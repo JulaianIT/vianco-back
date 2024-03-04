@@ -52,6 +52,14 @@ app.use(session({
 // Rutas para el login
 app.use("/login", loginRoutes);
 
+// Ruta para la programación de vehículos
+app.get("/programacion-vehiculos", (req, res) => {
+    if (req.session.loggedin === true) {
+        res.sendFile(__dirname + "/views/programacion/programacion.html");
+    } else {
+        res.redirect("/login/index");
+    }
+});
 
 // Ruta para la página principal
 app.get("/", (req, res) => {

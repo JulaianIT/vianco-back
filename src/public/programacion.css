@@ -1,0 +1,317 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+
+
+
+
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(144, 201, 167,0.3);
+  
+
+
+
+}
+header{
+    background-color: black;
+
+
+}
+nav{
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding-top: 80px;
+padding-left: 5%;
+padding-right: 5%;
+font-weight: bold;
+position: relative;
+top: -30px;
+
+
+
+}
+
+h1{
+    color: white;
+    font-size: 45px;
+
+
+
+}
+ul li {
+    display: inline-block;
+    padding: 0px 40px;
+
+
+
+
+}
+a{
+    font-size: 20px;
+    color: rgb(236, 236, 236);
+    text-decoration: none;
+
+
+}
+a:hover {
+    color: #90c9a7;
+}
+
+
+
+.menu{
+    top: 300px;
+    position: relative;
+    
+
+
+
+
+}
+body {
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container {
+    
+    width: 40%;
+    margin: 50px auto;
+    background-color: rgb(144, 201, 167,0.3);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #000;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555555;
+}
+
+select,
+input[type="date"],
+input[type="text"],
+input[type="time"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    color: #555555;
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #90c9a7;
+}
+.container {
+    position: relative;
+    margin-top: 30px; /* Espacio entre el formulario y el cuadro de información */
+}
+
+.horarios-info {
+    position: absolute;
+    top: 200px; /* Posicionamiento relativo al elemento padre */
+    right: 50px; /* Ajuste fino de la posición */
+    width: 200px; /* Ancho del cuadro de información */
+    background-color: #f8f8f8; /* Color de fondo */
+    border: 1px solid #ddd; /* Borde del cuadro */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px; /* Espacio interno */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+.horarios-info h3 {
+    margin-top: 0; /* Eliminar margen superior del título */
+    font-size: 23px; /* Tamaño de fuente del título */
+    color: #333; /* Color del texto */
+}
+
+.horarios-info ul {
+    list-style-type: none; /* Eliminar viñetas de la lista */
+    padding: 0; /* Eliminar relleno */
+}
+
+.horarios-info ul li {
+    margin-bottom: 5px; /* Espacio entre elementos de la lista */
+    font-size: 14px; /* Tamaño de fuente del texto */
+    color: #555; /* Color del texto */
+}
+
+.horarios-info ul li:nth-child(odd) {
+    background-color: #f3f3f3; /* Color de fondo alterno para resaltar */
+}
+/* Cambiar color del texto en el formulario */
+#registrationForm label {
+    color: #0f0e0e; /* Cambiar color del texto de las etiquetas */
+}
+
+#registrationForm input[type="text"],
+#registrationForm input[type="date"],
+#registrationForm select {
+    color: #555; /* Cambiar color del texto de los campos de entrada y las listas desplegables */
+}
+
+#registrationForm button[type="submit"] {
+    color: #000; /* Cambiar color del texto del botón de envío */
+    background-color: #90c9a7; /* Cambiar color de fondo del botón de envío */
+    border: none; /* Eliminar borde del botón de envío */
+    border-radius: 5px; /* Bordes redondeados para el botón de envío */
+    padding: 10px 20px; /* Espacio interno del botón de envío */
+    cursor: pointer; /* Cambiar cursor al pasar sobre el botón de envío */
+}
+
+#registrationForm button[type="submit"]:hover {
+    background-color: #717061; /* Cambiar color de fondo del botón de envío al pasar el mouse */
+}
+/* Cambiar el color del texto seleccionado en las listas desplegables */
+select::-moz-selection { /* Para navegadores Firefox */
+    color: #fff; /* Cambiar el color del texto seleccionado */
+    background-color: #90c9a7; /* Cambiar el color de fondo del texto seleccionado */
+}
+
+select::selection { /* Para navegadores que no sean Firefox */
+    color: #fff; /* Cambiar el color del texto seleccionado */
+    background-color: #90c9a7; /* Cambiar el color de fondo del texto seleccionado */
+}
+/* Cambiar el color del texto y el fondo al pasar el cursor sobre un ítem de la lista desplegable */
+select option:hover {
+    color: #333; /* Cambiar el color del texto */
+    background-color: #90c9a7; /* Cambiar el color de fondo */
+}
+
+/* Reset de estilos */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Estilos para el formulario */
+#registrationForm {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px
+
+}
+.horarios-info {
+    position: absolute;
+    bottom: 20px; /* Ajusta la posición vertical */
+    right: 50px;
+    width: 250px; /* Ancho del cuadro de información */
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 768px) {
+    .horarios-info {
+        position: relative; /* Cambiar a posición relativa para que siga el flujo del documento */
+        top: auto; /* Quitar la posición superior */
+        width: 100%; /* Ancho completo en pantallas más pequeñas */
+        margin-top: 20px; /* Espacio superior */
+        margin-bottom: 20px; /* Espacio inferior */
+    }
+}
+
+
+
+
+
+
+
+
+  
