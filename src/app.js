@@ -1,14 +1,14 @@
-const { engine } = require("express-handlebars");
+const express = require("express");
 const session = require("express-session");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
-const express = require("express");
+const { engine } = require("express-handlebars");
 
 const loginRoutes = require("./routes/login");
 
 const app = express();
 
-app.set("port", 4000);
+app.set("port", process.env.PORT || 4000);
 
 app.set("views", __dirname + "/views");
 app.engine(".hbs", engine({
@@ -55,7 +55,7 @@ app.use("/login", loginRoutes);
 
 // Ruta para la página principal
 app.get("/", (req, res) => {
-    if (req.session.loggedin == true) {
+    if (req.session.loggedin === true) {
         res.render("home", { name: req.session.name });
     } else {
         res.redirect("/login/index");
@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 
 // Ruta para logout
 app.get("/logout", (req, res) => {
-    if (req.session.loggedin == true) {
+    if (req.session.loggedin === true) {
         req.session.destroy();
     }
     res.redirect("/login/index");
