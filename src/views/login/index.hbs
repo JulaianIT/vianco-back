@@ -1,23 +1,24 @@
-<div class="mx-auto my-12 p-8 bg-white sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 border-gray-200 rounded-lg shadow-lg">
-    <!-- Define un contenedor con estilos de Tailwind CSS -->
+<div class="mx-auto my-12 p-8 bg-white sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 border border-gray-200 rounded-lg shadow-lg">
+    <!-- Contenedor principal con margen automático, relleno y sombra -->
 
-    <h1 class="text-4xl md:text-5xl lg:text-6xl text-center mb-8">Iniciar sesión</h1>
-    <!-- Define un encabezado con estilos de Tailwind CSS -->
+    <h1 class="text-4xl md:text-5xl lg:text-6xl text-center mb-8 text-gray-800 font-bold">Iniciar sesión</h1>
+    <!-- Encabezado centrado con texto grande, negrita y color gris oscuro -->
 
-    <form action="" method="post">
-        <!-- Define un formulario con el método POST y una acción vacía -->
+    <form action="" method="post" class="space-y-4">
+        <!-- Formulario con espacio entre elementos -->
 
-        <input type="email" name="email" placeholder="Digite su correo" class="border border-gray-200 w-full text-lg placeholder-gray-500 p-2 my-2 bg-gray-200 focus:bg-white rounded-md" required>
-        <!-- Define un campo de entrada de correo electrónico con estilos de Tailwind CSS -->
+        <input type="email" name="email" placeholder="Correo electrónico" class="border border-gray-200 w-full text-lg placeholder-gray-500 p-2 my-2 bg-gray-200 focus:bg-white rounded-md" required>
+        <!-- Campo de entrada de correo electrónico con estilos y marcador de posición -->
 
-        <input type="password" name="password" placeholder="Digite su contraseña" class="border border-gray-200 w-full text-lg placeholder-gray-500 p-2 my-2 bg-gray-200 focus:bg-white rounded-md" required>
-        <!-- Define un campo de entrada de contraseña con estilos de Tailwind CSS -->
+        <input type="password" name="password" placeholder="Contraseña" class="border border-gray-200 w-full text-lg placeholder-gray-500 p-2 my-2 bg-gray-200 focus:bg-white rounded-md" required>
+        <!-- Campo de entrada de contraseña con estilos y marcador de posición -->
 
         <button type="submit" class="bg-green-500 w-full text-lg text-white font-semibold p-2 my-3 hover:bg-green-600 focus:bg-green-700 rounded-md">Iniciar sesión</button>
-        <!-- Define un botón de envío con estilos de Tailwind CSS -->
+        <!-- Botón de envío con color de fondo verde, texto blanco y estilos -->
     </form>
 
     {{#if error}}
     <p class="text-red-500 font-bold text-lg my-3">{{error}}</p>
+    <!-- Mensaje de error en caso de que haya un error -->
     {{/if}}
 </div>
