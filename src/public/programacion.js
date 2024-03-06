@@ -1,48 +1,31 @@
 // Mapeo de bases y placas
 const basesPlacas = {
     "NH TELEPORT": [
-    "MYR681",
-    "LZT992",
-    "WEP303",
-    "JTZ545",
-    "WGZ810",
-    "WMZ913",
-    "WMZ358",
-    "GUV190",
-    "WMZ145",
-    "WMZ359",
-    "TFQ323",
-    "WHQ453",
-    "LCO380",
-    "SPX517",
-    "GET364",
-    "LUM902",],
-    "NH HACIENDA": [ "MYR681",
-    "LZT992",
-    "WEP303",
-    "JTZ545",
-    "WGZ810",
-    "WMZ913",
-    "WMZ358",
-    "GUV190",
-    "WMZ145",
-    "WMZ359",
-    "TFQ323",
-    "WHQ453",
-    "LCO380",
-    "SPX517",
-    "GET364",
-    "LUM902",],
-    "HYAAT": [  
-        "GUZ800","JVK757", "JKV987","LSY924","GZZ534","ETT654","JTY497","TSP678","LJS684","WFH542","TLX856", "TTP460","GUU760","LWL706", "WGP651","TGV100","FRR364"
+       " MYR681",
+        "WEP303",
+        "JTZ545",
+        "WGZ810",
+        "WMZ913",
+        "WMZ358",
+        "GUV190",
+        "WMZ145",
+        "WMZ359",
+        "TFQ323",
+        "WHQ453",
+        "LCO380",
+        "SPX517",
+        "GET364",
+        "LUM902",
 
-],
-    "club el nogal": [
-    "LLL748",
-    "KYP065",
-    "LZN965",
-    "LZN273",
-    "LUL430",],
+        ],
+
+
+    "CLUB EL NOGAL": [
+        "LLL748",
+        "KYP065",
+        "LZN965",
+        "LZN273",
+        "LUL430",],
 
     "HILTON 72": [
         "LUW724",
@@ -60,44 +43,104 @@ const basesPlacas = {
         "LJU191",],
 
 
-        "URBAN 93": ["WMZ354",],
-        "WTC": [    "LUN435",
+        "URBAN 93": [
+            "WMZ354",
+            "TSN353",
+        
+        ],
+        "TRIPULACION": [
+        "RELEVO TRIPULACIÓN",
+            "LUM256",
+            "LUM613",
+            "TFP864",
+            "WNV219",
+            "WNV218",
+        
+        ],
+
+        "NH WTC": [   
+            "WLM076",
+            "LUN435",
             "WMZ144",
             "KYS293",
             "WCW220",
             "WDC029",
-            "LUW148",
             "JTS587",
             "SZU873",
             "TLO365",
-            "LRN218",],
+            "LRN218",
+        ,],
 
 
-            "WILTON CORFERIAS": ["WNY587",
-            "TTN605",
-            "JTZ544",
-            "WPP359",
-            "LUW564",
-            "WHQ792",
-            "LLL737",
-            "LRN456",
-            "SXY097",
-            "SXY097",
-            "TTQ301",
-            "JOX262",
-            "TLM299",
-            "LJS833",
-            "WNU316",
-            "NHR232"],
+            "WILTON CORFERIAS": [
+                "WNY587",
+                "TTN605",
+                "JTZ544",
+                "WPP359",
+                "LUW564",
+                "WHQ792",
+                "LLL737",
+                "LRN456",
+                "SXY097",
+                "SXY097",
+                "TTQ301",
+                "JOX262",
+                "TLM299",
+                "LJS833",
+                "2WNU316",
+         ],
 
-            "ANDINO": ["LZN590",
-            "NHP457",
-            "LJS783",
-            "WNY015",
-            "TTX898",
-            "LFQ828",
-            "LJU205",
-            "LUN070",],
+            "NH ANDINO": [
+                "LZN590",
+                "NHP457",
+                "LJS783",
+                "WNY015",
+                "TTX898",
+                "LFQ828",
+                "LLO701",
+                "LJU205",
+                "LUN070",
+          ],
+
+            "ESTELAR CALLE 100": [,
+            "WOU337",
+            ,],
+
+            "GRAN HYATT": [
+                "GUZ800",
+                "JVK757",
+                "JKV987",
+                "LSY924",
+                "GZZ534",
+                "ETT654",
+                "JTY497",
+                "TSP678",
+                "LJS684",
+                "WFH542",
+                "TLX856",
+                "TTP460",
+                "GUU760",
+                "LWL706",
+                "WGP651",
+                "TGV100",
+                "FRR364",],
+
+
+                "ESTELAR PARQUE 93": [
+                        "LLR404",
+
+                        "LLQ558",
+
+                        "LJU633",
+                        "EQY472",
+                        "TFU477",
+                        "EYY236",
+                        "LUW324",
+                        "LZT997",
+
+                   
+                    ],
+        
 
     // Otras bases y placas
 };

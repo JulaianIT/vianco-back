@@ -4,34 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vianco</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.1/tailwind.min.css">
+    
     <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
+    <style>
+
+    #vigilado{
+    float: right;
+    position: relative;
+    top: 74px;
+    right: 4%;
+    }
+    #logo{
+    position: relative;
+    left: 3%;
+    
+
+}
+ 
+main{
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+    margin-top: 100px;
+
+}
+
+
+    </style>
 </head>
-<body class="bg-gray-200">
-    <nav class="flex py-5 bg-green-500 text-white px-24">
-        <div class="w-1/2 px-12 mr-auto">
-            <h1 class="text-2xl font-bold">VIANCO</h1>
-        </div>
+<body>
 
-        <ul class="w-1/2 px-15 ml-auto flex justify-end pt-1">
-            {{#if name }}
-                <li class="nav-item px-4">
-                    <p class="font-semibold">{{name}}</p>
-                </li>
-                <li class="nav-item px-4">
-                    <a href="/logout" class="nav-link font-semibold bg-red-500 text-white hover:bg-red-700 py-3 px-4 rounded-md">Cerrar</a>
-                </li>
-            {{else}}
-                <li class="nav-item px-4">
-                    <a href="/login/index" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">Iniciar Sesion</a>
-                </li>
-                <li class="nav-item px-4">
-                    <a href="/login/register" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">Registrarse</a>
-                </li>
-            {{/if}}
-        </ul>
-    </nav>
+    <header>
+        <img id="membrete"   src="../imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        
+       
+ 
 
-    {{{body}}}
+
+
+
+    </header>
+
+ 
+   {{{body}}}
 </body>
 </html>

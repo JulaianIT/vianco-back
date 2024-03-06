@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,7 @@
                 <nav>
                     <ul>
                         <li><a href="#" id="selected"></a></li>  
-                        <li><a href="./operaciones/Poperaciones/operaciones.php">Operaciones</a>
+                        <li><a href="">Operaciones</a>
                             <ul>
                                 <li><a href="#">Vehículo</a></li>
                                 <li><a href="#">Conductores</a></li>
@@ -25,7 +24,15 @@
                         </li> 
                         <li><a href="">Ejecutivo</a>
                             <ul>
-<li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
+                                <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
+                                <li><a href="">COTIZACIONES</a></li>
+                                <li><a href="">RECEPCIONES AEROPUERTO</a></li>
+                                <li><a href="">TARIFAS HOTELES</a></li>
+                                <li><a href="">METAS</a></li>
+
+                            
+                            
+                            
                             </ul>
                         </li> 
                         <li><a href="">Soporte IT</a> 
@@ -34,16 +41,100 @@
                                 <li><a href="#">Ayuda</a></li>
                             </ul>
                         </li>
-                        <div class="id">
-                            <h1 class="id">Bienvenido {{name}}</h1>
-                        </div>
+                     
                     </ul>
                 </nav>
             </div>
         </div>
     </header>
     <main>
-       
     </main>
+    <style>
+        .container_menu {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Asegura que la barra de navegación esté sobre otros elementos */
+        }
+        footer {
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+            top: 649px;
+            margin: 0;
+        }
+        footer section {
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a {
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: rgb(162, 204, 170);
+        }
+        footer p {
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .nav-item {
+            margin-left: 15px;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+    
+    <footer>
+        <section>
+            <li id="nombre" class="nav-item px-4">
+                <p class="font-semibold">Bienvenido {{name}}</p>
+                
+            </li>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+            <br>
+               
+            <hr>
+            
+            <nav class="">
+                <ul class="w-full ml-auto flex justify-end pt-1">
+                    {{#if name }}
+                        <li id="cerrar" class="nav-item px-4">
+                            <a href="/logout" class="nav-link font-semibold bg-red-500 text-white hover:bg-red-700 py-3 px-4 rounded-md">Cerrar</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item px-4">
+                            <a href="/login/index" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">Iniciar Sesion</a>
+                        </li>
+                        <li class="nav-item px-4">
+                            <a href="/login/register" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">Registrarse</a>
+                        </li>
+                    {{/if}}
+                </ul>
+            </nav>
+        </section>
+    </footer>
+
+    <!-- Ocultar las imágenes -->
+    <style>
+        img {
+            display: none;
+        }
+    </style>
 </body>
 </html>

@@ -11,7 +11,7 @@
   header{
     width: 100%;
     position: fixed;
-    top:9;
+    top:100;
     left: 0;
     background-color: #ffff;
   }
@@ -222,4 +222,6 @@
       position: relative;
       right: -11vw; /* Desplazamiento relativo al ancho de la ventana */
   }
+  
+
   
