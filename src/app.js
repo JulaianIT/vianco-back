@@ -1,14 +1,19 @@
+// Importar los módulos necesarios
 const express = require("express");
 const session = require("express-session");
 const mysql = require("mysql2");
-const bodyParser = require("body-parser");
 const { engine } = require("express-handlebars");
 
+// Importar el manejador de webhook
+const webhookHandler = require("./webhook/webhookHandler");
+
+// Importar las rutas de login
 const loginRoutes = require("./routes/login");
 
+// Crear una instancia de la aplicación Express
 const app = express();
 
-app.set("port", process.env.PORT || 4000);
+app.set("port", process.env.PORT || 3000);
 
 app.set("views", __dirname + "/views");
 app.engine(".hbs", engine({
@@ -16,11 +21,8 @@ app.engine(".hbs", engine({
 }));
 app.set("view engine", "hbs");
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 const connection = mysql.createConnection({
@@ -48,6 +50,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
+// Configurar la ruta para el webhook y usar el manejador de webhook
+app.post("/webhook", webhookHandler.handleWebhook);
 
 // Rutas para el login
 app.use("/login", loginRoutes);
