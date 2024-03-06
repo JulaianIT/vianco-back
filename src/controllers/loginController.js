@@ -34,6 +34,17 @@ function auth(req, res) {
                 } else {
                     req.session.loggedin = true;
                     req.session.name = user.name; // Asumiendo que el usuario tiene un campo 'name'
+
+                    // Establecer req.session.roles con los roles del usuario si es una cadena
+                    if (typeof user.roles === 'string') {
+                        req.session.roles = user.roles.split(',');
+                    } else {
+                        req.session.roles = [];
+                    }
+
+                    // Registro de depuración para verificar el valor de req.session.roles
+                    console.log("Valor de req.session.roles:", req.session.roles);
+
                     res.redirect("/");
                 }
             });
@@ -43,6 +54,8 @@ function auth(req, res) {
     });
 }
 
+
+
 // Función para renderizar la vista de registro
 function register(req, res) {
     if (req.session.loggedin != true) {
@@ -51,7 +64,6 @@ function register(req, res) {
         res.redirect("/");
     }
 }
-
 
 // Función para manejar el almacenamiento de usuarios
 function storeUser(req, res) {
@@ -89,22 +101,22 @@ function storeUser(req, res) {
             });
     });
 }
+
+// Función para cerrar sesión
 function logout(req, res) {
     if (req.session.loggedin == true) {
-        req.session.destroy(); // Corregir 'red.session.destroy()' a 'req.session.destroy()'
+        req.session.destroy(); // Destruye la sesión del usuario
         res.redirect("/login");
     } else {
         res.redirect("/login");
     }
 }
 
-
-// Exporta las funciones para que estén disponibles para otros módulos
 // Exporta las funciones para que estén disponibles para otros módulos
 module.exports = {
     login, // Función para iniciar sesión
     register, // Función para registrar usuarios
     storeUser, // Función para almacenar usuarios
-    auth,
-    logout, // Agrega la función logout aquí
+    auth, // Función para autenticar al usuario
+    logout, // Función para cerrar sesión
 };

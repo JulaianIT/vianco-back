@@ -14,14 +14,27 @@
                 <nav>
                     <ul>
                         <li><a href="#" id="selected"></a></li>  
-                        <li><a href="">Operaciones</a>
+                        {{#if isOperative}}
+                        <li><a href="#">Operaciones</a> 
                             <ul>
                                 <li><a href="#">Vehículo</a></li>
                                 <li><a href="#">Conductores</a></li>
                                 <li><a href="#">Documentación</a></li>
                                 <li><a href="#">Contratos</a></li>
                             </ul>
-                        </li> 
+                        </li>
+                        {{/if}}
+
+                        {{#if isAdmin}}
+                        <li><a href="">Gerencia</a> 
+                            <ul>
+                                <li><a href="#">Reportes</a></li>
+                                <li><a href="#">Estadísticas</a></li>
+                                <li><a href="#">Configuración</a></li>
+                            </ul>
+                        </li>
+                        {{/if}}
+                        {{#if isExecutive}}
                         <li><a href="">Ejecutivo</a>
                             <ul>
                                 <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
@@ -29,12 +42,9 @@
                                 <li><a href="">RECEPCIONES AEROPUERTO</a></li>
                                 <li><a href="">TARIFAS HOTELES</a></li>
                                 <li><a href="">METAS</a></li>
-
-                            
-                            
-                            
                             </ul>
-                        </li> 
+                        </li>
+                        {{/if}}
                         <li><a href="">Soporte IT</a> 
                             <ul>
                                 <li><a href="#">Citas</a></li>

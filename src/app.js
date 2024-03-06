@@ -98,11 +98,19 @@ app.get("/programacion-vehiculos", (req, res) => {
 // Ruta para la página principal
 app.get("/", (req, res) => {
     if (req.session.loggedin === true) {
-        res.render("home", { name: req.session.name });
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        
+        const isAdmin = roles.includes('gerencia');
+        const isExecutive = roles.includes('ejecutivo');
+        const isOperative = roles.includes('operativo'); // Verificar si el usuario tiene el rol de 'operativo'
+
+        res.render("home", { name: req.session.name, isAdmin, isExecutive, isOperative }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
 });
+
 
 // Ruta para logout
 app.get("/logout", (req, res) => {
