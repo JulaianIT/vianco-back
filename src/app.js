@@ -32,12 +32,41 @@ const connection = mysql.createConnection({
     database: "viancote_nodelogin"
 });
 
-connection.connect((err) => {
+// Función para enviar un ping a la base de datos periódicamente
+function sendPing() {
+    connection.ping(err => {
+        if (err) {
+            console.error("Error al enviar ping a la base de datos:", err);
+        } else {
+            console.log("Ping enviado a la base de datos");
+        }
+    });
+}
+
+// Configura el intervalo para enviar el ping cada 5 minutos (300,000 milisegundos)
+const pingInterval = setInterval(sendPing, 300000);
+
+// Maneja los eventos de error y cierre de la conexión
+connection.on('error', err => {
+    console.error("Error en la conexión a la base de datos:", err);
+    clearInterval(pingInterval); // Detiene el intervalo cuando se produce un error
+});
+
+connection.on('close', () => {
+    console.log("Conexión a la base de datos cerrada");
+    clearInterval(pingInterval); // Detiene el intervalo cuando se cierra la conexión
+});
+
+// Conecta con la base de datos
+connection.connect(err => {
     if (err) {
-        console.error("Error connecting to database:", err);
+        console.error("Error al conectar con la base de datos:", err);
         return;
     }
-    console.log("Connected to database");
+    console.log("Conectado a la base de datos");
+
+    // Envía el primer ping después de conectar
+    sendPing();
 });
 
 app.use((req, res, next) => {
