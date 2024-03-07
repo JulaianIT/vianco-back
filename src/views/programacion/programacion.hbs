@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programación de Vehículos</title>
+    <link rel="stylesheet" href="programacion.css"> <!-- Asegúrate de que la ruta del archivo CSS sea correcta -->
+</head>
+<body>
+  
+    <header>
+      
+                <li><a href="/" style="color: black;">INICIO</a></li>
+                <!-- Otros elementos de navegación si es necesario -->
+        
+    </header>
+
+    <div class="container">
+        <h2>Programación de Vehículos</h2>
+<form id="programacionForm" method="post" action="/programacion-vehiculos">
+            <div class="form-group">
+                <label for="base">Seleccionar Base:</label>
+                <select id="base" name="base" required>
+                    <option value="" disabled selected>Seleccione una base</option>
+                    <!-- Las opciones de base se llenarán dinámicamente usando JavaScript -->
+                </select>
+            </div>
+            <div class="form-group" id="placasGroup">
+                <label for="placa">Seleccionar Placa:</label>
+                <select id="placa" name="placa" required>
+                    <option value="" disabled selected>Seleccione una placa</option>
+                    <!-- Las opciones de placa se llenarán dinámicamente usando JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="horario">Horario:</label>
+                <select id="horario" name="horario" required>
+                    <option value="" disabled selected>Seleccione un horario</option>
+                    <option value="1">04:00 A 12:00</option>
+                    <option value="2">06:00 A 14:00</option>
+                    <option value="3">08:00 A 16:00</option>
+                    <option value="4">12:00 A 20:00</option>
+                    <option value="5">14:00 A 22:00</option>
+                    <option value="6">20:00 A 04:00</option>
+                    <option value="7">PICO Y PLACA</option>
+                     <option value="8">PERMISO</option>
+                    <option value="9">NO ACEPTA PROGRAMACION </option>
+                    <!-- Agrega el resto de las opciones de horario según tu necesidad -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones:</label>
+                <textarea id="observaciones" name="observaciones" rows="5" required></textarea>
+            </div>
+            <button type="submit">Programar Vehículo</button>
+        </form>
+    </div>
+
+    <script src="programacion.js"></script> <!-- Asegúrate de que la ruta del archivo JavaScript sea correcta -->
+</body>
+</html>

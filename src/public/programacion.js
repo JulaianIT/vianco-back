@@ -1,188 +1,67 @@
-// Mapeo de bases y placas
-const basesPlacas = {
-    "NH TELEPORT": [
-       " MYR681",
-        "WEP303",
-        "JTZ545",
-        "WGZ810",
-        "WMZ913",
-        "WMZ358",
-        "GUV190",
-        "WMZ145",
-        "WMZ359",
-        "TFQ323",
-        "WHQ453",
-        "LCO380",
-        "SPX517",
-        "GET364",
-        "LUM902",
+// Función para cargar las opciones de base desde el servidor
+function cargarBases() {
+    fetch('/api/bases') // Endpoint para obtener las bases desde el servidor
+        .then(response => response.json())
+        .then(data => {
+            const baseSelect = document.getElementById('base');
+            baseSelect.innerHTML = ''; // Limpiar las opciones actuales
 
-        ],
-
-
-    "CLUB EL NOGAL": [
-        "LLL748",
-        "KYP065",
-        "LZN965",
-        "LZN273",
-        "LUL430",],
-
-    "HILTON 72": [
-        "LUW724",
-        "TAL491",
-        "WMK368",
-        "WLT649",
-        "LUK855",
-        "LQL173",
-        "LSX557",
-        "UFW432",
-        "JTY926",
-        "TAL491",
-        "LZM557",
-        "WMZ147",
-        "LJU191",],
-
-
-        "URBAN 93": [
-            "WMZ354",
-            "TSN353",
-        
-        ],
-        "TRIPULACION": [
-        "RELEVO TRIPULACIÓN",
-            "LUM256",
-            "LUM613",
-            "TFP864",
-            "WNV219",
-            "WNV218",
-        
-        ],
-
-        "NH WTC": [   
-            "WLM076",
-            "LUN435",
-            "WMZ144",
-            "KYS293",
-            "WCW220",
-            "WDC029",
-            "JTS587",
-            "SZU873",
-            "TLO365",
-            "LRN218",
-        ,],
-
-
-            "WILTON CORFERIAS": [
-                "WNY587",
-                "TTN605",
-                "JTZ544",
-                "WPP359",
-                "LUW564",
-                "WHQ792",
-                "LLL737",
-                "LRN456",
-                "SXY097",
-                "SXY097",
-                "TTQ301",
-                "JOX262",
-                "TLM299",
-                "LJS833",
-                "2WNU316",
-         ],
-
-            "NH ANDINO": [
-                "LZN590",
-                "NHP457",
-                "LJS783",
-                "WNY015",
-                "TTX898",
-                "LFQ828",
-                "LLO701",
-                "LJU205",
-                "LUN070",
-          ],
-
-            "ESTELAR CALLE 100": [,
-            "WOU337",
-            ,],
-
-            "GRAN HYATT": [
-                "GUZ800",
-                "JVK757",
-                "JKV987",
-                "LSY924",
-                "GZZ534",
-                "ETT654",
-                "JTY497",
-                "TSP678",
-                "LJS684",
-                "WFH542",
-                "TLX856",
-                "TTP460",
-                "GUU760",
-                "LWL706",
-                "WGP651",
-                "TGV100",
-                "FRR364",],
-
-
-                "ESTELAR PARQUE 93": [
-                        "LLR404",
-
-                        "LLQ558",
-
-                        "LJU633",
-                        "EQY472",
-                        "TFU477",
-                        "EYY236",
-                        "LUW324",
-                        "LZT997",
-
-                   
-                    ],
-        
-
-    // Otras bases y placas
-};
-
-function updatePlacas() {
-    const baseSeleccionada = document.getElementById("base").value;
-    const placasSelect = document.getElementById("placa");
-    
-    // Limpiar las opciones actuales del menú desplegable de placas
-    placasSelect.innerHTML = '';
-
-    // Obtener las placas de la base seleccionada y agregarlas al menú desplegable
-    const placas = basesPlacas[baseSeleccionada];
-    if (placas && placas.length > 0) {
-        // Si hay placas asociadas a la base seleccionada, agregarlas al menú desplegable
-        placas.forEach(placa => {
-            const option = document.createElement("option");
-            option.text = placa;
-            option.value = placa;
-            placasSelect.appendChild(option);
+            data.forEach(base => {
+                const option = document.createElement('option');
+                option.value = base;
+                option.textContent = base;
+                baseSelect.appendChild(option);
+            });
+            // Llamar a la función para cargar las placas cuando se selecciona una base
+            baseSelect.addEventListener('change', cargarPlacas);
+        })
+        .catch(error => {
+            console.error('Error al cargar las bases:', error);
         });
-    } else {
-        // Si no hay placas asociadas a la base seleccionada, agregar una opción predeterminada
-        const defaultOption = document.createElement("option");
-        defaultOption.text = "No hay carros asociados a esta base";
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
-        placasSelect.appendChild(defaultOption);
-    }
 }
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbziHx7tcGQOf59803938jQSub0mbSQECXOXALaZ9B6QlRbTle_Fg0fVFobQfZWEKN9ylw/exec";
-const form = document.getElementById("registrationForm"); // Obtener el formulario por su ID
+// Función para cargar las opciones de placa según la base seleccionada
+function cargarPlacas() {
+    const baseSeleccionada = document.getElementById('base').value;
+    fetch(`/api/placas?base=${baseSeleccionada}`) // Endpoint para obtener las placas según la base seleccionada
+        .then(response => response.json())
+        .then(data => {
+            const placasSelect = document.getElementById('placa');
+            placasSelect.innerHTML = ''; // Limpiar las opciones actuales
 
+            data.forEach(placa => {
+                const option = document.createElement('option');
+                option.value = placa;
+                option.textContent = placa;
+                placasSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar las placas:', error);
+        });
+}
+
+// Llamar a la función para cargar las bases cuando la página se cargue completamente
+document.addEventListener('DOMContentLoaded', cargarBases);
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbziHx7tcGQOf59803938jQSub0mbSQECXOXALaZ9B6QlRbTle_Fg0fVFobQfZWEKN9ylw/exec";
+const form = document.getElementById("programacionForm"); // Cambiado el ID del formulario
 form.addEventListener("submit", e => {
     e.preventDefault(); // Prevenir la acción por defecto del formulario
+
+    // Mostrar mensaje de carga
+    const loadingMessage = document.createElement('p');
+    loadingMessage.textContent = 'Enviando formulario...';
+    form.appendChild(loadingMessage);
 
     fetch(scriptURL, { 
         method: "POST", 
         body: new FormData(form) // Enviar los datos del formulario
     })
     .then(response => {
+        // Eliminar mensaje de carga
+        form.removeChild(loadingMessage);
+
         if (response.ok) { // Verificar si la respuesta es exitosa
             alert("¡Felicidades! Tu carro ha sido programado.");
             window.location.reload(); // Recargar la página después de enviar los datos
@@ -193,5 +72,8 @@ form.addEventListener("submit", e => {
     .catch(error => {
         console.error("Error:", error);
         alert("Hubo un error al enviar el formulario. Por favor, inténtalo de nuevo más tarde.");
+        // Eliminar mensaje de carga en caso de error
+        form.removeChild(loadingMessage);
     });
 });
+

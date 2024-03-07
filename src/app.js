@@ -89,7 +89,16 @@ app.use("/login", loginRoutes);
 // Ruta para la programación de vehículos
 app.get("/programacion-vehiculos", (req, res) => {
     if (req.session.loggedin === true) {
-        res.sendFile(__dirname + "/views/programacion/programacion.html");
+        // Consulta SQL para obtener las bases y placas
+        connection.query("SELECT base, placa FROM vehiculos", (error, results) => {
+            if (error) {
+                console.error("Error al obtener las bases y placas:", error);
+                res.status(500).send("Error al obtener las bases y placas");
+                return;
+            }
+            // Renderizar la vista de programación de vehículos con los datos de las bases y placas
+            res.render("programacion/programacion", { basesPlacas: results });
+        });
     } else {
         res.redirect("/login/index");
     }
@@ -119,7 +128,6 @@ app.get("/logout", (req, res) => {
     }
     res.redirect("/login/index");
 });
-
 
 // Ruta para administrar roles
 app.get("/admin/roles", (req, res) => {
@@ -151,8 +159,6 @@ app.get("/admin/roles", (req, res) => {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
     }
 });
-
-
 
 // Ruta para mostrar el formulario de edición de roles
 app.get("/admin/roles/:id/edit", (req, res) => {
@@ -194,9 +200,39 @@ app.post("/admin/editRole/:id/edit", (req, res) => {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
     }
 });
+// Ruta para obtener la lista de bases
+app.get('/api/bases', (req, res) => {
+    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+        if (error) {
+            console.error('Error al obtener las bases:', error);
+            res.status(500).json({ error: 'Error al obtener las bases' });
+            return;
+        }
+        const bases = results.map(result => result.base);
+        res.json(bases);
+    });
+});
 
-
-
+// Ruta para obtener la lista de placas según la base seleccionada
+app.get('/api/placas', (req, res) => {
+    const baseSeleccionada = req.query.base;
+    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener las placas:', error);
+            res.status(500).json({ error: 'Error al obtener las placas' });
+            return;
+        }
+        const placas = results.map(result => result.placa);
+        res.json(placas);
+    });
+});
+// Ruta para manejar la programación de vehículos
+app.post("/programacion-vehiculos", (req, res) => {
+    // Aquí puedes agregar la lógica para manejar los datos enviados desde el formulario
+    // Por ejemplo, puedes obtener los datos del cuerpo de la solicitud (req.body) y realizar la programación de vehículos en la base de datos
+    
+    // Después de manejar los datos, puedes redirigir a una página de éxito o renderizar una vista que indique que la programación fue exitosa
+});
 
 
 
