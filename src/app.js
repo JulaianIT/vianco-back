@@ -120,6 +120,86 @@ app.get("/logout", (req, res) => {
     res.redirect("/login/index");
 });
 
+
+// Ruta para administrar roles
+app.get("/admin/roles", (req, res) => {
+    // Verificar si el usuario tiene permisos de administrador
+    if (req.session.loggedin && req.session.roles.includes('gerencia')) {
+        // Obtener los usuarios y sus roles desde la base de datos
+        connection.query("SELECT id, email, name, roles FROM user", (error, results) => {
+            if (error) {
+                console.error("Error al obtener usuarios y roles:", error);
+                res.status(500).send("Error al obtener usuarios y roles");
+                return;
+            }
+            // Renderizar la vista de administración de roles con los datos de los usuarios
+            res.render("admin/roles", { users: results });
+        });
+    } else {
+        res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
+    }
+});
+
+
+// Ruta para la página de ajustes de roles
+app.get("/admin/roles", (req, res) => {
+    // Verificar si el usuario tiene permisos de administrador
+    if (req.session.loggedin && req.session.roles.includes('gerencia')) {
+        // Aquí puedes agregar la lógica para mostrar la página de ajustes de roles
+        res.render("admin/roles"); // Esto renderiza una vista llamada "roles.hbs", por ejemplo
+    } else {
+        res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
+    }
+});
+
+
+
+// Ruta para mostrar el formulario de edición de roles
+app.get("/admin/roles/:id/edit", (req, res) => {
+    // Verificar si el usuario tiene permisos de administrador
+    if (req.session.loggedin && req.session.roles.includes('gerencia')) {
+        const userId = req.params.id;
+        // Obtener información del usuario y sus roles desde la base de datos
+        connection.query("SELECT id, email, name, roles FROM user WHERE id = ?", [userId], (error, results) => {
+            if (error) {
+                console.error("Error al obtener información del usuario:", error);
+                res.status(500).send("Error al obtener información del usuario");
+                return;
+            }
+            // Renderizar el formulario de edición de roles con los datos del usuario
+            res.render("admin/editRole", { user: results[0] });
+        });
+    } else {
+        res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
+    }
+});
+// Ruta para procesar la edición de roles
+app.post("/admin/editRole/:id/edit", (req, res) => {
+    // Verificar si el usuario tiene permisos de administrador
+    if (req.session.loggedin && req.session.roles.includes('gerencia')) {
+        const userId = req.params.id;
+        const newRole = req.body.newRole; // Obtener el nuevo rol del cuerpo de la solicitud
+        
+        // Actualizar el rol del usuario en la base de datos
+        connection.query("UPDATE user SET roles = ? WHERE id = ?", [newRole, userId], (error, results) => {
+            if (error) {
+                console.error("Error al actualizar el rol del usuario:", error);
+                res.status(500).send("Error al actualizar el rol del usuario");
+                return;
+            }
+            // Redirigir a la página de administración de roles después de la actualización
+            res.redirect("/admin/roles");
+        });
+    } else {
+        res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
+    }
+});
+
+
+
+
+
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
