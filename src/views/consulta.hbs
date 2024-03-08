@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Vida del Vehículo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+   
+          <style>
+
+    #vigilado{
+    float: right;
+    position: relative;
+    top: 74px;
+    right: 4%;
+    }
+    #logo{
+    position: relative;
+    left: 3%;
+    
+
+}
+ 
+main{
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+    margin-top: 100px;
+
+}
+
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+   
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #d9d9d9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #413d4b
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            margin-top: 5px;
+        }
+        .btn {
+            background-color: #90c9a7;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #90c9a7;
+        }
+        .info-vehiculo {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .campo {
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .label {
+            font-weight: bold;
+            float: left;
+            width: 120px;
+            color: #555;
+        }
+        .dato {
+            float: left;
+            width: calc(100% - 120px);
+            margin-left: 20px;
+            font-style: italic;
+            color: #333;
+        }
+        .info-vehiculo h2 {
+            color: #413d4b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+            .volver-btn {
+            background-color:#90c9a7;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hoja de Vida del Vehículo</h1>
+        <form id="consulta-form">
+            <div class="form-group">
+                <label for="placa">Selecciona una placa:</label>
+                <select id="placa" name="placa">
+                    {{#each placas}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <button type="submit" class="btn">Consultar</button>
+        </form>
+        <div id="info-vehiculo" class="info-vehiculo">
+            <h2>Información del Vehículo</h2>
+            <div class="campo">
+                <span class="label">Placa:</span>
+                <span class="dato">{{Placa}}</span>
+            </div>
+            <div class="campo">
+                <span class="label">Matrícula:</span>
+                <span class="dato">{{Matricula}}</span>
+            </div>
+                    <a href="/" class="volver-btn">Volver al Menú</a>
+
+            <!-- Agregar más campos de información técnica aquí -->
+        </div>
+    </div>
+    <script src="consulta.js"></script>
+</body>
+</html>

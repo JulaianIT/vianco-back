@@ -82,6 +82,24 @@
                 padding: 30px 10%;
             }
         }
+          .volver-btn {
+            background-color: #90c9a7;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .volver-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -94,7 +112,7 @@
                         {{#if isOperative}}
                         <li><a href="#">Operaciones</a> 
                             <ul>
-                                <li><a href="#">Vehículo</a></li>
+                                <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="#">Conductores</a></li>
                                 <li><a href="#">Documentación</a></li>
                                 <li><a href="#">Contratos</a></li>

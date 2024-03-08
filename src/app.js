@@ -235,6 +235,41 @@ app.post("/programacion-vehiculos", (req, res) => {
 });
 
 
+// Ruta para la página de consulta de vehículos
+app.get("/consulta-vehiculos", (req, res) => {
+    // Consulta SQL para obtener las placas disponibles
+    connection.query("SELECT placa FROM vehiculos", (error, results) => {
+        if (error) {
+            console.error("Error al obtener las placas:", error);
+            res.status(500).send("Error al obtener las placas");
+            return;
+        }
+        // Renderizar la vista de consulta de vehículos con los datos de las placas
+        res.render("consulta", { placas: results.map(result => result.placa) });
+    });
+});
+
+// Ruta para manejar la solicitud del formulario de consulta de vehículos
+app.post("/consulta-vehiculos", (req, res) => {
+    const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+    // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
+    connection.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
+        if (error) {
+            console.error("Error al obtener la información del vehículo:", error);
+            res.status(500).send("Error al obtener la información del vehículo");
+            return;
+        }
+        if (results.length === 0) {
+            // Si no se encuentra ningún vehículo con la placa seleccionada, enviar un mensaje de error
+            res.status(404).send("Vehículo no encontrado");
+            return;
+        }
+        const vehiculo = results[0]; // Obtener el primer vehículo encontrado (debería haber solo uno)
+        // Enviar la información del vehículo al cliente en formato JSON
+        res.json(vehiculo);
+    });
+});
+
 
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
