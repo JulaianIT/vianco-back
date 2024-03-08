@@ -5,61 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Programación de Vehículos</title>
     <link rel="stylesheet" href="programacion.css"> <!-- Asegúrate de que la ruta del archivo CSS sea correcta -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f2f2f2; /* Color de fondo */
+        }
+        header {
+            background-color: #ffffff; /* Color de fondo del encabezado */
+            padding: 0px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0; /* Asegura que no haya margen en el encabezado */
+        }
+        #membrete {
+            margin: 0; /* Asegura que no haya margen en el membrete */
+        }
+        #logo, #vigilado {
+            max-width: 100%; /* Asegura que las imágenes no se desborden del contenedor */
+            height: auto; /* Hace que las imágenes mantengan su proporción original */
+        }
+        .container {
+            max-width: 800px; /* Limita el ancho del contenido para que no sea demasiado ancho en pantallas grandes */
+            margin: 0 auto; /* Centra el contenido horizontalmente */
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            font-size: 18px;
+               padding: 20px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        
+        button[type="submit"]:hover {
+             background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+     
+    #btn-volver {
+            padding: 7px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        #btn-volver:hover {
+            background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+           #btn-ver{
+           position: relative;
+           left: 100px;
+                       padding: 7px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        #btn-ver:hover {
+            background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+    </style>
 </head>
 <body>
-  
-    <header>
-      
-                <li><a href="/" style="color: black;">INICIO</a></li>
-                <!-- Otros elementos de navegación si es necesario -->
-        
-    </header>
 
-    <div class="container">
-        <h2>Programación de Vehículos</h2>
-<form id="programacionForm" method="post" action="/programacion-vehiculos">
-            <div class="form-group">
-                <label for="base">Seleccionar Base:</label>
-                <select id="base" name="base" required>
-                    <option value="" disabled selected>Seleccione una base</option>
-                    <!-- Las opciones de base se llenarán dinámicamente usando JavaScript -->
-                </select>
-            </div>
-            <div class="form-group" id="placasGroup">
-                <label for="placa">Seleccionar Placa:</label>
-                <select id="placa" name="placa" required>
-                    <option value="" disabled selected>Seleccione una placa</option>
-                    <!-- Las opciones de placa se llenarán dinámicamente usando JavaScript -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" required>
-            </div>
-            <div class="form-group">
-                <label for="horario">Horario:</label>
-                <select id="horario" name="horario" required>
-                    <option value="" disabled selected>Seleccione un horario</option>
-                    <option value="1">04:00 A 12:00</option>
-                    <option value="2">06:00 A 14:00</option>
-                    <option value="3">08:00 A 16:00</option>
-                    <option value="4">12:00 A 20:00</option>
-                    <option value="5">14:00 A 22:00</option>
-                    <option value="6">20:00 A 04:00</option>
-                    <option value="7">PICO Y PLACA</option>
-                     <option value="8">PERMISO</option>
-                    <option value="9">NO ACEPTA PROGRAMACION </option>
-                    <!-- Agrega el resto de las opciones de horario según tu necesidad -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="observaciones">Observaciones:</label>
-                <textarea id="observaciones" name="observaciones" rows="5" required></textarea>
-            </div>
-            <button type="submit">Programar Vehículo</button>
-        </form>
-    </div>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="../imagenes/logo vianco.png"/>
+    <img id="vigilado" src="../imagenes/vigilado.png"/>
+</header>
 
-    <script src="programacion.js"></script> <!-- Asegúrate de que la ruta del archivo JavaScript sea correcta -->
+<div class="container">
+    <h2>Programación de Vehículos</h2>
+    <form id="programacionForm" method="post" action="/programacion-vehiculos">
+        <div class="form-group">
+            <label for="base">Seleccionar Base:</label>
+            <select id="base" name="base" required>
+                <option value="" disabled selected>Seleccione una base</option>
+                <!-- Las opciones de base se llenarán dinámicamente usando JavaScript -->
+            </select>
+        </div>
+        <div class="form-group" id="placasGroup">
+            <label for="placa">Seleccionar Placa:</label>
+            <select id="placa" name="placa" required>
+                <option value="" disabled selected>Seleccione una placa</option>
+                <!-- Las opciones de placa se llenarán dinámicamente usando JavaScript -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+        </div>
+        <div class="form-group">
+            <label for="horario">Horario:</label>
+            <select id="horario" name="horario" required>
+                <option value="" disabled selected>Seleccione un horario</option>
+                <option value="1">04:00 A 12:00</option>
+                <option value="2">06:00 A 14:00</option>
+                <option value="3">08:00 A 16:00</option>
+                <option value="4">12:00 A 20:00</option>
+                <option value="5">14:00 A 22:00</option>
+                <option value="6">20:00 A 04:00</option>
+                <option value="7">PICO Y PLACA</option>
+                <option value="8">PERMISO</option>
+                <option value="9">NO ACEPTA PROGRAMACION </option>
+                <!-- Agrega el resto de las opciones de horario según tu necesidad -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="observaciones">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones" rows="5" ></textarea>
+        </div>
+        <button type="submit">Programar Vehículo</button>
+    </form>
+
+<br>
+<br>
+
+
+<a href="/" id="btn-volver">Volver al Inicio</a>
+<a href="https://docs.google.com/spreadsheets/d/1SZ7QsYuJRY6lchPvbqv48y7tO2Nbrf1DIaR7aCaSlXI/edit#gid=0" id="btn-ver" target="_blank">mi programacion</a>
+
+</div>
+
+<script src="programacion.js"></script> <!-- Asegúrate de que la ruta del archivo JavaScript sea correcta -->
 </body>
 </html>
