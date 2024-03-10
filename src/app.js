@@ -402,6 +402,67 @@ app.post('/guardar-edicion', (req, res) => {
         }
     );
 });
+// Ruta para renderizar la página del formulario de agregación de vehículos
+app.get("/agregar-vehiculo", (req, res) => {
+    res.render("formulario_agregar");
+});
+
+
+// Ruta para manejar los datos enviados desde el formulario y agregar un nuevo vehículo a la base de datos
+app.post("/agregar-vehiculo", (req, res) => {
+    // Obtener todos los campos del formulario
+    const formData = req.body;
+
+    // Construir las cláusulas SET y los valores para la consulta SQL
+    let setClause = '';
+    let values = [];
+
+    // Iterar sobre los campos del formulario
+    Object.keys(formData).forEach((key, index) => {
+        // Si el valor del campo no está vacío
+        if (formData[key]) {
+            // Agregar el nombre del campo y el signo de interrogación al conjunto
+            setClause += `${key} = ?, `;
+            // Agregar el valor del campo al array de valores
+            values.push(formData[key]);
+        }
+    });
+
+    // Quitar la coma final de la cláusula SET
+    setClause = setClause.slice(0, -2);
+
+    // Insertar los datos en la base de datos
+    connection.query(
+        `INSERT INTO vehiculos SET ${setClause}`,
+        values,
+        (error, results) => {
+            if (error) {
+                console.error("Error al agregar el vehículo:", error);
+                res.status(500).send("Error al agregar el vehículo");
+                return;
+            }
+            console.log("Vehículo agregado correctamente a la base de datos");
+            // Redirigir al usuario de vuelta a la página de consulta de vehículos
+            res.redirect(`/consulta-vehiculos`);
+        }
+    );
+});
+
+
+// Vista del formulario de agregación de vehículos (formulario_agregar.ejs)
+// Asegúrate de tener campos para todos los datos que deseas recopilar para un nuevo vehículo
+// y un botón de envío para enviar el formulario al servidor.
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Ruta para la página de consulta de conductores
