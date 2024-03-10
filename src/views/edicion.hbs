@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Vehículo - Placa: {{ vehiculo.Placa }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; /* Color de fondo */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el encabezado */
+        header {
+            background-color: #fff; /* Color de fondo */
+            padding: 0px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+        }
+
+        /* Estilos para el contenedor principal */
+        .container {
+            max-width: 1700px; /* Ancho máximo */
+            margin: auto; /* Centrar horizontalmente */
+            padding: 20px; /* Espacio alrededor del contenido */
+        }
+
+        /* Estilos para los títulos */
+        h1 {
+            font-size: 32px; /* Tamaño de fuente */
+            margin-top: 30px; /* Margen superior */
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para el formulario */
+        form {
+            background-color: #fff; /* Color de fondo */
+            padding: 50px; /* Espaciado interno */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+           
+        }
+
+        /* Estilos para los grupos de formulario */
+        .form-group {
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para las etiquetas de formulario */
+        .form-group label {
+            display: block; /* Mostrar como bloque */
+            font-size: 40px; /* Tamaño de fuente */
+            margin-bottom: 5px; /* Margen inferior */
+        }
+
+        /* Estilos para los campos de entrada de formulario */
+        .form-group input {
+            width: 100%; /* Ancho completo */
+            font-size: 66px; /* Tamaño de fuente */
+            padding: 10px; /* Espaciado interno */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 5px; /* Radio del borde */
+        }
+
+        /* Estilos para los botones */
+        button {
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+            left: 220PX;
+        }
+
+        /* Estilos para el hover del botón */
+        button:hover {
+              background-color: #d9d9d9;
+        }
+        label{
+            padding: 12px;
+            font-size: 25px;
+            display: inline-block; /* Aplicamos inline-block al div */
+            width: 200px; /* Ancho de la caja */
+            height: 100px; /* Alto de la caja */
+            background-color: ; /* Color de fondo rojo */
+            margin-right: 20px; /* Margen derecho para separar las cajas */
+        }
+    
+
+        input{
+            font-size: 20px;
+            text-align:justify;
+            align-items: center;
+             padding: 10px;
+               margin-bottom: 0px;
+
+        }
+            strong {
+            text-transform: uppercase;
+        }
+                 .volver-btn {
+                    position:relative;
+                    left: 30%;
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
+
+
+<body>
+
+        <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+    <div class="container">
+        <div class="heading"><h1>VEHICULO :{{ vehiculo.Placa }}</h1></div>
+
+<form action="/guardar-edicion" method="POST">
+            <label for="placa">  <strong>  PLACA :</strong></label>
+            <input type="text" id="placa" name="placa" value="{{ vehiculo.Placa }}" readonly>
+            
+            <label for="base"><strong>    BASE: </strong></label>
+            <input type="text" id="base" name="base" value="{{ vehiculo.Base }}">
+            
+            <label for="conductor"><strong>Conductor:</strong></label>
+            <input type="text" id="conductor" name="conductor" value="{{ vehiculo.Conductor }}">
+            
+            <label for="noMovil"><strong>N° Móvil:</strong></label>
+            <input type="text" id="noMovil" name="noMovil" value="{{ vehiculo.No_movil }}">
+              
+            <!-- Nuevos campos de edición con primera letra en mayúscula -->
+            <label for="Matricula"><strong>Matrícula:</strong></label>
+            <input type="text" id="Matricula" name="Matricula" value="{{ vehiculo.Matricula }}">
+           
+            <label for="Marca"><strong>Marca:</strong></label>
+            <input type="text" id="Marca" name="Marca" value="{{ vehiculo.Marca }}">
+              
+           
+
+            <label for="Linea"><strong>Línea:</strong></label>
+            <input type="text" id="Linea" name="Linea" value="{{ vehiculo.Linea }}">
+            
+            <label for="Clase"><strong>Clase:</strong></label>
+            <input type="text" id="Clase" name="Clase" value="{{ vehiculo.Clase_vehiculo }}">
+            
+            <label for="Modelo"><strong>Modelo:</strong></label>
+            <input type="text" id="Modelo" name="Modelo" value="{{ vehiculo.Modelo }}">
+            
+            <label for="Capacidad>"><strong>Capacidad:</strong></label>
+            <input type="text" id="Capacidad" name="Capacidad" value="{{ vehiculo.Capacidad }}">
+             
+            <label for="PropietarioContrato"><strong>Propietario Contrato:</strong></label>
+            <input type="text" id="PropietarioContrato" name="PropietarioContrato" value="{{ vehiculo.Propietario_contrato }}">
+           
+              
+            <label for="PropietarioLicencia"><strong>Propietario Licencia:</strong></label>
+            <input type="text" id="PropietarioLicencia" name="PropietarioLicencia" value="{{ vehiculo.Propietario_licencia }}">
+             
+            <label for="AfiliadoA"><strong>Afiliado A:</strong></label>
+            <input type="text" id="AfiliadoA" name="AfiliadoA" value="{{ vehiculo.Afiliado_a }}">
+            
+            <label for="NumeroPuestos"><strong>N° de Puestos:</strong></label>
+            <input type="text" id="NumeroPuestos" name="NumeroPuestos" value="{{ vehiculo.Num_puestos }}">
+        
+            <label for="Puertas"><strong>Puertas:</strong></label>
+            <input type="text" id="Puertas" name="Puertas" value="{{ vehiculo.Puertas }}">
+            
+            <label for="PesoBruto"><strong>Peso Bruto:</strong></label>
+            <input type="text" id="PesoBruto" name="PesoBruto" value="{{ vehiculo.Peso_bruto }}">
+         
+              
+            <label for="NumeroEjes"><strong>N° de Ejes:</strong></label>
+            <input type="text" id="NumeroEjes" name="NumeroEjes" value="{{ vehiculo.Num_ejes }}">
+            
+            <label for="NumeroChasis"><strong>N° Chasis:</strong></label>
+            <input type="text" id="NumeroChasis" name="NumeroChasis" value="{{ vehiculo.Numero_chasis }}">
+            
+            <label for="NumeroMotor"><strong>N° Motor:</strong></label>
+            <input type="text" id="NumeroMotor" name="NumeroMotor" value="{{ vehiculo.Numero_motor }}">
+          
+            <label for="Color"><strong>Color:</strong></label>
+            <input type="text" id="Color" name="Color" value="{{ vehiculo.Color }}">
+            
+            <label for="Cilindraje"><strong>Cilindraje:</strong></label>
+            <input type="text" id="Cilindraje" name="Cilindraje" value="{{ vehiculo.Cilindraje }}">
+       
+           
+              
+            <label for="Combustible"><strong>Combustible:</strong></label>
+            <input type="text" id="Combustible" name="Combustible" value="{{ vehiculo.Combustible }}">
+            
+            <label for="Carroceria"><strong>Carrocería:</strong></label>
+            <input type="text" id="Carroceria" name="Carroceria" value="{{ vehiculo.Carroceria }}">
+            
+            <label for="FechaMatricula"><strong>Fecha Matrícula:</strong></label>
+            <input type="text" id="FechaMatricula" name="FechaMatricula" value="{{ vehiculo.Fecha_matricula }}">
+             
+            <label for="NumeroSoat"><strong>N° SOAT:</strong></label>
+            <input type="text" id="NumeroSoat" name="NumeroSoat" value="{{ vehiculo.Num_soat }}">
+               
+              
+            <label for="VigenciaSoat"><strong>Fecha Vigencia SOAT:</strong></label>
+            <input type="text" id="VigenciaSoat" name="VigenciaSoat" value="{{ vehiculo.VigenciaSoat }}">
+            
+            <label for="NumeroTecnomecanica"><strong>N° Tecnomecánica:</strong></label>
+            <input type="text" id="NumeroTecnomecanica" name="NumeroTecnomecanica" value="{{ vehiculo.Num_tecnomecanica }}">
+            
+            <label for="Cda"><strong>CDA:</strong></label>
+            <input type="text" id="Cda" name="Cda" value="{{ vehiculo.Cda }}">
+            
+            <label for="FechaInicioTecnomecanica"><strong>Fecha Inicio Tecnomecánica:</strong></label>
+            <input type="text" id="FechaInicioTecnomecanica" name="FechaInicioTecnomecanica" value="{{ vehiculo.Fecha_inicio_tecnomecanica }}">
+     
+            <label for="FechaVigencia"><strong>Fecha Vigencia:</strong></label>
+            <input type="text" id="FechaVigencia" name="FechaVigencia" value="{{ vehiculo.Fecha_vigencia }}">
+            
+            <label for="NumeroPolizas"><strong>N° Pólizas RCC RCE:</strong></label>
+            <input type="text" id="NumeroPolizas" name="NumeroPolizas" value="{{ vehiculo.Num_polizas_rcc_rce }}">
+            
+            <label for="CompaniaAseguradora"><strong>Compañía Aseguradora:</strong></label>
+            <input type="text" id="CompaniaAseguradora" name="CompaniaAseguradora" value="{{ vehiculo.Compania_aseguradora }}">
+           
+               
+            <label for="VigenciaPolizas"><strong>Vigencia Pólizas:</strong></label>
+            <input type="text" id="VigenciaPolizas" name="VigenciaPolizas" value="{{ vehiculo.Vigencia_polizas }}">
+          
+            <label for="NumeroTarjetaOperacion"><strong>N° Tarjeta Operación:</strong></label>
+            <input type="text" id="NumeroTarjetaOperacion" name="NumeroTarjetaOperacion" value="{{ vehiculo.Num_tarjeta_operacion }}">
+           
+            <label for="EmpresaAfiliacion"><strong>Empresa Afiliación:</strong></label>
+            <input type="text" id="EmpresaAfiliacion" name="EmpresaAfiliacion" value="{{ vehiculo.Empresa_afiliacion }}">
+          
+              
+            <label for="FechaFinalOperacion"><strong>Fecha Final Operación:</strong></label>
+            <input type="text" id="FechaFinalOperacion" name="FechaFinalOperacion" value="{{ vehiculo.Fecha_final_operacion }}">
+               
+            <label for="NumeroPreventiva1"><strong>N° Preventiva 1:</strong></label>
+            <input type="text" id="NumeroPreventiva1" name="NumeroPreventiva1" value="{{ vehiculo.Num_preventiva_1 }}">
+            
+            <label for="CdaPreventiva"><strong>CDA Preventiva:</strong></label>
+            <input type="text" id="CdaPreventiva" name="CdaPreventiva" value="{{ vehiculo.Cda_preventiva }}">
+             
+            <label for="FechaInicialPreventiva1"><strong>Fecha Inicial Preventiva 1:</strong></label>
+            <input type="text" id="FechaInicialPreventiva1" name="FechaInicialPreventiva1" value="{{ vehiculo.Fecha_inicial_preventiva_1 }}">
+        
+            <label for="FechaFinalPreventiva1"><strong>FECHA Final Preventiva 1:</strong></label>
+            <input type="text" id="FechaFinalPreventiva1" name="FechaFinalPreventiva1" value="{{ vehiculo.Fecha_final_preventiva_1 }}">
+            
+            <button type="submit">Guardar Cambios</button>
+                                                                    <a href="/" class="volver-btn">Volver al Menú</a>
+
+
+
+        </form>
+    </div>
+
+</body>
+</html>

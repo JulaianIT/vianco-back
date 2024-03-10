@@ -235,7 +235,7 @@ app.post("/programacion-vehiculos", (req, res) => {
 });
 
 
-// Ruta para la página de consulta de vehículos
+// Definir las rutas
 app.get("/consulta-vehiculos", (req, res) => {
     // Consulta SQL para obtener las placas disponibles
     connection.query("SELECT placa FROM vehiculos", (error, results) => {
@@ -249,7 +249,6 @@ app.get("/consulta-vehiculos", (req, res) => {
     });
 });
 
-// Ruta para manejar la solicitud del formulario de consulta de vehículos
 app.post("/consulta-vehiculos", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
@@ -270,6 +269,221 @@ app.post("/consulta-vehiculos", (req, res) => {
     });
 });
 
+// Ruta para la página de edición en el servidor
+app.get('/edicion/:placa', (req, res) => {
+    const placa = req.params.placa;
+    
+    // Realizar una consulta a la base de datos para obtener los datos del vehículo
+    connection.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
+        if (error) {
+            console.error("Error al obtener los datos del vehículo:", error);
+            res.status(500).send("Error al obtener los datos del vehículo");
+            return;
+        }
+
+        if (results.length === 0) {
+            console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
+            res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
+            return;
+        }
+
+        // Renderizar la vista de edición con los datos del vehículo
+        res.render('edicion', { vehiculo: results[0] }); // Pasar los datos del vehículo a la vista
+    });
+});
+
+
+app.post('/guardar-edicion', (req, res) => {
+    console.log('Datos recibidos en la solicitud:', req.body);
+    const placa = req.body.placa;
+    const base = req.body.base;
+    const conductor = req.body.conductor;
+    const noMovil = req.body.noMovil;
+    // Variables para los campos adicionales del formulario
+    const matricula = req.body.Matricula;
+    const marca = req.body.Marca;
+    const linea = req.body.Linea;
+    const claseVehiculo = req.body.Clase;
+    const modelo = req.body.Modelo;
+    const capacidad = req.body.Capacidad;
+    const propietarioContrato = req.body.PropietarioContrato;
+    const propietarioLicencia = req.body.PropietarioLicencia;
+    const afiliadoA = req.body.AfiliadoA;
+    const numPuestos = req.body.NumeroPuestos;
+    const puertas = req.body.Puertas;
+    const pesoBruto = req.body.PesoBruto;
+    const numEjes = req.body.NumeroEjes;
+    const numChasis = req.body.NumeroChasis;
+    const numMotor = req.body.NumeroMotor;
+    const color = req.body.Color;
+    const cilindraje = req.body.Cilindraje;
+    const combustible = req.body.Combustible;
+    const carroceria = req.body.Carroceria;
+    const fechaMatricula = req.body.FechaMatricula;
+    const numSoat = req.body.NumeroSoat;
+    const entidad = req.body.Entidad;
+    const fechaVigenciaSoat = req.body.VigenciaSoat;
+    const numTecnomecanica = req.body.NumeroTecnomecanica;
+    const cda = req.body.Cda;
+    const fechaInicioTecnomecanica = req.body.FechaInicioTecnomecanica;
+    const fechaVigencia = req.body.FechaVigencia;
+    const numPolizasRccRce = req.body.NumeroPolizas;
+    const companiaAseguradora = req.body.CompaniaAseguradora;
+    const vigenciaPolizas = req.body.VigenciaPolizas;
+    const numTarjetaOperacion = req.body.NumeroTarjetaOperacion;
+    const empresaAfiliacion = req.body.EmpresaAfiliacion;
+    const fechaFinalOperacion = req.body.FechaFinalOperacion;
+    const numPreventiva1 = req.body.NumeroPreventiva1;
+    const cdaPreventiva = req.body.CdaPreventiva;
+    const fechaInicialPreventiva1 = req.body.FechaInicialPreventiva1;
+    const fechaFinalPreventiva1 = req.body.FechaFinalPreventiva1;
+
+    console.log('Datos enviados:', placa, base, conductor, noMovil);
+
+    connection.query(
+        'UPDATE vehiculos SET base = ?, conductor = ?, no_movil = ?, Matricula = ?, Marca = ?, Linea = ?, Clase_vehiculo = ?, Modelo = ?, Capacidad = ?, Propietario_contrato = ?, Propietario_licencia = ?, Afiliado_a = ?, Num_puestos = ?, Puertas = ?, Peso_bruto = ?, Num_ejes = ?, Numero_chasis = ?, Numero_motor = ?, Color = ?, Cilindraje = ?, Combustible = ?, Carroceria = ?, Fecha_matricula = ?, Num_soat = ?, Entidad = ?, Fecha_vigencia_soat = ?, Num_tecnomecanica = ?, Cda = ?, Fecha_inicio_tecnomecanica = ?, Fecha_vigencia = ?, Num_polizas_rcc_rce = ?, Compania_aseguradora = ?, Vigencia_polizas = ?, Num_tarjeta_operacion = ?, Empresa_afiliacion = ?, Fecha_final_operacion = ?, Num_preventiva_1 = ?, Cda_preventiva = ?, Fecha_inicial_preventiva_1 = ?, Fecha_final_preventiva_1 = ? WHERE placa = ?',
+        [
+            base,
+            conductor,
+            noMovil,
+            matricula,
+            marca,
+            linea,
+            claseVehiculo,
+            modelo,
+            capacidad,
+            propietarioContrato,
+            propietarioLicencia,
+            afiliadoA,
+            numPuestos,
+            puertas,
+            pesoBruto,
+            numEjes,
+            numChasis,
+            numMotor,
+            color,
+            cilindraje,
+            combustible,
+            carroceria,
+            fechaMatricula,
+            numSoat,
+            entidad,
+            fechaVigenciaSoat,
+            numTecnomecanica,
+            cda,
+            fechaInicioTecnomecanica,
+            fechaVigencia,
+            numPolizasRccRce,
+            companiaAseguradora,
+            vigenciaPolizas,
+            numTarjetaOperacion,
+            empresaAfiliacion,
+            fechaFinalOperacion,
+            numPreventiva1,
+            cdaPreventiva,
+            fechaInicialPreventiva1,
+            fechaFinalPreventiva1,
+            placa
+        ],
+        (error, results) => {
+            if (error) {
+                console.error("Error al guardar los cambios:", error);
+                res.status(500).send("Error al guardar los cambios");
+                return;
+            }
+            if (results.affectedRows === 0) {
+                console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
+                res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
+                return;
+            }
+            console.log("Cambios guardados correctamente en la base de datos");
+            // Redirigir al usuario de vuelta a la página de consulta de vehículos
+            res.redirect(`/consulta-vehiculos?placa=${placa}`);
+        }
+    );
+});
+
+
+// Ruta para la página de consulta de conductores
+app.get("/consulta-conductores", (req, res) => {
+    // Consulta SQL para obtener las placas disponibles
+    connection.query("SELECT placa FROM conductores", (error, results) => {
+        if (error) {
+            console.error("Error al obtener las placas:", error);
+            res.status(500).send("Error al obtener las placas");
+            return;
+        }
+        // Renderizar la vista de consulta de conductores con los datos de las placas
+        res.render("conductores", { placas: results.map(result => result.placa) }); // Utiliza la plantilla "conductores"
+    });
+});
+
+app.post("/consulta-conductores", (req, res) => {
+    const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+    // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
+    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+        if (error) {
+            console.error("Error al obtener la información del conductor:", error);
+            res.status(500).send("Error al obtener la información del conductor");
+            return;
+        }
+        if (results.length === 0) {
+            // Si no se encuentra ningún conductor con la placa seleccionada, enviar un mensaje de error
+            res.status(404).send("Conductor no encontrado");
+            return;
+        }
+        const conductor = results[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
+        // Enviar la información del conductor al cliente en formato JSON
+        res.json(conductor);
+    });
+});
+
+// Ruta para la página de edición del conductor en el servidor
+app.get('/edicionC/:placa', (req, res) => {
+    const placa = req.params.placa;
+    
+    // Realizar una consulta a la base de datos para obtener los datos del conductor
+    connection.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
+        if (error) {
+            console.error("Error al obtener los datos del conductor:", error);
+            res.status(500).send("Error al obtener los datos del conductor");
+            return;
+        }
+
+        if (results.length === 0) {
+            console.error("No se encontró ningún conductor con la placa proporcionada:", placa);
+            res.status(404).send("No se encontró ningún conductor con la placa proporcionada");
+            return;
+        }
+
+        // Renderizar la vista de edición con los datos del conductor
+        res.render('edicionC', { conductor: results[0] }); // Pasar los datos del conductor a la vista
+    });
+});
+
+// Manejador de la solicitud POST para guardar la edición del conductor en el servidor
+app.post('/guardar-edicionC', (req, res) => {
+    const placa = req.body.placa;
+    // Obtener los demás datos del conductor desde el cuerpo de la solicitud
+    const { conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
+
+    // Realizar la actualización en la base de datos con los datos recibidos
+    connection.query('UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?', [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, placa], (error, results) => {
+        if (error) {
+            console.error("Error al guardar los cambios:", error);
+            res.status(500).send("Error al guardar los cambios");
+            return;
+        }
+        if (results.affectedRows === 0) {
+            console.error("No se encontró ningún conductor con la placa proporcionada:", placa);
+            res.status(404).send("No se encontró ningún conductor con la placa proporcionada");
+            return;
+        }
+        console.log("Cambios guardados correctamente en la base de datos");
+        // Redirigir al usuario de vuelta a la página de consulta del conductor
+        res.redirect(`/consulta-conductores?placa=${placa}`);
+    });
+});
 
 // Iniciar el servidor
 app.listen(app.get("port"), () => {

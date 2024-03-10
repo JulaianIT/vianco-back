@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoja de Vida del Vehículo</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-   
+    <title>Consulta de Conductores</title>
+</head>
           <style>
 
     #vigilado{
@@ -185,10 +183,10 @@ main{
         }
         
     </style>
-</head>
+
 <body>
     <div class="container">
-        <h1>Hoja de Vida del Vehículo</h1>
+        <h1>Hoja de Vida del conductor</h1>
         <form id="consulta-form">
             <div class="form-group">
                 <label for="placa">Selecciona una placa:</label>
@@ -200,22 +198,18 @@ main{
             </div>
             <button type="submit" class="btn">Consultar</button>
         </form>
-        <div id="info-vehiculo" class="info-vehiculo">
-            <h2>Información del Vehículo</h2>
+        <div id="info-conductores" class="info-conductores">
+            <h2>Información del Conductor</h2>
             <hr>
             <div class="campo">
-                <span class="label">SELECIONA UNA PLACA</span>
-                
+                <span class="label">SELECCIONA UNA PLACA</span>
             </div>
-      
             <!-- Agregar el botón de editar después de mostrar la información del vehículo -->
-<button class="btn editar-btn">Editar Información</button>
-
-                    <a href="/" class="volver-btn">Volver al Menú</a>
-
+            <button id="editar-btn" class="btn editar-btn">Editar Información</button>
+            <a href="/" class="volver-btn">Volver al Menú</a>
             <!-- Agregar más campos de información técnica aquí -->
         </div>
     </div>
-    <script src="consulta.js"></script>
+    <script src="conductores.js"></script>
 </body>
 </html>

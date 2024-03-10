@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const consultaForm = document.getElementById('consulta-form');
-    const infoVehiculoDiv = document.getElementById('info-vehiculo');
 
     consultaForm.addEventListener('submit', (event) => {
         event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
         const placaSeleccionada = document.getElementById('placa').value;
+        const infoVehiculoDiv = document.getElementById('info-vehiculo'); // Mover la inicialización aquí
 
         // Enviar la solicitud POST al servidor
         fetch('/consulta-vehiculos', {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(vehiculo => {
             // Mostrar la información del vehículo
             infoVehiculoDiv.innerHTML = `
-                <h2>Información del Vehículo</h2>
+                 <h2>Información del Vehículo</h2>
                 <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
                 <p><strong>BASE:</strong> ${vehiculo.Base}</p>
                 <p><strong>CONDUCTOR:</strong> ${vehiculo.Conductor}</p>
@@ -60,13 +60,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>CDA PREVENTIVA:</strong> ${vehiculo.Cda_preventiva}</p>
                 <p><strong>FECHA INICIAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_inicial_preventiva_1}</p>
                 <p><strong>FECHA FINAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_final_preventiva_1}</p>
+                <button id="editar-btn" class="btn editar-btn">Editar Información</button>
                 <a href="/" class="volver-btn">Volver al Menú</a>
 
-            `;
-        })
-        .catch(error => {
-            console.error('Error al consultar el vehículo:', error);
-            infoVehiculoDiv.textContent = 'Error al consultar el vehículo';
+                `;
+            
+                // Obtener la placa del vehículo mostrada en la página de consulta
+                const placaSeleccionada = vehiculo.Placa;
+
+                // Ahora registramos el evento click en el botón de editar
+                const editarBtn = document.getElementById('editar-btn');
+                editarBtn.addEventListener('click', () => {
+                    // Redirigir a la página de edición con la placa del vehículo como parámetro
+                    window.location.href = `./edicion/${placaSeleccionada}`;
+                });
+            })
+            .catch(error => {
+                console.error('Error al consultar el vehículo:', error);
+                infoVehiculoDiv.textContent = 'Error al consultar el vehículo';
+            });
         });
     });
-});
