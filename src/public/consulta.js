@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>FECHA INICIAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_inicial_preventiva_1}</p>
                 <p><strong>FECHA FINAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_final_preventiva_1}</p>
                 <button id="editar-btn" class="btn editar-btn">Editar Información</button>
+                <a href="/agregar-vehiculo" class="volver-btn">Agregar Nuevo Vehículo</a>
+
                 <a href="/" class="volver-btn">Volver al Menú</a>
 
                 `;

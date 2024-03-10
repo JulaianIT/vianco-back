@@ -46,11 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong> CONTACTO EN CASO DE EMERGENCIA :</strong> ${conductor.contacto_emergencia}</p>
                 <p><strong>N° EN CASO DE EMERGENCIA:</strong> ${conductor.celular_emergencia}</p>
                 <!-- Agrega más campos de información del conductor aquí -->
+
             `;
             
             // Agregar botón de editar con un id único
             infoConductoresDiv.innerHTML += `
                 <button id="editar-conductor-btn" class="btn editar-btn">Editar Información</button>
+                <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
+
                 <a href="/" class="volver-btn">Volver al Menú</a>
             `;
 

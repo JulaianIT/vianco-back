@@ -546,6 +546,57 @@ app.post('/guardar-edicionC', (req, res) => {
     });
 });
 
+// Ruta para manejar los datos enviados desde el formulario y agregar un nuevo conductor a la base de datos
+// Ruta para renderizar la página del formulario de agregar conductor
+app.get("/agregar-conductor", (req, res) => {
+    // Renderiza el formulario para agregar un nuevo conductor
+    res.render("formulario_agregar_conductor");
+});
+
+
+// Ruta para manejar los datos enviados desde el formulario y agregar un nuevo conductor a la base de datos
+app.post("/agregar-conductor", (req, res) => {
+    // Obtener todos los campos del formulario
+    const formData = req.body;
+
+    // Insertar los datos en la base de datos
+    connection.query(
+        `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+            formData.placa,
+            formData.conductor,
+            formData.tipo_documento,
+            formData.cedula,
+            formData.fecha_expedicion,
+            formData.fecha_nacimiento,
+            formData.celular,
+            formData.email,
+            formData.direccion,
+            formData.arl,
+            formData.eps,
+            formData.seguridad_social,
+            formData.fecha_vencimiento_examen,
+            formData.categoria,
+            formData.fecha_vigencia,
+            formData.tipo_sangre,
+            formData.contacto_emergencia,
+            formData.celular_emergencia
+        ],
+        (error, results) => {
+            if (error) {
+                console.error("Error al agregar el conductor:", error);
+                res.status(500).send("Error al agregar el conductor");
+                return;
+            }
+            console.log("Conductor agregado correctamente a la base de datos");
+            // Redirigir al usuario de vuelta a la página de consulta de conductores
+            res.redirect(`/consulta-conductores`);
+        }
+    );
+});
+
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

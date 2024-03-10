@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Agregar Conductor</title>
+    <!-- Aquí puedes incluir tus estilos CSS -->
+</head>
+<body>
+    <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; /* Color de fondo */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el encabezado */
+        header {
+            background-color: #fff; /* Color de fondo */
+            padding: 0px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+        }
+
+        /* Estilos para el contenedor principal */
+        .container {
+            max-width: 1700px; /* Ancho máximo */
+            margin: auto; /* Centrar horizontalmente */
+            padding: 20px; /* Espacio alrededor del contenido */
+        }
+
+        /* Estilos para los títulos */
+        h1 {
+            font-size: 32px; /* Tamaño de fuente */
+            margin-top: 30px; /* Margen superior */
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para el formulario */
+        form {
+            background-color: #fff; /* Color de fondo */
+            padding: 50px; /* Espaciado interno */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+           
+        }
+
+        /* Estilos para los grupos de formulario */
+        .form-group {
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para las etiquetas de formulario */
+        .form-group label {
+            display: block; /* Mostrar como bloque */
+            font-size: 40px; /* Tamaño de fuente */
+            margin-bottom: 5px; /* Margen inferior */
+        }
+
+        /* Estilos para los campos de entrada de formulario */
+        .form-group input {
+            width: 100%; /* Ancho completo */
+            font-size: 20px; /* Tamaño de fuente */
+            padding: 10px; /* Espaciado interno */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 5px; /* Radio del borde */
+        }
+
+        /* Estilos para los botones */
+        button {
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+            left: 220px;
+        }
+
+        /* Estilos para el hover del botón */
+        button:hover {
+            background-color: #d9d9d9;
+        }
+
+        label {
+            padding: 12px;
+            font-size: 25px;
+            display: inline-block; /* Aplicamos inline-block al div */
+            width: 200px; /* Ancho de la caja */
+            height: 100px; /* Alto de la caja */
+            background-color: ; /* Color de fondo rojo */
+            margin-right: 20px; /* Margen derecho para separar las cajas */
+        }
+
+        input {
+            font-size: 20px;
+            text-align: justify;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        strong {
+            text-transform: uppercase;
+        }
+
+        .volver-btn {
+            position:relative;
+            left: 30%;
+            background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+    </header>
+
+    <div class="container">
+        <div class="heading"><h1>Agregar Conductor</h1></div>
+        <form action="/agregar-conductor" method="POST">
+            <label for="placa">Placa:</label>
+            <input type="text" id="placa" name="placa"><br><br>
+
+            <label for="conductor">Conductor:</label>
+            <input type="text" id="conductor" name="conductor"><br><br>
+
+            <label for="tipo_documento">Tipo de Documento:</label>
+            <input type="text" id="tipo_documento" name="tipo_documento"><br><br>
+
+            <label for="cedula">Cédula:</label>
+            <input type="text" id="cedula" name="cedula"><br><br>
+
+            <label for="fecha_expedicion">Fecha de Expedición:</label>
+            <input type="text" id="fecha_expedicion" name="fecha_expedicion"><br><br>
+
+            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+            <input type="text" id="fecha_nacimiento" name="fecha_nacimiento"><br><br>
+
+            <label for="celular">Celular:</label>
+            <input type="text" id="celular" name="celular"><br><br>
+
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email"><br><br>
+
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion"><br><br>
+
+            <label for="arl">ARL:</label>
+            <input type="text" id="arl" name="arl"><br><br>
+
+            <label for="eps">EPS:</label>
+            <input type="text" id="eps" name="eps"><br><br>
+
+            <label for="seguridad_social">Seguridad Social:</label>
+            <input type="text" id="seguridad_social" name="seguridad_social"><br><br>
+
+            <label for="fecha_vencimiento_examen">Fecha de Vencimiento del Examen:</label>
+            <input type="text" id="fecha_vencimiento_examen" name="fecha_vencimiento_examen"><br><br>
+
+            <label for="categoria">Categoría:</label>
+            <input type="text" id="categoria" name="categoria"><br><br>
+
+            <label for="fecha_vigencia">Fecha de Vigencia:</label>
+            <input type="text" id="fecha_vigencia" name="fecha_vigencia"><br><br>
+
+            <label for="tipo_sangre">Tipo de Sangre:</label>
+            <input type="text" id="tipo_sangre" name="tipo_sangre"><br><br>
+
+            <label for="contacto_emergencia">Contacto de Emergencia:</label>
+            <input type="text" id="contacto_emergencia" name="contacto_emergencia"><br><br>
+
+            <label for="celular_emergencia">Celular de Emergencia:</label>
+            <input type="text" id="celular_emergencia" name="celular_emergencia"><br><br>
+
+            <button type="submit">Agregar Conductor</button>
+            <a href="/consulta-conductores" class="volver-btn">Volver al Menú</a>
+        </form>
+    </div>
+</body>
+</html>
