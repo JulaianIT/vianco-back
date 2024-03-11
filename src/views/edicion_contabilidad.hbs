@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Contabilidad - Placa: {{ contabilidad.placa }}</title>
+    <!-- Agrega tus enlaces a estilos y fuentes aquí -->
+        <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; /* Color de fondo */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el encabezado */
+        header {
+            background-color: #fff; /* Color de fondo */
+            padding: 0px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+        }
+
+        /* Estilos para el contenedor principal */
+        .container {
+            max-width: 1700px; /* Ancho máximo */
+            margin: auto; /* Centrar horizontalmente */
+            padding: 20px; /* Espacio alrededor del contenido */
+        }
+
+        /* Estilos para los títulos */
+        h1 {
+            font-size: 32px; /* Tamaño de fuente */
+            margin-top: 30px; /* Margen superior */
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para el formulario */
+        form {
+            background-color: #fff; /* Color de fondo */
+            padding: 50px; /* Espaciado interno */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+           
+        }
+
+        /* Estilos para los grupos de formulario */
+        .form-group {
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para las etiquetas de formulario */
+        .form-group label {
+            display: block; /* Mostrar como bloque */
+            font-size: 40px; /* Tamaño de fuente */
+            margin-bottom: 5px; /* Margen inferior */
+        }
+
+        /* Estilos para los campos de entrada de formulario */
+        .form-group input {
+            width: 100%; /* Ancho completo */
+            font-size: 66px; /* Tamaño de fuente */
+            padding: 10px; /* Espaciado interno */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 5px; /* Radio del borde */
+        }
+
+        /* Estilos para los botones */
+        button {
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+            left: 220PX;
+        }
+
+        /* Estilos para el hover del botón */
+        button:hover {
+              background-color: #d9d9d9;
+        }
+        label{
+            padding: 12px;
+            font-size: 25px;
+            display: inline-block; /* Aplicamos inline-block al div */
+            width: 200px; /* Ancho de la caja */
+            height: 100px; /* Alto de la caja */
+            background-color: ; /* Color de fondo rojo */
+            margin-right: 20px; /* Margen derecho para separar las cajas */
+        }
+    
+
+        input{
+            font-size: 20px;
+            text-align:justify;
+            align-items: center;
+             padding: 10px;
+               margin-bottom: 0px;
+
+        }
+            strong {
+            text-transform: uppercase;
+        }
+                 .volver-btn {
+                    position:relative;
+                    left: 30%;
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
+
+</head>
+<body>
+
+    <header>
+        <!-- Agrega tu encabezado aquí -->
+    </header>
+
+    <div class="container">
+        <div class="heading">
+            <h1>Contabilidad - Placa: {{ contabilidad.placa }}</h1>
+        </div>
+
+        <form action="/guardar-edicion-contabilidad" method="POST">
+            <label for="placa"><strong>Placa:</strong></label>
+            <input type="text" id="placa" name="placa" value="{{ contabilidad.placa }}" readonly>
+            
+            <!-- Agrega campos para otros atributos de contabilidad -->
+            <label for="actividadEconomica"><strong>Actividad Económica:</strong></label>
+            <input type="text" id="actividadEconomica" name="actividadEconomica" value="{{ contabilidad.Actividad_economica }}">
+            
+            <label for="nombreBanco"><strong>Nombre del Banco:</strong></label>
+            <input type="text" id="nombreBanco" name="nombreBanco" value="{{ contabilidad.Nombre_del_banco }}">
+            
+            <label for="tipoCuentaBancaria"><strong>Tipo de Cuenta Bancaria:</strong></label>
+            <input type="text" id="tipoCuentaBancaria" name="tipoCuentaBancaria" value="{{ contabilidad.Tipo_de_cuenta_bancaria }}">
+            
+            <label for="numeroCuenta"><strong>Número de Cuenta:</strong></label>
+            <input type="text" id="numeroCuenta" name="numeroCuenta" value="{{ contabilidad.Numero_de_cuenta }}">
+            
+            <label for="tipoDocumento"><strong>Tipo de Documento de Quien Recibe el Pago:</strong></label>
+            <input type="text" id="tipoDocumento" name="tipoDocumento" value="{{ contabilidad.tipo_documento }}">
+            
+            <label for="cedula"><strong>Cédula:</strong></label>
+            <input type="text" id="cedula" name="cedula" value="{{ contabilidad.Cedula }}">
+            
+            <label for="identificacion"><strong>Identificación:</strong></label>
+            <input type="text" id="identificacion" name="identificacion" value="{{ contabilidad.Identificacion }}">
+            
+            <label for="nombre"><strong>Nombre:</strong></label>
+            <input type="text" id="nombre" name="nombre" value="{{ contabilidad.Nombre }}">
+            
+            <label for="direccion"><strong>Dirección:</strong></label>
+            <input type="text" id="direccion" name="direccion" value="{{ contabilidad.Direccion }}">
+            
+            <label for="celular"><strong>Celular:</strong></label>
+            <input type="text" id="celular" name="celular" value="{{ contabilidad.Celular }}">
+            
+            <label for="email"><strong>Email:</strong></label>
+            <input type="text" id="email" name="email" value="{{ contabilidad.Email }}">
+            
+            <!-- Agrega más campos según los atributos de tu tabla de contabilidad -->
+
+            <button type="submit">Guardar Cambios</button>
+            <a href="/consulta-contabilidad" class="volver-btn">Volver al Menú</a>
+        </form>
+    </div>
+
+</body>
+</html>

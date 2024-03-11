@@ -596,6 +596,159 @@ app.post("/agregar-conductor", (req, res) => {
     );
 });
 
+//consulta contabilidad 
+app.get("/consulta-contabilidad", (req, res) => {
+    // Consulta SQL para obtener todas las placas disponibles
+    connection.query("SELECT placa FROM contabilidad", (error, results) => {
+        if (error) {
+            console.error("Error al obtener las placas de contabilidad:", error);
+            res.status(500).send("Error al obtener las placas de contabilidad");
+            return;
+        }
+        const placas = results.map(result => result.placa); // Extraer solo las placas de los resultados
+        res.render("consulta_contabilidad", { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
+    });
+});
+
+//consulta contabilidad 
+app.post("/consulta-contabilidad", (req, res) => {
+    const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+    // Consulta SQL para obtener la información de contabilidad correspondiente a la placa seleccionada
+    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placaSeleccionada], (error, results) => {
+        if (error) {
+            console.error("Error al obtener la información de contabilidad:", error);
+            res.status(500).send("Error al obtener la información de contabilidad");
+            return;
+        }
+        if (results.length === 0) {
+            // Si no se encuentra ninguna entrada de contabilidad con la placa seleccionada, enviar un mensaje de error
+            res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa seleccionada");
+            return;
+        }
+        const entradaContabilidad = results[0]; // Obtener la primera entrada de contabilidad encontrada (debería haber solo una)
+        // Renderizar la plantilla y pasar las placas y la entrada de contabilidad como datos
+        res.json(entradaContabilidad);
+    });
+});
+
+
+
+
+
+
+
+
+
+// Ruta para cargar la página de edición de contabilidad
+app.get("/edicion-contabilidad/:placa", (req, res) => {
+    const placa = req.params.placa; // Obtener la placa del parámetro de la URL
+    // Consulta SQL para obtener la información de contabilidad correspondiente a la placa
+    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placa], (error, results) => {
+        if (error) {
+            console.error("Error al obtener la información de contabilidad:", error);
+            res.status(500).send("Error al obtener la información de contabilidad");
+            return;
+        }
+        if (results.length === 0) {
+            // Si no se encuentra ninguna entrada de contabilidad con la placa seleccionada, enviar un mensaje de error
+            res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa seleccionada");
+            return;
+        }
+        const contabilidad = results[0]; // Obtener la primera entrada de contabilidad encontrada
+        // Renderizar la plantilla de edición de contabilidad y pasar la información de contabilidad como datos
+        res.render("edicion_contabilidad", { contabilidad: contabilidad });
+    });
+});
+
+
+// Ruta para manejar el formulario de edición de contabilidad
+app.post('/guardar-edicion-contabilidad', (req, res) => {
+    const { placa, actividadEconomica, nombreBanco, tipoCuentaBancaria, numeroCuenta, tipoDocumento, cedula, identificacion, nombre, direccion, celular, email } = req.body;
+    // Consulta SQL para actualizar los datos de contabilidad en la base de datos
+    connection.query(
+        "UPDATE contabilidad SET Actividad_economica = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, tipo_documento = ?, Cedula = ?, Identificacion = ?, Nombre = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?",
+        [actividadEconomica, nombreBanco, tipoCuentaBancaria, numeroCuenta, tipoDocumento, cedula, identificacion, nombre, direccion, celular, email, placa],
+        (error, results) => {
+            if (error) {
+                console.error("Error al actualizar los datos de contabilidad:", error);
+                res.status(500).send("Error al actualizar los datos de contabilidad");
+                return;
+            }
+            console.log("Datos de contabilidad actualizados correctamente en la base de datos");
+            // Redirigir al usuario de vuelta a la página de consulta de contabilidad
+            res.redirect("/consulta-contabilidad");
+        }
+    );
+});
+
+
+
+// agregar contabilidad 
+// Ruta para renderizar la página del formulario de agregar contabilidad
+// Ruta para renderizar la página del formulario de agregar contabilidad
+app.get("/agregar-contabilidad", (req, res) => {
+    // Renderiza el formulario para agregar una nueva entrada de contabilidad
+    res.render("formulario_agregar_contabilidad");
+});
+
+// Ruta para manejar los datos enviados desde el formulario y agregar una nueva entrada de contabilidad a la base de datos
+app.post("/agregar-contabilidad", (req, res) => {
+    // Obtener todos los campos del formulario
+    const formData = req.body;
+
+    // Asegurarse de enviar una cadena vacía si no se proporciona ningún valor para 'Numero_de_cuenta'
+    const numeroCuenta = formData.Numero_de_cuenta || '';
+
+    // Insertar los datos en la base de datos
+    connection.query(
+        `INSERT INTO contabilidad (placa, actividad_economica, nombre_del_banco, tipo_de_cuenta_bancaria, Numero_de_cuenta, tipo_documento, cedula, identificacion, nombre, direccion, celular, email) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+            formData.placa,
+            formData.actividadEconomica,
+            formData.nombreBanco,
+            formData.tipoCuentaBancaria,
+            numeroCuenta, // Aquí se utiliza la variable numeroCuenta
+            formData.tipoDocumento,
+            formData.cedula,
+            formData.identificacion,
+            formData.nombre,
+            formData.direccion,
+            formData.celular,
+            formData.email
+        ],
+        (error, results) => {
+            if (error) {
+                console.error("Error al agregar el conductor:", error);
+                res.status(500).send("Error al agregar el conductor");
+                return;
+            }
+            console.log("informacion agregado correctamente a la base de datos");
+            // Redirigir al usuario de vuelta a la página de consulta de contabilidad
+            res.redirect(`/consulta-contabilidad`);
+        }
+    );
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
