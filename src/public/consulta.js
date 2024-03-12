@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
            <p><strong>N° MOVIL:</strong> ${vehiculo.No_movil}</p>
            <p><strong>MATRICULA:</strong> ${vehiculo.Matricula}</p>
            <p><strong>MARCA:</strong> ${vehiculo.Marca}</p>
-           <p><strong>Linea:</strong> ${vehiculo.Linea}</p>
-           <p><strong>Modelo:</strong> ${vehiculo.Modelo}</p>
+           <p><strong>LINEA:</strong> ${vehiculo.Linea}</p>
+           <p><strong>MODELO:</strong> ${vehiculo.Modelo}</p>
            <p><strong>N° MOTOR:</strong> ${vehiculo.Numero_motor}</p>
            <p><strong>N° CHASIS:</strong> ${vehiculo.Numero_chasis}</p>
            <p><strong>CLASE:</strong> ${vehiculo.Clase_vehiculo	}</p>
-           <p><strong>CAPACIDAD:</strong> ${vehiculo.Capacidad}</p>
+         
            <p><strong>N° DE PUESTOS:</strong> ${vehiculo.Num_puestos}</p>
            <p><strong>N° DE PUERTA:</strong> ${vehiculo.Puertas}</p>
            <p><strong>N° DE EJES:</strong> ${vehiculo.Num_ejes}</p>
@@ -49,24 +49,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
            <h2>Documentos reglamentarios</h2>
            <p><strong>N°SOAT:</strong> ${vehiculo.Num_soat}</p>
-           <p><strong>CDA:</strong> ${vehiculo.Cda}</p>
-           <p><strong>FECHA VIGENCIA SOAT:</strong> ${vehiculo.Fecha_vigencia_soat}</p>
+           
+           <p><strong>COMPANIA ASEGURADORA:</strong> ${vehiculo.Compania_aseguradora}</p>
+         
+           <p><strong>FECHA VIGENCIA :</strong> ${vehiculo.Fecha_vigencia_soat}</p>
            <p><strong>N° TECNOMECANICA:</strong> ${vehiculo.Num_tecnomecanica}</p>
-           <p><strong>COMPANIA ASEGURADORA:</strong> ${vehiculo.Compania_aseguradora}</p>
-           <p><strong>FECHA INICIO TECNOMECANICA:</strong> ${vehiculo.Fecha_inicio_tecnomecanica}</p>
+           <p><strong>CDA:</strong> ${vehiculo.Cda}</p>
+           <p><strong>FECHA INICIO :</strong> ${vehiculo.Fecha_inicio_tecnomecanica}</p>
            <p><strong>FECHA VIGENCIA:</strong> ${vehiculo.Fecha_vigencia}</p>
+           <p><strong>N° POLIZAS:</strong> ${vehiculo.Num_polizas_rcc_rce}</p> 
+           <p><strong>COMPAÑIA ASEGURADORA:</strong> ${vehiculo.Compania_aseguradora}</p> 
 
 
 
-           <p><strong>COMPANIA ASEGURADORA:</strong> ${vehiculo.Compania_aseguradora}</p>
-           <p><strong>VIGENCIA POLIZAS:</strong> ${vehiculo.Vigencia_polizas}</p>
+           <p><strong>FECHA VIGENCIA:</strong> ${vehiculo.Vigencia_polizas}</p>
            <p><strong>N° TARJETA OPERACION:</strong> ${vehiculo.Num_tarjeta_operacion}</p>
            <p><strong>EMPRESA AFILIACION:</strong> ${vehiculo.Empresa_afiliacion}</p>
-           <p><strong>FECHA FINAL OPERACION:</strong> ${vehiculo.Fecha_final_operacion}</p>
-           <p><strong>N° PREVENTIVA 1:</strong> ${vehiculo.Num_preventiva_1}</p>
+           <p><strong>FECHA VIGENCIA:</strong> ${vehiculo.Fecha_final_operacion}</p>
+           <p><strong>N° PREVENTIVA :</strong> ${vehiculo.Num_preventiva_1}</p>
            <p><strong>CDA PREVENTIVA:</strong> ${vehiculo.Cda_preventiva}</p>
-           <p><strong>FECHA INICIAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_inicial_preventiva_1}</p>
-           <p><strong>FECHA FINAL PREVENTIVA 1:</strong> ${vehiculo.Fecha_final_preventiva_1}</p>
+           <p><strong>FECHA INICIAL:</strong> ${vehiculo.Fecha_inicial_preventiva_1}</p>
+           <p><strong>FECHA VIGENCIA:</strong> ${vehiculo.Fecha_final_preventiva_1}</p>
            
 
            <hr>
