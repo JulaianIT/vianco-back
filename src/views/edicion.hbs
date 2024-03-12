@@ -158,143 +158,134 @@
         <div class="heading"><h1>VEHICULO :{{ vehiculo.Placa }}</h1></div>
 
 <form action="/guardar-edicion" method="POST">
-            <label for="placa">  <strong>  PLACA :</strong></label>
-            <input type="text" id="placa" name="placa" value="{{ vehiculo.Placa }}" readonly>
-            
-            <label for="base"><strong>    BASE: </strong></label>
-            <input type="text" id="base" name="base" value="{{ vehiculo.Base }}">
-            
-            <label for="conductor"><strong>Conductor:</strong></label>
-            <input type="text" id="conductor" name="conductor" value="{{ vehiculo.Conductor }}">
-            
-            <label for="noMovil"><strong>N° Móvil:</strong></label>
-            <input type="text" id="noMovil" name="noMovil" value="{{ vehiculo.No_movil }}">
-              
-            <!-- Nuevos campos de edición con primera letra en mayúscula -->
-            <label for="Matricula"><strong>Matrícula:</strong></label>
-            <input type="text" id="Matricula" name="Matricula" value="{{ vehiculo.Matricula }}">
-           
-            <label for="Marca"><strong>Marca:</strong></label>
-            <input type="text" id="Marca" name="Marca" value="{{ vehiculo.Marca }}">
-              
-           
 
-            <label for="Linea"><strong>Línea:</strong></label>
-            <input type="text" id="Linea" name="Linea" value="{{ vehiculo.Linea }}">
-            
-            <label for="Clase"><strong>Clase:</strong></label>
-            <input type="text" id="Clase" name="Clase" value="{{ vehiculo.Clase_vehiculo }}">
-            
-            <label for="Modelo"><strong>Modelo:</strong></label>
-            <input type="text" id="Modelo" name="Modelo" value="{{ vehiculo.Modelo }}">
-            
-            <label for="Capacidad>"><strong>Capacidad:</strong></label>
-            <input type="text" id="Capacidad" name="Capacidad" value="{{ vehiculo.Capacidad }}">
-             
-            <label for="PropietarioContrato"><strong>Propietario Contrato:</strong></label>
-            <input type="text" id="PropietarioContrato" name="PropietarioContrato" value="{{ vehiculo.Propietario_contrato }}">
-           
-              
-            <label for="PropietarioLicencia"><strong>Propietario Licencia:</strong></label>
-            <input type="text" id="PropietarioLicencia" name="PropietarioLicencia" value="{{ vehiculo.Propietario_licencia }}">
-             
-            <label for="AfiliadoA"><strong>Afiliado A:</strong></label>
-            <input type="text" id="AfiliadoA" name="AfiliadoA" value="{{ vehiculo.Afiliado_a }}">
-            
-            <label for="NumeroPuestos"><strong>N° de Puestos:</strong></label>
-            <input type="text" id="NumeroPuestos" name="NumeroPuestos" value="{{ vehiculo.Num_puestos }}">
-        
-            <label for="Puertas"><strong>Puertas:</strong></label>
-            <input type="text" id="Puertas" name="Puertas" value="{{ vehiculo.Puertas }}">
-            
-            <label for="PesoBruto"><strong>Peso Bruto:</strong></label>
-            <input type="text" id="PesoBruto" name="PesoBruto" value="{{ vehiculo.Peso_bruto }}">
-         
-              
-            <label for="NumeroEjes"><strong>N° de Ejes:</strong></label>
-            <input type="text" id="NumeroEjes" name="NumeroEjes" value="{{ vehiculo.Num_ejes }}">
-            
-            <label for="NumeroChasis"><strong>N° Chasis:</strong></label>
-            <input type="text" id="NumeroChasis" name="NumeroChasis" value="{{ vehiculo.Numero_chasis }}">
-            
-            <label for="NumeroMotor"><strong>N° Motor:</strong></label>
-            <input type="text" id="NumeroMotor" name="NumeroMotor" value="{{ vehiculo.Numero_motor }}">
-          
-            <label for="Color"><strong>Color:</strong></label>
-            <input type="text" id="Color" name="Color" value="{{ vehiculo.Color }}">
-            
-            <label for="Cilindraje"><strong>Cilindraje:</strong></label>
-            <input type="text" id="Cilindraje" name="Cilindraje" value="{{ vehiculo.Cilindraje }}">
-       
-           
-              
-            <label for="Combustible"><strong>Combustible:</strong></label>
-            <input type="text" id="Combustible" name="Combustible" value="{{ vehiculo.Combustible }}">
-            
-            <label for="Carroceria"><strong>Carrocería:</strong></label>
-            <input type="text" id="Carroceria" name="Carroceria" value="{{ vehiculo.Carroceria }}">
-            
-            <label for="FechaMatricula"><strong>Fecha Matrícula:</strong></label>
-            <input type="text" id="FechaMatricula" name="FechaMatricula" value="{{ vehiculo.Fecha_matricula }}">
-             
-            <label for="NumeroSoat"><strong>N° SOAT:</strong></label>
-            <input type="text" id="NumeroSoat" name="NumeroSoat" value="{{ vehiculo.Num_soat }}">
-               
-              
-            <label for="VigenciaSoat"><strong>Fecha Vigencia SOAT:</strong></label>
-            <input type="text" id="VigenciaSoat" name="VigenciaSoat" value="{{ vehiculo.VigenciaSoat }}">
-            
-            <label for="NumeroTecnomecanica"><strong>N° Tecnomecánica:</strong></label>
-            <input type="text" id="NumeroTecnomecanica" name="NumeroTecnomecanica" value="{{ vehiculo.Num_tecnomecanica }}">
-            
-            <label for="Cda"><strong>CDA:</strong></label>
-            <input type="text" id="Cda" name="Cda" value="{{ vehiculo.Cda }}">
-            
-            <label for="FechaInicioTecnomecanica"><strong>Fecha Inicio Tecnomecánica:</strong></label>
-            <input type="text" id="FechaInicioTecnomecanica" name="FechaInicioTecnomecanica" value="{{ vehiculo.Fecha_inicio_tecnomecanica }}">
-     
-            <label for="FechaVigencia"><strong>Fecha Vigencia:</strong></label>
-            <input type="text" id="FechaVigencia" name="FechaVigencia" value="{{ vehiculo.Fecha_vigencia }}">
-            
-            <label for="NumeroPolizas"><strong>N° Pólizas RCC RCE:</strong></label>
-            <input type="text" id="NumeroPolizas" name="NumeroPolizas" value="{{ vehiculo.Num_polizas_rcc_rce }}">
-            
-            <label for="CompaniaAseguradora"><strong>Compañía Aseguradora:</strong></label>
-            <input type="text" id="CompaniaAseguradora" name="CompaniaAseguradora" value="{{ vehiculo.Compania_aseguradora }}">
-           
-               
-            <label for="VigenciaPolizas"><strong>Vigencia Pólizas:</strong></label>
-            <input type="text" id="VigenciaPolizas" name="VigenciaPolizas" value="{{ vehiculo.Vigencia_polizas }}">
-          
-            <label for="NumeroTarjetaOperacion"><strong>N° Tarjeta Operación:</strong></label>
-            <input type="text" id="NumeroTarjetaOperacion" name="NumeroTarjetaOperacion" value="{{ vehiculo.Num_tarjeta_operacion }}">
-           
-            <label for="EmpresaAfiliacion"><strong>Empresa Afiliación:</strong></label>
-            <input type="text" id="EmpresaAfiliacion" name="EmpresaAfiliacion" value="{{ vehiculo.Empresa_afiliacion }}">
-          
-              
-            <label for="FechaFinalOperacion"><strong>Fecha Final Operación:</strong></label>
-            <input type="text" id="FechaFinalOperacion" name="FechaFinalOperacion" value="{{ vehiculo.Fecha_final_operacion }}">
-               
-            <label for="NumeroPreventiva1"><strong>N° Preventiva 1:</strong></label>
-            <input type="text" id="NumeroPreventiva1" name="NumeroPreventiva1" value="{{ vehiculo.Num_preventiva_1 }}">
-            
-            <label for="CdaPreventiva"><strong>CDA Preventiva:</strong></label>
-            <input type="text" id="CdaPreventiva" name="CdaPreventiva" value="{{ vehiculo.Cda_preventiva }}">
-             
-            <label for="FechaInicialPreventiva1"><strong>Fecha Inicial Preventiva 1:</strong></label>
-            <input type="text" id="FechaInicialPreventiva1" name="FechaInicialPreventiva1" value="{{ vehiculo.Fecha_inicial_preventiva_1 }}">
-        
-            <label for="FechaFinalPreventiva1"><strong>FECHA Final Preventiva 1:</strong></label>
-            <input type="text" id="FechaFinalPreventiva1" name="FechaFinalPreventiva1" value="{{ vehiculo.Fecha_final_preventiva_1 }}">
-            
-            <button type="submit">Guardar Cambios</button>
-                                                                    <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
+        <h2>Información Técnica</h2>
+        <label for="placa">Placa:</label>
+        <input type="text" id="placa" name="placa" value="{{ vehiculo.Placa }}" readonly><br><br>
 
+        <label for="base">Base:</label>
+        <input type="text" id="base" name="base" value="{{ vehiculo.Base }}"><br><br>
 
+        <label for="conductor">Conductor:</label>
+        <input type="text" id="conductor" name="conductor" value="{{ vehiculo.Conductor }}"><br><br>
 
-        </form>
-    </div>
+        <label for="noMovil">N° Móvil:</label>
+        <input type="text" id="noMovil" name="noMovil" value="{{ vehiculo.No_movil }}"><br><br>
+
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" value="{{ vehiculo.Matricula }}"><br><br>
+
+        <label for="marca">Marca:</label>
+        <input type="text" id="marca" name="marca" value="{{ vehiculo.Marca }}"><br><br>
+
+        <label for="linea">Línea:</label>
+        <input type="text" id="linea" name="linea" value="{{ vehiculo.Linea }}"><br><br>
+
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" name="modelo" value="{{ vehiculo.Modelo }}"><br><br>
+
+        <label for="numMotor">N° Motor:</label>
+        <input type="text" id="numMotor" name="numMotor" value="{{ vehiculo.Numero_motor }}"><br><br>
+
+        <label for="numChasis">N° Chasis:</label>
+        <input type="text" id="numChasis" name="numChasis" value="{{ vehiculo.Numero_chasis }}"><br><br>
+
+        <label for="claseVehiculo">Clase de Vehículo:</label>
+        <input type="text" id="claseVehiculo" name="claseVehiculo" value="{{ vehiculo.Clase_vehiculo }}"><br><br>
+
+        <label for="capacidad">Capacidad:</label>
+        <input type="text" id="capacidad" name="capacidad" value="{{ vehiculo.Capacidad }}"><br><br>
+
+        <label for="numPuestos">N° de Puestos:</label>
+        <input type="text" id="numPuestos" name="numPuestos" value="{{ vehiculo.Num_puestos }}"><br><br>
+
+        <label for="puertas">Puertas:</label>
+        <input type="text" id="puertas" name="puertas" value="{{ vehiculo.Puertas }}"><br><br>
+
+        <label for="numEjes">N° de Ejes:</label>
+        <input type="text" id="numEjes" name="numEjes" value="{{ vehiculo.Num_ejes }}"><br><br>
+
+        <label for="cilindraje">Cilindraje:</label>
+        <input type="text" id="cilindraje" name="cilindraje" value="{{ vehiculo.Cilindraje }}"><br><br>
+
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" value="{{ vehiculo.Color }}"><br><br>
+
+        <label for="combustible">Combustible:</label>
+        <input type="text" id="combustible" name="combustible" value="{{ vehiculo.Combustible }}"><br><br>
+
+        <label for="carroceria">Carrocería:</label>
+        <input type="text" id="carroceria" name="carroceria" value="{{ vehiculo.Carroceria }}"><br><br>
+
+        <label for="fechaMatricula">Fecha Matrícula:</label>
+        <input type="text" id="fechaMatricula" name="fechaMatricula" value="{{ vehiculo.Fecha_matricula }}"><br><br>
+
+        <hr>
+
+        <h2>Documentos Reglamentarios</h2>
+        <label for="numSoat">N° SOAT:</label>
+        <input type="text" id="numSoat" name="numSoat" value="{{ vehiculo.Num_soat }}"><br><br>
+
+        <label for="cda">CDA:</label>
+        <input type="text" id="cda" name="cda" value="{{ vehiculo.Cda }}"><br><br>
+
+        <label for="fechaVigenciaSoat">Fecha Vigencia SOAT:</label>
+        <input type="text" id="fechaVigenciaSoat" name="fechaVigenciaSoat" value="{{ vehiculo.VigenciaSoat }}"><br><br>
+
+        <label for="numTecnomecanica">N° Tecnomecánica:</label>
+        <input type="text" id="numTecnomecanica" name="numTecnomecanica" value="{{ vehiculo.Num_tecnomecanica }}"><br><br>
+
+        <label for="companiaAseguradora">Compañía Aseguradora:</label>
+        <input type="text" id="companiaAseguradora" name="companiaAseguradora" value="{{ vehiculo.Compania_aseguradora }}"><br><br>
+
+        <label for="fechaInicioTecnomecanica">Fecha Inicio Tecnomecánica:</label>
+        <input type="text" id="fechaInicioTecnomecanica" name="fechaInicioTecnomecanica" value="{{ vehiculo.Fecha_inicio_tecnomecanica }}"><br><br>
+
+        <label for="fechaVigencia">Fecha Vigencia:</label>
+        <input type="text" id="fechaVigencia" name="fechaVigencia" value="{{ vehiculo.Fecha_vigencia }}"><br><br>
+
+        <hr>
+
+        <h2>Información General</h2>
+        <label for="propietarioContrato">Propietario Contrato:</label>
+        <input type="text" id="propietarioContrato" name="propietarioContrato" value="{{ vehiculo.Propietario_contrato }}"><br><br>
+
+        <label for="propietarioLicencia">Propietario Licencia:</label>
+        <input type="text" id="propietarioLicencia" name="propietarioLicencia" value="{{ vehiculo.Propietario_licencia }}"><br><br>
+
+        <label for="afiliadoA">Afiliado A:</label>
+        <input type="text" id="afiliadoA" name="afiliadoA" value="{{ vehiculo.Afiliado_a }}"><br><br>
+
+        <label for="vigenciaPolizas">Vigencia Pólizas:</label>
+        <input type="text" id="vigenciaPolizas" name="vigenciaPolizas" value="{{ vehiculo.Vigencia_polizas }}"><br><br>
+
+        <label for="numTarjetaOperacion">N° Tarjeta Operación:</label>
+        <input type="text" id="numTarjetaOperacion" name="numTarjetaOperacion" value="{{ vehiculo.Num_tarjeta_operacion }}"><br><br>
+
+        <label for="empresaAfiliacion">Empresa Afiliación:</label>
+        <input type="text" id="empresaAfiliacion" name="empresaAfiliacion" value="{{ vehiculo.Empresa_afiliacion }}"><br><br>
+
+        <label for="fechaFinalOperacion">Fecha Final Operación:</label>
+        <input type="text" id="fechaFinalOperacion" name="fechaFinalOperacion" value="{{ vehiculo.Fecha_final_operacion }}"><br><br>
+
+        <label for="numPreventiva1">N° Preventiva 1:</label>
+        <input type="text" id="numPreventiva1" name="numPreventiva1" value="{{ vehiculo.Num_preventiva_1 }}"><br><br>
+
+        <label for="cdaPreventiva">CDA Preventiva:</label>
+        <input type="text" id="cdaPreventiva" name="cdaPreventiva" value="{{ vehiculo.Cda_preventiva }}"><br><br>
+
+        <label for="fechaInicialPreventiva1">Fecha Inicial Preventiva 1:</label>
+        <input type="text" id="fechaInicialPreventiva1" name="fechaInicialPreventiva1" value="{{ vehiculo.Fecha_inicial_preventiva_1 }}"><br><br>
+
+        <label for="fechaFinalPreventiva1">Fecha Final Preventiva 1:</label>
+        <input type="text" id="fechaFinalPreventiva1" name="fechaFinalPreventiva1" value="{{ vehiculo.Fecha_final_preventiva_1 }}"><br><br>
+
+        <button type="submit">Guardar Cambios</button>
+        <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
+
+    </form>
+</div>
+
 
 </body>
 </html>

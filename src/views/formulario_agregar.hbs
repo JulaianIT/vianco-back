@@ -143,10 +143,7 @@
     </header>
 
     <div class="container">
-        <div class="heading"><h1>Formulario de Agregar Vehículo</h1></div>
-        <form action="/agregar-vehiculo" method="POST">
-   
-    
+         <h2>Información Técnica</h2>
         <label for="placa">Placa:</label>
         <input type="text" id="placa" name="placa"><br><br>
 
@@ -168,23 +165,20 @@
         <label for="linea">Línea:</label>
         <input type="text" id="linea" name="linea"><br><br>
 
-        <label for="claseVehiculo">Clase de Vehículo:</label>
-        <input type="text" id="claseVehiculo" name="claseVehiculo"><br><br>
-
         <label for="modelo">Modelo:</label>
         <input type="text" id="modelo" name="modelo"><br><br>
 
+        <label for="numMotor">N° Motor:</label>
+        <input type="text" id="numMotor" name="numMotor"><br><br>
+
+        <label for="numChasis">N° Chasis:</label>
+        <input type="text" id="numChasis" name="numChasis"><br><br>
+
+        <label for="claseVehiculo">Clase de Vehículo:</label>
+        <input type="text" id="claseVehiculo" name="claseVehiculo"><br><br>
+
         <label for="capacidad">Capacidad:</label>
         <input type="text" id="capacidad" name="capacidad"><br><br>
-
-        <label for="propietarioContrato">Propietario Contrato:</label>
-        <input type="text" id="propietarioContrato" name="propietarioContrato"><br><br>
-
-        <label for="propietarioLicencia">Propietario Licencia:</label>
-        <input type="text" id="propietarioLicencia" name="propietarioLicencia"><br><br>
-
-        <label for="afiliadoA">Afiliado A:</label>
-        <input type="text" id="afiliadoA" name="afiliadoA"><br><br>
 
         <label for="numPuestos">N° de Puestos:</label>
         <input type="text" id="numPuestos" name="numPuestos"><br><br>
@@ -192,23 +186,14 @@
         <label for="puertas">Puertas:</label>
         <input type="text" id="puertas" name="puertas"><br><br>
 
-        <label for="pesoBruto">Peso Bruto:</label>
-        <input type="text" id="pesoBruto" name="pesoBruto"><br><br>
-
         <label for="numEjes">N° de Ejes:</label>
         <input type="text" id="numEjes" name="numEjes"><br><br>
 
-        <label for="numChasis">N° Chasis:</label>
-        <input type="text" id="numChasis" name="numChasis"><br><br>
-
-        <label for="numMotor">N° Motor:</label>
-        <input type="text" id="numMotor" name="numMotor"><br><br>
+        <label for="cilindraje">Cilindraje:</label>
+        <input type="text" id="cilindraje" name="cilindraje"><br><br>
 
         <label for="color">Color:</label>
         <input type="text" id="color" name="color"><br><br>
-
-        <label for="cilindraje">Cilindraje:</label>
-        <input type="text" id="cilindraje" name="cilindraje"><br><br>
 
         <label for="combustible">Combustible:</label>
         <input type="text" id="combustible" name="combustible"><br><br>
@@ -219,11 +204,14 @@
         <label for="fechaMatricula">Fecha Matrícula:</label>
         <input type="text" id="fechaMatricula" name="fechaMatricula"><br><br>
 
+        <hr>
+
+        <h2>Documentos Reglamentarios</h2>
         <label for="numSoat">N° SOAT:</label>
         <input type="text" id="numSoat" name="numSoat"><br><br>
 
-        <label for="entidad">Entidad:</label>
-        <input type="text" id="entidad" name="entidad"><br><br>
+        <label for="cda">CDA:</label>
+        <input type="text" id="cda" name="cda"><br><br>
 
         <label for="fechaVigenciaSoat">Fecha Vigencia SOAT:</label>
         <input type="text" id="fechaVigenciaSoat" name="fechaVigenciaSoat"><br><br>
@@ -231,8 +219,8 @@
         <label for="numTecnomecanica">N° Tecnomecánica:</label>
         <input type="text" id="numTecnomecanica" name="numTecnomecanica"><br><br>
 
-        <label for="cda">CDA:</label>
-        <input type="text" id="cda" name="cda"><br><br>
+        <label for="companiaAseguradora">Compañía Aseguradora:</label>
+        <input type="text" id="companiaAseguradora" name="companiaAseguradora"><br><br>
 
         <label for="fechaInicioTecnomecanica">Fecha Inicio Tecnomecánica:</label>
         <input type="text" id="fechaInicioTecnomecanica" name="fechaInicioTecnomecanica"><br><br>
@@ -240,11 +228,17 @@
         <label for="fechaVigencia">Fecha Vigencia:</label>
         <input type="text" id="fechaVigencia" name="fechaVigencia"><br><br>
 
-        <label for="numPolizasRccRce">N° Pólizas RCC RCE:</label>
-        <input type="text" id="numPolizasRccRce" name="numPolizasRccRce"><br><br>
+        <hr>
 
-        <label for="companiaAseguradora">Compañía Aseguradora:</label>
-        <input type="text" id="companiaAseguradora" name="companiaAseguradora"><br><br>
+        <h2>Información General</h2>
+        <label for="propietarioContrato">Propietario Contrato:</label>
+        <input type="text" id="propietarioContrato" name="propietarioContrato"><br><br>
+
+        <label for="propietarioLicencia">Propietario Licencia:</label>
+        <input type="text" id="propietarioLicencia" name="propietarioLicencia"><br><br>
+
+        <label for="afiliadoA">Afiliado A:</label>
+        <input type="text" id="afiliadoA" name="afiliadoA"><br><br>
 
         <label for="vigenciaPolizas">Vigencia Pólizas:</label>
         <input type="text" id="vigenciaPolizas" name="vigenciaPolizas"><br><br>
@@ -271,9 +265,10 @@
         <input type="text" id="fechaFinalPreventiva1" name="fechaFinalPreventiva1"><br><br>
 
         <button type="submit">Agregar Vehículo</button>
-                    <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
+        <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
 
     </form>
-    </div>
+</div>
+
 </body>
 </html>

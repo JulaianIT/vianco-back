@@ -293,6 +293,7 @@ app.get('/edicion/:placa', (req, res) => {
 });
 
 
+
 app.post('/guardar-edicion', (req, res) => {
     console.log('Datos recibidos en la solicitud:', req.body);
     const placa = req.body.placa;
