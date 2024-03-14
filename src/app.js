@@ -554,10 +554,6 @@ app.post("/consulta-contabilidad", (req, res) => {
 
 
 
-
-
-
-
 // Ruta para cargar la página de edición de contabilidad
 app.get("/edicion-contabilidad/:placa", (req, res) => {
     const placa = req.params.placa; // Obtener la placa del parámetro de la URL
@@ -579,25 +575,54 @@ app.get("/edicion-contabilidad/:placa", (req, res) => {
     });
 });
 
-
+// Ruta para manejar el formulario de edición de contabilidad
 app.post('/guardar-edicion-contabilidad', (req, res) => {
-    const { placa, NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
-    // Consulta SQL para actualizar los datos de contabilidad en la base de datos
+    const placa = req.body.placa;
+    // Obtener los datos del cuerpo de la solicitud
+    const { NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO,TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
+
+    // Realizar la actualización en la base de datos con los datos recibidos
     connection.query(
-        "UPDATE contabilidad SET Actividad_economica = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, tipo_documento = ?, Cedula = ?, Nombres = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?",
-        [ACTIVIDAD_ECONOMICA_CONTRATO, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, TIPO_DE_DOCUMENTO_LICENCIA, Cedula, NOMBRES_LICENCIA, direccion, celular, email, placa],
+        'UPDATE contabilidad SET NOMBRES_LICENCIA = ?, TIPO_DE_DOCUMENTO_LICENCIA = ?, NUMERO_DE_DOCUMENTO_LICENCIA = ?, FECHA_DE_INICIO_CONTRATO = ?, FECHA_FINAL = ?, MOTIVO_RETIRO = ?, NOMBRES_CONTRATO = ?, TIPO_DE_DOCUMENTO_CONTRATO = ?,NUMERO_DE_DOCUMENTO_CONTRATO = ?, DIRECCION_CONTRATO = ?,CELULAR_CONTRATO = ?, EMAIL_CONTRATO = ?, ACTIVIDAD_ECONOMICA_CONTRATO = ?, VALOR_ADMINISTRACION = ?, Nombre = ?, tipo_documento = ?, Cedula = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?',
+        [NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO,NUMERO_DE_DOCUMENTO_CONTRATO,DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email, placa],
         (error, results) => {
             if (error) {
-                console.error("Error al actualizar los datos de contabilidad:", error);
-                res.status(500).send("Error al actualizar los datos de contabilidad");
+                console.error("Error al guardar los cambios:", error);
+                res.status(500).send("Error al guardar los cambios");
                 return;
             }
-            console.log("Datos de contabilidad actualizados correctamente en la base de datos");
+            if (results.affectedRows === 0) {
+                console.error("No se encontró ninguna entrada de contabilidad con la placa proporcionada:", placa);
+                res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa proporcionada");
+                return;
+            }
+            console.log("Cambios guardados correctamente en la base de datos");
             // Redirigir al usuario de vuelta a la página de consulta de contabilidad
-            res.redirect("/consulta-contabilidad");
+            res.redirect(`/consulta-contabilidad?placa=${placa}`);
         }
     );
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -620,29 +645,42 @@ app.post("/agregar-contabilidad", (req, res) => {
 
     // Insertar los datos en la base de datos
     connection.query(
-        `INSERT INTO contabilidad (placa, actividad_economica, nombre_del_banco, tipo_de_cuenta_bancaria, Numero_de_cuenta, tipo_documento, cedula, identificacion, nombre, direccion, celular, email) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO contabilidad 
+        (placa, NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, Direccion, Celular, Email) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             formData.placa,
-            formData.actividadEconomica,
-            formData.nombreBanco,
-            formData.tipoCuentaBancaria,
-            numeroCuenta, // Aquí se utiliza la variable numeroCuenta
-            formData.tipoDocumento,
-            formData.cedula,
-            formData.identificacion,
-            formData.nombre,
-            formData.direccion,
-            formData.celular,
-            formData.email
+            formData.NOMBRES_LICENCIA,
+            formData.TIPO_DE_DOCUMENTO_LICENCIA,
+            formData.NUMERO_DE_DOCUMENTO_LICENCIA,
+            formData.FECHA_DE_INICIO_CONTRATO,
+            formData.FECHA_FINAL,
+            formData.MOTIVO_RETIRO,
+            formData.NOMBRES_CONTRATO,
+            formData.TIPO_DE_DOCUMENTO_CONTRATO,
+            formData.NUMERO_DE_DOCUMENTO_CONTRATO,
+            formData.DIRECCION_CONTRATO,
+            formData.CELULAR_CONTRATO,
+            formData.EMAIL_CONTRATO,
+            formData.ACTIVIDAD_ECONOMICA_CONTRATO,
+            formData.VALOR_ADMINISTRACION,
+            formData.Nombre,
+            formData.tipo_documento,
+            formData.Cedula,
+            formData.Nombre_del_banco,
+            formData.Tipo_de_cuenta_bancaria,
+            formData.Numero_de_cuenta,
+            formData.Direccion,
+            formData.Celular,
+            formData.Email
         ],
         (error, results) => {
             if (error) {
-                console.error("Error al agregar el conductor:", error);
-                res.status(500).send("Error al agregar el conductor");
+                console.error("Error al agregar la contabilidad:", error);
+                res.status(500).send("Error al agregar la contabilidad");
                 return;
             }
-            console.log("informacion agregado correctamente a la base de datos");
+            console.log("Información agregada correctamente a la base de datos");
             // Redirigir al usuario de vuelta a la página de consulta de contabilidad
             res.redirect(`/consulta-contabilidad`);
         }

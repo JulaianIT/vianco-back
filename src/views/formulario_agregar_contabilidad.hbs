@@ -137,61 +137,96 @@
         }
     </style>
 <body>
-    <div class="container">
-        <h1>Agregar Contabilidad</h1>
-        <form action="/agregar-contabilidad" method="POST">
-            <div class="form-group">
-                <label for="placa">Placa:</label>
-                <input type="text" id="placa" name="placa" required>
-            </div>
-            <div class="form-group">
-                <label for="actividadEconomica">Actividad Económica:</label>
-                <input type="text" id="actividadEconomica" name="actividadEconomica">
-            </div>
-            <div class="form-group">
-                <label for="nombreBanco">Nombre del Banco:</label>
-                <input type="text" id="nombreBanco" name="nombreBanco" required>
-            </div>
-            <div class="form-group">
-                <label for="tipoCuentaBancaria">Tipo de Cuenta Bancaria:</label>
-                <input type="text" id="tipoCuentaBancaria" name="tipoCuentaBancaria">
-            </div>
-            <div class="form-group">
-                <label for="numeroDeCuenta">Número de Cuenta:</label>
-                <input type="text" id="numeroDeCuenta" name="numeroDeCuenta">
-            </div>
-            <div class="form-group">
-                <label for="tipoDocumento">Tipo de Documento:</label>
-                <input type="text" id="tipoDocumento" name="tipoDocumento">
-            </div>
-            <div class="form-group">
-                <label for="cedula">Cédula:</label>
-                <input type="text" id="cedula" name="cedula">
-            </div>
-            <div class="form-group">
-                <label for="identificacion">Identificación:</label>
-                <input type="text" id="identificacion" name="identificacion">
-            </div>
-            <div class="form-group">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre">
-            </div>
-            <div class="form-group">
-                <label for="direccion">Dirección:</label>
-                <input type="text" id="direccion" name="direccion">
-            </div>
-            <div class="form-group">
-                <label for="celular">Celular:</label>
-                <input type="text" id="celular" name="celular">
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="text" id="email" name="email">
-            </div>
-            <button type="submit">Agregar Contabilidad</button>
-                        <a href="/consulta-contabilidad" class="volver-btn">Volver al Menú</a>
+  <div class="container">
+    <h1>Agregar Contabilidad</h1>
+    <form action="/agregar-contabilidad" method="POST">
+        <h2>Información de licencia</h2>
+        <label for="placa"><strong>Placa:</strong></label>
+        <input type="text" id="placa" name="placa" value="{{ contabilidad.placa }}">
 
-        </form>
+        <label for="NOMBRES_LICENCIA"><strong>NOMBRES Y APELLIDOS:</strong></label>
+        <input type="text" id="NOMBRES_LICENCIA" name="NOMBRES_LICENCIA" value="{{ contabilidad.NOMBRES_LICENCIA }}">
+                
+        <label for="TIPO_DE_DOCUMENTO_LICENCIA"><strong>TIPO DE DOCUMENTO:</strong></label>
+        <input type="text" id="TIPO_DE_DOCUMENTO_LICENCIA" name="TIPO_DE_DOCUMENTO_LICENCIA" value="{{ contabilidad.TIPO_DE_DOCUMENTO_LICENCIA }}">
+                
+        <label for="NUMERO_DE_DOCUMENTO_LICENCIA"><strong>N° DE DOCUMENTO:</strong></label>
+        <input type="text" id="NUMERO_DE_DOCUMENTO_LICENCIA" name="NUMERO_DE_DOCUMENTO_LICENCIA" value="{{ contabilidad.NUMERO_DE_DOCUMENTO_LICENCIA }}">
+                
+        <hr>
+        <br>
+        <h2>Información de Contrato</h2>
+
+        <label for="FECHA_DE_INICIO_CONTRATO"><strong>FECHA DE INICIO:</strong></label>
+        <input type="text" id="FECHA_DE_INICIO_CONTRATO" name="FECHA_DE_INICIO_CONTRATO" value="{{ contabilidad.FECHA_DE_INICIO_CONTRATO }}">
+        
+        <label for="FECHA_FINAL"><strong>FECHA FINAL:</strong></label>
+        <input type="text" id="FECHA_FINAL" name="FECHA_FINAL" value="{{ contabilidad.FECHA_FINAL }}">
+        
+        <label for="MOTIVO_RETIRO"><strong>MOTIVO DEL RETIRO:</strong></label>
+        <input type="text" id="MOTIVO_RETIRO" name="MOTIVO_RETIRO" value="{{ contabilidad.MOTIVO_RETIRO }}">
+        
+        <label for="NOMBRES_CONTRATO"><strong>NOMBRES Y APELLIDOS:</strong></label>
+        <input type="text" id="NOMBRES_CONTRATO" name="NOMBRES_CONTRATO" value="{{ contabilidad.NOMBRES_CONTRATO }}">
+        
+        <label for="TIPO_DE_DOCUMENTO_CONTRATO"><strong>TIPO DE DOCUMENTO:</strong></label>
+        <input type="text" id="TIPO_DE_DOCUMENTO_CONTRATO" name="TIPO_DE_DOCUMENTO_CONTRATO" value="{{ contabilidad.TIPO_DE_DOCUMENTO_CONTRATO }}">
+
+        <label for="NUMERO_DE_DOCUMENTO_CONTRATO"><strong>N° DE DOCUMENTO:</strong></label>
+        <input type="text" id="NUMERO_DE_DOCUMENTO_CONTRATO" name="NUMERO_DE_DOCUMENTO_CONTRATO" value="{{ contabilidad.NUMERO_DE_DOCUMENTO_CONTRATO }}">
+
+        <label for="DIRECCION_CONTRATO"><strong>DIRECCION:</strong></label>
+        <input type="text" id="DIRECCION_CONTRATO" name="DIRECCION_CONTRATO" value="{{ contabilidad.DIRECCION_CONTRATO }}">
+
+        <label for="CELULAR_CONTRATO"><strong>CELULAR:</strong></label>
+        <input type="text" id="CELULAR_CONTRATO" name="CELULAR_CONTRATO" value="{{ contabilidad.CELULAR_CONTRATO }}">
+
+        <label for="EMAIL_CONTRATO"><strong>EMAIL:</strong></label>
+        <input type="text" id="EMAIL_CONTRATO" name="EMAIL_CONTRATO" value="{{ contabilidad.EMAIL_CONTRATO }}">
+
+        <label for="ACTIVIDAD_ECONOMICA_CONTRATO"><strong>Actividad Económica:</strong></label>
+        <input type="text" id="ACTIVIDAD_ECONOMICA_CONTRATO" name="ACTIVIDAD_ECONOMICA_CONTRATO" value="{{ contabilidad.ACTIVIDAD_ECONOMICA_CONTRATO }}">
+
+        <label for="VALOR_ADMINISTRACION"><strong>VALOR ADMINISTRACION:</strong></label>
+        <input type="text" id="VALOR_ADMINISTRACION" name="VALOR_ADMINISTRACION" value="{{ contabilidad.VALOR_ADMINISTRACION }}">
+
+        <hr>
+        <br>
+        <h2>Cuenta bancaria</h2>
+
+        <label for="Nombre"><strong>NOMBRES Y APELLIDOS:</strong></label>
+        <input type="text" id="Nombre" name="Nombre" value="{{ contabilidad.Nombre }}">
+
+        <label for="tipo_documento"><strong>TIPO DE DOCUMENTO:</strong></label>
+        <input type="text" id="tipo_documento" name="tipo_documento" value="{{ contabilidad.tipo_documento }}">
+
+        <label for="Cedula"><strong>N° DE DOCUMENTO:</strong></label>
+        <input type="text" id="Cedula" name="Cedula" value="{{ contabilidad.Cedula }}">
+
+        <label for="Nombre_del_banco"><strong>BANCO</strong></label>
+        <input type="text" id="Nombre_del_banco" name="Nombre_del_banco" value="{{ contabilidad.Nombre_del_banco }}">
+
+        <label for="Tipo_de_cuenta_bancaria"><strong>TIPO DE CUENTA BANCARIA:</strong></label>
+        <input type="text" id="Tipo_de_cuenta_bancaria" name="Tipo_de_cuenta_bancaria" value="{{ contabilidad.Tipo_de_cuenta_bancaria }}">
+
+        <label for="Numero_de_cuenta"><strong>N° CUENTA:</strong></label>
+        <input type="text" id="Numero_de_cuenta" name="Numero_de_cuenta" value="{{ contabilidad.Numero_de_cuenta }}">
+
+        <label for="Direccion"><strong>DIRECCIÓN:</strong></label>
+        <input type="text" id="Direccion" name="Direccion" value="{{ contabilidad.Direccion }}">
+
+        <label for="Celular"><strong>CELULAR:</strong></label>
+        <input type="text" id="Celular" name="Celular" value="{{ contabilidad.Celular }}">
+
+        <label for="Email"><strong>EMAIL:</strong></label>
+        <input type="text" id="Email" name="Email" value="{{ contabilidad.Email }}">
+
+        <!-- Agrega más campos según corresponda -->
+    </div>
+    <button type="submit">Agregar Contabilidad</button>
+    <a href="/consulta-contabilidad" class="volver-btn">Volver al Menú</a>
+</form>
+
     </div>
 </body>
 </html>
