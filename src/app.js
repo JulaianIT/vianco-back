@@ -489,16 +489,20 @@ app.post("/agregar-conductor", (req, res) => {
             formData.cedula,
             formData.fecha_expedicion,
             formData.fecha_nacimiento,
+            formData.tipo_sangre,
+            formData.direccion,
             formData.celular,
             formData.email,
-            formData.direccion,
+            formData.categoria,
+            formData.fecha_vigencia,
+           
             formData.arl,
             formData.eps,
             formData.seguridad_social,
             formData.fecha_vencimiento_examen,
-            formData.categoria,
-            formData.fecha_vigencia,
-            formData.tipo_sangre,
+          
+           
+       
             formData.contacto_emergencia,
             formData.celular_emergencia
         ],
