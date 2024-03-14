@@ -142,136 +142,175 @@
         <hr>
     </header>
        <div class="container"></div>
+      
                <div class="heading"><h1>Formulario de Agregar Vehículo</h1></div>
 
         <form action="/agregar-vehiculo" method="POST">
 
+ <!-- Formulario de Edición -->
+<form action="/guardar-edicion" method="POST">
  
-         <h2>Información Técnica</h2>
-        <label for="placa">Placa:</label>
-        <input type="text" id="placa" name="placa"><br><br>
+    <h2>INFORMACIÓN TÉCNICA</h2>
+    <label for="Placa">PLACA:</label>
+    <input type="text" id="Placa" name="Placa" value="" ><br><br>
 
-        <label for="base">Base:</label>
-        <input type="text" id="base" name="base"><br><br>
+    <label for="Base">BASE:</label>
+    <input type="text" id="Base" name="Base" value=""><br><br>
 
-        <label for="conductor">Conductor:</label>
-        <input type="text" id="conductor" name="conductor"><br><br>
+    <label for="Conductor">CONDUCTOR:</label>
+    <input type="text" id="Conductor" name="Conductor" value=""><br><br>
 
-        <label for="noMovil">N° Móvil:</label>
-        <input type="text" id="noMovil" name="noMovil"><br><br>
+<label for="No_movil">N° MÓVIL:</label>
+<input type="text" id="No_movil" name="No_movil" value=""><br><br>
 
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula"><br><br>
+    <label for="matricula">MATRÍCULA:</label>
+    <input type="text" id="matricula" name="matricula" value=""><br><br>
 
-        <label for="marca">Marca:</label>
-        <input type="text" id="marca" name="marca"><br><br>
+    <label for="Marca">MARCA:</label>
+    <input type="text" id="Marca" name="Marca" value=""><br><br>
 
-        <label for="linea">Línea:</label>
-        <input type="text" id="linea" name="linea"><br><br>
+    <label for="Linea">LÍNEA:</label>
+    <input type="text" id="Linea" name="Linea" value=""><br><br>
 
-        <label for="modelo">Modelo:</label>
-        <input type="text" id="modelo" name="modelo"><br><br>
+    <label for="Modelo">MODELO:</label>
+    <input type="text" id="Modelo" name="Modelo" value=""><br><br>
 
-        <label for="numMotor">N° Motor:</label>
-        <input type="text" id="numMotor" name="numMotor"><br><br>
+    <label for="Numero_motor">N° MOTOR:</label>
+    <input type="text" id="Numero_motor" name="Numero_motor" value=""><br><br>
 
-        <label for="numChasis">N° Chasis:</label>
-        <input type="text" id="numChasis" name="numChasis"><br><br>
+    <label for="Numero_chasis">N° CHASIS:</label>
+    <input type="text" id="Numero_chasis" name="Numero_chasis" value=""><br><br>
 
-        <label for="claseVehiculo">Clase de Vehículo:</label>
-        <input type="text" id="claseVehiculo" name="claseVehiculo"><br><br>
+    <label for="Clase_vehiculo">CLASE DE VEHÍCULO:</label>
+    <input type="text" id="Clase_vehiculo" name="Clase_vehiculo" value=""><br><br>
 
-        <label for="capacidad">Capacidad:</label>
-        <input type="text" id="capacidad" name="capacidad"><br><br>
+    <label for="Num_puestos">N° DE PUESTOS:</label>
+    <input type="text" id="Num_puestos	" name="Num_puestos	" value=""><br><br>
 
-        <label for="numPuestos">N° de Puestos:</label>
-        <input type="text" id="numPuestos" name="numPuestos"><br><br>
+    <label for="Puertas">N° DE PUERTAS:</label>
+    <input type="text" id="Puertas" name="Puertas" value=""><br><br>
 
-        <label for="puertas">Puertas:</label>
-        <input type="text" id="puertas" name="puertas"><br><br>
+    <label for="Num_ejes">N° DE EJES:</label>
+    <input type="text" id="Num_ejes" name="Num_ejes" value=""><br><br>
 
-        <label for="numEjes">N° de Ejes:</label>
-        <input type="text" id="numEjes" name="numEjes"><br><br>
+    <label for="Cilindraje">CILINDRAJE:</label>
+    <input type="text" id="Cilindraje" name="Cilindraje" value=""><br><br>
 
-        <label for="cilindraje">Cilindraje:</label>
-        <input type="text" id="cilindraje" name="cilindraje"><br><br>
+    <label for="Color">COLOR:</label>
+    <input type="text" id="Color" name="Color" value=""><br><br>
 
-        <label for="color">Color:</label>
-        <input type="text" id="color" name="color"><br><br>
+    <label for="Combustible	">COMBUSTIBLE:</label>
+    <input type="text" id="Combustible	" name="Combustible	" value=""><br><br>
 
-        <label for="combustible">Combustible:</label>
-        <input type="text" id="combustible" name="combustible"><br><br>
+    <label for="Carroceria">CARROCERÍA:</label>
+    <input type="text" id="Carroceria" name="Carroceria" value=""><br><br>
 
-        <label for="carroceria">Carrocería:</label>
-        <input type="text" id="carroceria" name="carroceria"><br><br>
+    <label for="Fecha_matricula">FECHA MATRÍCULA:</label>
+    <input type="text" id="Fecha_matricula" name="Fecha_matricula" value=""><br><br>
 
-        <label for="fechaMatricula">Fecha Matrícula:</label>
-        <input type="text" id="fechaMatricula" name="fechaMatricula"><br><br>
+    <hr>
 
-        <hr>
+    <h2>DOCUMENTOS REGLAMENTARIOS</h2>
+    <label for="Num_soat">N° SOAT:</label>
+    <input type="text" id="Num_soat" name="Num_soat" value=""><br><br>
 
-        <h2>Documentos Reglamentarios</h2>
-        <label for="numSoat">N° SOAT:</label>
-        <input type="text" id="numSoat" name="numSoat"><br><br>
 
-        <label for="cda">CDA:</label>
-        <input type="text" id="cda" name="cda"><br><br>
+   <label for="Entidad">COMPAÑÍA ASEGURADORA:</label>
+    <input type="text" id="Entidad" name="Entidad" value=""><br><br>
 
-        <label for="fechaVigenciaSoat">Fecha Vigencia SOAT:</label>
-        <input type="text" id="fechaVigenciaSoat" name="fechaVigenciaSoat"><br><br>
 
-        <label for="numTecnomecanica">N° Tecnomecánica:</label>
-        <input type="text" id="numTecnomecanica" name="numTecnomecanica"><br><br>
+            <label for="Fecha_vigencia_soat">FECHA VIGENCIA:</label>
+    <input type="text" id="Fecha_vigencia_soat" name="Fecha_vigencia_soat" value=""><br><br>
 
-        <label for="companiaAseguradora">Compañía Aseguradora:</label>
-        <input type="text" id="companiaAseguradora" name="companiaAseguradora"><br><br>
 
-        <label for="fechaInicioTecnomecanica">Fecha Inicio Tecnomecánica:</label>
-        <input type="text" id="fechaInicioTecnomecanica" name="fechaInicioTecnomecanica"><br><br>
+    
+    <label for="Num_tecnomecanica	">N° TECNOMECÁNICA:</label>
+    <input type="text" id="Num_tecnomecanica	" name="Num_tecnomecanica	" value=""><br><br>
 
-        <label for="fechaVigencia">Fecha Vigencia:</label>
-        <input type="text" id="fechaVigencia" name="fechaVigencia"><br><br>
 
-        <hr>
 
-        <h2>Información General</h2>
-        <label for="propietarioContrato">Propietario Contrato:</label>
-        <input type="text" id="propietarioContrato" name="propietarioContrato"><br><br>
+    <label for="Cda">CDA:</label>
+    <input type="text" id="Cda" name="Cda" value=""><br><br>
 
-        <label for="propietarioLicencia">Propietario Licencia:</label>
-        <input type="text" id="propietarioLicencia" name="propietarioLicencia"><br><br>
 
-        <label for="afiliadoA">Afiliado A:</label>
-        <input type="text" id="afiliadoA" name="afiliadoA"><br><br>
+ 
+    <label for="Fecha_inicio_tecnomecanica">FECHA INICIO:</label>
+    <input type="text" id="Fecha_inicio_tecnomecanica" name="Fecha_inicio_tecnomecanica" value=""><br><br>
 
-        <label for="vigenciaPolizas">Vigencia Pólizas:</label>
-        <input type="text" id="vigenciaPolizas" name="vigenciaPolizas"><br><br>
+    <label for="Fecha_vigencia">FECHA VIGENCIA:</label>
+    <input type="text" id="Fecha_vigencia" name="Fecha_vigencia" value=""><br><br>
 
-        <label for="numTarjetaOperacion">N° Tarjeta Operación:</label>
-        <input type="text" id="numTarjetaOperacion" name="numTarjetaOperacion"><br><br>
 
-        <label for="empresaAfiliacion">Empresa Afiliación:</label>
-        <input type="text" id="empresaAfiliacion" name="empresaAfiliacion"><br><br>
+    
+    <label for="Num_polizas_rcc_rce">N° POLIZAS:</label>
+    <input type="text" id="Num_polizas_rcc_rce" name="Num_polizas_rcc_rce" value=""><br><br>
 
-        <label for="fechaFinalOperacion">Fecha Final Operación:</label>
-        <input type="text" id="fechaFinalOperacion" name="fechaFinalOperacion"><br><br>
 
-        <label for="numPreventiva1">N° Preventiva 1:</label>
-        <input type="text" id="numPreventiva1" name="numPreventiva1"><br><br>
+  <label for="Compania_aseguradora">COMPAÑIA ASEGURADORA:</label>
+    <input type="text" id="Compania_aseguradora" name="Compania_aseguradora" value=""><br><br>
 
-        <label for="cdaPreventiva">CDA Preventiva:</label>
-        <input type="text" id="cdaPreventiva" name="cdaPreventiva"><br><br>
 
-        <label for="fechaInicialPreventiva1">Fecha Inicial Preventiva 1:</label>
-        <input type="text" id="fechaInicialPreventiva1" name="fechaInicialPreventiva1"><br><br>
 
-        <label for="fechaFinalPreventiva1">Fecha Final Preventiva 1:</label>
-        <input type="text" id="fechaFinalPreventiva1" name="fechaFinalPreventiva1"><br><br>
 
-        <button type="submit">Agregar Vehículo</button>
-        <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
 
-    </form>
+
+      <label for="Vigencia_polizas">FECHA VIGENCIAS:</label>
+    <input type="text" id="Vigencia_polizas" name="Vigencia_polizas" value=""><br><br>
+
+
+   <label for="Num_tarjeta_operacion">N° TARJETA OPERACIÓN:</label>
+    <input type="text" id="Num_tarjeta_operacion" name="Num_tarjeta_operacion" value=""><br><br>
+
+
+
+    <label for="Empresa_afiliacion">EMPRESA AFILIACIÓN:</label>
+    <input type="text" id="Empresa_afiliacion" name="Empresa_afiliacion" value=""><br><br>
+
+
+
+
+    <label for="Fecha_final_operacion">FECHA VIGENCIA:</label>
+    <input type="text" id="Fecha_final_operacion" name="Fecha_final_operacion" value=""><br><br>
+
+
+
+
+      <label for="Num_preventiva_1">N° PREVENTIVA:</label>
+    <input type="text" id="Num_preventiva_1" name="Num_preventiva_1" value=""><br><br>
+
+  
+    <label for="Cda_preventiva">CDA PREVENTIVA:</label>
+    <input type="text" id="Cda_preventiva" name="Cda_preventiva" value=""><br><br>
+
+    <label for="Fecha_inicial_preventiva_1">FECHA INICIAL :</label>
+    <input type="text" id="Fecha_inicial_preventiva_1" name="Fecha_inicial_preventiva_1" value=""><br><br>
+
+   <label for="Fecha_final_preventiva_1">FECHA VIGENCIA:</label>
+    <input type="text" id="Fecha_final_preventiva_1" name="Fecha_final_preventiva_1" value=""><br><br>
+
+    <hr>
+
+    <h2>INFORMACIÓN GENERAL</h2>
+    <label for="Propietario_contrato">PROPIETARIO CONTRATO:</label>
+    <input type="text" id="Propietario_contrato" name="Propietario_contrato" value=""><br><br>
+
+    <label for="Propietario_licencia">PROPIETARIO LICENCIA:</label>
+    <input type="text" id="Propietario_licencia" name="Propietario_licencia" value=""><br><br>
+
+    <label for="Afiliado_a">AFILIADO A:</label>
+    <input type="text" id="Afiliado_a" name="Afiliado_a" value=""><br><br>
+
+  
+ 
+
+
+ 
+    <hr>
+
+    <button type="submit">Guardar Cambios</button>
+    <a href="/consulta-vehiculos" class="volver-btn">Volver al Menú</a>
+</form>
+
 </div>
 
 </body>

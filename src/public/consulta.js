@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
            <h2>Documentos reglamentarios</h2>
            <p><strong>N°SOAT:</strong> ${vehiculo.Num_soat}</p>
            
-           <p><strong>COMPANIA ASEGURADORA:</strong> ${vehiculo.Compania_aseguradora}</p>
+           <p><strong>COMPANIA ASEGURADORA:</strong> ${vehiculo.Entidad}</p>
          
            <p><strong>FECHA VIGENCIA :</strong> ${vehiculo.Fecha_vigencia_soat}</p>
            <p><strong>N° TECNOMECANICA:</strong> ${vehiculo.Num_tecnomecanica}</p>

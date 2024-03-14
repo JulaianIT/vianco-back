@@ -296,96 +296,13 @@ app.get('/edicion/:placa', (req, res) => {
 
 app.post('/guardar-edicion', (req, res) => {
     console.log('Datos recibidos en la solicitud:', req.body);
-    const placa = req.body.placa;
-    const base = req.body.base;
-    const conductor = req.body.conductor;
-    const noMovil = req.body.noMovil;
-    // Variables para los campos adicionales del formulario
-    const matricula = req.body.Matricula;
-    const marca = req.body.Marca;
-    const linea = req.body.Linea;
-    const claseVehiculo = req.body.Clase;
-    const modelo = req.body.Modelo;
-    const capacidad = req.body.Capacidad;
-    const propietarioContrato = req.body.PropietarioContrato;
-    const propietarioLicencia = req.body.PropietarioLicencia;
-    const afiliadoA = req.body.AfiliadoA;
-    const numPuestos = req.body.NumeroPuestos;
-    const puertas = req.body.Puertas;
-    const pesoBruto = req.body.PesoBruto;
-    const numEjes = req.body.NumeroEjes;
-    const numChasis = req.body.NumeroChasis;
-    const numMotor = req.body.NumeroMotor;
-    const color = req.body.Color;
-    const cilindraje = req.body.Cilindraje;
-    const combustible = req.body.Combustible;
-    const carroceria = req.body.Carroceria;
-    const fechaMatricula = req.body.FechaMatricula;
-    const numSoat = req.body.NumeroSoat;
-    const entidad = req.body.Entidad;
-    const fechaVigenciaSoat = req.body.VigenciaSoat;
-    const numTecnomecanica = req.body.NumeroTecnomecanica;
-    const cda = req.body.Cda;
-    const fechaInicioTecnomecanica = req.body.FechaInicioTecnomecanica;
-    const fechaVigencia = req.body.FechaVigencia;
-    const numPolizasRccRce = req.body.NumeroPolizas;
-    const companiaAseguradora = req.body.CompaniaAseguradora;
-    const vigenciaPolizas = req.body.VigenciaPolizas;
-    const numTarjetaOperacion = req.body.NumeroTarjetaOperacion;
-    const empresaAfiliacion = req.body.EmpresaAfiliacion;
-    const fechaFinalOperacion = req.body.FechaFinalOperacion;
-    const numPreventiva1 = req.body.NumeroPreventiva1;
-    const cdaPreventiva = req.body.CdaPreventiva;
-    const fechaInicialPreventiva1 = req.body.FechaInicialPreventiva1;
-    const fechaFinalPreventiva1 = req.body.FechaFinalPreventiva1;
+    const { placa, base, conductor, noMovil, ...otrosDatos } = req.body;
 
     console.log('Datos enviados:', placa, base, conductor, noMovil);
 
     connection.query(
-        'UPDATE vehiculos SET base = ?, conductor = ?, no_movil = ?, Matricula = ?, Marca = ?, Linea = ?, Clase_vehiculo = ?, Modelo = ?, Capacidad = ?, Propietario_contrato = ?, Propietario_licencia = ?, Afiliado_a = ?, Num_puestos = ?, Puertas = ?, Peso_bruto = ?, Num_ejes = ?, Numero_chasis = ?, Numero_motor = ?, Color = ?, Cilindraje = ?, Combustible = ?, Carroceria = ?, Fecha_matricula = ?, Num_soat = ?, Entidad = ?, Fecha_vigencia_soat = ?, Num_tecnomecanica = ?, Cda = ?, Fecha_inicio_tecnomecanica = ?, Fecha_vigencia = ?, Num_polizas_rcc_rce = ?, Compania_aseguradora = ?, Vigencia_polizas = ?, Num_tarjeta_operacion = ?, Empresa_afiliacion = ?, Fecha_final_operacion = ?, Num_preventiva_1 = ?, Cda_preventiva = ?, Fecha_inicial_preventiva_1 = ?, Fecha_final_preventiva_1 = ? WHERE placa = ?',
-        [
-            base,
-            conductor,
-            noMovil,
-            matricula,
-            marca,
-            linea,
-            claseVehiculo,
-            modelo,
-            capacidad,
-            propietarioContrato,
-            propietarioLicencia,
-            afiliadoA,
-            numPuestos,
-            puertas,
-            pesoBruto,
-            numEjes,
-            numChasis,
-            numMotor,
-            color,
-            cilindraje,
-            combustible,
-            carroceria,
-            fechaMatricula,
-            numSoat,
-            entidad,
-            fechaVigenciaSoat,
-            numTecnomecanica,
-            cda,
-            fechaInicioTecnomecanica,
-            fechaVigencia,
-            numPolizasRccRce,
-            companiaAseguradora,
-            vigenciaPolizas,
-            numTarjetaOperacion,
-            empresaAfiliacion,
-            fechaFinalOperacion,
-            numPreventiva1,
-            cdaPreventiva,
-            fechaInicialPreventiva1,
-            fechaFinalPreventiva1,
-            placa
-        ],
+        'UPDATE vehiculos SET ? WHERE placa = ?',
+        [otrosDatos, placa],
         (error, results) => {
             if (error) {
                 console.error("Error al guardar los cambios:", error);
@@ -403,6 +320,7 @@ app.post('/guardar-edicion', (req, res) => {
         }
     );
 });
+
 // Ruta para renderizar la página del formulario de agregación de vehículos
 app.get("/agregar-vehiculo", (req, res) => {
     res.render("formulario_agregar");
