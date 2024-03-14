@@ -480,29 +480,25 @@ app.post("/agregar-conductor", (req, res) => {
 
     // Insertar los datos en la base de datos
     connection.query(
-        `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia) 
+        `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen, contacto_emergencia, celular_emergencia) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             formData.placa,
             formData.conductor,
             formData.tipo_documento,
             formData.cedula,
-            formData.fecha_expedicion,
             formData.fecha_nacimiento,
+            formData.fecha_expedicion,
             formData.tipo_sangre,
             formData.direccion,
             formData.celular,
             formData.email,
             formData.categoria,
             formData.fecha_vigencia,
-           
             formData.arl,
             formData.eps,
             formData.seguridad_social,
             formData.fecha_vencimiento_examen,
-          
-           
-       
             formData.contacto_emergencia,
             formData.celular_emergencia
         ],
@@ -584,13 +580,12 @@ app.get("/edicion-contabilidad/:placa", (req, res) => {
 });
 
 
-// Ruta para manejar el formulario de edición de contabilidad
 app.post('/guardar-edicion-contabilidad', (req, res) => {
-    const { placa, actividadEconomica, nombreBanco, tipoCuentaBancaria, numeroCuenta, tipoDocumento, cedula, identificacion, nombre, direccion, celular, email } = req.body;
+    const { placa, NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
     // Consulta SQL para actualizar los datos de contabilidad en la base de datos
     connection.query(
-        "UPDATE contabilidad SET Actividad_economica = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, tipo_documento = ?, Cedula = ?, Identificacion = ?, Nombre = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?",
-        [actividadEconomica, nombreBanco, tipoCuentaBancaria, numeroCuenta, tipoDocumento, cedula, identificacion, nombre, direccion, celular, email, placa],
+        "UPDATE contabilidad SET Actividad_economica = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, tipo_documento = ?, Cedula = ?, Nombres = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?",
+        [ACTIVIDAD_ECONOMICA_CONTRATO, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, TIPO_DE_DOCUMENTO_LICENCIA, Cedula, NOMBRES_LICENCIA, direccion, celular, email, placa],
         (error, results) => {
             if (error) {
                 console.error("Error al actualizar los datos de contabilidad:", error);
@@ -603,6 +598,7 @@ app.post('/guardar-edicion-contabilidad', (req, res) => {
         }
     );
 });
+
 
 
 

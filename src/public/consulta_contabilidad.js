@@ -24,16 +24,42 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(contabilidad => {
             // Mostrar la información de la contabilidad
             infoContabilidadDiv.innerHTML = `
-                 <h2>Información de Contabilidad</h2>
-                <p><strong>PLACA:</strong> ${contabilidad.placa}</p>
-                <p><strong>ACTIVIDAD ECONÓMICA:</strong> ${contabilidad.Actividad_economica}</p>
-                <p><strong>NOMBRE DEL BANCO:</strong> ${contabilidad.Nombre_del_banco}</p>
-                <p><strong>TIPO DE CUENTA BANCARIA:</strong> ${contabilidad.Tipo_de_cuenta_bancaria}</p>
-                <p><strong>NÚMERO DE CUENTA:</strong> ${contabilidad.Numero_de_cuenta}</p>
+                 <h2>Información de licencia</h2>
+                 <p><strong>PLACA:</strong> ${contabilidad.placa}</p>
+                 <p><strong>NOMBRES Y APELLIDOS:</strong> ${contabilidad.NOMBRES_LICENCIA}</p>
+                 <p><strong>TIPO DE DOCUMENTO:</strong> ${contabilidad.TIPO_DE_DOCUMENTO_LICENCIA	}</p>
+                 <p><strong>N° DE DOCUMENTO:</strong> ${contabilidad.NUMERO_DE_DOCUMENTO_LICENCIA	}</p>
+                <hr>
+                <br>
+                <h2>Información de Contrato</h2>
+                           
+                <p><strong>FECHA DE INICIO:</strong> ${contabilidad.FECHA_DE_INICIO_CONTRATO}</p>
+                <p><strong>FECHA FINAL:</strong> ${contabilidad.FECHA_FINAL}</p>
+                <p><strong>MOTIVO DEL RETIRO:</strong> ${contabilidad.MOTIVO_RETIRO}</p>
+                <p><strong>NOMBRES Y APELLIDOS:</strong> ${contabilidad.NOMBRES_CONTRATO}</p>
+                <p><strong>TIPO DE DOCUMENTO:</strong> ${contabilidad.TIPO_DE_DOCUMENTO_CONTRATO	}</p>
+                <p><strong>NUMERO DE DOCUMENTO:</strong> ${contabilidad.NUMERO_DE_DOCUMENTO_CONTRATO}</p>
+                <p><strong>DIRECCION:</strong> ${contabilidad.DIRECCION_CONTRATO}</p>
+                <p><strong>CELULAR:</strong> ${contabilidad.CELULAR_CONTRATO}</p>
+                <p><strong>EMAIL:</strong> ${contabilidad.EMAIL_CONTRATO}</p>
+                <p><strong>ACTIVIDAD ECONOMICA:</strong> ${contabilidad.ACTIVIDAD_ECONOMICA_CONTRATO}</p>
+                <p><strong>VALOR ADMINISTRACION:</strong> ${contabilidad.VALOR_ADMINISTRACION}</p>
+
+
+
+
+
+                <hr>
+                <br>
+                <h2>Cuenta bancaria</h2>
+
+                <p><strong>NOMBRES Y APELLIDOS:</strong> ${contabilidad.Nombre}</p>
                 <p><strong>TIPO DE DOCUMENTO:</strong> ${contabilidad.tipo_documento}</p>
-                <p><strong>CÉDULA:</strong> ${contabilidad.Cedula}</p>
-                <p><strong>IDENTIFICACIÓN:</strong> ${contabilidad.Identificacion}</p>
-                <p><strong>NOMBRE:</strong> ${contabilidad.Nombre}</p>
+                <p><strong>N° DE DOCUMENTO:</strong> ${contabilidad.Cedula}</p>
+
+                <p><strong> BANCO:</strong> ${contabilidad.Nombre_del_banco}</p>
+                <p><strong>TIPO DE CUENTA BANCARIA:</strong> ${contabilidad.Tipo_de_cuenta_bancaria}</p>
+                <p><strong>N° CUENTA:</strong> ${contabilidad.Numero_de_cuenta}</p>
                 <p><strong>DIRECCIÓN:</strong> ${contabilidad.Direccion}</p>
                 <p><strong>CELULAR:</strong> ${contabilidad.Celular}</p>
                 <p><strong>EMAIL:</strong> ${contabilidad.Email}</p>
