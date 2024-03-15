@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
              // Asigna conductor.foto a dynamicFotoURL
 // Asigna conductor.foto a dynamicFotoURL
 // Asigna conductor.foto a dynamicFotoURL
-const dynamicFotoURL = conductor.foto ? conductor.foto.replaceAll('src\\public\\uploads\\', '\\uploads\\') : '';
+const dynamicFotoURL = conductor.foto ? conductor.foto.replaceAll('src/public/uploads/', '/uploads/') : '';
 
 
             // Mostrar la información del conductor
