@@ -4,6 +4,8 @@ const session = require("express-session");
 const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
 const multer = require('multer');
+const upload = multer({ dest: 'src/public/uploads/' });
+
 
 // Importar el manejador de webhook
 const webhookHandler = require("./webhook/webhookHandler");
@@ -293,17 +295,18 @@ app.get('/edicion/:placa', (req, res) => {
     });
 });
 
+app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
+    if (!req.file) {    // Si no se subió ningún archivo, maneja el error aquí
+        return res.status(400).send('No se seleccionó ninguna foto.');
+    }
+    const fotoPath = req.file.path;
 
-
-app.post('/guardar-edicion', (req, res) => {
-    console.log('Datos recibidos en la solicitud:', req.body);
-    const { placa, base, conductor, noMovil, ...otrosDatos } = req.body;
-
-    console.log('Datos enviados:', placa, base, conductor, noMovil);
+    // Obtener otros datos del vehiculo desde el cuerpo de la solicitud
+    const { placa, Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a } = req.body;
 
     connection.query(
-        'UPDATE vehiculos SET ? WHERE placa = ?',
-        [otrosDatos, placa],
+        'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, matricula=?, Marca=?, Linea=?, Modelo=?, Numero_motor=?, Numero_chasis=?, Clase_vehiculo=?, Num_puestos=?, Puertas=?, Num_ejes=?, Cilindraje=?, Color=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, foto_vehiculo=?  WHERE placa=?',
+        [Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a, fotoPath, placa],
         (error, results) => {
             if (error) {
                 console.error("Error al guardar los cambios:", error);
@@ -321,6 +324,7 @@ app.post('/guardar-edicion', (req, res) => {
         }
     );
 });
+
 
 // Ruta para renderizar la página del formulario de agregación de vehículos
 app.get("/agregar-vehiculo", (req, res) => {
@@ -413,7 +417,6 @@ app.get('/consulta-conductores', (req, res) => {
 });
 
 
-const upload = multer({ dest: 'src/public/uploads/' });
 
 // Middleware para modificar la URL de la foto antes de guardarla en la base de datos
 app.post('/upload', upload.single('foto'), (req, res, next) => {

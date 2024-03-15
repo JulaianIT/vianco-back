@@ -157,7 +157,7 @@
     <div class="container">
         <div class="heading"><h1>VEHICULO :{{ vehiculo.Placa }}</h1></div>
 
-<form action="/guardar-edicion" method="POST">
+<form action="/guardar-edicion" method="POST"  enctype="multipart/form-data">
 
         <h2>Información Técnica</h2>
         <label for="placa">Placa:</label>
@@ -302,7 +302,10 @@
 
 
       
-    
+                <label for="foto_vehiculo">Foto del Conductor:</label>
+<input type="file" id="foto_vehiculo" name="foto_vehiculo" accept="image/*">
+
+
   
      
         <button type="submit">Guardar Cambios</button>
