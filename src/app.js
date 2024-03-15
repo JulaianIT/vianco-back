@@ -294,19 +294,35 @@ app.get('/edicion/:placa', (req, res) => {
         res.render('edicion', { vehiculo: results[0] }); // Pasar los datos del vehículo a la vista
     });
 });
-
 app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
-    // Obtener otros datos del vehiculo desde el cuerpo de la solicitud
+    let fotoPath = ''; // Inicializar la variable para la ruta de la foto
+
+    // Verificar si se subió una nueva foto
+    if (req.file) {
+        fotoPath = req.file.path; // Establecer la ruta de la nueva foto
+    }
+
+    // Obtener otros datos del vehículo desde el cuerpo de la solicitud
     const { placa, Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a } = req.body;
 
-    let fotoPath = null;
+    // Construir la consulta SQL para la actualización
+    let sqlQuery = '';
+    let queryParams = [];
+
+    // Verificar si se subió una nueva foto
     if (req.file) {
-        fotoPath = req.file.path;
+        // Si se subió una nueva foto, actualizar la foto en la base de datos
+        sqlQuery = 'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, matricula=?, Marca=?, Linea=?, Modelo=?, Numero_motor=?, Numero_chasis=?, Clase_vehiculo=?, Num_puestos=?, Puertas=?, Num_ejes=?, Cilindraje=?, Color=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, foto_vehiculo=? WHERE placa=?';
+        queryParams = [Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a, fotoPath, placa];
+    } else {
+        // Si no se subió una nueva foto, mantener la foto existente en la base de datos
+        sqlQuery = 'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, matricula=?, Marca=?, Linea=?, Modelo=?, Numero_motor=?, Numero_chasis=?, Clase_vehiculo=?, Num_puestos=?, Puertas=?, Num_ejes=?, Cilindraje=?, Color=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=? WHERE placa=?';
+        queryParams = [Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a, placa];
     }
 
     connection.query(
-        'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, matricula=?, Marca=?, Linea=?, Modelo=?, Numero_motor=?, Numero_chasis=?, Clase_vehiculo=?, Num_puestos=?, Puertas=?, Num_ejes=?, Cilindraje=?, Color=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, foto_vehiculo=?  WHERE placa=?',
-        [Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a, fotoPath, placa],
+        sqlQuery,
+        queryParams,
         (error, results) => {
             if (error) {
                 console.error("Error al guardar los cambios:", error);
@@ -324,6 +340,7 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
         }
     );
 });
+
 
 
 // Ruta para renderizar la página del formulario de agregación de vehículos
@@ -507,39 +524,52 @@ app.get('/edicionC/:placa', (req, res) => {
     res.render('edicionC', { conductor: results[0] }); // Pasar los datos del conductor a la vista
   });
 });
-
 // Manejador de la solicitud POST para guardar la edición del conductor en el servidor
 app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
-    if (!req.file) {
-      // Si no se subió ningún archivo, maneja el error aquí
-      return res.status(400).send('No se seleccionó ninguna foto.');
+    let fotoPath = ''; // Inicializar la variable para la ruta de la foto
+
+    // Verificar si se subió una nueva foto
+    if (req.file) {
+        fotoPath = req.file.path; // Establecer la ruta de la nueva foto
     }
-    const fotoPath = req.file.path;
-  
+
     // Obtener otros datos del conductor desde el cuerpo de la solicitud
     const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
-  
+
+    // Construir la consulta SQL para la actualización
+    let sqlQuery = '';
+    let queryParams = [];
+
+    // Verificar si se subió una nueva foto
+    if (req.file) {
+        // Si se subió una nueva foto, actualizar la foto en la base de datos
+        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoPath, placa];
+    } else {
+        // Si no se subió una nueva foto, mantener la foto existente en la base de datos
+        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, placa];
+    }
+
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(
-      'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?',
-      [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoPath, placa],
-      (error, results) => {
+    connection.query(sqlQuery, queryParams, (error, results) => {
         if (error) {
-          console.error('Error al guardar los cambios:', error);
-          res.status(500).send('Error al guardar los cambios');
-          return;
+            console.error('Error al guardar los cambios:', error);
+            res.status(500).send('Error al guardar los cambios');
+            return;
         }
         if (results.affectedRows === 0) {
-          console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
-          res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
-          return;
+            console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
+            res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
+            return;
         }
         console.log('Cambios guardados correctamente en la base de datos');
         // Redirigir al usuario de vuelta a la página de consulta del conductor
         res.redirect(`/consulta-conductores?placa=${placa}`);
-      }
-    );
-  });
+    });
+});
+
+
   
 // Ruta para renderizar la página del formulario de agregar conductor
 app.get('/agregar-conductor', (req, res) => {
