@@ -33,8 +33,8 @@ const dynamicFotoURL = conductor.foto ? conductor.foto.replaceAll('src/public/up
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
                 <h2>Información del Conductor</h2>
-                <div class="conductor-image">
-                    ${conductor.foto ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor">` : ''}
+                <div class="conductor-image" >
+                    ${conductor.foto ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
                 </div>
                 
                 <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             infoVehiculoDiv.innerHTML = `
             <h2>Información Tecnica</h2>
             <div class="conductor-image">
-            ${vehiculo.foto_vehiculo ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor">` : ''}
+            ${vehiculo.foto_vehiculo ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor"style="width: 100%; height: 100%; object-fit: cover;">` : ''}
         </div>
            <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
            <p><strong>BASE:</strong> ${vehiculo.Base}</p>
