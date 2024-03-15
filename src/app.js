@@ -4,7 +4,10 @@ const session = require("express-session");
 const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
 const multer = require('multer');
-const upload = multer({ dest: 'src/public/uploads/' });
+const path = require('path');
+const upload = multer({ 
+    dest: path.join(__dirname, 'src', 'public', 'uploads') 
+});
 
 
 // Importar el manejador de webhook
