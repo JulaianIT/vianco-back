@@ -296,13 +296,13 @@ app.get('/edicion/:placa', (req, res) => {
 });
 
 app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
-    if (!req.file) {    // Si no se subió ningún archivo, maneja el error aquí
-        return res.status(400).send('No se seleccionó ninguna foto.');
-    }
-    const fotoPath = req.file.path;
-
     // Obtener otros datos del vehiculo desde el cuerpo de la solicitud
     const { placa, Base, Conductor, No_movil, matricula, Marca, Linea, Modelo, Numero_motor, Numero_chasis, Clase_vehiculo, Num_puestos, Puertas, Num_ejes, Cilindraje, Color, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, Propietario_contrato, Propietario_licencia, Afiliado_a } = req.body;
+
+    let fotoPath = null;
+    if (req.file) {
+        fotoPath = req.file.path;
+    }
 
     connection.query(
         'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, matricula=?, Marca=?, Linea=?, Modelo=?, Numero_motor=?, Numero_chasis=?, Clase_vehiculo=?, Num_puestos=?, Puertas=?, Num_ejes=?, Cilindraje=?, Color=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, foto_vehiculo=?  WHERE placa=?',
@@ -510,37 +510,37 @@ app.get('/edicionC/:placa', (req, res) => {
 
 // Manejador de la solicitud POST para guardar la edición del conductor en el servidor
 app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
-  if (!req.file) {
-    // Si no se subió ningún archivo, maneja el error aquí
-    return res.status(400).send('No se seleccionó ninguna foto.');
-  }
-  const fotoPath = req.file.path;
-
-  // Obtener otros datos del conductor desde el cuerpo de la solicitud
-  const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
-
-  // Realizar la actualización en la base de datos con los datos recibidos
-  connection.query(
-    'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?',
-    [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoPath, placa],
-    (error, results) => {
-      if (error) {
-        console.error('Error al guardar los cambios:', error);
-        res.status(500).send('Error al guardar los cambios');
-        return;
-      }
-      if (results.affectedRows === 0) {
-        console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
-        res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
-        return;
-      }
-      console.log('Cambios guardados correctamente en la base de datos');
-      // Redirigir al usuario de vuelta a la página de consulta del conductor
-      res.redirect(`/consulta-conductores?placa=${placa}`);
+    if (!req.file) {
+      // Si no se subió ningún archivo, maneja el error aquí
+      return res.status(400).send('No se seleccionó ninguna foto.');
     }
-  );
-});
-
+    const fotoPath = req.file.path;
+  
+    // Obtener otros datos del conductor desde el cuerpo de la solicitud
+    const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
+  
+    // Realizar la actualización en la base de datos con los datos recibidos
+    connection.query(
+      'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?',
+      [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoPath, placa],
+      (error, results) => {
+        if (error) {
+          console.error('Error al guardar los cambios:', error);
+          res.status(500).send('Error al guardar los cambios');
+          return;
+        }
+        if (results.affectedRows === 0) {
+          console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
+          res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
+          return;
+        }
+        console.log('Cambios guardados correctamente en la base de datos');
+        // Redirigir al usuario de vuelta a la página de consulta del conductor
+        res.redirect(`/consulta-conductores?placa=${placa}`);
+      }
+    );
+  });
+  
 // Ruta para renderizar la página del formulario de agregar conductor
 app.get('/agregar-conductor', (req, res) => {
   // Renderiza el formulario para agregar un nuevo conductor
