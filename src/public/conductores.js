@@ -22,12 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(conductor => {
-            console.log(conductor); // Agregado para verificar los datos recibidos del servidor
-            
-            // Verificar si la propiedad 'foto' existe en el objeto 'conductor'
-            const fotoURL = conductor.foto ? conductor.foto : 'ruta_a_imagen_por_defecto';
+            console.log(conductor); // Para verificar los datos recibidos del servidor
         
-        
+             // Asigna conductor.foto a dynamicFotoURL
+    const dynamicFotoURL = conductor.foto;
+
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
                 <h2>Información del Conductor</h2>
