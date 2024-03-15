@@ -146,7 +146,7 @@
 
       <div class="container">
         <div class="heading"><h1>Agregar Conductor</h1></div>
-        <form action="/agregar-conductor" method="POST">
+<form action="/agregar-conductor" method="POST" enctype="multipart/form-data">
             <label for="placa">Placa:</label>
             <input type="text" id="placa" name="placa"><br><br>
 
@@ -206,6 +206,12 @@
 
             <label for="celular_emergencia">Celular de Emergencia:</label>
             <input type="text" id="celular_emergencia" name="celular_emergencia"><br><br>
+
+            <label for="foto">Foto del Conductor:</label>
+<input type="file" id="foto" name="foto" accept="image/*">
+
+
+
 
             <button type="submit">Agregar Conductor</button>
             <a href="/consulta-conductores" class="volver-btn">Volver al Menú</a>

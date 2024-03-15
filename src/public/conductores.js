@@ -23,10 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(conductor => {
             console.log(conductor); // Agregado para verificar los datos recibidos del servidor
-
+            
+            // Verificar si la propiedad 'foto' existe en el objeto 'conductor'
+            const fotoURL = conductor.foto ? conductor.foto : 'ruta_a_imagen_por_defecto';
+        
+            // Remover la parte estática 'src\public\' de la URL de la foto si existe
+            const dynamicFotoURL = fotoURL ? fotoURL.replace('src\\public\\', '') : '';
+        
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
                 <h2>Información del Conductor</h2>
+                <div class="conductor-image">
+                    ${conductor.foto ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor">` : ''}
+                </div>
+                
                 <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
                 <p><strong>TIPO DE DOCUMENTO :</strong> ${conductor.tipo_documento}</p>
                 <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
@@ -51,13 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>TELEFONO EN CASO DE EMERGENCIA:</strong> ${conductor.celular_emergencia}</p>
                 <!-- Agrega más campos de información del conductor aquí -->
                 <button id="editar-conductor-btn" class="btn editar-btn">Editar Información</button>
-
             `;
             
             // Agregar botón de editar con un id único
             infoConductoresDiv.innerHTML += `
                 <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
-
                 <a href="/" class="volver-btn">Volver al Menú</a>
             `;
 

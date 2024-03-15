@@ -145,7 +145,7 @@
     <div class="container">
         <h1>Editar Conductor - {{ conductor.conductor }}</h1>
 
-        <form action="/guardar-edicionC" method="POST">
+<form action="/guardar-edicionC" method="POST" enctype="multipart/form-data">
             <label for="placa">Placa:</label>
             <input type="text" id="placa" name="placa" value="{{ conductor.placa }}" readonly>
             
@@ -211,6 +211,11 @@
             <input type="text" id="celular_emergencia" name="celular_emergencia" value="{{ conductor.celular_emergencia }}">
 
             <!-- Agrega más campos de edición según sea necesario -->
+            <label for="foto">Foto del Conductor:</label>
+<input type="file" id="foto" name="foto" accept="image/*">
+
+
+
 
             <button type="submit">Guardar Cambios</button>
             <a href="/consulta-conductores" class="volver-btn">Volver al Menú</a>

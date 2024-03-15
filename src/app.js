@@ -3,6 +3,7 @@ const express = require("express");
 const session = require("express-session");
 const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
+const multer = require('multer');
 
 // Importar el manejador de webhook
 const webhookHandler = require("./webhook/webhookHandler");
@@ -377,28 +378,21 @@ app.post("/agregar-vehiculo", (req, res) => {
 
 
 
-
-
-
-
-
-
-
+app.use(express.static('public'));
 // Ruta para la página de consulta de conductores
-app.get("/consulta-conductores", (req, res) => {
+app.get('/consulta-conductores', (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query("SELECT placa FROM conductores", (error, results) => {
-        if (error) {
-            console.error("Error al obtener las placas:", error);
-            res.status(500).send("Error al obtener las placas");
-            return;
-        }
-        // Renderizar la vista de consulta de conductores con los datos de las placas
-        res.render("conductores", { placas: results.map(result => result.placa) }); // Utiliza la plantilla "conductores"
+    connection.query('SELECT placa FROM conductores', (error, results) => {
+      if (error) {
+        console.error('Error al obtener las placas:', error);
+        res.status(500).send('Error al obtener las placas');
+        return;
+      }
+      // Renderizar la vista de consulta de conductores con los datos de las placas
+      res.render('conductores', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
     });
-});
-
-app.post("/consulta-conductores", (req, res) => {
+  });
+  app.post("/consulta-conductores", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
     connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
@@ -418,101 +412,136 @@ app.post("/consulta-conductores", (req, res) => {
     });
 });
 
-// Ruta para la página de edición del conductor en el servidor
+
+const upload = multer({ dest: 'src/public/uploads/' });
+
+// Middleware para modificar la URL de la foto antes de guardarla en la base de datos
+app.post('/upload', upload.single('foto'), (req, res, next) => {
+    if (req.file && req.file.path) {
+        // Remueve la parte estática 'src\public\' de la ruta del archivo cargado
+        const dynamicFilePath = req.file.path.replace('src\\public\\', '');
+        console.log('Ruta del archivo modificada:', dynamicFilePath);
+
+        // Ahora puedes guardar dynamicFilePath en tu base de datos
+        // código para guardar en la base de datos ...
+        
+        res.send('Archivo subido correctamente');
+    } else {
+        res.status(400).send('No se recibió ningún archivo');
+    }
+});
+
+// Manejador de ruta para procesar el formulario y agregar un nuevo conductor a la base de datos
+app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
+  // Verificar si se subió una foto
+  if (!req.file) {
+    // Si no se subió ninguna foto, manejar el error aquí
+    return res.status(400).send('No se seleccionó ninguna foto.');
+  }
+
+  // Aquí puedes acceder al archivo subido a través de req.file
+  const fotoPath = req.file.path;
+
+  // Obtener todos los campos del formulario incluida la información de la foto
+  const formData = { ...req.body, foto: fotoPath };
+
+  // Insertar los datos en la base de datos
+  connection.query(
+    `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen, contacto_emergencia, celular_emergencia, foto) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      formData.placa,
+      formData.conductor,
+      formData.tipo_documento,
+      formData.cedula,
+      formData.fecha_nacimiento,
+      formData.fecha_expedicion,
+      formData.tipo_sangre,
+      formData.direccion,
+      formData.celular,
+      formData.email,
+      formData.categoria,
+      formData.fecha_vigencia,
+      formData.arl,
+      formData.eps,
+      formData.seguridad_social,
+      formData.fecha_vencimiento_examen,
+      formData.contacto_emergencia,
+      formData.celular_emergencia,
+      formData.foto
+    ],
+    (error, results) => {
+      if (error) {
+        console.error('Error al agregar el conductor:', error);
+        res.status(500).send('Error al agregar el conductor');
+        return;
+      }
+      console.log('Conductor agregado correctamente a la base de datos');
+      // Redirigir al usuario de vuelta a la página de consulta de conductores
+      res.redirect(`/consulta-conductores`);
+    }
+  );
+});
+
+
+
+// Ruta para mostrar la página de edición de conductor
 app.get('/edicionC/:placa', (req, res) => {
-    const placa = req.params.placa;
-    
-    // Realizar una consulta a la base de datos para obtener los datos del conductor
-    connection.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
-        if (error) {
-            console.error("Error al obtener los datos del conductor:", error);
-            res.status(500).send("Error al obtener los datos del conductor");
-            return;
-        }
-
-        if (results.length === 0) {
-            console.error("No se encontró ningún conductor con la placa proporcionada:", placa);
-            res.status(404).send("No se encontró ningún conductor con la placa proporcionada");
-            return;
-        }
-
-        // Renderizar la vista de edición con los datos del conductor
-        res.render('edicionC', { conductor: results[0] }); // Pasar los datos del conductor a la vista
-    });
+  const placa = req.params.placa;
+  // Realizar una consulta a la base de datos para obtener los datos del conductor
+  connection.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
+    if (error) {
+      console.error('Error al obtener los datos del conductor:', error);
+      res.status(500).send('Error al obtener los datos del conductor');
+      return;
+    }
+    if (results.length === 0) {
+      console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
+      res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
+      return;
+    }
+    // Renderizar la vista de edición con los datos del conductor
+    res.render('edicionC', { conductor: results[0] }); // Pasar los datos del conductor a la vista
+  });
 });
 
 // Manejador de la solicitud POST para guardar la edición del conductor en el servidor
-app.post('/guardar-edicionC', (req, res) => {
-    const placa = req.body.placa;
-    // Obtener los demás datos del conductor desde el cuerpo de la solicitud
-    const { conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
+app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
+  if (!req.file) {
+    // Si no se subió ningún archivo, maneja el error aquí
+    return res.status(400).send('No se seleccionó ninguna foto.');
+  }
+  const fotoPath = req.file.path;
 
-    // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query('UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?', [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, placa], (error, results) => {
-        if (error) {
-            console.error("Error al guardar los cambios:", error);
-            res.status(500).send("Error al guardar los cambios");
-            return;
-        }
-        if (results.affectedRows === 0) {
-            console.error("No se encontró ningún conductor con la placa proporcionada:", placa);
-            res.status(404).send("No se encontró ningún conductor con la placa proporcionada");
-            return;
-        }
-        console.log("Cambios guardados correctamente en la base de datos");
-        // Redirigir al usuario de vuelta a la página de consulta del conductor
-        res.redirect(`/consulta-conductores?placa=${placa}`);
-    });
+  // Obtener otros datos del conductor desde el cuerpo de la solicitud
+  const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
+
+  // Realizar la actualización en la base de datos con los datos recibidos
+  connection.query(
+    'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?',
+    [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoPath, placa],
+    (error, results) => {
+      if (error) {
+        console.error('Error al guardar los cambios:', error);
+        res.status(500).send('Error al guardar los cambios');
+        return;
+      }
+      if (results.affectedRows === 0) {
+        console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
+        res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
+        return;
+      }
+      console.log('Cambios guardados correctamente en la base de datos');
+      // Redirigir al usuario de vuelta a la página de consulta del conductor
+      res.redirect(`/consulta-conductores?placa=${placa}`);
+    }
+  );
 });
 
-// Ruta para manejar los datos enviados desde el formulario y agregar un nuevo conductor a la base de datos
 // Ruta para renderizar la página del formulario de agregar conductor
-app.get("/agregar-conductor", (req, res) => {
-    // Renderiza el formulario para agregar un nuevo conductor
-    res.render("formulario_agregar_conductor");
-});
-
-
-// Ruta para manejar los datos enviados desde el formulario y agregar un nuevo conductor a la base de datos
-app.post("/agregar-conductor", (req, res) => {
-    // Obtener todos los campos del formulario
-    const formData = req.body;
-
-    // Insertar los datos en la base de datos
-    connection.query(
-        `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen, contacto_emergencia, celular_emergencia) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-            formData.placa,
-            formData.conductor,
-            formData.tipo_documento,
-            formData.cedula,
-            formData.fecha_nacimiento,
-            formData.fecha_expedicion,
-            formData.tipo_sangre,
-            formData.direccion,
-            formData.celular,
-            formData.email,
-            formData.categoria,
-            formData.fecha_vigencia,
-            formData.arl,
-            formData.eps,
-            formData.seguridad_social,
-            formData.fecha_vencimiento_examen,
-            formData.contacto_emergencia,
-            formData.celular_emergencia
-        ],
-        (error, results) => {
-            if (error) {
-                console.error("Error al agregar el conductor:", error);
-                res.status(500).send("Error al agregar el conductor");
-                return;
-            }
-            console.log("Conductor agregado correctamente a la base de datos");
-            // Redirigir al usuario de vuelta a la página de consulta de conductores
-            res.redirect(`/consulta-conductores`);
-        }
-    );
+app.get('/agregar-conductor', (req, res) => {
+  // Renderiza el formulario para agregar un nuevo conductor
+  res.render('formulario_agregar_conductor');
 });
 
 //consulta contabilidad 
@@ -528,6 +557,16 @@ app.get("/consulta-contabilidad", (req, res) => {
         res.render("consulta_contabilidad", { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
     });
 });
+
+
+
+
+
+
+
+
+
+
 
 //consulta contabilidad 
 app.post("/consulta-contabilidad", (req, res) => {
