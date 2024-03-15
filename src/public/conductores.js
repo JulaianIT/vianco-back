@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Verificar si la propiedad 'foto' existe en el objeto 'conductor'
             const fotoURL = conductor.foto ? conductor.foto : 'ruta_a_imagen_por_defecto';
         
-            // Remover la parte estática 'src\public\' de la URL de la foto si existe
-            const dynamicFotoURL = fotoURL ? fotoURL.replace('src\\public\\', '') : '';
         
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
