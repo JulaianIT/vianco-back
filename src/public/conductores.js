@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(conductor); // Para verificar los datos recibidos del servidor
         
              // Asigna conductor.foto a dynamicFotoURL
-             const dynamicFotoURL = conductor.foto ? conductor.foto.replace('src\\public\\uploads\\', '\\uploads\\') : '';
+// Asigna conductor.foto a dynamicFotoURL
+// Asigna conductor.foto a dynamicFotoURL
+const dynamicFotoURL = conductor.foto ? conductor.foto.replaceAll('src\\public\\uploads\\', '\\uploads\\') : '';
 
 
             // Mostrar la información del conductor
