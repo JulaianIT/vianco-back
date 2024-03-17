@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fotoURL = vehiculo.fotoURL; // Suponiendo que recibes la URL base64 del servidor
         
             infoVehiculoDiv.innerHTML = `
-            <h2>Información general.</h2>
+            <h2>INFORMACION</h2>
             <div class="conductor-image">
                 <img src="${fotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
