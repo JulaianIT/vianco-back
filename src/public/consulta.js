@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
         const placaSeleccionada = document.getElementById('placa').value;
-        const infoVehiculoDiv = document.getElementById('info-vehiculo'); // Mover la inicialización aquí
+        const infoVehiculoDiv = document.getElementById('info-vehiculo');
 
         // Enviar la solicitud POST al servidor
         fetch('/consulta-vehiculos', {
@@ -21,16 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return response.json();
         })
-
+        
         .then(vehiculo => {
             // Mostrar la información del vehículo
-            const dynamicFotoURL = vehiculo.foto_vehiculo ? vehiculo.foto_vehiculo.replaceAll('src/public/uploads/', '/uploads/') : '';
-
+            const fotoURL = vehiculo.fotoURL; // Suponiendo que recibes la URL base64 del servidor
+        
             infoVehiculoDiv.innerHTML = `
             <h2>Información general.</h2>
             <div class="conductor-image">
-            ${vehiculo.foto_vehiculo ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor"style="width: 100%; height: 100%; object-fit: cover;">` : ''}
-        </div>
+                <img src="${fotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
            <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
            <p><strong>BASE:</strong> ${vehiculo.Base}</p>
            <p><strong>CONDUCTOR:</strong> ${vehiculo.Conductor}</p>

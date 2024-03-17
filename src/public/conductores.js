@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
         const placaSeleccionada = document.getElementById('placa').value;
-        const infoConductoresDiv = document.getElementById('info-conductores'); // Corregido el nombre del div
+        const infoConductoresDiv = document.getElementById('info-conductores');
 
         // Enviar la solicitud POST al servidor
         fetch('/consulta-conductores', {
@@ -22,21 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(conductor => {
-            console.log(conductor); // Para verificar los datos recibidos del servidor
-        
-             // Asigna conductor.foto a dynamicFotoURL
-// Asigna conductor.foto a dynamicFotoURL
-// Asigna conductor.foto a dynamicFotoURL
-const dynamicFotoURL = conductor.foto ? conductor.foto.replaceAll('src/public/uploads/', '/uploads/') : '';
-
-
+            const fotoURL = conductor.fotoURL; // Corrección: usar 'fotoURL' en lugar de 'fotoURNL'
+            
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
                 <h2>Información del Conductor</h2>
-                <div class="conductor-image" >
-                    ${conductor.foto ? `<img src="${dynamicFotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
+                <div class="conductor-image">
+                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                
                 <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
                 <p><strong>TIPO DE DOCUMENTO :</strong> ${conductor.tipo_documento}</p>
                 <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
