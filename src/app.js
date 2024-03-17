@@ -5,6 +5,10 @@ const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
 const multer = require('multer');
 const upload = multer();
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 
 
@@ -750,8 +754,80 @@ app.post("/agregar-contabilidad", (req, res) => {
 
 
 
+// Servir el formulario Handlebars
+app.get('/formulario', (req, res) => {
+    res.render('recepciones'); // Esto renderizará el archivo recepciones.hbs desde la carpeta views
+});
 
 
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Modifica la función post para enviar los datos al Google Sheet
+app.post('/procesar_formulario', async (req, res) => {
+    const { cliente, costo, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor } = req.body;
+
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwJsR7Thyn0Kq1dKOF87W080FGrUmvwsquVd1NluDpxo_oU0kqGs9XalUD4VAepSx2G/exec', {
+            method: 'POST',
+            body: new URLSearchParams(req.body),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        if (response.ok) {
+            console.log('Datos enviados correctamente al Google Sheet');
+
+            // Generar el PDF
+            const doc = new PDFDocument();
+            doc.pipe(fs.createWriteStream('formulario.pdf'));
+
+            // Establecer el tamaño de la fuente y el color del texto
+            doc.fontSize(12);
+            doc.fillColor('black');
+
+            // Agregar texto con diferentes estilos y colores
+            doc.font('Helvetica-Bold').text(`Cliente: ${cliente}`).moveDown();
+            doc.font('Helvetica').text(`Costo: ${costo}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('blue').text(`Fecha: ${fecha}`).moveDown();
+            doc.font('Helvetica').fillColor('green').text(`Hora: ${hora}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('red').text(`Nombre del Pasajero: ${nombre_pasajero}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('red').text(`Nombre del Pasajero: ${vuelo}`).moveDown();
+            // Agregar una línea divisoria
+            doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+
+            doc.end();
+
+            // Una vez que el PDF esté generado, envíalo como una descarga directa al cliente
+            res.download('formulario.pdf', 'formulario.pdf', (err) => {
+                if (err) {
+                    console.error('Error al descargar el PDF:', err);
+                    res.status(500).send('Error al descargar el PDF');
+                } else {
+                    console.log('PDF generado y descargado correctamente');
+                }
+            });
+        } else {
+            console.error('Error al enviar los datos al Google Sheet:', response.statusText);
+            throw new Error('Error al enviar los datos al Google Sheet');
+        }
+    } catch (error) {
+        console.error('Error en el procesamiento del formulario:', error);
+        res.status(500).send('Error en el procesamiento del formulario');
+    }
+});
+
+
+app.get('/descargar_pdf', (req, res) => {
+    // Ruta para descargar el PDF generado
+    res.download('formulario.pdf', 'formulario.pdf', (err) => {
+        if (err) {
+            // Manejar el error si ocurre
+            console.error('Error al descargar el PDF:', err);
+            res.status(500).send('Error al descargar el PDF');
+        }
+    });
+});
 
 
 
