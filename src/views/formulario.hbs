@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Formulario</title>
+    <style>
+        #vigilado {
+            float: right;
+            position: relative;
+            top: 74px;
+            right: 4%;
+        }
+        #logo {
+            position: relative;
+            left: 3%;
+        }
+        main {
+            width: 100%;
+            padding: 20px;
+            margin: auto;
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <img id="membrete" src="https://vianco-back-svdl.onrender.com/imagenes/menbrete.png"/>
+    <img id="logo" src="https://vianco-back-svdl.onrender.com/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="https://vianco-back-svdl.onrender.com/imagenes/vigilado.png"/>
+    <hr>
+</header>
+
+
+
+
+    <main>
+        <h1>Detalle del Formulario</h1>
+        <p>CLIENTE: {{datosFormulario.cliente}}</p>
+        <p>FECHA: {{datosFormulario.fecha}}</p>
+        <p>HORA: {{datosFormulario.hora}}</p>
+        <p>PASAJERO: {{datosFormulario.nombre_pasajero}}</p>
+        <p>VUELO: {{datosFormulario.vuelo}}</p>
+        <p>CONDUCTOR ASIGNADO: {{datosFormulario.conductor}}</p>
+        <p>PLACA: {{datosFormulario.placa}}</p>
+        <!-- Agregar más campos del formulario según sea necesario -->
+        <a href="/descargar_pdf?cliente={{datosFormulario.cliente}}&costo={{datosFormulario.costo}}&fecha={{datosFormulario.fecha}}&hora={{datosFormulario.hora}}">Descargar PDF</a>
+    </main>
+</body>
+</html>

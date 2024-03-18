@@ -9,7 +9,17 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const pdf = require('html-pdf');
 
+function htmlToPdf(html, options, callback) {
+    pdf.create(html, options).toBuffer((err, buffer) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, buffer);
+        }
+    });
+}
 
 
 // Importar el manejador de webhook
@@ -23,11 +33,14 @@ const app = express();
 
 app.set("port", process.env.PORT || 3000);
 
+// Configuración de Handlebars
 app.set("views", __dirname + "/views");
 app.engine(".hbs", engine({
     extname: ".hbs"
 }));
 app.set("view engine", "hbs");
+app.use(express.static(__dirname + '/public'));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -806,12 +819,14 @@ app.post('/obtener_conductor', (req, res) => {
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Modifica la función post para enviar los datos al Google Sheet
+/// Modifica la función post para enviar los datos al Google Sheet
+// Ruta para procesar el formulario
 app.post('/procesar_formulario', async (req, res) => {
     const { cliente, costo, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor } = req.body;
 
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwJsR7Thyn0Kq1dKOF87W080FGrUmvwsquVd1NluDpxo_oU0kqGs9XalUD4VAepSx2G/exec', {
+        // Enviar los datos al Google Sheet
+        const responseSheet = await fetch('https://script.google.com/macros/s/AKfycbwJsR7Thyn0Kq1dKOF87W080FGrUmvwsquVd1NluDpxo_oU0kqGs9XalUD4VAepSx2G/exec', {
             method: 'POST',
             body: new URLSearchParams(req.body),
             headers: {
@@ -819,65 +834,73 @@ app.post('/procesar_formulario', async (req, res) => {
             }
         });
 
-        if (response.ok) {
-            console.log('Datos enviados correctamente al Google Sheet');
-
-            // Generar el PDF
-            const doc = new PDFDocument();
-            doc.pipe(fs.createWriteStream('formulario.pdf'));
-
-            // Establecer el tamaño de la fuente y el color del texto
-            doc.fontSize(12);
-            doc.fillColor('black');
-
-            // Agregar texto con diferentes estilos y colores
-            doc.font('Helvetica-Bold').fillColor('black').text(`FECHA DEL SERVICIO: ${fecha}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`HORA: ${hora}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`HUESPED: ${nombre_pasajero}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`N° DE VUELO: ${vuelo}`).moveDown();
-
-            doc.font('Helvetica-Bold').fillColor('black').text(`PLACA: ${placa}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`CONDUCTOR ASIGNADO: ${conductor}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${celular_conductor}`).moveDown();
-
-
-            // Agregar una línea divisoria
-            doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-
-            doc.end();
-
-            // Una vez que el PDF esté generado, envíalo como una descarga directa al cliente
-            res.download('formulario.pdf', 'formulario.pdf', (err) => {
-                if (err) {
-                    console.error('Error al descargar el PDF:', err);
-                    res.status(500).send('Error al descargar el PDF');
-                } else {
-                    console.log('PDF generado y descargado correctamente');
-                }
-            });
-        } else {
-            console.error('Error al enviar los datos al Google Sheet:', response.statusText);
+        if (!responseSheet.ok) {
+            console.error('Error al enviar los datos al Google Sheet:', responseSheet.statusText);
             throw new Error('Error al enviar los datos al Google Sheet');
         }
+
+        console.log('Datos enviados correctamente al Google Sheet');
+
+        // Redireccionar a la ruta para mostrar los detalles del formulario
+        res.redirect(`/mostrar_formulario?${new URLSearchParams(req.body).toString()}`);
     } catch (error) {
         console.error('Error en el procesamiento del formulario:', error);
         res.status(500).send('Error en el procesamiento del formulario');
     }
 });
 
+// Ruta para mostrar los detalles del formulario y generar el PDF
+app.get('/mostrar_formulario', (req, res) => {
+    // Obtener los datos del formulario de la consulta
+    const datosFormulario = req.query;
 
+    // Generar el PDF
+    const doc = new PDFDocument();
+    doc.pipe(fs.createWriteStream('formulario.pdf'));
+    doc.fontSize(12);
+    doc.fillColor('black');
+    doc.font('Helvetica-Bold').fillColor('black').text(`FECHA DEL SERVICIO: ${datosFormulario.fecha}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`HORA: ${datosFormulario.hora}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`HUESPED: ${datosFormulario.nombre_pasajero}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`N° DE VUELO: ${datosFormulario.vuelo}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`PLACA: ${datosFormulario.placa}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`CONDUCTOR ASIGNADO: ${datosFormulario.conductor}`).moveDown();
+    doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${datosFormulario.celular_conductor}`).moveDown();
+    doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.end();
+
+    // Renderizar el formulario.hbs y pasar los datos del formulario
+    res.render('formulario', { datosFormulario });
+});
+
+// Ruta para descargar el PDF
 app.get('/descargar_pdf', (req, res) => {
-    // Ruta para descargar el PDF generado
-    res.download('formulario.pdf', 'formulario.pdf', (err) => {
+    // Renderizar la plantilla HTML con los datos del formulario
+    const datosFormulario = req.query;
+    res.render('formulario', { datosFormulario }, (err, html) => {
         if (err) {
-            // Manejar el error si ocurre
-            console.error('Error al descargar el PDF:', err);
-            res.status(500).send('Error al descargar el PDF');
+            console.error('Error al renderizar el HTML:', err);
+            res.status(500).send('Error al renderizar el HTML');
+        } else {
+            const options = { format: 'Letter' }; // Opciones de formato para el PDF
+
+            // Convertir el HTML a PDF
+            htmlToPdf(html, options, (pdfErr, buffer) => {
+                if (pdfErr) {
+                    console.error('Error al convertir HTML a PDF:', pdfErr);
+                    res.status(500).send('Error al convertir HTML a PDF');
+                } else {
+                    // Enviar el PDF generado como respuesta HTTP para descargar
+                    res.set({
+                        'Content-Type': 'application/pdf',
+                        'Content-Disposition': 'attachment; filename=formulario.pdf'
+                    });
+                    res.send(buffer);
+                }
+            });
         }
     });
 });
-
-
 
 
 
