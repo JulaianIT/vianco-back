@@ -356,6 +356,11 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
 });
 
 
+// Ruta para mostrar el formulario de agregar vehículo
+app.get("/agregar-vehiculo", (req, res) => {
+    res.render('formulario_agregar'); // Renderizar la vista del formulario de agregar
+});
+
 // Ruta para manejar los datos enviados desde el formulario y agregar un nuevo vehículo a la base de datos
 app.post("/agregar-vehiculo", (req, res) => {
     // Obtener todos los campos del formulario
