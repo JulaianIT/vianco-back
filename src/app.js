@@ -800,26 +800,33 @@ app.get('/formulario', async (req, res) => {
         res.status(500).send('Error al procesar la solicitud');
     }
 });
-
 app.post('/obtener_conductor', (req, res) => {
     const placaSeleccionada = req.body.placa;
 
     // Realiza una consulta a la base de datos para obtener el conductor correspondiente a la placa
-    connection.query('SELECT conductor, celular FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
+    connection.query('SELECT conductor, celular, foto FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener el conductor:', error);
             res.status(500).json({ error: 'Error al obtener el conductor' });
         } else {
-            if (results.length > 0) {
+            if (results && results.length > 0) {
                 const conductor = results[0].conductor;
                 const celular = results[0].celular;
-                res.json({ conductor, celular });
+                let fotoURL = null; // Inicializa la URL de la foto como nula por defecto
+                if (results[0].foto) {
+                    // Si hay una foto en la base de datos, conviértela a Base64 y forma la URL
+                    const fotoBase64 = results[0].foto.toString('base64');
+                    fotoURL = `data:image/jpeg;base64,${fotoBase64}`;
+                }
+                res.json({ conductor, celular, fotoURL });
             } else {
                 res.status(404).json({ error: 'Conductor no encontrado para la placa seleccionada' });
             }
         }
     });
 });
+
+
 
 
 app.use(bodyParser.urlencoded({ extended: false }));

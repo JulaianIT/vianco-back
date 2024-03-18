@@ -318,6 +318,14 @@
         <label for="conductor">Conductor:</label>
         <input type="text" id="conductor" name="conductor"required readonly ><br><br>
 </div>
+
+<div class="input-field">
+    <label for="foto">Foto del Conductor:</label>
+    <img id="foto_conductor" src="" alt="Foto del Conductor" style="max-width: 200px;">
+</div>
+
+
+
     <div class="input-field">
 
 
@@ -345,7 +353,7 @@
     </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
- $(document).ready(function() {
+$(document).ready(function() {
     $('#placa').change(function() {
         var placaSeleccionada = $(this).val();
         $.ajax({
@@ -355,9 +363,7 @@
             success: function(response) {
                 $('#conductor').val(response.conductor);
                 $('#celular_conductor').val(response.celular);
-                $('#foto').val(response.foto); // Actualiza el valor del campo de la foto del conductor
-                // También puedes mostrar la foto en un elemento de imagen si lo deseas
-                $('#foto_preview').attr('src', response.foto); // Muestra la foto en un elemento de imagen con id "foto_preview"
+                $('#foto_conductor').attr('src', response.fotoURL); // Mostrar la imagen en un elemento de imagen con id "foto_conductor"
             },
             error: function(error) {
                 console.error('Error al obtener el conductor:', error);
@@ -366,6 +372,8 @@
         });
     });
 });
+
+
 
 </script>
 
