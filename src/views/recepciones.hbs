@@ -9,112 +9,111 @@
 </head>
     <style>
         /* Estilos generales para el cuerpo de la página */
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4; /* Color de fondo */
-            color: #333; /* Color del texto */
-        }
+       .todo{
+                
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgb(144, 201, 167,0.3);
 
-        /* Estilos para el encabezado */
-        header {
-            background-color: #fff; /* Color de fondo */
-            padding: 0px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
-        }
 
-        /* Estilos para el contenedor principal */
-        .container {
-            max-width: 1700px; /* Ancho máximo */
-            margin: auto; /* Centrar horizontalmente */
-            padding: 20px; /* Espacio alrededor del contenido */
-        }
 
-        /* Estilos para los títulos */
-        h1 {
-            font-size: 32px; /* Tamaño de fuente */
-            margin-top: 30px; /* Margen superior */
-            margin-bottom: 20px; /* Margen inferior */
         }
-
-        /* Estilos para el formulario */
-        form {
-            background-color: #fff; /* Color de fondo */
-            padding: 50px; /* Espaciado interno */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
-           
-        }
-
-        /* Estilos para los grupos de formulario */
-        .form-group {
-            margin-bottom: 20px; /* Margen inferior */
-        }
-
-        /* Estilos para las etiquetas de formulario */
-        .form-group label {
-            display: block; /* Mostrar como bloque */
-            font-size: 40px; /* Tamaño de fuente */
-            margin-bottom: 5px; /* Margen inferior */
-        }
-
-        /* Estilos para los campos de entrada de formulario */
-        .form-group input {
-            width: 100%; /* Ancho completo */
-            font-size: 66px; /* Tamaño de fuente */
-            padding: 10px; /* Espaciado interno */
-            border: 1px solid #ccc; /* Borde */
-            border-radius: 5px; /* Radio del borde */
-        }
-
-        /* Estilos para los botones */
-        button {
-           background-color:#90c9a7;
-            color: #000;
-            border: none;
-            padding: 22px 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            text-decoration: none;
+        .container{
+            top: -80px;
             position: relative;
-            left: 220PX;
-        }
+            max-width: 1000px;
+            width: 100%;
+            border-radius: 6px;
+            padding: 30px;
+            margin: 0 15px;
+            background-color: #fff;
+            box-shadow: 0 5px 10px rgb(0, 0, 0,0,1);
 
-        /* Estilos para el hover del botón */
-        button:hover {
-              background-color: #d9d9d9;
-        }
-        label{
-            padding: 12px;
-            font-size: 25px;
-            display: inline-block; /* Aplicamos inline-block al div */
-            width: 200px; /* Ancho de la caja */
-            height: 100px; /* Alto de la caja */
-            background-color: ; /* Color de fondo rojo */
-            margin-right: 20px; /* Margen derecho para separar las cajas */
-        }
-    
-
-        input{
-            font-size: 20px;
-            text-align:justify;
-            align-items: center;
-             padding: 10px;
-               margin-bottom: 0px;
 
         }
-            strong {
-            text-transform: uppercase;
+        .container header{
+            font-size: 39px;
+            font-weight: 600;
+            color: #333;
+
+
         }
+        .container header::before{
+
+            content: " ";
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            height: 3px;
+            width: 27px;
+            border-radius: 8px;
+            background-color:rgb(144, 201, 167,0.5);
+
+        }
+   
+   .container form{
+
+    position: relative;
+    margin-top: 16px;
+    min-height: 490px;
+    background-color: #fff;
+
+
+   }
+ 
+   .container form .fields{
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+   }
+   form .fields .input-field{
+
+    display: flex;
+        width: calc(100% / 3 - 15px);
+    flex-direction: column;
+    margin: 4px 0;
+
+
+
+   }
+   .input-field label{
+    font-size: 12px;
+    font-weight: 500;
+    color: #2e2e2e;
+   }
+   .input-field input{
+    outline: none;
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    padding: 0 15px;
+    height: 42px;
+    margin: 8px 0;
+
+}
+ .input-field input:is(focus,:valid){
+    box-shadow: 0 3 px 6px rgb(0, 0, 0,0.13) ;
+
+
+
+
+ }
+
+   .volver-btn:hover {
+            background-color: #d9d9d9;
+            }
+       
                  .volver-btn {
                     position:relative;
-                    left: 30%;
+                    left: -75%;
+                    top: 120px;
 
                     
            background-color:#90c9a7;
@@ -132,58 +131,164 @@
             text-decoration: none;
        
         }
-        .volver-btn:hover {
+        .enviar:hover {
             background-color: #d9d9d9;
         }
+        .enviar{
+            position:relative;
+                    left: 30%;
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            left: 400px;
+            font-size: 30px;
+
+
+
+        }
+      
+    .input-field label{
+        font-size: 25px;
+
+
+
+        
+
+        }
+        /* Estilos para la lista desplegable */
+.input-field select {
+    outline: none;
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    padding: 10px 15px; /* Ajusta el padding según tu preferencia */
+    height: 42px;
+    margin: 8px 0;
+    width: 100%; /* Ajusta el ancho de acuerdo a tus necesidades */
+    box-sizing: border-box; /* Evita que el padding afecte el ancho total */
+}
+
+.input-field select:focus {
+    border-color: #888;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.13);
+}
+
+/* Estilos para las opciones de la lista desplegable */
+.input-field select option {
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    background-color: #fff;
+}
+
+/* Estilos para la flecha de la lista desplegable */
+.input-field::after {
+    content: '\25BC'; /* Código Unicode para la flecha hacia abajo */
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Evita que la flecha sea clickeable */
+}
+/* Estilos para las opciones de la lista desplegable */
+.input-field select option {
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    background-color: #d9d9d9; /* Color de fondo predeterminado */
+}
+
+/* Estilos para las opciones de la lista desplegable al pasar el mouse */
+.input-field select option:hover {
+    background-color: #d9d9d9; /* Color de fondo al pasar el mouse */
+}
+/* Estilos para las opciones de la lista desplegable */
+.input-field select option {
+    font-size: 20px; /* Tamaño de la fuente */
+    font-weight: 400;
+    color: #333; /* Color del texto */
+    background-color: #fff; /* Color de fondo predeterminado */
+}
+
+/* Estilos para las opciones de la lista desplegable al pasar el mouse */
+.input-field select option:hover,
+.input-field select option:focus {
+    background-color: #90c9a7; /* Color de fondo al pasar el mouse o estar seleccionado */
+    color: #000; /* Color del texto al pasar el mouse o estar seleccionado */
+}
+.CA{
+
+    color: #fff
+}
     </style>
 
 
 <body>
-
-        <header>
+      <header>
         <img id="membrete"   src="/imagenes/menbrete.png"/>
         <img  id="logo"      src="../imagenes/logo vianco.png"/>
         <img  id="vigilado"  src="../imagenes/vigilado.png"/>
         <hr>
-        
-       
- 
-
-
-
-
     </header>
+
+
 <body>
+    <div class="todo">
     <div class="container">
-        <h1>Formulario de Recepciones</h1>
+        <header>Formulario de Recepciones</header>
         <form action="/procesar_formulario" method="POST">
+        <div class="fields">
+            <div class="input-field">
             <label for="cliente">Cliente Costo:</label>
             <select id="cliente" name="cliente" required>
                 {{#each clientes}}
                     <option value="{{this.nombre}}">{{this.nombre}}</option>
                 {{/each}}
         </select><br><br>
+        </div>
+          <div class="input-field">
               <label for="fecha">Fecha:</label>
-        <input type="date" id="fecha" name="fecha" required><br><br>
-
+        <input  type="date" id="fecha" name="fecha" required><br><br>
+ </div>
+ <div class="input-field">
              <label for="hora">Hora:</label>
         <input type="time" id="hora" name="hora" required><br><br>
-
+</div>
+ <div class="input-field">
          <label for="nombre_pasajero">Nombre del Pasajero:</label>
         <input type="text" id="nombre_pasajero" name="nombre_pasajero" required><br><br>
 
-   
-       
+   </div>
+
+       <div class="input-field">
         <label for="valor">Valor:</label>
         <input type="text" id="valor" name="valor" required><br><br>
-
+</div>
+ <div class="input-field">
         <label for="cantidad_pasajeros">Cantidad de Pasajeros:</label>
         <input type="number" id="cantidad_pasajeros" name="cantidad_pasajeros" required><br><br>
 
-     
+     </div>
+      <div class="input-field">
 
         <label for="vuelo">Vuelo:</label>
         <input type="text" id="vuelo" name="vuelo" required><br><br>
+</div>
+ <div class="input-field">
 
      <label for="placa">Placa:</label>
             <select id="placa" name="placa" required>
@@ -191,26 +296,36 @@
                     <option value="{{this.placa}}">{{this.placa}}</option>
                 {{/each}}
             </select><br><br>
+            </div>
+             <div class="input-field">
 
         <label for="conductor">Conductor:</label>
         <input type="text" id="conductor" name="conductor"required readonly ><br><br>
-
+</div>
+    <div class="input-field">
 
 
         <label for="celular_conductor">Celular del Conductor:</label>
         <input type="tel" id="celular_conductor" name="celular_conductor" required readonly><br><br>
-
+</div>
+ <div class="input-field">
            <label for="tipo_vehiculo">Tipo de Vehículo:</label>
+
         <select id="tipo_vehiculo" name="tipo_vehiculo" required>
             <option value="Automóvil">Automóvil</option>
             <option value="Camioneta">Camioneta</option>
             <option value="Van">Van</option>
         </select><br><br>
+        </div>
 
-        <a href="/descargar_pdf">Descargar PDF</a>
+        <a class="CA"  href="/descargar_pdf">Descargar PDF</a>
 
-        <input type="submit" value="Enviar">
+                      <a href="/" class="volver-btn">Volver al Menú</a>
+        <input class="enviar" type="submit" value="Enviar">
+
     </form>
+    </div>
+    </div>
     </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
