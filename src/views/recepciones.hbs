@@ -4,13 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Recepciones</title>
-</head>
-<body>
-    <h1>Formulario de Recepciones</h1>
-    <form action="/procesar_formulario" method="POST">
-        <label for="cliente">Cliente Costo:</label>
-        <input type="text" id="cliente" name="cliente" required><br><br>
+    <!-- Bootstrap CSS -->
 
+</head>
+    <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; /* Color de fondo */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el encabezado */
+        header {
+            background-color: #fff; /* Color de fondo */
+            padding: 0px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+        }
+
+        /* Estilos para el contenedor principal */
+        .container {
+            max-width: 1700px; /* Ancho máximo */
+            margin: auto; /* Centrar horizontalmente */
+            padding: 20px; /* Espacio alrededor del contenido */
+        }
+
+        /* Estilos para los títulos */
+        h1 {
+            font-size: 32px; /* Tamaño de fuente */
+            margin-top: 30px; /* Margen superior */
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para el formulario */
+        form {
+            background-color: #fff; /* Color de fondo */
+            padding: 50px; /* Espaciado interno */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
+           
+        }
+
+        /* Estilos para los grupos de formulario */
+        .form-group {
+            margin-bottom: 20px; /* Margen inferior */
+        }
+
+        /* Estilos para las etiquetas de formulario */
+        .form-group label {
+            display: block; /* Mostrar como bloque */
+            font-size: 40px; /* Tamaño de fuente */
+            margin-bottom: 5px; /* Margen inferior */
+        }
+
+        /* Estilos para los campos de entrada de formulario */
+        .form-group input {
+            width: 100%; /* Ancho completo */
+            font-size: 66px; /* Tamaño de fuente */
+            padding: 10px; /* Espaciado interno */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 5px; /* Radio del borde */
+        }
+
+        /* Estilos para los botones */
+        button {
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+            left: 220PX;
+        }
+
+        /* Estilos para el hover del botón */
+        button:hover {
+              background-color: #d9d9d9;
+        }
+        label{
+            padding: 12px;
+            font-size: 25px;
+            display: inline-block; /* Aplicamos inline-block al div */
+            width: 200px; /* Ancho de la caja */
+            height: 100px; /* Alto de la caja */
+            background-color: ; /* Color de fondo rojo */
+            margin-right: 20px; /* Margen derecho para separar las cajas */
+        }
+    
+
+        input{
+            font-size: 20px;
+            text-align:justify;
+            align-items: center;
+             padding: 10px;
+               margin-bottom: 0px;
+
+        }
+            strong {
+            text-transform: uppercase;
+        }
+                 .volver-btn {
+                    position:relative;
+                    left: 30%;
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+    </style>
+
+
+<body>
+
+        <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+<body>
+    <div class="container">
+        <h1>Formulario de Recepciones</h1>
+        <form action="/procesar_formulario" method="POST">
+            <label for="cliente">Cliente Costo:</label>
+            <select id="cliente" name="cliente" required>
+                {{#each clientes}}
+                    <option value="{{this.nombre}}">{{this.nombre}}</option>
+                {{/each}}
+        </select><br><br>
               <label for="fecha">Fecha:</label>
         <input type="date" id="fecha" name="fecha" required><br><br>
 
@@ -23,61 +175,104 @@
    
        
         <label for="valor">Valor:</label>
-        <input type="number" id="valor" name="valor" required><br><br>
+        <input type="text" id="valor" name="valor" required><br><br>
 
         <label for="cantidad_pasajeros">Cantidad de Pasajeros:</label>
         <input type="number" id="cantidad_pasajeros" name="cantidad_pasajeros" required><br><br>
 
-        <label for="tipo_vehiculo">Tipo de Vehículo:</label>
+     
+
+        <label for="vuelo">Vuelo:</label>
+        <input type="text" id="vuelo" name="vuelo" required><br><br>
+
+     <label for="placa">Placa:</label>
+            <select id="placa" name="placa" required>
+                {{#each placas}}
+                    <option value="{{this.placa}}">{{this.placa}}</option>
+                {{/each}}
+            </select><br><br>
+
+        <label for="conductor">Conductor:</label>
+        <input type="text" id="conductor" name="conductor"required readonly ><br><br>
+
+
+
+        <label for="celular_conductor">Celular del Conductor:</label>
+        <input type="tel" id="celular_conductor" name="celular_conductor" required readonly><br><br>
+
+           <label for="tipo_vehiculo">Tipo de Vehículo:</label>
         <select id="tipo_vehiculo" name="tipo_vehiculo" required>
             <option value="Automóvil">Automóvil</option>
             <option value="Camioneta">Camioneta</option>
             <option value="Van">Van</option>
         </select><br><br>
 
-        <label for="vuelo">Vuelo:</label>
-        <input type="text" id="vuelo" name="vuelo" required><br><br>
-
-        <label for="placa">Placa:</label>
-        <input type="text" id="placa" name="placa" required><br><br>
-
-        <label for="conductor">Conductor:</label>
-        <input type="text" id="conductor" name="conductor" required><br><br>
-
-        <label for="celular_conductor">Celular del Conductor:</label>
-        <input type="tel" id="celular_conductor" name="celular_conductor" required><br><br>
         <a href="/descargar_pdf">Descargar PDF</a>
 
         <input type="submit" value="Enviar">
     </form>
-    <script>
-document.getElementById('formulario').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
-            
-            // Envía el formulario mediante una petición AJAX
-            var formData = new FormData(this);
-            try {
-                const response = await fetch('/procesar_formulario', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    // Si la respuesta es exitosa, inicia la descarga del PDF automáticamente
-                    window.location.href = '/descargar_pdf';
-                    // Limpiar el formulario
-                    this.reset();
-                } else {
-                    // Maneja cualquier error de respuesta del servidor
-                    console.error('Error al procesar el formulario:', response.statusText);
-                    alert('Ocurrió un error al procesar el formulario. Por favor, inténtalo de nuevo.');
-                }
-            } catch (error) {
-                console.error('Error de red:', error);
-                alert('Ocurrió un error de red. Por favor, verifica tu conexión e inténtalo de nuevo.');
+    </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+ $(document).ready(function() {
+    $('#placa').change(function() {
+        var placaSeleccionada = $(this).val();
+        $.ajax({
+            url: '/obtener_conductor',
+            method: 'POST',
+            data: { placa: placaSeleccionada },
+            success: function(response) {
+                $('#conductor').val(response.conductor);
+                $('#celular_conductor').val(response.celular);
+                $('#foto').val(response.foto); // Actualiza el valor del campo de la foto del conductor
+                // También puedes mostrar la foto en un elemento de imagen si lo deseas
+                $('#foto_preview').attr('src', response.foto); // Muestra la foto en un elemento de imagen con id "foto_preview"
+            },
+            error: function(error) {
+                console.error('Error al obtener el conductor:', error);
+                alert('Error al obtener el conductor. Por favor, inténtalo de nuevo.');
             }
         });
-    </script>
+    });
+});
 
+</script>
+
+
+        
+ <script>
+   document.getElementById('formulario').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+    
+    // Envía el formulario mediante una petición AJAX
+    var formData = new FormData(this);
+    try {
+        const response = await fetch('/procesar_formulario', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            // Si la respuesta es exitosa, muestra el mensaje de alerta
+            alert('Mensaje enviado al aeropuerto.');
+
+            // Inicia la descarga del PDF automáticamente
+            window.location.href = '/descargar_pdf';
+            
+            // Limpiar el formulario
+            this.reset();
+        } else {
+            // Maneja cualquier error de respuesta del servidor
+            console.error('Error al procesar el formulario:', response.statusText);
+            alert('Ocurrió un error al procesar el formulario. Por favor, inténtalo de nuevo.');
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+        alert('Ocurrió un error de red. Por favor, verifica tu conexión e inténtalo de nuevo.');
+    }
+});
+
+
+    </script>
 </body>
 </html>

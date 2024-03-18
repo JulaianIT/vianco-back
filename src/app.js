@@ -754,9 +754,53 @@ app.post("/agregar-contabilidad", (req, res) => {
 
 
 
-// Servir el formulario Handlebars
-app.get('/formulario', (req, res) => {
-    res.render('recepciones'); // Esto renderizará el archivo recepciones.hbs desde la carpeta views
+// Ruta para el formulario
+app.get('/formulario', async (req, res) => {
+    try {
+        // Consulta para obtener todos los clientes de la tabla "clientes"
+        connection.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
+            if (errorClientes) {
+                console.error('Error al obtener los clientes:', errorClientes);
+                res.status(500).send('Error al obtener los clientes');
+                return;
+            }
+
+            // Consulta para obtener todas las placas de la tabla "conductores"
+            connection.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
+                if (errorPlacas) {
+                    console.error('Error al obtener las placas de los conductores:', errorPlacas);
+                    res.status(500).send('Error al obtener las placas de los conductores');
+                    return;
+                }
+
+                // Los resultados de ambas consultas se pasan al renderizar la página
+                res.render('recepciones', { clientes: resultadosClientes, placas: resultadosPlacas });
+            });
+        });
+    } catch (error) {
+        console.error('Error al procesar la solicitud:', error);
+        res.status(500).send('Error al procesar la solicitud');
+    }
+});
+
+app.post('/obtener_conductor', (req, res) => {
+    const placaSeleccionada = req.body.placa;
+
+    // Realiza una consulta a la base de datos para obtener el conductor correspondiente a la placa
+    connection.query('SELECT conductor, celular FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener el conductor:', error);
+            res.status(500).json({ error: 'Error al obtener el conductor' });
+        } else {
+            if (results.length > 0) {
+                const conductor = results[0].conductor;
+                const celular = results[0].celular;
+                res.json({ conductor, celular });
+            } else {
+                res.status(404).json({ error: 'Conductor no encontrado para la placa seleccionada' });
+            }
+        }
+    });
 });
 
 
@@ -787,12 +831,16 @@ app.post('/procesar_formulario', async (req, res) => {
             doc.fillColor('black');
 
             // Agregar texto con diferentes estilos y colores
-            doc.font('Helvetica-Bold').text(`Cliente: ${cliente}`).moveDown();
-            doc.font('Helvetica').text(`Costo: ${costo}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('blue').text(`Fecha: ${fecha}`).moveDown();
-            doc.font('Helvetica').fillColor('green').text(`Hora: ${hora}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('red').text(`Nombre del Pasajero: ${nombre_pasajero}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('red').text(`Nombre del Pasajero: ${vuelo}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`FECHA DEL SERVICIO: ${fecha}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`HORA: ${hora}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`HUESPED: ${nombre_pasajero}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`N° DE VUELO: ${vuelo}`).moveDown();
+
+            doc.font('Helvetica-Bold').fillColor('black').text(`PLACA: ${placa}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`CONDUCTOR ASIGNADO: ${conductor}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${conductor}`).moveDown();
+
+
             // Agregar una línea divisoria
             doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
 
