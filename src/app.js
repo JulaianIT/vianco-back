@@ -838,7 +838,7 @@ app.post('/procesar_formulario', async (req, res) => {
 
             doc.font('Helvetica-Bold').fillColor('black').text(`PLACA: ${placa}`).moveDown();
             doc.font('Helvetica-Bold').fillColor('black').text(`CONDUCTOR ASIGNADO: ${conductor}`).moveDown();
-            doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${conductor}`).moveDown();
+            doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${celular_conductor}`).moveDown();
 
 
             // Agregar una línea divisoria
