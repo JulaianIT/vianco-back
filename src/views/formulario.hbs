@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Formulario</title>
     <style>
@@ -148,7 +150,7 @@ background-color: #666567;
 </head>
 <body>
     <main>
-        <div class="container">
+        <div class="container" id="container">
           <div class="protocolo">
             <img src="/imagenes/hlton.PNG" alt="">
 
@@ -223,7 +225,25 @@ background-color: #666567;
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
+    <button id="convertirBtn">Convertir a PNG</button>
+<div id="imagenConvertida"></div>
+
                 <a class="pdf" href="/descargar_pdf?cliente={{datosFormulario.cliente}}&costo={{datosFormulario.costo}}&fecha={{datosFormulario.fecha}}&hora={{datosFormulario.hora}}">Descargar PDF</a>
 
 </body>
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
+   <script>
+        document.getElementById('convertirBtn').addEventListener('click', function() {
+            var node = document.getElementById('container'); // Cambia 'container' al ID de tu contenedor HTML principal
+            htmlToImage.toPng(node)
+                .then(function (dataUrl) {
+                    var img = new Image();
+                    img.src = dataUrl;
+                    document.getElementById('imagenConvertida').appendChild(img);
+                })
+                .catch(function (error) {
+                    console.error('Error al convertir HTML a imagen:', error);
+                });
+        });
+    </script>
