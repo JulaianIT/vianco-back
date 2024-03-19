@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
 
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Formulario</title>
     <style>
@@ -61,16 +63,9 @@ p{
 
 }
 .protocolo{
- 
 background-color: #90c9a7;
 }
-.protocolo img{
-position: relative;
 
-width: 50%;
-align-items: center;
-left: 20%;
-}
 p strong{
     padding: 30px;
                       border: 4px solid #666567; /* Cambia #ff0000 al color que desees */
@@ -84,21 +79,23 @@ p{
         flex-wrap: wrap;
 }
 table td{
-                      border: 2px solid #666567; /* Cambia #ff0000 al color que desees */
+    border: 2px solid #666567; /* Cambia #ff0000 al color que desees */
 
     font-size: 15px;
+    padding: 10px;
 
 
 }
 .foto_condcutor{
 
 background-color: #90c9a7;
-padding: 30px;
+padding: 22px;
 
 
 }
 strong {
     text-transform: uppercase;
+    font-size: 16px;
 }
 
 .LETRA {
@@ -140,10 +137,7 @@ text-align: center;
 color: #f3f3f3;
 background-color: #666567;
 }
-.pdf{
 
-    color: #fff;
-}
 .protocolo{
 
     background-color: #90c9a7;
@@ -195,8 +189,69 @@ background-color: #666567;
                         background-color: #d9d9d9;
 
         }
-   /* Estilos para impresión */
+        .protocolo{
 
+            padding: 220px;
+
+        }
+   /* Estilos para impresión */
+.texto{
+    font-size: 23px;
+    position: relative;
+    left: 10px;
+
+
+}
+#whaas{
+    position: relative;
+    width: 30px;
+    top: 5px;
+     padding-right: 12px;
+
+
+
+}
+.body{
+
+
+  font-family: "ABeeZee", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+#gmael{
+ width: 30px;
+ padding-right: 12px;
+
+}
+#qr{
+
+  position: absolute;
+    width: 280px;
+   right: 55px;
+   top: 1000px;
+    padding: 0;
+    margin: 0;
+
+
+}
+ 
+ strong{
+padding: 10PX;
+
+ }
+.respuestas{
+    font-size: 20px;
+padding: 9px;
+
+    text-transform: uppercase;
+
+
+}
+.obs{
+
+padding: 36px;
+
+}
     </style>
 </head>
 <body>
@@ -211,16 +266,19 @@ background-color: #666567;
             <table>
                 <tr>
                     <td><strong>Nombre Pasajero:</strong></td>
-                    <td>{{datosFormulario.nombre_pasajero}}</td>
+                    
+                    <td class="respuestas"  >{{datosFormulario.nombre_pasajero}}</td>
+                    
                     <td><strong>Fecha:</strong></td>
-                    <td>{{datosFormulario.fecha}}</td>
+                    <td class="respuestas">{{datosFormulario.fecha}}</td>
                     
                 </tr>
                 <tr>
                     <td><strong>N° de Vuelo:</strong></td>
-                    <td>{{datosFormulario.vuelo}}</td>
+                    <td class="respuestas">{{datosFormulario.vuelo}}</td>
+                    </div>
                     <td><strong>Cnt. Pasajeros:</strong></td>
-                    <td>{{datosFormulario.cantidad_pasajeros}}</td>
+                    <td class="respuestas">{{datosFormulario.cantidad_pasajeros}}</td>
                   
                 </tr>
                 <tr>
@@ -230,27 +288,27 @@ background-color: #666567;
              
                 <tr>
                     <td ><strong>Conductor asignado:</strong></td>
-                    <td>{{datosFormulario.conductor}}</td>
+                    <td class="respuestas">{{datosFormulario.conductor}}</td>
                     <td><strong>Vehículo asignado:</strong></td>
-                    <td>{{datosFormulario.tipo_vehiculo}}</td>
+                    <td class="respuestas">{{datosFormulario.tipo_vehiculo}}</td>
                 </tr>
                 <tr>
                <td><strong>Tipo de Vehículo:</strong></td>
                     <td>CAMIONETA</td>
                     <td><strong>Placa:</strong></td>
-                    <td>{{datosFormulario.placa}}</td>
+                    <td class="respuestas">{{datosFormulario.placa}}</td>
                    
                 </tr>
                 <tr>
                     <td><strong>Teléfono:</strong></td>
-                    <td>{{datosFormulario.celular_conductor}}</td>
+                    <td class="respuestas">{{datosFormulario.celular_conductor}}</td>
                       <td><strong>Hora:</strong></td>
-                    <td>{{datosFormulario.hora}}</td>
-                    <td colspan="4"></td>
+                    <td class="respuestas">{{datosFormulario.hora}}</td>
+                  
                     
                 </tr>
                 <tr>
-                    <td colspan="6"><strong>Observaciones:</strong></td>
+                    <td colspan="6" class="obs"><strong>Observaciones:</strong></td>
                 </tr>
                 <tr>
                     
@@ -260,18 +318,18 @@ background-color: #666567;
       
              <div class="texto">
             "Hola Si desea realizar modificaciones a la reserva de transporte, por favor comuníquese por los siguientes medios: <br><br>
-            OPERACIONES@viancotetransporta.com <br>
-            +57 315 670 3770 <br>
+            <img  id="gmael" src="/gmail.jpg" alt="">operaciones@viancotetransporta.com <br>
+             <img id="whaas" src="/whatsapp-icon.png" alt="">+57 315 670 3770 <br> 
+             <br>
             La cancelación y cambios se deben realizar 12 horas antes del servicio. La compañía Vianco Te Transporta SAS protegerá sus datos personales y no serán de uso público ni comercial. Vianco Te Transporta SAS se abstiene de realizar servicios de turismo y transporte o actividad en el cual involucra el Turismo Sexual infringiendo la Ley 679 de 2001."
              
-                <strong>Foto del Conductor:</strong>
-                <img src="{{datosFormulario.foto}}" alt="Foto del Conductor" style="max-width: 200px;">
-      
+               
                    
 </td>
                 </tr>
                 </div>
             </table>
+            <img id="qr" src="/Codigo QR_Mesa de trabajo 1 (1).png" alt="">
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
