@@ -136,6 +136,7 @@ strong {
 text-align: center;
 color: #f3f3f3;
 background-color: #666567;
+
 }
 
 .protocolo{
@@ -146,6 +147,9 @@ background-color: #666567;
 
 }
   .volver-btn {
+    position: relative;
+    left: 520px;
+    top: -70px;
             background-color:#90c9a7;
             color: #000;
             border: none;
@@ -166,6 +170,9 @@ background-color: #666567;
         }
 
         .volver {
+            position: relative;
+    left: 320px;
+    top: -70px;
             background-color:#90c9a7;
             color: #000;
             border: none;
@@ -228,7 +235,7 @@ background-color: #666567;
   position: absolute;
     width: 280px;
    right: 55px;
-   top: 1000px;
+   top: 1060px;
     padding: 0;
     margin: 0;
 
@@ -248,10 +255,12 @@ padding: 9px;
 
 }
 .obs{
-
-padding: 36px;
+    font-size: 32px;
+}
+.asig{
 
 }
+
     </style>
 </head>
 <body>
@@ -282,7 +291,7 @@ padding: 36px;
                   
                 </tr>
                 <tr>
-                    <td class="asig"  colspan="6"><strong>Datos del conductor:</strong></td>
+                    <td class="asig"  colspan="6"><h1>DATOS DEL CONDUCTOR:</h1></td>
                   
                 </tr>
              
@@ -306,12 +315,16 @@ padding: 36px;
                     <td class="respuestas">{{datosFormulario.hora}}</td>
                   
                     
+               <tr>
+<tr>
+    <td colspan="3" class="obs"><strong>Observaciones:</strong></td>
+    <td colspan="3" class="respuestas">{{datosFormulario.observaciones}}</td>
+</tr>       
+<tr>
+                    <td class="asig"  colspan="6"><h1>POLITICA DE SERVICIO</h1></td>
+                  
                 </tr>
-                <tr>
-                    <td colspan="6" class="obs"><strong>Observaciones:</strong></td>
-                </tr>
-                <tr>
-                    
+                            
             <td class="LETRA" colspan="6">
    
              <div class="info">
@@ -333,8 +346,8 @@ padding: 36px;
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
-<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
                       <a href="/" class="volver">Volver al Menú</a>
+<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
