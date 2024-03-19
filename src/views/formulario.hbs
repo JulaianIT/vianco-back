@@ -348,7 +348,7 @@ padding: 9px;
     </main>
                       <a href="/" class="volver">Volver al Menú</a>
 <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
-                      <a href="https://docs.google.com/spreadsheets/d/1zy0koOePK6IKqv2Y9X5z7gL8tG_nWE3UeirkJ4__-t8/edit#gid=0" class="RECE">VER RECEPCIONES</a>
+<button onclick="redireccionarAGmail()">Ir a Gmail</button>
 
 
 
@@ -383,6 +383,20 @@ padding: 9px;
             });
         });
     });
+    function redireccionarAGmail() {
+  // Correo electrónico
+  const correo = 'correo_destino@gmail.com';
+
+  // Mensaje predefinido
+  const mensaje = encodeURIComponent("Apreciado huésped, gracias por visitar la increíble ciudad de Bogotá. Adjuntamos la imagen generada del formulario.");
+
+  // URL de Gmail con el correo electrónico y el mensaje predefinido
+  const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${correo}&su=&body=${mensaje}`;
+
+  // Redireccionar a Gmail
+  window.open(url, '_blank');
+}
+    
 </script>
 
 
