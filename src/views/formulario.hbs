@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js" integrity="sha512-FHEp/7kzW4TbZgzx1eAsImUI2O3gBVE5H0w15CgjW0gWwVkAXGgWqNJg7VSE8rHnCfhqNtRM+R5lF8tcsAaZ2g==" crossorigin="anonymous"></script>
-<script src="js/html-to-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Formulario</title>
@@ -39,7 +39,7 @@ p{
 
 
 }
-.container{
+.contenido{
     
    top: -100px;
     position: relative;
@@ -158,7 +158,7 @@ background-color: #666567;
 </head>
 <body>
     <main>
-        <div class="container" id="container">
+        <div class="contenido" id="contenido">
           <div class="protocolo">
 
 
@@ -232,63 +232,44 @@ background-color: #666567;
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
-        <button id="convertirBtn">Convertir a Imagen</button>
+<button id="convertirBtn">Convertir a Imagen</button>
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
 
-  <!DOCTYPE html>
-<html lang="es">
-<head>
-    <!-- Resto de tu encabezado -->
-</head>
-<body>
-    <!-- Contenido de tu página -->
-
-  
-
     <!-- Resto de tu contenido -->
-  <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('convertirBtn').addEventListener('click', async function() {
-                try {
-                    // Obtener el contenido HTML del formulario
-                    const html = document.documentElement.outerHTML;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('convertirBtn').addEventListener('click', function() {
+            // Captura el elemento contenedor que deseas convertir en imagen
+            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
 
-                    // Realizar una solicitud al servidor para convertir el HTML a una imagen
-                    const response = await fetch('/convertirHtmlAImagen', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ html: html })
-                    });
+            // Opciones de configuración para html2canvas (opcional)
+            const options = {
+                // Configura tus opciones aquí
+            };
 
-                    // Verificar si la solicitud fue exitosa
-                    if (!response.ok) {
-                        throw new Error('Error al convertir HTML a imagen');
-                    }
+            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
+            html2canvas(container, options).then(canvas => {
+                // Convierte el canvas en una URL de datos
+                const dataUrl = canvas.toDataURL();
 
-                    // Descargar la imagen generada
-                    const blob = await response.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'miImagen.png';
-                    a.textContent = 'Descargar Imagen';
-                    document.body.appendChild(a);
-                    a.click();
-                } catch (error) {
-                    console.error('Error al convertir HTML a imagen:', error);
-                    alert('Error al convertir HTML a imagen. Por favor, inténtalo de nuevo.');
-                }
+                // Crea un enlace para descargar la imagen
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'miImagen.png';
+                a.textContent = 'Descargar Imagen';
+                document.body.appendChild(a);
+
+                // Simula un clic en el enlace para iniciar la descarga
+                a.click();
             });
         });
-    </script>
+    });
+</script>
 
 
-</body>
-</html>
+
 
 </body>
 </html>

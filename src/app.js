@@ -9,8 +9,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-const pdf = require('html-pdf');
-const htmlToImage = require('html-to-image');
+const html2canvas = require('html2canvas');
 
 
 function htmlToPdf(html, options, callback) {
