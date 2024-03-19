@@ -151,7 +151,50 @@ background-color: #666567;
 
 
 }
+  .volver-btn {
+            background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
 
+        .volver-btn:hover {
+            background-color: #d9d9d9;
+        }
+
+        .volver {
+            background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .botones {
+            text-align: center;
+        }
+        .volver :hover {
+
+                        background-color: #d9d9d9;
+
+        }
    /* Estilos para impresión */
 
     </style>
@@ -232,7 +275,8 @@ background-color: #666567;
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
-<button id="convertirBtn">Convertir a Imagen</button>
+<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
+                      <a href="/" class="volver">Volver al Menú</a>
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
