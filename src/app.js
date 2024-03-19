@@ -10,6 +10,8 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const pdf = require('html-pdf');
+const htmlToImage = require('html-to-image');
+
 
 function htmlToPdf(html, options, callback) {
     pdf.create(html, options).toBuffer((err, buffer) => {
@@ -20,6 +22,7 @@ function htmlToPdf(html, options, callback) {
         }
     });
 }
+
 
 
 // Importar el manejador de webhook
@@ -923,6 +926,63 @@ app.get('/descargar_pdf', (req, res) => {
 
 
 
+
+
+
+
+const puppeteer = require('puppeteer');
+const path = require('path'); // Agregar esta línea para importar el módulo 'path'
+
+// Directorio donde se guardarán las imágenes
+const directorioImagenes = path.join(__dirname, 'imagenes');
+
+// Función para convertir HTML a imagen utilizando Puppeteer
+async function convertirHtmlAImagen(html, nombreArchivo) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+
+    // Ajusta el tamaño de la ventana del navegador para que coincida con el tamaño del contenedor
+    const { width, height } = await page.$eval('#container', container => ({
+        width: container.offsetWidth,
+        height: container.offsetHeight
+    }));
+    await page.setViewport({ width, height });
+
+    // Verifica si el directorio de imágenes existe, si no existe, créalo
+    if (!fs.existsSync(directorioImagenes)) {
+        fs.mkdirSync(directorioImagenes, { recursive: true });
+    }
+
+    await page.screenshot({ path: path.join(directorioImagenes, nombreArchivo) });
+    await browser.close();
+    console.log('La imagen se ha guardado correctamente en', nombreArchivo);
+}
+
+// Endpoint para convertir HTML a imagen
+app.post('/convertirHtmlAImagen', async (req, res) => {
+    try {
+        // Lee el contenido HTML del cuerpo de la solicitud
+        const html = req.body.html;
+
+        // Verifica que el HTML recibido no esté vacío
+        if (!html) {
+            throw new Error('El HTML recibido está vacío');
+        }
+
+        // Nombre del archivo de imagen de salida
+        const nombreArchivo = 'miImagen.png';
+
+        // Llama a la función para convertir HTML a imagen utilizando Puppeteer
+        await convertirHtmlAImagen(html, nombreArchivo);
+
+        // Envía la imagen como respuesta al cliente
+        res.sendFile(path.join(directorioImagenes, nombreArchivo));
+    } catch (error) {
+        console.error('Error al convertir HTML a imagen:', error);
+        res.status(500).send('Error al convertir HTML a imagen');
+    }
+});
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

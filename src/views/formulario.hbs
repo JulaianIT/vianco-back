@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js" integrity="sha512-FHEp/7kzW4TbZgzx1eAsImUI2O3gBVE5H0w15CgjW0gWwVkAXGgWqNJg7VSE8rHnCfhqNtRM+R5lF8tcsAaZ2g==" crossorigin="anonymous"></script>
+<script src="js/html-to-image.min.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Formulario</title>
@@ -43,7 +44,7 @@ p{
    top: -100px;
     position: relative;
     left: 20px;
-    max-width: 700px;
+    max-width: 900px;
        
       
         border-radius: 6px;
@@ -143,6 +144,13 @@ background-color: #666567;
 
     color: #fff;
 }
+.protocolo{
+
+    background-color: #90c9a7;
+    padding: 70PX;
+
+
+}
 
    /* Estilos para impresión */
 
@@ -152,7 +160,6 @@ background-color: #666567;
     <main>
         <div class="container" id="container">
           <div class="protocolo">
-            <img src="/imagenes/hlton.PNG" alt="">
 
 
 
@@ -225,25 +232,63 @@ background-color: #666567;
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
-    <button id="convertirBtn">Convertir a PNG</button>
-<div id="imagenConvertida"></div>
+        <button id="convertirBtn">Convertir a Imagen</button>
 
-                <a class="pdf" href="/descargar_pdf?cliente={{datosFormulario.cliente}}&costo={{datosFormulario.costo}}&fecha={{datosFormulario.fecha}}&hora={{datosFormulario.hora}}">Descargar PDF</a>
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
+
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Resto de tu encabezado -->
+</head>
+<body>
+    <!-- Contenido de tu página -->
+
+  
+
+    <!-- Resto de tu contenido -->
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('convertirBtn').addEventListener('click', async function() {
+                try {
+                    // Obtener el contenido HTML del formulario
+                    const html = document.documentElement.outerHTML;
+
+                    // Realizar una solicitud al servidor para convertir el HTML a una imagen
+                    const response = await fetch('/convertirHtmlAImagen', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ html: html })
+                    });
+
+                    // Verificar si la solicitud fue exitosa
+                    if (!response.ok) {
+                        throw new Error('Error al convertir HTML a imagen');
+                    }
+
+                    // Descargar la imagen generada
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'miImagen.png';
+                    a.textContent = 'Descargar Imagen';
+                    document.body.appendChild(a);
+                    a.click();
+                } catch (error) {
+                    console.error('Error al convertir HTML a imagen:', error);
+                    alert('Error al convertir HTML a imagen. Por favor, inténtalo de nuevo.');
+                }
+            });
+        });
+    </script>
+
 
 </body>
 </html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
-   <script>
-        document.getElementById('convertirBtn').addEventListener('click', function() {
-            var node = document.getElementById('container'); // Cambia 'container' al ID de tu contenedor HTML principal
-            htmlToImage.toPng(node)
-                .then(function (dataUrl) {
-                    var img = new Image();
-                    img.src = dataUrl;
-                    document.getElementById('imagenConvertida').appendChild(img);
-                })
-                .catch(function (error) {
-                    console.error('Error al convertir HTML a imagen:', error);
-                });
-        });
-    </script>
+
+</body>
+</html>
