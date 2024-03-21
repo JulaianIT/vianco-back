@@ -384,13 +384,20 @@ text-align: center;
 
 }
 #fotoConductor{
-    left: 100px;
+    left: 20px;
 position: relative;
 width: 200px;
 align-items: center
 
 }
+#fotoVehiculo{
 
+  left: 40px;
+position: relative;
+width: 220px;
+align-items: center
+
+}
 
     </style>
 </head>
@@ -440,8 +447,8 @@ align-items: center
         <img id="fotoConductor" src="" alt="Foto del conductor">
     </td>
     <!-- Agrega el segundo elemento img para la foto del vehículo -->
-    <td colspan="3" s
-        <strong>Foto del vehículo:</strong>
+    <td colspan="3" 
+        <strong>:</strong>
         <img id="fotoVehiculo" src="" alt="Foto del vehículo">
     </td>
 </tr>
@@ -674,6 +681,39 @@ const placaConductor = document.querySelector('.respuestass').textContent;
 // Llamar a la función para mostrar la foto del conductor
 mostrarFotoConductor(placaConductor);
 
+
+
+
+
+
+
+// Función para mostrar la foto del vehículo
+function mostrarFotovehiculo(placa) {
+    // Agrega un console.log para imprimir el valor de la placa
+    console.log('Placa a buscar:', placa);
+
+    fetch(`/obtenerFotoVehiculo?placa=${placa}`) // Corrige el nombre de la ruta a obtenerFotoVehiculo
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se pudo obtener la foto del vehículo'); // Corrige el mensaje de error
+            }
+            return response.blob(); // Convertir la respuesta en un Blob
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob); // Crear una URL a partir del Blob
+            const fotovehiculo = document.getElementById('fotoVehiculo'); // Corrige el ID del elemento de la imagen
+            fotovehiculo.src = url; // Asignar la URL al atributo src de la imagen
+        })
+        .catch(error => {
+            console.error('Error al obtener la foto del vehículo:', error); // Corrige el mensaje de error
+        });
+}
+
+// Obtener la placa del vehículo desde el elemento HTML
+const placavehiculo = document.querySelector('.respuestass').textContent; // Asegúrate de que el selector sea correcto
+
+// Llamar a la función para mostrar la foto del vehículo
+mostrarFotovehiculo(placavehiculo);
 
 </script>
 

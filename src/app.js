@@ -1056,6 +1056,33 @@ app.get('/obtenerFotoConductor', (req, res) => {
 });
 
 
+app.get('/obtenerFotovehiculo', (req, res) => {
+    const placa = req.query.placa;
+    console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
+
+// Corrige el nombre de la columna en la consulta SQL y en la asignación de resultados
+connection.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa], (error, results, fields) => {
+    if (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).send('Error interno del servidor');
+        return;
+    }
+
+    // Verificar si se encontró la foto del vehículo con la placa dada
+    if (results.length > 0) {
+        const fotoVehiculo = results[0].foto_vehiculo; // Corrige el nombre de la variable a fotoVehiculo
+
+        // Devolver los datos binarios de la foto del vehículo
+        res.send(fotoVehiculo);
+    } else {
+        res.status(404).send('Foto del vehículo no encontrada');
+    }
+});
+
+});
+
+
+
 
 
 // Iniciar el servidor
