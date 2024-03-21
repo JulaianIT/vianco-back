@@ -458,11 +458,7 @@ background-color: #90c9a7;
 
 <div class="input-field">
     <h2 class="selecione">{{datosFormulario.cliente}}</h2>
-    <select class="clientee" id="cliente" name="cliente" required>
-        {{#each clientes}}
-        <option value="{{this.id}}">{{this.nombre}}</option>
-        {{/each}}
-    </select>
+
 </div> <!-- Cerrar el select aquí -->
 
 
@@ -547,28 +543,75 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error al obtener los clientes:', error);
         });
 });
+
 document.addEventListener('DOMContentLoaded', function() {
+    const clienteSelect = document.getElementById('cliente');
+    const clienteH2 = document.querySelector('.selecione');
     const fotoCliente = document.getElementById('fotoCliente');
-    const clienteSeleccionadoSpan = document.getElementById('clienteSeleccionadoSpan');
 
-    // Event listener para detectar cuando se selecciona un cliente
-    clienteSeleccionadoSpan.addEventListener('change', function() {
-        // Obtener el cliente seleccionado
-        const clienteSeleccionado = clienteSeleccionadoSpan.textContent;
-
-        // Hacer solicitud AJAX para obtener la foto del cliente seleccionado
-        fetch(`/obtenerFotoCliente?cliente=${clienteSeleccionado}`)
+    function mostrarFotoCliente(idCliente) {
+        console.log('Mostrando foto del cliente con ID:', idCliente);
+        fetch(`/cliente?id=${idCliente}`)
             .then(response => response.json())
-            .then(data => {
-                // Asignar la foto del cliente al elemento img
-                fotoCliente.src = data.foto;
-                fotoCliente.alt = clienteSeleccionado;
+            .then(cliente => {
+                console.log('Datos del cliente:', cliente);
+                fotoCliente.src = cliente.foto;
+                fotoCliente.alt = cliente.nombre;
+                console.log('Foto del cliente establecida:', fotoCliente.src);
             })
             .catch(error => {
-                console.error('Error al obtener la foto del cliente:', error);
+                console.error('Error al obtener los datos del cliente:', error);
             });
-    });
+    }
+
+    // Hacer solicitud AJAX para obtener los datos de los clientes
+    fetch('/clientes')
+        .then(response => response.json())
+        .then(clientes => {
+            // Iterar sobre los clientes y agregar opciones al desplegable
+            clientes.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.nombre;
+                clienteSelect.appendChild(option);
+            });
+
+            // Obtener el cliente seleccionado del h2
+            const clienteSeleccionadoH2 = clienteH2.textContent;
+
+            // Establecer el cliente seleccionado automáticamente en el select
+            clienteSelect.value = clienteSeleccionadoH2;
+
+            // Mostrar la foto del cliente seleccionado
+            mostrarFotoCliente(clienteSeleccionadoH2);
+        })
+        .catch(error => {
+            console.error('Error al obtener los clientes:', error);
+        });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    const clienteH2 = document.querySelector('.selecione');
+    const fotoCliente = document.getElementById('fotoCliente');
+
+    function mostrarFotoCliente(nombreCliente) {
+        fetch(`/clientePorNombre?nombre=${nombreCliente}`)
+            .then(response => response.json())
+            .then(cliente => {
+                fotoCliente.src = cliente.foto;
+                fotoCliente.alt = cliente.nombre;
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos del cliente:', error);
+            });
+    }
+
+    // Obtener el cliente seleccionado del h2
+    const clienteSeleccionadoH2 = clienteH2.textContent;
+
+    // Mostrar la foto del cliente seleccionado
+    mostrarFotoCliente(clienteSeleccionadoH2);
+});
+
 
 
 </script>

@@ -1008,6 +1008,26 @@ app.get('/clientes', (req, res) => {
 
 
 
+app.get('/clientePorNombre', (req, res) => {
+    const nombreCliente = req.query.nombre;
+
+    // Realiza una consulta a la base de datos para obtener los datos del cliente por su nombre
+    connection.query('SELECT * FROM clientes WHERE nombre = ?', [nombreCliente], (error, results, fields) => {
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        // Verifica si se encontró un cliente con el nombre dado
+        if (results.length > 0) {
+            const cliente = results[0];
+            res.json(cliente);
+        } else {
+            res.status(404).send('Cliente no encontrado');
+        }
+    });
+});
 
 
 
