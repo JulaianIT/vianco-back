@@ -1031,9 +1031,29 @@ app.get('/clientePorNombre', (req, res) => {
 
 
 
+app.get('/obtenerFotoConductor', (req, res) => {
+    const placa = req.query.placa;
+    console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
 
+    // Realizar una consulta a la base de datos para obtener los datos binarios de la foto del conductor basada en la placa
+    connection.query('SELECT foto FROM conductores WHERE placa = ?', [placa], (error, results, fields) => {
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
 
+        // Verificar si se encontró la foto del conductor con la placa dada
+        if (results.length > 0) {
+            const fotoConductor = results[0].foto;
 
+            // Devolver los datos binarios de la foto del conductor
+            res.send(fotoConductor);
+        } else {
+            res.status(404).send('Foto del conductor no encontrada');
+        }
+    });
+});
 
 
 

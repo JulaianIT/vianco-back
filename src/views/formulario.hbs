@@ -257,7 +257,7 @@ padding: 10PX;
  }
 .respuestas{
     font-size: 20px;
-padding: 9px;
+padding: 0px;
 
     text-transform: uppercase;
 
@@ -383,6 +383,14 @@ border-radius: 10px;
 text-align: center;
 
 }
+#fotoConductor{
+    left: 100px;
+position: relative;
+width: 200px;
+align-items: center
+
+}
+
 
     </style>
 </head>
@@ -409,38 +417,48 @@ text-align: center;
                     <td><strong>N° de Vuelo:</strong></td>
                     <td class="respuestas">{{datosFormulario.vuelo}}</td>
                     </div>
-                    <td><strong>Cnt. Pasajeros:</strong></td>
-                    <td class="respuestas">{{datosFormulario.cantidad_pasajeros}}</td>
+                 
+                        <td><strong>Hora:</strong></td>
+                    <td class="respuestas">{{datosFormulario.hora}}</td>
                   
+                    
                 </tr>
                 <tr>
                     <td class="asig"  colspan="6"><h1>DATOS DEL CONDUCTOR:</h1></td>
                   
                 </tr>
              
-                <tr>
-                    <td ><strong>Conductor asignado:</strong></td>
-                    <td class="respuestas">{{datosFormulario.conductor}}</td>
-                    <td><strong>Vehículo asignado:</strong></td>
-                    <td class="respuestas">{{datosFormulario.tipo_vehiculo}}</td>
-                </tr>
-                <tr>
+           <tr>
+    <td><strong>Conductor asignado:</strong></td>
+    <td class="FOTO">{{datosFormulario.conductor}}</td>
+       <td><strong>Placa:</strong></td>
+                    <td class="respuestass">{{datosFormulario.placa}}</td>
+</tr>
+<tr>
+    <!-- Agrega el primer elemento img para la foto del conductor -->
+    <td colspan="1" style="max-width: 20px;">
+        <img id="fotoConductor" src="" alt="Foto del conductor">
+    </td>
+    <!-- Agrega el segundo elemento img para la foto del vehículo -->
+    <td colspan="3" s
+        <strong>Foto del vehículo:</strong>
+        <img id="fotoVehiculo" src="" alt="Foto del vehículo">
+    </td>
+</tr>
                <td><strong>Tipo de Vehículo:</strong></td>
-                    <td>CAMIONETA</td>
-                    <td><strong>Placa:</strong></td>
-                    <td class="respuestas">{{datosFormulario.placa}}</td>
-                   
+                  <td class="respuestas">{{datosFormulario.tipo_vehiculo}}</td>
+    <td><strong>N°. Pasajeros:</strong></td>
+                    <td class="respuestas">{{datosFormulario.cantidad_pasajeros}}</td>
+                  
                 </tr>
                 <tr>
                     <td><strong>Teléfono:</strong></td>
-                    <td class="respuestas">{{datosFormulario.celular_conductor}}</td>
-                      <td><strong>Hora:</strong></td>
-                    <td class="respuestas">{{datosFormulario.hora}}</td>
-                  
+                    <td colspan="3" class="respuestas">{{datosFormulario.celular_conductor}}</td>
+              
                     
                <tr>
 <tr>
-    <td colspan="3" class="obs"><strong>Observaciones:</strong></td>
+    <td colspan="1" class="obs"><strong>Observaciones:</strong></td>
     <td colspan="3" class="respuestas">{{datosFormulario.observaciones}}</td>
 </tr>       
 <tr>
@@ -448,7 +466,7 @@ text-align: center;
                  
                 </tr>
                           
-            <td class="LETRA" colspan="6">
+            <td class="LETRA" colspan="1">
    
            
       
@@ -476,7 +494,6 @@ text-align: center;
 
 <div class="input-field">
     <h2 class="selecione">{{datosFormulario.cliente}}</h2>
-
 </div> <!-- Cerrar el select aquí -->
 
 
@@ -629,7 +646,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostrar la foto del cliente seleccionado
     mostrarFotoCliente(clienteSeleccionadoH2);
 });
+// Función para mostrar la foto del conductor
+function mostrarFotoConductor(placa) {
+    // Agrega un console.log para imprimir el valor de la placa
+    console.log('Placa a buscar:', placa);
 
+    fetch(`/obtenerFotoConductor?placa=${placa}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se pudo obtener la foto del conductor');
+            }
+            return response.blob(); // Convertir la respuesta en un Blob
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob); // Crear una URL a partir del Blob
+            const fotoConductor = document.getElementById('fotoConductor');
+            fotoConductor.src = url; // Asignar la URL al atributo src de la imagen
+        })
+        .catch(error => {
+            console.error('Error al obtener la foto del conductor:', error);
+        });
+}
+
+// Obtener la placa del conductor desde el elemento HTML
+const placaConductor = document.querySelector('.respuestass').textContent;
+
+// Llamar a la función para mostrar la foto del conductor
+mostrarFotoConductor(placaConductor);
 
 
 </script>
