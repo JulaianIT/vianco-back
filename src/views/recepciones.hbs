@@ -278,6 +278,8 @@
         <option value="{{this.nombre}}">{{this.nombre}}</option>
     {{/each}}
 </select><br><br>
+<input type="hidden" id="clienteSeleccionado" name="clienteSeleccionado">
+
 
         </div>
           <div class="input-field">
@@ -426,13 +428,11 @@ $(document).ready(function() {
     const clienteSeleccionadoInput = document.getElementById('clienteSeleccionado');
 
     // Agregar evento onchange al primer select
-    clienteCostoSelect.addEventListener('change', function() {
-        // Obtener el valor seleccionado en el primer select
-        const selectedCliente = clienteCostoSelect.value;
+clienteCostoSelect.addEventListener('change', function() {
+    const selectedCliente = clienteCostoSelect.value;
+    clienteSeleccionadoInput.value = selectedCliente;
+});
 
-        // Asignar el valor seleccionado al campo oculto
-        clienteSeleccionadoInput.value = selectedCliente;
-    });
 
     </script>
 </body>

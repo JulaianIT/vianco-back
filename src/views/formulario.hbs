@@ -376,7 +376,6 @@ background-color: #90c9a7;
 
 <img  class="PRO"    id="fotoCliente" src="" alt="Foto del cliente">
 
-
           </div>
             <h1>DATOS DEL SERVICIO</h1>
             <table>
@@ -458,13 +457,13 @@ background-color: #90c9a7;
 <button class="volvera"  onclick="redireccionarAGmail()">Ir a Gmail</button>
 
 <div class="input-field">
-        <h2 class="selecione">SELECIONE CLIENTE:</h2>
-    <select   class="clientee" id="cliente" name="cliente" required>
+    <h2 class="selecione">{{datosFormulario.cliente}}</h2>
+    <select class="clientee" id="cliente" name="cliente" required>
         {{#each clientes}}
-            <option value="{{this.id}}">{{this.nombre}}</option>
+        <option value="{{this.id}}">{{this.nombre}}</option>
         {{/each}}
     </select>
-</div>
+</div> <!-- Cerrar el select aquí -->
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
@@ -547,6 +546,28 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error al obtener los clientes:', error);
         });
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoCliente = document.getElementById('fotoCliente');
+    const clienteSeleccionadoSpan = document.getElementById('clienteSeleccionadoSpan');
+
+    // Event listener para detectar cuando se selecciona un cliente
+    clienteSeleccionadoSpan.addEventListener('change', function() {
+        // Obtener el cliente seleccionado
+        const clienteSeleccionado = clienteSeleccionadoSpan.textContent;
+
+        // Hacer solicitud AJAX para obtener la foto del cliente seleccionado
+        fetch(`/obtenerFotoCliente?cliente=${clienteSeleccionado}`)
+            .then(response => response.json())
+            .then(data => {
+                // Asignar la foto del cliente al elemento img
+                fotoCliente.src = data.foto;
+                fotoCliente.alt = clienteSeleccionado;
+            })
+            .catch(error => {
+                console.error('Error al obtener la foto del cliente:', error);
+            });
+    });
 });
 
 
