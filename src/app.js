@@ -982,6 +982,42 @@ app.post('/convertirHtmlAImagen', async (req, res) => {
         res.status(500).send('Error al convertir HTML a imagen');
     }
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+
+
+
+
+app.get('/clientes', (req, res) => {
+    // Realiza una consulta a la base de datos para obtener los nombres y fotos de los clientes
+    connection.query('SELECT nombre, foto FROM clientes', (error, results, fields) => {
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        // Envia los resultados de la consulta como respuesta en formato JSON
+        res.json(results);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

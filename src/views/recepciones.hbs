@@ -269,12 +269,16 @@
         <form action="/procesar_formulario" method="POST">
         <div class="fields">
             <div class="input-field">
-            <label for="cliente">Cliente Costo:</label>
-            <select id="cliente" name="cliente" required>
-                {{#each clientes}}
-                    <option value="{{this.nombre}}">{{this.nombre}}</option>
-                {{/each}}
-        </select><br><br>
+       <!-- Primer select -->
+<label for="cliente">Cliente Costo:</label>
+<!-- Primer select -->
+<label for="cliente">Cliente Costo:</label>
+<select id="clienteCosto" name="cliente" required>
+    {{#each clientes}}
+        <option value="{{this.nombre}}">{{this.nombre}}</option>
+    {{/each}}
+</select><br><br>
+
         </div>
           <div class="input-field">
               <label for="fecha">Fecha:</label>
@@ -417,7 +421,18 @@ $(document).ready(function() {
         alert('Ocurrió un error de red. Por favor, verifica tu conexión e inténtalo de nuevo.');
     }
 });
+  // Obtener referencia al select y al campo oculto
+    const clienteCostoSelect = document.getElementById('clienteCosto');
+    const clienteSeleccionadoInput = document.getElementById('clienteSeleccionado');
 
+    // Agregar evento onchange al primer select
+    clienteCostoSelect.addEventListener('change', function() {
+        // Obtener el valor seleccionado en el primer select
+        const selectedCliente = clienteCostoSelect.value;
+
+        // Asignar el valor seleccionado al campo oculto
+        clienteSeleccionadoInput.value = selectedCliente;
+    });
 
     </script>
 </body>
