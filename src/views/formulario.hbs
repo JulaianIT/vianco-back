@@ -32,7 +32,7 @@ margin: 0;
 
 h1{
     
-    font-size: 21px;
+    font-size: 27px;
     padding: 7px;
     margin: 0;
 text-align: center;
@@ -48,11 +48,11 @@ p{
 
 }
 .contenido{
-    
+  
    top: -100px;
     position: relative;
-    left: 20px;
-    max-width: 800px;
+    left: 20%;
+    max-width: 850px;
        
       
         border-radius: 6px;
@@ -85,8 +85,8 @@ p{
         flex-wrap: wrap;
 }
 table td{
-    border: 2px solid #666567; /* Cambia #ff0000 al color que desees */
-
+    border: 5px solid #666567; /* Cambia #ff0000 al color que desees */
+    margin: 10px;
     font-size: 15px;
     padding: 10px;
 
@@ -105,10 +105,8 @@ strong {
 }
 
 .LETRA {
-    border: #fff;
+  
     display: flex;
-    justify-content: space-between; /* Alinea los elementos a los extremos */
-    align-items: center; /* Alinea verticalmente los elementos */
 }
 
 .info {
@@ -157,7 +155,7 @@ background-color: #666567;
 }
   .volver-btn {
     position: relative;
-    left: 520px;
+    left: 52%;
     top: -70px;
             background-color:#90c9a7;
             color: #000;
@@ -180,7 +178,7 @@ background-color: #666567;
 
         .volver {
             position: relative;
-    left: 120px;
+    left: 20%;
     top: -70px;
             background-color:#90c9a7;
             color: #000;
@@ -252,7 +250,8 @@ background-color: #666567;
 }
  
  strong{
-padding: 10PX;
+padding: 5PX;
+font-size: 25px;
 
  }
 .respuestas{
@@ -273,7 +272,7 @@ padding: 0px;
 
 
   position: relative;
-    left: 62px;
+    left: 15%;
     top: -70px;
             background-color:#90c9a7;
             color: #000;
@@ -367,15 +366,11 @@ top: -1490px;
 .selecione{
 
     position: relative;
-left: 920px;
-top: -1490px;
-padding: 20px;
-background-color: #90c9a7;
 }
 .felii{
 position: relative;
-left: 990px;
-top: -1790px;
+left: 28%;
+top: -95px;
 width: 700px;
 font-size: 30px;
 background-color: #fff;
@@ -384,7 +379,7 @@ text-align: center;
 
 }
 #fotoConductor{
-    left: 20px;
+    left: 15px;
 position: relative;
 width: 200px;
 align-items: center
@@ -392,16 +387,63 @@ align-items: center
 }
 #fotoVehiculo{
 
-  left: 40px;
 position: relative;
-width: 220px;
+width: 100%;
 align-items: center
 
+}
+.respuestas {
+    text-align: center;
+    font-size: 25px; /* Ajusta el tamaño de la fuente para las respuestas */
+    width: 500px; /* Ajusta el ancho de las casillas de respuestas */
+}
+
+.respuestass {
+
+    text-align: center;
+    font-size: 25px; /* Ajusta el tamaño de la fuente para las respuestas */
+    width: 500px; /* Ajusta el ancho de las casillas de respuestas */
+}
+header{
+background-color: #fff;
+
+
+}
+.selecione{
+padding: 15px;
+        background-color: #90c9a7;
+    border: solid 10px #90c9a7;
+    margin: 20px;
+    top: 30px;
+    position: relative;
+    left: 30%;
+
+
+}
+body{
+
+
+    
+}
+.texto{
+    margin: 10px;
+    margin-right: 30px;
+ text-align: justify;
+ font-size: 30px;
 }
 
     </style>
 </head>
 <body>
+       <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+    </header>
+<div class="input-field">
+    <h2 class="selecione">{{datosFormulario.cliente}}</h2>
+</div> 
     <main>
         <div class="contenido" id="contenido">
           <div class="protocolo">
@@ -473,24 +515,16 @@ align-items: center
                  
                 </tr>
                           
-            <td class="LETRA" colspan="1">
-   
-           
-      
+            <td class="" colspan="6">
              <div class="texto">
-                <br>
-                 <br>
             "Hola Si desea realizar modificaciones a la reserva de transporte, por favor comuníquese por los siguientes medios: <br><br>
             <img  id="gmael" src="/gmail.jpg" alt="">operaciones@viancotetransporta.com <br>
              <img id="whaas" src="/whatsapp-icon.png" alt="">+57 315 670 3770 <br> 
              <br>
-            La cancelación y cambios se deben realizar 12 horas antes del servicio. La compañía Vianco Te Transporta SAS protegerá sus datos personales y no serán de uso público ni comercial. Vianco Te Transporta SAS se abstiene de realizar servicios de turismo y transporte o actividad en el cual involucra el Turismo Sexual infringiendo la Ley 679 de 2001."
-                    
-</td>
+            La cancelación y cambios se deben realizar 12 horas antes del servicio. La compañía Vianco Te Transporta SAS protegerá sus datos personales y no serán de uso público ni comercial. Vianco Te Transporta SAS se abstiene de realizar servicios de turismo y transporte o actividad en el cual involucra el Turismo Sexual infringiendo la Ley 679 de 2001."    
+            </td>
                 </tr>
-                
             </table>
-            <img id="qr" src="/Codigo QR_Mesa de trabajo 1 (1).png" alt="">
             <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
@@ -499,9 +533,7 @@ align-items: center
 <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 <button class="volvera"  onclick="redireccionarAGmail()">Ir a Gmail</button>
 
-<div class="input-field">
-    <h2 class="selecione">{{datosFormulario.cliente}}</h2>
-</div> <!-- Cerrar el select aquí -->
+<!-- Cerrar el select aquí -->
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
