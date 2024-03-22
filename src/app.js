@@ -10,6 +10,7 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const html2canvas = require('html2canvas');
+const nodemailer = require('nodemailer');
 
 
 function htmlToPdf(html, options, callback) {
@@ -1082,6 +1083,80 @@ connection.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa],
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+// Configurar body-parser para permitir cuerpos de solicitud más grandes (50 MB en este caso)
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+
+app.post('/enviar-email', upload.single('imagen'), (req, res) => {
+    // Extraer los datos del cuerpo de la solicitud
+    const { destinatario, asunto, cuerpoHtml } = req.body;
+    const imagenFile = req.file;
+
+    // Verificar si todos los campos requeridos están presentes
+    if (!destinatario || !asunto || !cuerpoHtml || !imagenFile) {
+        res.status(400).send('Faltan campos requeridos.');
+        return;
+    }
+
+    // Configurar el transporte del correo electrónico
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'recepciones.vianco@gmail.com',
+            pass: 'xaezkqbzfsuegqhm'
+        }
+    });
+
+// Agrega tu texto adicional al cuerpo del correo electrónico
+const textoAdicional = '<p>Texto adicional que quieres agregar junto con la imagen:</p>';
+const cuerpoHtmlConTexto = cuerpoHtml + textoAdicional;
+
+// Configurar los detalles del correo electrónico
+const mailOptions = {
+    from: 'recepciones.vianco@gmail.com',
+    to: destinatario,
+    subject: 'Recogida de transporte en el Aeropuerto Internacional El Dorado, Bogotá Colombia. Recibidos',
+    html: `
+        <p>Cordial Saludo,</p>
+        <p>Gracias por visitar la increíble ciudad de Bogotá, anexo al correo encontrará una imagen la confirmación del transporte solicitado con los datos del conductor(es), vehículo(s) asignado(s), el itinerario, los términos y condiciones.</p>
+        <p>Dentro del Aeropuerto frente a la puerta internacional o nacional, lo esperará un integrante del equipo Vianco Te Transporta para trasladarlo al Hotel.</p>
+        <p>Gracias por preferirnos, !Vianco te transporta a un mundo lleno de experiencias¡</p>
+    `,
+    attachments: [
+        {
+            filename: imagenFile.originalname, // Nombre de la imagen original
+            content: imagenFile.buffer, // Contenido de la imagen en formato buffer
+            encoding: 'base64' // Codificación de la imagen
+        }
+    ]
+};
+
+
+
+
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+            res.status(500).send('Error al enviar el correo electrónico');
+        } else {
+            console.log('Correo electrónico enviado:', info.response);
+            res.status(200).send('Correo electrónico enviado correctamente');
+        }
+    });
+});
 
 
 
