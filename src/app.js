@@ -1138,7 +1138,7 @@ const mailOptions = {
         {
             filename: imagenFile.originalname, // Nombre de la imagen original
             content: imagenFile.buffer, // Contenido de la imagen en formato buffer
-            encoding: 'base64' // Codificación de la imagen
+            encoding: 'base64' // Codificación de la imagenT
         }
     ]
 };
@@ -1158,6 +1158,32 @@ const mailOptions = {
     });
 });
 
+
+
+
+// Ruta pa
+
+app.get('/seleccionar_hotel', (req, res) => {
+    res.render('seleccionar_hotel'); // Renderiza la vista seleccionar_hotel.hbs
+});
+
+
+
+app.get('/tarifas', (req, res) => {
+    const hotelSeleccionado = req.query.hotel; // Obtén el nombre del hotel seleccionado desde la consulta
+
+    // Construye la ruta de la imagen basada en el nombre del hotel
+    const rutaImagen = path.join(__dirname, 'public', 'imagenes', `${hotelSeleccionado}.png`);
+
+    // Envía la imagen al cliente
+    res.sendFile(rutaImagen, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(404).send('Imagen no encontrada para el hotel seleccionado');
+        }
+    });
+});
+// 
 
 
 // Iniciar el servidor

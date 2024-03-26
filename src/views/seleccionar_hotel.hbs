@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Hotel</title>
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif; /* Tipo de fuente para el cuerpo del documento */
+            background-color: rgb(144, 201, 167,0.6); /* Color de fondo */
+            margin: 0; /* Elimina los márgenes predeterminados */
+            padding: 0; /* Elimina el relleno predeterminado */
+        }
+header{
+    background-color: #fff;
+
+
+}
+#vigilado{
+
+    position: relative;
+    left: 1220px;
+    top: -40px;
+}
+#logo{
+
+    position: relative;
+    left: 200px;
+    top: -25px;
+}
+
+
+
+
+
+
+
+
+
+
+    
+        .container {
+            border: solid 5px #333;
+            height: 700px;
+            left: 250px;
+            width: 700px;
+            position: relative;
+            top: 300px;
+            text-align: center; /* Alinea el contenido al centro */
+            background-color: #fff; /* Color de fondo del contenedor */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 20px; /* Espaciado interior */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+        }
+
+        h1 {
+            margin-bottom: 20px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+
+        label {
+            display: block; /* Muestra los elementos de etiqueta como bloques */
+            margin-bottom: 10px; /* Espacio inferior */
+            font-weight: bold; /* Texto en negrita */
+        }
+
+        select {
+            width: 100%; /* Ancho completo */
+            padding: 10px; /* Relleno */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 4px; /* Bordes redondeados */
+            margin-bottom: 20px; /* Espacio inferior */
+            font-size: 16px; /* Tamaño de fuente */
+        }
+
+        button {
+            background-color: #007bff; /* Color de fondo del botón */
+            color: #fff; /* Color del texto */
+            padding: 10px 20px; /* Relleno */
+            border: none; /* Sin borde */
+            border-radius: 4px; /* Bordes redondeados */
+            cursor: pointer; /* Cursor de puntero */
+            font-size: 16px; /* Tamaño de fuente */
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Cambia el color de fondo al pasar el ratón */
+        }
+           footer{
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+            top: 297px;
+            margin: 0;
+        }
+        footer section{
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a{
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover{
+            color: rgb(162, 204, 170);
+        }
+        footer p{
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad{
+            font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        #sele{
+            font-size: 30px;
+
+
+        }
+        h1{
+            font-size: 50px;
+
+        }
+        /* Estilos para el label */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            margin-bottom: 50px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el select */
+        select {
+            text-align: justify;
+            width: 100%; /* Ancho completo */
+            padding: 15px; /* Relleno */
+            border: 2px solid #ccc; /* Borde */
+            border-radius: 6px; /* Bordes redondeados */
+            font-size: 23px; /* Tamaño de fuente */
+            margin-bottom: 20px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+
+        /* Estilos para el botón */
+        button {
+         
+            background-color: #90c9a7; /* Color de fondo del botón */
+            color: #fff; /* Color del texto */
+            padding: 20px 50px; /* Relleno */
+            border: none; /* Sin borde */
+            border-radius: 4px; /* Bordes redondeados */
+            cursor: pointer; /* Cursor de puntero */
+            font-size: 16px; /* Tamaño de fuente */
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+
+        button:hover {
+            background-color: #d9d9d9; /* Cambia el color de fondo al pasar el ratón */
+        }
+        .ver{
+            border-radius: 10px; /* Bordes redondeados */
+
+            font-size: 30px;
+
+        }
+       /* Estilos para la imagen en pantalla completa */
+        #imagenPantallaCompleta {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro semi-transparente */
+            display: none; /* Ocultar inicialmente */
+            justify-content: center;
+            align-items: center;
+            z-index: 999; /* Asegura que la imagen esté encima de otros elementos */
+        }
+        #imagenPantallaCompleta img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        #cerrarPantallaCompleta {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 120px;
+            cursor: pointer;
+        }
+        #imagenHotel{
+            position: relative;
+            top: -370PX;
+            left: 1170px;
+            width: 220px;
+
+
+
+        }
+        .pantalla{   
+            left: 110px;
+            position: relative;
+            top: -59px;    
+            background-color: #90c9a7; /* Color de fondo del botón */
+            color: #fff; /* Color del texto */
+            padding: 20px 50px; /* Relleno */
+            border: none; /* Sin borde */
+            border-radius: 10px; /* Bordes redondeados */
+            cursor: pointer; /* Cursor de puntero */
+            font-size: 26px; /* Tamaño de fuente */
+            transition: background-color 0.3s ease; /* Transición suave */
+
+        }
+    .pantalla:hover{
+            background-color: #d9d9d9; /* Cambia el color de fondo al pasar el ratón */
+
+
+    }
+     .volver-btn:hover {
+            background-color: #d9d9d9;
+            }
+       
+                 .volver-btn {
+                    position:relative;
+                    left:40%;
+                    top: 160px;
+
+                    
+           background-color:#90c9a7;
+            color: #fff; /* Color del texto */
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px; /* Bordes redondeados */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            }
+            .ver{
+                position:relative;
+                    left: -50%;
+                    top: 3px;
+
+                    
+           background-color:#90c9a7;
+            color: #fff; /* Color del texto */
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px; /* Bordes redondeados */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+
+
+            }
+             .ver:hover {
+            background-color: #d9d9d9;
+            }
+    </style>
+</head>
+<body>
+    <header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="../imagenes/logo vianco.png"/>
+    <img id="vigilado" src="../imagenes/vigilado.png"/>
+    <hr>
+</header>
+    <div class="container">
+        <!-- Encabezado -->
+        <h1>SELECCIONE HOTEL</h1>
+        <hr>
+        <br>
+        <br>
+        <br>
+        <br>
+        
+        <!-- Formulario de selección de hotel -->
+        <form id="tarifasForm" method="get">
+            <!-- Etiqueta del select -->
+            <label id="sele"  for="hotel">Selecciona para ver tarifas:</label>
+            <br>
+
+            <!-- Select con opciones de hotel -->
+            <select name="hotel" id="hotel">
+              
+                            <option value="HYATT">H01. HOTEL GRAND HYATT</option>
+                            <option value="HILTON">H02. HOTEL HILTON CORFERIAS</option>
+                            <option value="">H03. HOTEL HILTON BOGOTA (72)</option>
+                            <option value="">H04. HOTEL NH COLLECTION HACIENDA</option>
+                            <option value="">H05. HOTEL NH COLLECTION TELEPORT</option>
+                            <option value="">H06. HOTEL NH COLLECTION WTC</option>
+                            <option value="">H07. HOTEL NH COLLECTION TERRA 100</option>
+                            <option value="">H08. HOTEL NH COLLECTION ANDINO</option>
+                            <option value="">H09. HOTEL NH PAVILLON</option>
+                            <option value="">H10. HOTEL NH URBAN 93</option>
+                            <option value="">H11. HOTEL NH URBAN 26</option>
+                            <option value="">H12. HOTEL AVANI ZONA T</option>
+                            <option value="">H13. HOTEL ESTELAR PARQUE 93</option>
+                            <option value="">H14. HOTEL ESTELAR CALLE 100</option>
+                            <option value="">H20. HOTEL CLUB EL NOGAL</option>
+                            <option value="">E01. SIKA</option>
+                            <option value="">OFICINAS PRINCIPALES</option>
+                            <option value=""></option>
+                <!-- Agrega más opciones según tus hoteles -->
+            </select>
+            <!-- Botón para enviar el formulario -->
+            
+        <br>
+        <br>
+        <br>
+        <br>
+                                  <a href="/" class="volver-btn">Volver al Menú</a>
+
+         <input class="ver"   type="button" value="Ver imagen" onclick="mostrarImagen()">
+            <input class="pantalla"  type="button" value="Ver pantalla completa" onclick="verPantallaCompleta()">
+    </div>
+
+
+
+
+        </form>
+    </div>
+        <!-- Contenedor de la imagen del hotel -->
+      <div id="imagenHotel" >
+        <h2>TARIFARIO</h2>
+        <!-- Aquí se mostrará la imagen del hotel seleccionado -->
+    </div>
+     <div id="imagenPantallaCompleta">
+    <span id="cerrarPantallaCompleta" onclick="cerrarPantallaCompleta()">×</span>
+    <img id="imagenPantallaCompletaSrc">
+</div>
+    <!-- Aquí se mostrará la imagen del hotel seleccionado -->
+</div>
+
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+        </section>
+    </footer>
+    <!-- Script JavaScript -->
+    <script>
+   // Función para cambiar la imagen del hotel seleccionado
+        function cambiarImagenHotel(selectedHotel) {
+            var imagenHotel = document.getElementById('imagenHotel');
+            var img = document.createElement('img');
+            img.src = '/imagenes/'+selectedHotel+'.png';
+            imagenHotel.innerHTML = ''; // Limpiar la sección de la imagen anterior
+            imagenHotel.appendChild(img);
+        }
+
+        // Escucha el evento de envío del formulario
+        document.getElementById('tarifasForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que el formulario se envíe automáticamente
+            var selectedHotel = document.getElementById('hotel').value;
+            // Cambia la imagen del hotel seleccionado
+            cambiarImagenHotel(selectedHotel);
+        });
+ // Función para mostrar la imagen del hotel seleccionado
+        function mostrarImagen() {
+            var selectedHotel = document.getElementById('hotel').value;
+            var imagenHotel = document.getElementById('imagenHotel');
+            var img = document.createElement('img');
+            img.src = '/imagenes/' + selectedHotel + '.png';
+            imagenHotel.innerHTML = '';
+            imagenHotel.appendChild(img);
+        }
+              // Función para ver la imagen en pantalla completa
+        function verPantallaCompleta() {
+            var selectedHotel = document.getElementById('hotel').value;
+            var imagenPantallaCompleta = document.getElementById('imagenPantallaCompleta');
+            var imgPantallaCompleta = document.getElementById('imagenPantallaCompletaSrc');
+            imgPantallaCompleta.src = '/imagenes/' + selectedHotel + '.png';
+            imagenPantallaCompleta.style.display = 'flex'; // Mostrar la imagen en pantalla completa
+        }
+             // Función para cerrar la imagen en pantalla completa
+        function cerrarPantallaCompleta() {
+            var imagenPantallaCompleta = document.getElementById('imagenPantallaCompleta');
+            imagenPantallaCompleta.style.display = 'none'; // Ocultar la imagen en pantalla completa
+        }
+
+        // Función para redirigir al usuario para ver la tarifa
+        function verTarifa() {
+            var selectedHotel = document.getElementById('hotel').value;
+            window.location.href = '/tarifas?hotel=' + selectedHotel;
+        }
+    </script>
+</body>
+</html>
