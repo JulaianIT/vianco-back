@@ -2,119 +2,199 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Principal</title>
-    <link rel="stylesheet" href="menu.css">
-      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            background-image: url('/imagenes/carro menu.png');
-    background-size: 100% auto; /* Ajusta la anchura al 100% y la altura de forma automática */
-    background-repeat: no-repeat;
-
-           }
-
-
-        
-        .container_menu {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        header {
-            padding: 2% 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.8);
-        }
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        nav ul li {
-            margin-right: 20px;
-        }
-        nav ul li:last-child {
-            margin-right: 0; /* Remove margin from last li */
-        }
-        nav ul li a {
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-        }
-        footer {
-            background-color: rgba(34, 34, 34, 0.8);
-            color: #fff;
-            padding: 20px 5%;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-        }
-        footer a {
-            color: #fff;
-            text-decoration: none;
-        }
-        footer p {
-            margin: 2px 0;
-        }
-        @media screen and (max-width: 768px) {
-            header {
-                padding: 5% 10%;
-                flex-direction: column;
-                align-items: center;
-            }
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-            }
-            nav ul li {
-                margin: 10px 0;
-            }
-            footer {
-                padding: 30px 10%;
-            }
-        }
-          .volver-btn {
-            background-color: #90c9a7;
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .volver-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Document</title>
 </head>
+<style>
+*{
+    
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+body{
+        background-color: rgb(144,201,167, 0.5);
+
+
+}
+header{
+
+    background-color: white;
+
+
+
+}
+nav{
+    max-width: 100%;
+    margin: auto;
+    background-color: #666567;
+    font-size: 30px;
+    margin-top: 0px;
+              border: solid 6px #d9d9d9;
+              
+
+
+}
+.menu-horizontal{
+text-transform: uppercase;
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+
+
+}
+.menu-horizontal >li > a{
+
+    display: block;
+    padding: 30px 15px;
+    color: white;
+    text-decoration: none;
+
+
+}
+.menu-horizontal >li:hover{
+
+
+    background-color: #d9d9d9;
+}
+.menu-vertical{
+    text-transform: uppercase;
+    position: absolute;
+    display: none;
+    list-style: none;
+    width: 300px;
+    background-color: rgb(0,0,0, .6) ;
+
+
+}
+.menu-horizontal li:hover .menu-vertical{
+    display: block;
+
+}
+.menu-vertical li:hover{
+
+    background-color: black;
+
+}
+.menu-vertical li a{
+    text-decoration: none;
+    display: block;
+    color: white;
+  padding: 30px;
+
+
+}
+
+@media only screen and (max-width: 600px) {
+  /* Estilos para pantallas más pequeñas, como teléfonos móviles */
+  body {
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+  }
+  .menu-horizontal {
+    font-size: 20px; /* Tamaño de fuente más pequeño para el menú horizontal */
+  }
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+   footer{
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+         
+            margin: 0;
+        }
+        footer section{
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a{
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover{
+            color: rgb(162, 204, 170);
+        }
+        footer p{
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad{
+            font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        #sele{
+            font-size: 30px;
+
+
+        }
+        h1{
+            font-size: 50px;
+
+        }
+        /* Estilos para el label */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            margin-bottom: 50px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+        .fond{
+          width: 100%;
+    
+      
+        }
+
+
+
+</style>
+
 <body>
-    <header>
-        <div class="container_menu">
-            <div class="menu">
-                <nav>
-                    <ul>
-                        <li><a href="#" id="selected">Home</a></li>  
+       <header>
+         <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+    <nav>
+    <label class="logo" for=""></label>
+
+      <ul class="menu-horizontal">
+                      
                         {{#if isOperative}}
-                        <li><a href="#">Operaciones</a> 
-                            <ul>
+                        <li><a class="active" href="">Operaciones</a> 
+                            <ul class="menu-vertical" >
                                 <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="/consulta-conductores">Conductores</a></li>
                                 <li><a href="/consulta-contabilidad">ADmin vehiculo</a></li>
@@ -124,63 +204,55 @@
                         {{/if}}
 
                         {{#if isAdmin}}
-                        <li><a href="">Gerencia</a> 
-                            <ul>
-                                <li><a href="#">Reportes</a></li>
-                                <li><a href="#">Estadísticas</a></li>
-                                <li><a href="#">Configuración</a></li>
-                                <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
+                        <li><a class="menu-horizontal" href="">Gerencia</a> 
+                            <ul class="menu-vertical">
+                            <li ><a href="#">Reportes</a></li>
+                            <li><a href="#">Estadísticas</a></li>
+                            <li><a href="#">Configuración</a></li>
+                            <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
                             </ul>
                         </li>
                         {{/if}}
                         {{#if isExecutive}}
-                        <li><a href="">Ejecutivo</a>
-                            <ul>
+                        <li><a class="menu-horizontal" href="">Ejecutivo</a>
+                            <ul class="menu-vertical">
                                 <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
                                 <li><a href="#">COTIZACIONES</a></li>
                                 <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
                                 <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
-                                 
                                 <li><a href="#">METAS</a></li>
-                          
                             </ul>
                         </li>
                         {{/if}}
-                        <li><a href="#">Soporte IT</a> 
-                            <ul>
+                        <li><a  class="menu-horizontal" href="#">Soporte IT</a> 
+                            <ul class="menu-vertical">
                                 <li><a href="#">Citas</a></li>
-                              
                                 <li><a href="#">Ayuda</a></li>
                             </ul>
                         </li>
                       
+                      <li><a href="/logout" id="selected">CERRAR SESSION</a></li>  
 
                     </ul>
-                    
-                </nav>
-            </div>
-        </div>
-    </header>
-    <footer>
-        <p>Bienvenido    {{name}}</p>
-     <hr>
-     <br>
-     <br>
+</nav>
+<div class="fondo">
 
-       
-        <p>Copyrigt soporteVianco</p>
-        <nav>
-            <ul>
-                {{#if name }}
-                    <li id="cerrar" class="nav-item px-4">
-                        <a href="/logout">Cerrar Sesión</a>
-                    </li>
-                {{else}}
-                    <li><a href="/login/index">Iniciar Sesión</a></li>
-                    <li><a href="/login/register">Registrarse</a></li>
-                {{/if}}
-            </ul>
-        </nav>
-    </footer>
+        <img class="fond" src="/imagenes/carro menu.png" alt="">
+
+
+
+
+</div>
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+   
 </body>
 </html>
