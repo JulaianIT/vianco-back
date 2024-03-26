@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
-            background-color: #f2f2f2; /* Color de fondo */
+            background-color: #d9d9d9; /* Color de fondo */
         }
         header {
             background-color: #ffffff; /* Color de fondo del encabezado */
@@ -23,14 +23,23 @@
             align-items: center;
             margin: 0; /* Asegura que no haya margen en el encabezado */
         }
-        #membrete {
-            margin: 0; /* Asegura que no haya margen en el membrete */
-        }
-        #logo, #vigilado {
-            max-width: 100%; /* Asegura que las imágenes no se desborden del contenedor */
-            height: auto; /* Hace que las imágenes mantengan su proporción original */
-        }
+#logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+
         .container {
+            background-color: rgb(144,201,167,0.5);
+           border: solid 5px  #666567;
+            top: 60px;
             max-width: 800px; /* Limita el ancho del contenido para que no sea demasiado ancho en pantallas grandes */
             margin: 0 auto; /* Centra el contenido horizontalmente */
             padding: 20px;
@@ -99,6 +108,87 @@
             background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
             border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
         }
+         .input-field {
+        width: calc(100% / 2 - 15px);
+        margin-bottom: 20px;
+    }
+
+label {
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #2e2e2e;
+        margin-bottom: 5px;
+    }
+
+    input,
+     select {
+        width: 100%;
+        padding: 10px;
+        font-size: 25px;
+        border-radius: 5px;
+        border: 1px solid #aaa;
+        box-sizing: border-box;
+    }
+
+    select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23333" d="M6 5.196L.75.5h10.5L6 5.196z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) center;
+        background-size: 15px;
+    }
+
+    select:focus {
+        border-color: #888;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+     select option {
+        font-size: 25px;
+        font-weight: 400px;
+        color: #333;
+    }
+
+    a {
+        display: inline-block;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+
+    a:hover {
+        background-color: #d9d9d9;
+    }
+input:is(focus,:valid){
+    box-shadow: 0 3 px 6px rgb(0, 0, 0,0.13) ;
+
+
+
+
+ }
+ h2{
+    color:#413d4b;
+    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: bold; /* Aplicar negrita */
+
+
+
+ }
+ form label{
+font-size: 25PX;
+    text-transform: uppercase;
+
+    font-weight: bold; /* Aplicar negrita */
+
+ }
     </style>
 </head>
 <body>
@@ -107,6 +197,10 @@
     <img id="membrete" src="/imagenes/menbrete.png"/>
     <img id="logo" src="../imagenes/logo vianco.png"/>
     <img id="vigilado" src="../imagenes/vigilado.png"/>
+    <br>
+<br>
+<hr>
+
 </header>
 
 <div class="container">
