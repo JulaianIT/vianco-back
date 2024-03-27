@@ -134,11 +134,13 @@ app.get("/", (req, res) => {
         const rolesString = req.session.roles;
         const roles = Array.isArray(rolesString) ? rolesString : [];
         
+
+        const isControl = roles.includes('seguimiento');
         const isAdmin = roles.includes('gerencia');
         const isExecutive = roles.includes('ejecutivo');
         const isOperative = roles.includes('operativo'); // Verificar si el usuario tiene el rol de 'operativo'
 
-        res.render("home", { name: req.session.name, isAdmin, isExecutive, isOperative }); // Pasar los roles a la plantilla
+        res.render("home", { name: req.session.name, isAdmin, isExecutive, isOperative,isControl }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
