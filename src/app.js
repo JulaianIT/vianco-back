@@ -110,9 +110,31 @@ app.post("/webhook", webhookHandler.handleWebhook);
 // Rutas para el login
 app.use("/login", loginRoutes);
 
+
+
+
+
+
+
+
+// Ruta para la programación de vehículos
 // Ruta para la programación de vehículos
 app.get("/programacion-vehiculos", (req, res) => {
     if (req.session.loggedin === true) {
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        
+        const ejecutivo1 = roles.includes('ejecutivo1');
+        const ejecutivo2 = roles.includes('ejecutivo2');
+        const ejecutivo3 = roles.includes('ejecutivo3');
+        const ejecutivo4 = roles.includes('ejecutivo4');
+        const ejecutivo5 = roles.includes('ejecutivo5');
+        const ejecutivo6 = roles.includes('ejecutivo6');
+        const ejecutivo7 = roles.includes('ejecutivo7');
+        const ejecutivo8 = roles.includes('ejecutivo8');
+        
+        const isExecutive = roles.includes('ejecutivo');
+        
         // Consulta SQL para obtener las bases y placas
         connection.query("SELECT base, placa FROM vehiculos", (error, results) => {
             if (error) {
@@ -121,12 +143,33 @@ app.get("/programacion-vehiculos", (req, res) => {
                 return;
             }
             // Renderizar la vista de programación de vehículos con los datos de las bases y placas
-            res.render("programacion/programacion", { basesPlacas: results });
+            res.render("programacion/programacion", { 
+                basesPlacas: results,
+                name: req.session.name, 
+                isExecutive, 
+                ejecutivo1, 
+                ejecutivo2, 
+                ejecutivo3,
+                ejecutivo4,
+                ejecutivo5,
+                ejecutivo6,
+                ejecutivo7,
+                ejecutivo8,
+                // Otros roles ejecutivos...
+            });
         });
     } else {
         res.redirect("/login/index");
     }
 });
+
+        
+
+
+
+
+
+
 
 // Ruta para la página principal
 app.get("/", (req, res) => {
@@ -134,13 +177,30 @@ app.get("/", (req, res) => {
         const rolesString = req.session.roles;
         const roles = Array.isArray(rolesString) ? rolesString : [];
         
+//EJECUTIVOS
+
+const ejecutivo1 = roles.includes('ejecutivo1');
+const ejecutivo2 = roles.includes('ejecutivo2');
+const ejecutivo3 = roles.includes('ejecutivo3');
+const ejecutivo4 = roles.includes('ejecutivo4');
+const ejecutivo5 = roles.includes('ejecutivo5');
+const ejecutivo6 = roles.includes('ejecutivo6');
+const ejecutivo7 = roles.includes('ejecutivo7');
+const ejecutivo8 = roles.includes('ejecutivo8');
+
+
+
+
+
+
+
 
         const isControl = roles.includes('seguimiento');
         const isAdmin = roles.includes('gerencia');
         const isExecutive = roles.includes('ejecutivo');
         const isOperative = roles.includes('operativo'); // Verificar si el usuario tiene el rol de 'operativo'
 
-        res.render("home", { name: req.session.name, isAdmin, isExecutive, isOperative,isControl }); // Pasar los roles a la plantilla
+        res.render("home",{ name: req.session.name, isAdmin, isExecutive, isOperative,isControl,ejecutivo1,ejecutivo2,ejecutivo3,ejecutivo4,ejecutivo5,ejecutivo6,ejecutivo7,ejecutivo8 }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
@@ -1186,6 +1246,44 @@ app.get('/tarifas', (req, res) => {
     });
 });
 // 
+
+
+
+
+
+
+//NOVEDADES CALLCENTER 
+app.get("/novedades_callcenter")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Iniciar el servidor
