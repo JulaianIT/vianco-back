@@ -845,63 +845,71 @@ app.post("/agregar-contabilidad", (req, res) => {
 
 
 // Ruta para el formulario
+// Ruta para el formulario
 app.get('/formulario', async (req, res) => {
     try {
-        // Consulta para obtener todos los clientes de la tabla "clientes"
-        connection.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
-            if (errorClientes) {
-                console.error('Error al obtener los clientes:', errorClientes);
-                res.status(500).send('Error al obtener los clientes');
-                return;
-            }
-
-            // Consulta para obtener todas las placas de la tabla "conductores"
-            connection.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
-                if (errorPlacas) {
-                    console.error('Error al obtener las placas de los conductores:', errorPlacas);
-                    res.status(500).send('Error al obtener las placas de los conductores');
+        if (req.session.loggedin === true) {
+            const rolesString = req.session.roles;
+            const roles = Array.isArray(rolesString) ? rolesString : [];
+        
+        const ejecutivo1 = roles.includes('ejecutivo1');
+        const ejecutivo2 = roles.includes('ejecutivo2');
+        const ejecutivo3 = roles.includes('ejecutivo3');
+        const ejecutivo4 = roles.includes('ejecutivo4');
+        const ejecutivo5 = roles.includes('ejecutivo5');
+        const ejecutivo6 = roles.includes('ejecutivo6');
+        const ejecutivo7 = roles.includes('ejecutivo7');
+        const ejecutivo8 = roles.includes('ejecutivo8');
+        
+        const isExecutive = roles.includes('ejecutivo');
+        
+            // Consulta para obtener todos los clientes de la tabla "clientes"
+            connection.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
+                if (errorClientes) {
+                    console.error('Error al obtener los clientes:', errorClientes);
+                    res.status(500).send('Error al obtener los clientes');
                     return;
                 }
 
-                // Los resultados de ambas consultas se pasan al renderizar la página
-                res.render('recepciones', { clientes: resultadosClientes, placas: resultadosPlacas });
+                // Consulta para obtener todas las placas de la tabla "conductores"
+                connection.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
+                    if (errorPlacas) {
+                        console.error('Error al obtener las placas de los conductores:', errorPlacas);
+                        res.status(500).send('Error al obtener las placas de los conductores');
+                        return;
+                    }
+
+                    // Los resultados de ambas consultas se pasan al renderizar la página
+                    res.render('recepciones', { 
+                        clientes: resultadosClientes, 
+                        placas: resultadosPlacas,
+                        isExecutive, 
+                        ejecutivo1, 
+                        ejecutivo2, 
+                        ejecutivo3,
+                        ejecutivo4,
+                        ejecutivo5,
+                        ejecutivo6,
+                        ejecutivo7,
+                        ejecutivo8,
+                    });
+                });
             });
-        });
+        } else {
+            res.redirect("/login/index");
+        }
     } catch (error) {
         console.error('Error al procesar la solicitud:', error);
         res.status(500).send('Error al procesar la solicitud');
     }
 });
-app.post('/obtener_conductor', (req, res) => {
-    const placaSeleccionada = req.body.placa;
 
-    // Realiza una consulta a la base de datos para obtener el conductor correspondiente a la placa
-    connection.query('SELECT conductor, celular, foto FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
-        if (error) {
-            console.error('Error al obtener el conductor:', error);
-            res.status(500).json({ error: 'Error al obtener el conductor' });
-        } else {
-            if (results && results.length > 0) {
-                const conductor = results[0].conductor;
-                const celular = results[0].celular;
-                let fotoURL = null; // Inicializa la URL de la foto como nula por defecto
-                if (results[0].foto) {
-                    // Si hay una foto en la base de datos, conviértela a Base64 y forma la URL
-                    const fotoBase64 = results[0].foto.toString('base64');
-                    fotoURL = `data:image/jpeg;base64,${fotoBase64}`;
-                }
-                res.json({ conductor, celular, fotoURL });
-            } else {
-                res.status(404).json({ error: 'Conductor no encontrado para la placa seleccionada' });
-            }
-        }
-    });
+app.post('/obtener_conductor', (req, res) => {
+    // Lógica para obtener el conductor...
 });
 
-
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
+
 
 /// Modifica la función post para enviar los datos al Google Sheet
 // Ruta para procesar el formulario
