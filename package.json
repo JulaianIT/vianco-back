@@ -26,7 +26,6 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.13",
     "path": "^0.12.7",
-    "pdfkit": "^0.14.0",
     "puppeteer": "^22.5.0",
     "webhook": "^0.0.2"
   },

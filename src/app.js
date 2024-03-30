@@ -7,7 +7,6 @@ const multer = require('multer');
 const upload = multer();
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const html2canvas = require('html2canvas');
 const nodemailer = require('nodemailer');
@@ -972,7 +971,6 @@ app.get('/mostrar_formulario', (req, res) => {
     const datosFormulario = req.query;
 
     // Generar el PDF
-    const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream('formulario.pdf'));
     doc.fontSize(12);
     doc.fillColor('black');
