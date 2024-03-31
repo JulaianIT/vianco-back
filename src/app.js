@@ -49,11 +49,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 const connection = mysql.createConnection({
-    host: "69.61.31.131",
-    user: "viancote_soporte",
-    password: "MXPwPzz4zlU=",
-    database: "viancote_nodelogin"
+    host: "b1pvtt5x9m2s9faoklk5-mysql.services.clever-cloud.com",
+    database: "b1pvtt5x9m2s9faoklk5",
+    user: "u3nx3nmdc4roczln",
+    port: "3306",
+    password: "Ga3RgQaClsXVn4ZD50Vd",
 });
+
 
 // Función para enviar un ping a la base de datos periódicamente
 function sendPing() {
