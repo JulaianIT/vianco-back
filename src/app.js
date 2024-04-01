@@ -972,7 +972,9 @@ app.get('/mostrar_formulario', (req, res) => {
     // Obtener los datos del formulario de la consulta
     const datosFormulario = req.query;
 
-    // Generar el PDF
+    // Crear un nuevo documento PDF
+    const doc = new PDFDocument(); // Crea un nuevo documento PDF
+
     doc.pipe(fs.createWriteStream('formulario.pdf'));
     doc.fontSize(12);
     doc.fillColor('black');
@@ -989,7 +991,6 @@ app.get('/mostrar_formulario', (req, res) => {
     // Renderizar el formulario.hbs y pasar los datos del formulario
     res.render('formulario', { datosFormulario });
 });
-
 // Ruta para descargar el PDF
 app.get('/descargar_pdf', (req, res) => {
     // Renderizar la plantilla HTML con los datos del formulario
