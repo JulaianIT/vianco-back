@@ -7,9 +7,11 @@ const multer = require('multer');
 const upload = multer();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const html2canvas = require('html2canvas');
 const nodemailer = require('nodemailer');
+
 
 
 function htmlToPdf(html, options, callback) {
@@ -973,8 +975,7 @@ app.get('/mostrar_formulario', (req, res) => {
     const datosFormulario = req.query;
 
     // Crear un nuevo documento PDF
-    const doc = new PDFDocument(); // Crea un nuevo documento PDF
-
+    const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream('formulario.pdf'));
     doc.fontSize(12);
     doc.fillColor('black');
@@ -987,7 +988,6 @@ app.get('/mostrar_formulario', (req, res) => {
     doc.font('Helvetica-Bold').fillColor('black').text(`CELULAR: ${datosFormulario.celular_conductor}`).moveDown();
     doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
     doc.end();
-
     // Renderizar el formulario.hbs y pasar los datos del formulario
     res.render('formulario', { datosFormulario });
 });
@@ -1280,6 +1280,11 @@ app.get('/tarifas', (req, res) => {
     });
 });
 // 
+
+app.get('/novedades', (req, res) => {
+    res.render('novedades_Callcenter/novedades_Callcenter.hbs'); // Renderiza la vista seleccionar_hotel.hbs
+});
+
 
 
 

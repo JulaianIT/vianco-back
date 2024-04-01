@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form action="/novedades" method="post" id="novedadForm">
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha"><br>
+    <label for="turno">Turno:</label><br>
+    <input type="radio" id="turnoDia" name="turno" value="dia">
+    <label for="turnoDia">Día</label><br>
+    <input type="radio" id="turnoNoche" name="turno" value="noche">
+    <label for="turnoNoche">Noche</label><br>
+    <label for="realiza">Quién realiza la novedad:</label><br>
+    <input type="text" id="realiza" name="realiza"><br>
+    <label for="entrega">A quién se entrega la novedad:</label><br>
+    <input type="text" id="entrega" name="entrega"><br>
+    <label for="tripulacion">Tripulación:</label>
+    <input type="checkbox" id="tripulacion" name="tema" value="tripulacion" onclick="mostrarNovedad('tripulacion')"><br>
+    <div id="campoNovedad_tripulacion" style="display: none;">
+        <label for="novedad_tripulacion">Novedad:</label><br>
+        <textarea id="novedad_tripulacion" name="novedad_tripulacion" rows="4" cols="50"></textarea><br>
+    </div>
+    <label for="hoteleria">Hotelería:</label>
+    <input type="checkbox" id="hoteleria" name="tema" value="hoteleria" onclick="mostrarNovedad('hoteleria')"><br>
+    <div id="campoNovedad_hoteleria" style="display: none;">
+        <label for="novedad_hoteleria">Novedad:</label><br>
+        <textarea id="novedad_hoteleria" name="novedad_hoteleria" rows="4" cols="50"></textarea><br>
+    </div>
+    <label for="ejecutivos">Ejecutivos:</label>
+    <input type="checkbox" id="ejecutivos" name="tema" value="ejecutivos" onclick="mostrarNovedad('ejecutivos')"><br>
+    <div id="campoNovedad_ejecutivos" style="display: none;">
+        <label for="novedad_ejecutivos">Novedad:</label><br>
+        <textarea id="novedad_ejecutivos" name="novedad_ejecutivos" rows="4" cols="50"></textarea><br>
+    </div>
+    <label for="empresasPrivadas">Empresas Privadas:</label>
+    <input type="checkbox" id="empresasPrivadas" name="tema" value="empresasPrivadas" onclick="mostrarNovedad('empresasPrivadas')"><br>
+    <div id="campoNovedad_empresasPrivadas" style="display: none;">
+        <label for="novedad_empresasPrivadas">Novedad:</label><br>
+        <textarea id="novedad_empresasPrivadas" name="novedad_empresasPrivadas" rows="4" cols="50"></textarea><br>
+    </div>
+    <input type="submit" value="Enviar">
+</form>
+
+<script>
+function mostrarNovedad(id) {
+    const checkbox = document.getElementById(id);
+    const campoNovedad = document.getElementById('campoNovedad_' + id);
+    if (checkbox.checked) {
+        campoNovedad.style.display = 'block';
+    } else {
+        campoNovedad.style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>
