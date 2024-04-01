@@ -1300,18 +1300,37 @@ app.get("/novedades_callcenter")
 
 
 
+// Aquí es donde se van a enviar los campos de novedades callcenter a la base de datos 
+app.post('/novedades', (req, res) => {
+    const fecha = req.body.fecha;
+    const turno = req.body.turno;
+    const realiza = req.body.realiza;
+    const entrega = req.body.entrega;
+    const novedad_tripulacion = req.body.novedad_tripulacion || '';
+    const novedad_hoteleria = req.body.novedad_hoteleria || '';
+    const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
+    const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
+    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || ''; // Corregido aquí
+    const novedad_ACTAS = req.body.novedad_ACTAS || ''; // Nuevo campo
+    const otrasNovedades = req.body.novedad_OTRAS || '';
 
+    // Crear la consulta SQL para insertar la novedad en la base de datos
+    const sql = 'INSERT INTO novedades (fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS,otras_novedades) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)';
+    
+    // Ejecutar la consulta SQL
+    connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades], (error, results, fields) => {
+        if (error) {
+            console.error('Error al insertar la novedad en la base de datos:', error);
+            res.status(500).send('Error interno del servidor.');
+        } else {
+            console.log('Novedad guardada exitosamente en la base de datos.');
 
-
-
-
-
-
-
-
-
-
-
+            // Mostrar alert en el cliente
+            const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
+            res.send(alertScript);
+        }
+    });
+});
 
 
 
