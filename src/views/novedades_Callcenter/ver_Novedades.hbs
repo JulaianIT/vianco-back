@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Novedades por Fecha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #fechasContainer, #novedadesContainer {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+           
+           
+         
+            cursor: pointer;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 3px solid #000;
+            background-color: #fff;
+            color: black;
+        }
+        li:hover {
+            background-color: #90c9a7;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+  th, td {
+    border-radius: 3px;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 5px solid #fff;
+    position: relative;
+    left: -500px; /* Ajusta este valor según sea necesario */
+}
+        th {
+
+            font-size: 25px;
+
+            background-color: #f2f2f2;
+        }
+        td{
+            
+
+            font-size: 20px;
+
+        }
+                #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+#fechasContainer {
+    text-align: center;
+    font-size: 22px;
+}
+
+#fechasContainer p {
+    font-weight: bold;
+}
+
+
+    </style>
+</head>
+<body>
+           <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+    
+
+    </header>
+    <br>
+    <br>
+    <h1>NOVEDADES PENDIENTES</h1>
+    <br>
+    <br>
+    <div id="fechasContainer">
+        <!-- Aquí se mostrarán las fechas disponibles -->
+    </div>
+
+    <div id="novedadesContainer">
+        <!-- Aquí se mostrarán las novedades -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            obtenerTodasLasFechas(); // Llama a la función correcta para obtener las fechas disponibles
+        });
+
+        function obtenerTodasLasFechas() {
+            fetch('/api/obtener_fechas_disponibles')
+                .then(response => response.json())
+                .then(fechas => {
+                    const fechasContainer = document.getElementById('fechasContainer');
+                    fechasContainer.innerHTML = ''; // Limpiar contenido anterior
+
+                    if (fechas.length === 0) {
+                        fechasContainer.innerHTML = '<p>No hay fechas disponibles.</p>';
+                    } else {
+                        const listaFechas = document.createElement('ul');
+                        fechas.forEach(fecha => {
+                            // Formatear la fecha
+                            const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                            const listItem = document.createElement('li');
+                            listItem.textContent = fechaFormateada;
+                            listItem.style.cursor = 'pointer';
+                            listItem.addEventListener('click', function() {
+                                obtenerNovedadesPorFecha(fecha); // Pasa la fecha como argumento
+                            });
+                            listaFechas.appendChild(listItem);
+                        });
+                        fechasContainer.appendChild(listaFechas);
+                    }
+                })
+                .catch(error => console.error('Error al obtener las fechas disponibles:', error));
+        }
+
+        function obtenerNovedadesPorFecha(fechaSeleccionada) {
+            // Formatear la fecha como 'YYYY-MM-DD'
+            const fechaFormateada = new Date(fechaSeleccionada).toISOString().split('T')[0];
+
+            fetch(`/api/obtener_novedades?fecha=${fechaFormateada}`)
+                .then(response => response.json())
+                .then(novedades => {
+                    console.log('Novedades:', novedades);
+                    const novedadesContainer = document.getElementById('novedadesContainer');
+                    novedadesContainer.innerHTML = ''; // Limpiar contenido anterior
+
+                    if (novedades.length > 0) {
+                        const tabla = document.createElement('table');
+                        tabla.innerHTML = `
+                            <thead>
+                                <tr>
+                                    ${novedades[0].fecha ? '<th>FECHA</th>' : ''}
+                                    ${novedades[0].turno ? '<th>TURNO</th>' : ''}
+                                    ${novedades[0].realiza ? '<th>Realiza</th>' : ''}
+                                    ${novedades[0].entrega ? '<th>Entrega</th>' : ''}
+                                    ${novedades[0].novedad_tripulacion ? '<th>Novedad Tripulacion</th>' : ''}
+                                    ${novedades[0].novedad_hoteleria ? '<th>Novedad Hoteleria</th>' : ''}
+                                    ${novedades[0].novedad_ejecutivos ? '<th>Novedad Ejecutivos</th>' : ''}
+                                    ${novedades[0].novedad_empresas_privadas ? '<th>Novedad Empresas Privadas</th>' : ''}
+                                    ${novedades[0].NOVEDADES_TASKGO ? '<th>NOVEDADES_TASKGO</th>' : ''}
+                                    ${novedades[0].novedad_ACTAS ? '<th>Novedad ACTAS</th>' : ''}
+                                    ${novedades[0].otras_novedades ? '<th>Otras Novedades</th>' : ''}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${novedades.map(novedad => `
+                                    <tr>
+                                        <td>${novedad.fecha ? new Date(novedad.fecha).toLocaleDateString() : ''}</td>
+                                        <td>${novedad.turno || ''}</td>
+                                        <td>${novedad.realiza || ''}</td>
+                                        <td>${novedad.entrega || ''}</td>
+                                        <td>${novedad.novedad_tripulacion || ''}</td>
+                                        <td>${novedad.novedad_hoteleria || ''}</td>
+                                        <td>${novedad.novedad_ejecutivos || ''}</td>
+                                        <td>${novedad.novedad_empresas_privadas || ''}</td>
+                                        <td>${novedad.NOVEDADES_TASKGO || ''}</td>
+                                        <td>${novedad.novedad_ACTAS || ''}</td>
+                                        <td>${novedad.otras_novedades || ''}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        `;
+                        novedadesContainer.appendChild(tabla);
+                    } else {
+                        novedadesContainer.innerHTML = '<p>No hay novedades disponibles para esta fecha.</p>';
+                    }
+                })
+                .catch(error => console.error('Error al obtener las novedades:', error));
+        }
+    </script>
+</body>
+</html>

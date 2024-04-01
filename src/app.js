@@ -1281,25 +1281,18 @@ app.get('/tarifas', (req, res) => {
 });
 // 
 
+
+
+
+
+
+
 app.get('/novedades', (req, res) => {
     res.render('novedades_Callcenter/novedades_Callcenter.hbs'); // Renderiza la vista seleccionar_hotel.hbs
 });
 
-
-
-
-
-
-
 //NOVEDADES CALLCENTER 
 app.get("/novedades_callcenter")
-
-
-
-
-
-
-
 // Aquí es donde se van a enviar los campos de novedades callcenter a la base de datos 
 app.post('/novedades', (req, res) => {
     const fecha = req.body.fecha;
@@ -1334,16 +1327,55 @@ app.post('/novedades', (req, res) => {
 
 
 
+// Ruta para ver las novedades (visualización de página)
+app.get('/ver_novedades', (req, res) => {
+    res.render('novedades_Callcenter/ver_Novedades.hbs');
+});
+
+// Backend (Endpoint /api/obtener_fechas_disponibles)
+app.get('/api/obtener_fechas_disponibles', (req, res) => {
+    connection.query('SELECT DISTINCT fecha FROM novedades', (error, results) => {
+        if (error) {
+            console.error('Error al obtener las fechas disponibles:', error);
+            res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
+        } else {
+            const fechasDisponibles = results.map(result => result.fecha);
+            res.json(fechasDisponibles); // Devuelve un JSON con las fechas disponibles
+        }
+    });
+});
+
+// Backend (Endpoint /api/obtener_novedades)
+// Backend (Endpoint /api/obtener_novedades)
+app.get('/api/obtener_novedades', (req, res) => {
+    const fechaSeleccionada = req.query.fecha;
+    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades FROM novedades WHERE DATE(fecha) = ?'; // Aquí realizamos el ajuste en la consulta SQL
+    connection.query(query, [fechaSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener las novedades:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        } else {
+            res.json(results);
+        }
+    });
+});
 
 
-
-
-
-
-
-
-
-
+function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
+    console.log('Fecha seleccionada:', fechaSeleccionada); // Comprobar la fecha seleccionada
+    const query = 'SELECT * FROM novedades WHERE fecha = ?';
+    console.log('Query SQL:', query); // Comprobar la consulta SQL
+    return new Promise((resolve, reject) => {
+        connection.query(query, [fechaSeleccionada], (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                console.log('Resultados:', results); // Comprobar los resultados de la consulta
+                resolve(results);
+            }
+        });
+    });
+}
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
