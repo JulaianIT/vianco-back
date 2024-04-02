@@ -1307,9 +1307,9 @@ app.post('/novedades', (req, res) => {
     const novedad_ACTAS = req.body.novedad_ACTAS || ''; // Nuevo campo
     const otrasNovedades = req.body.novedad_OTRAS || '';
 
-    // Crear la consulta SQL para insertar la novedad en la base de datos
-    const sql = 'INSERT INTO novedades (fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS,otras_novedades) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)';
-    
+  // Crear la consulta SQL para insertar la novedad en la base de datos, incluyendo la fecha y hora actual
+const sql = 'INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
     // Ejecutar la consulta SQL
     connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades], (error, results, fields) => {
         if (error) {
@@ -1345,11 +1345,16 @@ app.get('/api/obtener_fechas_disponibles', (req, res) => {
     });
 });
 
-// Backend (Endpoint /api/obtener_novedades)
+
+
+
+
+
+
 // Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
-    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades FROM novedades WHERE DATE(fecha) = ?'; // Aquí realizamos el ajuste en la consulta SQL
+    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades,fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Aquí realizamos el ajuste en la consulta SQL
     connection.query(query, [fechaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
@@ -1359,6 +1364,11 @@ app.get('/api/obtener_novedades', (req, res) => {
         }
     });
 });
+
+
+
+
+
 
 
 function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
@@ -1376,6 +1386,23 @@ function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
         });
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

@@ -45,11 +45,9 @@
         }
   th, td {
     border-radius: 3px;
-    padding: 20px;
-    text-align: center;
+    padding: 10px;
     border-bottom: 5px solid #fff;
     position: relative;
-    left: -500px; /* Ajusta este valor según sea necesario */
 }
         th {
 
@@ -82,8 +80,28 @@
 #fechasContainer p {
     font-weight: bold;
 }
+.noveda{
+    border-radius: 5px;
+    padding: 25px;
+    margin: 20px;
+    background-color:white;
+    border: 3px solid black;
+}
+body{
+
+background-color: rgb(217, 217, 217,0.3);
+
+}
+header{
+
+background-color: white;
+
+}
+.noveda h3{
+    text-align: center;
 
 
+}
     </style>
 </head>
 <body>
@@ -96,6 +114,7 @@
     
 
     </header>
+   
     <br>
     <br>
     <h1>NOVEDADES PENDIENTES</h1>
@@ -143,60 +162,145 @@
                 .catch(error => console.error('Error al obtener las fechas disponibles:', error));
         }
 
-        function obtenerNovedadesPorFecha(fechaSeleccionada) {
-            // Formatear la fecha como 'YYYY-MM-DD'
-            const fechaFormateada = new Date(fechaSeleccionada).toISOString().split('T')[0];
+function obtenerNovedadesPorFecha(fechaSeleccionada) {
+    // Formatear la fecha como 'YYYY-MM-DD'
+    const fechaFormateada = new Date(fechaSeleccionada).toISOString().split('T')[0];
 
-            fetch(`/api/obtener_novedades?fecha=${fechaFormateada}`)
-                .then(response => response.json())
-                .then(novedades => {
-                    console.log('Novedades:', novedades);
-                    const novedadesContainer = document.getElementById('novedadesContainer');
-                    novedadesContainer.innerHTML = ''; // Limpiar contenido anterior
+    fetch(`/api/obtener_novedades?fecha=${fechaFormateada}`)
+        .then(response => response.json())
+        .then(novedades => {
+            console.log('Novedades:', novedades);
+            const novedadesContainer = document.getElementById('novedadesContainer');
+            novedadesContainer.innerHTML = ''; // Limpiar contenido anterior
 
-                    if (novedades.length > 0) {
-                        const tabla = document.createElement('table');
-                        tabla.innerHTML = `
-                            <thead>
-                                <tr>
-                                    ${novedades[0].fecha ? '<th>FECHA</th>' : ''}
-                                    ${novedades[0].turno ? '<th>TURNO</th>' : ''}
-                                    ${novedades[0].realiza ? '<th>Realiza</th>' : ''}
-                                    ${novedades[0].entrega ? '<th>Entrega</th>' : ''}
-                                    ${novedades[0].novedad_tripulacion ? '<th>Novedad Tripulacion</th>' : ''}
-                                    ${novedades[0].novedad_hoteleria ? '<th>Novedad Hoteleria</th>' : ''}
-                                    ${novedades[0].novedad_ejecutivos ? '<th>Novedad Ejecutivos</th>' : ''}
-                                    ${novedades[0].novedad_empresas_privadas ? '<th>Novedad Empresas Privadas</th>' : ''}
-                                    ${novedades[0].NOVEDADES_TASKGO ? '<th>NOVEDADES_TASKGO</th>' : ''}
-                                    ${novedades[0].novedad_ACTAS ? '<th>Novedad ACTAS</th>' : ''}
-                                    ${novedades[0].otras_novedades ? '<th>Otras Novedades</th>' : ''}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${novedades.map(novedad => `
-                                    <tr>
-                                        <td>${novedad.fecha ? new Date(novedad.fecha).toLocaleDateString() : ''}</td>
-                                        <td>${novedad.turno || ''}</td>
-                                        <td>${novedad.realiza || ''}</td>
-                                        <td>${novedad.entrega || ''}</td>
-                                        <td>${novedad.novedad_tripulacion || ''}</td>
-                                        <td>${novedad.novedad_hoteleria || ''}</td>
-                                        <td>${novedad.novedad_ejecutivos || ''}</td>
-                                        <td>${novedad.novedad_empresas_privadas || ''}</td>
-                                        <td>${novedad.NOVEDADES_TASKGO || ''}</td>
-                                        <td>${novedad.novedad_ACTAS || ''}</td>
-                                        <td>${novedad.otras_novedades || ''}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        `;
-                        novedadesContainer.appendChild(tabla);
-                    } else {
-                        novedadesContainer.innerHTML = '<p>No hay novedades disponibles para esta fecha.</p>';
-                    }
-                })
-                .catch(error => console.error('Error al obtener las novedades:', error));
-        }
+            if (novedades.length > 0) {
+                const formulario = document.createElement('form');
+
+                novedades.forEach(novedad => {
+                    const fila = document.createElement('div');
+                    fila.classList.add('fila');
+
+                    fila.innerHTML = `
+                    <br>
+                    <div class="noveda">
+                                            <h3> HORARIO DE ENTREGA:  <span>${novedad.fecha_registro ? formatFechaRegistro(novedad.fecha_registro) : ''}</span></h3>
+                                            <br>
+
+                        <div class="campo">
+                            <label> <strong>FECHA DE LA NOVEDAD:</strong></label>
+                            <span>${novedad.fecha ? new Date(novedad.fecha).toLocaleDateString() : ''}</span>
+                        </div>
+                      
+                        <div class="campo">
+                            <label><strong>TURNO:</strong></label>
+                            <span>${novedad.turno || ''}</span>
+                        </div>
+                        <div class="campo">
+                            <label><strong>ENTREGA:</strong></label>
+                            <span>${novedad.realiza || ''}</span>
+                        </div>
+
+
+                         <div class="campo">
+                            <label><strong>RECIBE:</strong></label>
+                            <span>${novedad.entrega || ''}</span>
+                        </div>
+
+                          <br>
+
+                         <div class="campo">
+                            <label><strong>NOVEDADES DE TRIPULACION:</strong></label>
+                            <span>${novedad.novedad_tripulacion || ''}</span>
+                        </div>
+                            <br>
+                            <br>
+                            <hr>
+
+                         <div class="campo">
+                            <label><strong>NOVEDADES DE HOTELERIA:</strong></label>
+                            <span>${novedad.novedad_hoteleria || ''}</span>
+                            </div>
+                            <br>
+                            <br>
+                            <hr>
+
+                             <div class="campo">
+                            <label><strong>NOVEDADES DE EJECUTIVOS:</strong></label>
+                            <span>${novedad.novedad_ejecutivos || ''}</span>
+                        </div>
+
+                            <br>
+                            <br>
+                            <hr>
+
+                        <div class="campo">
+                            <label><strong>NOVEDADES DE EMPRESAS:</strong></label>
+                            <span>${novedad.novedad_empresas_privadas || ''}</span>
+                        </div>
+                            <br>
+                            <br>
+                            <hr>
+                    
+                         <div class="campo">
+                            <label><strong>NOVEDADES DE TASKGO:</strong></label>
+                            <span>${novedad.NOVEDADES_TASKGO || ''}</span>
+                        </div>
+<br>
+                            <br>
+                            <hr>
+                        <div class="campo">
+                            <label><strong>NOVEDADES DE ACTAS:</strong></label>
+                            <span>${novedad.novedad_ACTAS  || ''}</span>
+                        </div>
+
+<br>
+                            <br>
+                            <hr>
+                            <div class="campo">
+                            <label><strong>OTRAS NOVEDADES:</strong></label>
+                            <span>${novedad.otras_novedades  || ''}</span>
+                        </div>
+
+
+<br>
+                            <br>
+                          
+ </div>
+
+                        <hr>`;
+                    formulario.appendChild(fila);
+                });
+
+                novedadesContainer.appendChild(formulario);
+            } else {
+                novedadesContainer.innerHTML = '<p>No hay novedades disponibles para esta fecha.</p>';
+            }
+        })
+        .catch(error => console.error('Error al obtener las novedades:', error));
+}
+
+function formatFechaRegistro(fechaRegistro) {
+    const date = new Date(fechaRegistro);
+    const formattedDate = `${date.getFullYear()}-${padNumber(date.getMonth() + 1)}-${padNumber(date.getDate())} ${padNumber(date.getHours())}:${padNumber(date.getMinutes())}`;
+    return formattedDate;
+}
+
+function padNumber(num) {
+    return num.toString().padStart(2, '0');
+}
+
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
