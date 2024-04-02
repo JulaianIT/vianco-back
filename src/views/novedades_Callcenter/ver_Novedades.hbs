@@ -133,35 +133,34 @@ background-color: white;
             obtenerTodasLasFechas(); // Llama a la función correcta para obtener las fechas disponibles
         });
 
- function obtenerTodasLasFechas() {
-    fetch('/api/obtener_fechas_disponibles')
-        .then(response => response.json())
-        .then(fechas => {
-            const fechasContainer = document.getElementById('fechasContainer');
-            fechasContainer.innerHTML = ''; // Limpiar contenido anterior
+        function obtenerTodasLasFechas() {
+            fetch('/api/obtener_fechas_disponibles')
+                .then(response => response.json())
+                .then(fechas => {
+                    const fechasContainer = document.getElementById('fechasContainer');
+                    fechasContainer.innerHTML = ''; // Limpiar contenido anterior
 
-            if (fechas.length === 0) {
-                fechasContainer.innerHTML = '<p>No hay fechas disponibles.</p>';
-            } else {
-                const listaFechas = document.createElement('ul');
-                fechas.forEach(fecha => {
-                    // Convertir la fecha a UTC
-                    const fechaUTC = new Date(fecha).toISOString().split('T')[0];
+                    if (fechas.length === 0) {
+                        fechasContainer.innerHTML = '<p>No hay fechas disponibles.</p>';
+                    } else {
+                        const listaFechas = document.createElement('ul');
+                        fechas.forEach(fecha => {
+                            // Formatear la fecha
+                            const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-                    const listItem = document.createElement('li');
-                    listItem.textContent = fechaUTC;
-                    listItem.style.cursor = 'pointer';
-                    listItem.addEventListener('click', function() {
-                        obtenerNovedadesPorFecha(fecha); // Pasa la fecha como argumento
-                    });
-                    listaFechas.appendChild(listItem);
-                });
-                fechasContainer.appendChild(listaFechas);
-            }
-        })
-        .catch(error => console.error('Error al obtener las fechas disponibles:', error));
-}
-
+                            const listItem = document.createElement('li');
+                            listItem.textContent = fechaFormateada;
+                            listItem.style.cursor = 'pointer';
+                            listItem.addEventListener('click', function() {
+                                obtenerNovedadesPorFecha(fecha); // Pasa la fecha como argumento
+                            });
+                            listaFechas.appendChild(listItem);
+                        });
+                        fechasContainer.appendChild(listaFechas);
+                    }
+                })
+                .catch(error => console.error('Error al obtener las fechas disponibles:', error));
+        }
 
 function obtenerNovedadesPorFecha(fechaSeleccionada) {
     // Formatear la fecha como 'YYYY-MM-DD'

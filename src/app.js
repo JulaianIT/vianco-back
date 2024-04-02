@@ -12,6 +12,8 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const html2canvas = require('html2canvas');
 const nodemailer = require('nodemailer');
 
+// Establecer la zona horaria de la aplicación Node.js
+process.env.TZ = 'America/Bogota';
 
 
 function htmlToPdf(html, options, callback) {
