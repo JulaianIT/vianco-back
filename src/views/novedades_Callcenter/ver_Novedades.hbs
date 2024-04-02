@@ -102,6 +102,45 @@ background-color: white;
 
 
 }
+.campo1{
+
+    background-color:rgb(217, 217, 217,0.3);
+
+
+}
+.campo2{
+
+    background-color:rgb(144, 201, 167,0.3);
+
+}
+.campo3{
+
+    background-color:rgb(217, 217, 217,0.3);
+
+
+}
+.campo4{
+
+    background-color:rgb(144, 201, 167,0.3);
+
+}
+.campo5{
+
+    background-color:rgb(217, 217, 217,0.3);
+
+
+}
+.campo6{
+
+    background-color:rgb(144, 201, 167,0.3);
+
+}
+.campo7{
+
+    background-color:rgb(217, 217, 217,0.3);
+
+
+}
     </style>
 </head>
 <body>
@@ -183,8 +222,8 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                     fila.innerHTML = `
                     <br>
                     <div class="noveda">
-                                            <h3> HORARIO DE ENTREGA:  <span>${novedad.fecha_registro ? formatFechaRegistro(novedad.fecha_registro) : ''}</span></h3>
-                                            <br>
+                        <h3> HORARIO DE ENTREGA:  <span>${novedad.fecha_registro ? formatFechaRegistro(novedad.fecha_registro) : ''}</span></h3>
+                        <br>
 
                         <div class="campo">
                             <label> <strong>FECHA DE LA NOVEDAD:</strong></label>
@@ -200,74 +239,75 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <span>${novedad.realiza || ''}</span>
                         </div>
 
-
-                         <div class="campo">
+                        <div class="campo">
                             <label><strong>RECIBE:</strong></label>
                             <span>${novedad.entrega || ''}</span>
                         </div>
 
-                          <br>
-
-                         <div class="campo1">
+                        ${novedad.novedad_tripulacion ? `
+                        <div class="campo1">
                             <label><strong>NOVEDADES DE TRIPULACION:</strong></label>
-                            <span>${novedad.novedad_tripulacion || ''}</span>
-                        </div>
+                            <span>${novedad.novedad_tripulacion}</span>
                             <br>
                             <br>
                             <hr>
+                        </div>` : ''}
 
-                         <div class="campo2">
+                        ${novedad.novedad_hoteleria ? `
+                        <div class="campo2">
                             <label><strong>NOVEDADES DE HOTELERIA:</strong></label>
-                            <span>${novedad.novedad_hoteleria || ''}</span>
-                            </div>
+                            <span>${novedad.novedad_hoteleria}</span>
                             <br>
                             <br>
                             <hr>
+                        </div>` : ''}
 
-                             <div class="campo">
+                        ${novedad.novedad_ejecutivos ? `
+                        <div class="campo3">
                             <label><strong>NOVEDADES DE EJECUTIVOS:</strong></label>
-                            <span>${novedad.novedad_ejecutivos || ''}</span>
-                        </div>
-
+                            <span>${novedad.novedad_ejecutivos}</span>
                             <br>
                             <br>
                             <hr>
+                        </div>` : ''}
 
-                        <div class="campo">
+                        ${novedad.novedad_empresas_privadas ? `
+                        <div class="campo4">
                             <label><strong>NOVEDADES DE EMPRESAS:</strong></label>
-                            <span>${novedad.novedad_empresas_privadas || ''}</span>
-                        </div>
+                            <span>${novedad.novedad_empresas_privadas}</span>
                             <br>
                             <br>
                             <hr>
-                    
-                         <div class="campo">
+                        </div>` : ''}
+
+                        ${novedad.NOVEDADES_TASKGO ? `
+                        <div class="campo5">
                             <label><strong>NOVEDADES DE TASKGO:</strong></label>
-                            <span>${novedad.NOVEDADES_TASKGO || ''}</span>
-                        </div>
-<br>
+                            <span>${novedad.NOVEDADES_TASKGO}</span>
+                            <br>
                             <br>
                             <hr>
-                        <div class="campo">
+                        </div>` : ''}
+
+                        ${novedad.novedad_ACTAS ? `
+                        <div class="campo6">
                             <label><strong>NOVEDADES DE ACTAS:</strong></label>
-                            <span>${novedad.novedad_ACTAS  || ''}</span>
-                        </div>
-
-<br>
+                            <span>${novedad.novedad_ACTAS}</span>
+                            <br>
                             <br>
                             <hr>
-                            <div class="campo">
+                        </div>` : ''}
+
+                        ${novedad.otras_novedades ? `
+                        <div class="campo7">
                             <label><strong>OTRAS NOVEDADES:</strong></label>
-                            <span>${novedad.otras_novedades  || ''}</span>
-                        </div>
-
-
-<br>
+                            <span>${novedad.otras_novedades}</span>
                             <br>
-                          
- </div>
-
-                        <hr>`;
+                            <br>
+                        </div>` : ''}
+                    </div>
+                    <hr>`;
+                    
                     formulario.appendChild(fila);
                 });
 
