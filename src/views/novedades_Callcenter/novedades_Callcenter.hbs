@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -230,7 +232,9 @@ label {
 }
       
     </style>
-    
+     <body>
+        
+     </body>
         <header>
         <img id="membrete"   src="/imagenes/menbrete.png"/>
         <img  id="logo"      src="/imagenes/logo vianco.png"/>
@@ -370,7 +374,7 @@ label {
     </nav>
    </footer>
 </body>
-</html>
+
 
 <script>
 function mostrarNovedad(id) {
@@ -424,6 +428,30 @@ function limpiarFirma() {
     document.getElementById('firmaBase64').value = '';
     console.log("Firma borrada");
 }
+canvas.addEventListener('touchstart', function(e) {
+    firmaActiva = true;
+    var touch = e.touches[0];
+    [lastX, lastY] = [touch.clientX - canvas.offsetLeft, touch.clientY - canvas.offsetTop];
+});
+
+canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault(); // Evita el desplazamiento de la página en dispositivos táctiles
+    if (firmaActiva) {
+        var touch = e.touches[0];
+        var currentX = touch.clientX - canvas.offsetLeft;
+        var currentY = touch.clientY - canvas.offsetTop;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+        [lastX, lastY] = [currentX, currentY];
+    }
+});
+
+canvas.addEventListener('touchend', function() {
+    firmaActiva = false;
+});
+
 
 
 </script>

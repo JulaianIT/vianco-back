@@ -244,12 +244,7 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <span>${novedad.entrega || ''}</span>
                         </div>
 
-                    <!-- Mostrar la firma si está presente -->
-                        ${novedad.firma ? `
-                        <div class="campo">
-                            <label><strong>FIRMA DE QUIEN RECIBE :</strong></label><br>
-                            <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
-                        </div>` : ''}
+                  
                   
                         ${novedad.novedad_tripulacion ? `
                         <div class="campo1">
@@ -304,6 +299,9 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <br>
                             <hr>
                         </div>` : ''}
+                            <br>
+                            <br>
+
 
                         ${novedad.otras_novedades ? `
                         <div class="campo7">
@@ -312,6 +310,16 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <br>
                             <br>
                         </div>` : ''}
+
+                              <!-- Mostrar la firma si está presente -->
+                        ${novedad.firma ? `
+                        <div class="campo">
+                            <label><strong>FIRMA DE QUIEN RECIBE :</strong></label><br>
+                            <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
+                        </div>` : ''}
+
+
+                  
                     </div>
                     <hr>`;
                     
