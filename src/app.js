@@ -1289,13 +1289,11 @@ app.get('/tarifas', (req, res) => {
 
 
 
+
 app.get('/novedades', (req, res) => {
-    res.render('novedades_Callcenter/novedades_Callcenter.hbs'); // Renderiza la vista seleccionar_hotel.hbs
+    res.render('novedades_Callcenter/novedades_Callcenter.hbs');
 });
 
-//NOVEDADES CALLCENTER 
-app.get("/novedades_callcenter")
-// Aquí es donde se van a enviar los campos de novedades callcenter a la base de datos 
 app.post('/novedades', (req, res) => {
     const fecha = req.body.fecha;
     const turno = req.body.turno;
@@ -1305,22 +1303,21 @@ app.post('/novedades', (req, res) => {
     const novedad_hoteleria = req.body.novedad_hoteleria || '';
     const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
     const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
-    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || ''; // Corregido aquí
-    const novedad_ACTAS = req.body.novedad_ACTAS || ''; // Nuevo campo
+    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
+    const novedad_ACTAS = req.body.novedad_ACTAS || '';
     const otrasNovedades = req.body.novedad_OTRAS || '';
+    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
+    console.log("Firma en formato base64 recibida:", firmaBase64);
 
-  // Crear la consulta SQL para insertar la novedad en la base de datos, incluyendo la fecha y hora actual
-const sql = 'INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    // Ejecutar la consulta SQL
-    connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades], (error, results, fields) => {
+    const sql = 'INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+    connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades, firmaBase64], (error, results, fields) => {
         if (error) {
             console.error('Error al insertar la novedad en la base de datos:', error);
             res.status(500).send('Error interno del servidor.');
         } else {
             console.log('Novedad guardada exitosamente en la base de datos.');
-
-            // Mostrar alert en el cliente
             const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
             res.send(alertScript);
         }
@@ -1351,23 +1348,29 @@ app.get('/api/obtener_fechas_disponibles', (req, res) => {
 
 
 
-
-
 // Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
-    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades,fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Aquí realizamos el ajuste en la consulta SQL
+    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma, fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Añadir el campo de la firma en la consulta SQL
     connection.query(query, [fechaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         } else {
+            // Aquí tienes los resultados de la consulta SQL
+            // Itera sobre los resultados para procesar cada fila
+            results.forEach(row => {
+                // Suponiendo que 'row' es el resultado de tu consulta SQL que contiene la firma codificada en base64
+                const firmaBase64 = row.firma;
+                const firmaBinaria = Buffer.from(firmaBase64, 'base64');
+                // Modifica la fila actual para incluir la firma binaria decodificada
+                row.firmaBinaria = firmaBinaria;
+            });
+            // Devuelve los resultados con las firmas binarias decodificadas
             res.json(results);
         }
     });
 });
-
-
 
 
 
@@ -1388,8 +1391,6 @@ function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
         });
     });
 }
-
-
 
 
 

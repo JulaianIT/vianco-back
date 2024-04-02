@@ -244,6 +244,13 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <span>${novedad.entrega || ''}</span>
                         </div>
 
+                    <!-- Mostrar la firma si está presente -->
+                        ${novedad.firma ? `
+                        <div class="campo">
+                            <label><strong>FIRMA DE QUIEN RECIBE :</strong></label><br>
+                            <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
+                        </div>` : ''}
+                  
                         ${novedad.novedad_tripulacion ? `
                         <div class="campo1">
                             <label><strong>NOVEDADES DE TRIPULACION:</strong></label>
@@ -328,6 +335,16 @@ function formatFechaRegistro(fechaRegistro) {
 function padNumber(num) {
     return num.toString().padStart(2, '0');
 }
+
+// Suponiendo que 'response' contiene los datos de la respuesta JSON del backend que incluye la firma binaria
+const firmaBinaria = response.firma;
+
+// Convierte los datos binarios en una URL de objeto
+const urlFirma = URL.createObjectURL(new Blob([firmaBinaria]));
+
+// Muestra la firma en una imagen en el HTML
+const imagenFirma = document.getElementById('imagenFirma');
+imagenFirma.src = urlFirma;
 
     </script>
 </body>
