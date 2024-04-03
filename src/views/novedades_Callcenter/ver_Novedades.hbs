@@ -167,6 +167,10 @@ background-color: white;
         <!-- Aquí se mostrarán las novedades -->
     </div>
 
+
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             obtenerTodasLasFechas(); // Llama a la función correcta para obtener las fechas disponibles
@@ -318,21 +322,55 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
                         </div>` : ''}
 
+                        <div class="campo">
+<button type="button" onclick="mostrarFormularioSeguimiento(${novedad.id})">Seguimiento</button>
+                        </div>
 
-                  
                     </div>
                     <hr>`;
-                    
-                    formulario.appendChild(fila);
-                });
+// Agregar evento click para mostrar detalles de la novedad
+fila.addEventListener('click', function() {
+    mostrarDetallesNovedad(novedad);
+});
+
+formulario.appendChild(fila);
+
+// Aquí se agrega el contenedor del formulario de seguimiento
+const formularioSeguimiento = document.createElement('div');
+formularioSeguimiento.id = `formularioSeguimiento-${novedad.id}`;
+formularioSeguimiento.style.display = 'none';
+formularioSeguimiento.innerHTML = `
+    <h4>Seguimiento</h4>
+    <div id="formularioSeguimientoContenido-${novedad.id}">
+        <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
+            <!-- Campos del formulario -->
+            <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre">
+            <input type="text" id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="Detalle">
+            <!-- Otros campos del formulario -->
+            
+<button type="submit">Guardar Seguimiento</button>
+        </form>
+    </div>
+    <br>
+`;
+
+novedadesContainer.appendChild(formularioSeguimiento);
+                    });
 
                 novedadesContainer.appendChild(formulario);
+                    // Agregar evento click al botón de guardar en el formulario de seguimiento
+    const botonGuardar = document.getElementById(`guardarSeguimiento-${novedad.id}`);
+    botonGuardar.addEventListener('click', function() {
+        guardarSeguimiento(novedad.id, novedad); // Llama a la función guardarSeguimiento
+    });
+
             } else {
                 novedadesContainer.innerHTML = '<p>No hay novedades disponibles para esta fecha.</p>';
             }
         })
         .catch(error => console.error('Error al obtener las novedades:', error));
 }
+
 
 function formatFechaRegistro(fechaRegistro) {
     const date = new Date(fechaRegistro);
@@ -353,6 +391,97 @@ const urlFirma = URL.createObjectURL(new Blob([firmaBinaria]));
 // Muestra la firma en una imagen en el HTML
 const imagenFirma = document.getElementById('imagenFirma');
 imagenFirma.src = urlFirma;
+
+
+// Función para obtener la novedad por su ID
+function obtenerNovedadPorId(idNovedad) {
+    // Obtener todas las filas que representan las novedades
+    const filasNovedades = document.querySelectorAll('.fila');
+    
+    // Iterar sobre las filas para encontrar la que corresponde al ID deseado
+    for (const fila of filasNovedades) {
+        // Obtener el ID de la fila actual
+        const idActual = fila.getAttribute('data-novedad-id');
+        
+        // Convertir el ID actual a un número entero para compararlo con idNovedad
+        const idActualNumero = parseInt(idActual, 10);
+        
+        // Verificar si el ID actual coincide con el ID buscado
+        if (idActualNumero === idNovedad) {
+            // Devolver los datos de la novedad correspondiente
+            return {
+                id: idActualNumero,
+      
+                // Aquí puedes obtener otros datos de la novedad según la estructura de tu HTML
+                // Por ejemplo, puedes obtener el nombre del seguimiento y el detalle del seguimiento
+            };
+        }
+    }
+    
+    // Si no se encuentra la novedad con el ID especificado, devolver null
+    return null;
+}
+
+// Dentro de tu script JavaScript
+
+
+
+// Función para mostrar el formulario de seguimiento
+function mostrarFormularioSeguimiento(idNovedad) {
+    const formularioSeguimiento = document.getElementById(`formularioSeguimiento-${idNovedad}`);
+    formularioSeguimiento.style.display = 'block';
+  
+}
+    // Aquí puedes agregar la lógica para mostrar el formulario de seguimiento
+
+
+function mostrarDetallesNovedad(novedad) {
+    // Implementa aquí la lógica para mostrar los detalles de la novedad
+    console.log('Detalles de la novedad:', novedad);
+}
+
+function guardarSeguimiento(event, idNovedad) {
+    console.log('Guardando seguimiento...'); // Agregar un console.log para verificar si la función se llama correctamente
+    event.preventDefault(); // Evitar que el formulario se envíe de forma predeterminada
+
+    // Obtener los valores de los campos de nombre y detalle del seguimiento
+    const nombreSeguimiento = document.getElementById(`nombreSeguimiento-${idNovedad}`).value;
+    const detalleSeguimiento = document.getElementById(`detalleSeguimiento-${idNovedad}`).value;
+
+    // Crear un objeto con los datos del seguimiento
+const seguimientoData = {
+    id: idNovedad,
+    nombreSeguimiento: nombreSeguimiento,
+    detalleSeguimiento: detalleSeguimiento,
+    fecha_registro: new Date().toISOString(), // Establecer la fecha y hora actuales como valor de fecha_registro
+    nombre: 'NombreEjemplo' // Aquí debes proporcionar el valor deseado para el campo nombre
+};
+
+
+    // Enviar los datos del seguimiento al servidor usando una solicitud fetch
+    fetch('/api/guardar_seguimiento', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(seguimientoData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar el seguimiento');
+        }
+        // Eliminar el formulario de seguimiento del DOM después de guardar exitosamente
+        const formularioSeguimiento = document.getElementById(`formularioSeguimiento-${idNovedad}`);
+        formularioSeguimiento.parentNode.removeChild(formularioSeguimiento);
+        // Mostrar un mensaje de éxito o realizar otras acciones necesarias
+        console.log('Seguimiento guardado correctamente');
+    })
+    .catch(error => {
+        console.error('Error al guardar el seguimiento:', error);
+        // Manejar errores de forma adecuada, como mostrar un mensaje de error al usuario
+    });
+}
+
 
     </script>
 </body>

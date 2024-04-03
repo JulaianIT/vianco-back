@@ -1309,7 +1309,6 @@ app.post('/novedades', (req, res) => {
     const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
     console.log("Firma en formato base64 recibida:", firmaBase64);
 
-
     const sql = 'INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
     connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades, firmaBase64], (error, results, fields) => {
@@ -1318,11 +1317,45 @@ app.post('/novedades', (req, res) => {
             res.status(500).send('Error interno del servidor.');
         } else {
             console.log('Novedad guardada exitosamente en la base de datos.');
-            const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
-            res.send(alertScript);
-        }
-    });
+
+            // Configurar transporte de correo electrónico
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'callcenter.vianco@gmail.com',
+                    pass: 'mdfaqssdhgoedbmw'
+                }
+            });
+
+// Generar un ID de mensaje único
+function generateMessageId() {
+    return `vianco_${Date.now()}@dominio.com`;
+}
+
+// Enviar correo electrónico
+transporter.sendMail({
+    from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
+    to: 'soporte.it.vianco@gmail.com', // El destinatario del correo electrónico
+    subject: 'alerta no denovedad centro operaciones', // El asunto del correo electrónico
+    html: '<p><strong>Estimados,</strong></p><br>' +
+          '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
+          '<p>Recuerde realizar el seguimiento en la app en el módulo novedades pendientes.</p>', // El contenido del correo electrónico en HTML
+    messageId: generateMessageId() // Generar un ID de mensaje único
+}, (error, info) => {
+    if (error) {
+        console.error('Error al enviar el correo electrónico:', error);
+    } else {
+        console.log('Correo electrónico enviado:', info.response);
+    }
 });
+
+
+                    const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
+                    res.send(alertScript);
+                }
+            });
+        });
+
 
 
 
@@ -1392,18 +1425,65 @@ function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
     });
 }
 
+function guardarSeguimiento(event, idNovedad) {
+    event.preventDefault(); // Evitar que el formulario se envíe de forma predeterminada
+
+    // Obtener los valores de los campos de nombre y detalle del seguimiento
+    const nombreSeguimiento = document.getElementById(`nombreSeguimiento-${idNovedad}`).value;
+    const detalleSeguimiento = document.getElementById(`detalleSeguimiento-${idNovedad}`).value;
+
+    // Crear un objeto con los datos del seguimiento
+    const seguimientoData = {
+        id: idNovedad,
+        nombreSeguimiento: nombreSeguimiento,
+        detalleSeguimiento: detalleSeguimiento
+    };
+
+    // Enviar los datos del seguimiento al servidor usando una solicitud fetch
+    fetch('/api/guardar_seguimiento', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(seguimientoData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar el seguimiento');
+        }
+        // Eliminar el formulario de seguimiento del DOM después de guardar exitosamente
+        const formularioSeguimiento = document.getElementById(`formularioSeguimiento-${idNovedad}`);
+        formularioSeguimiento.parentNode.removeChild(formularioSeguimiento);
+        // Mostrar un mensaje de éxito o realizar otras acciones necesarias
+        console.log('Seguimiento guardado correctamente');
+    })
+    .catch(error => {
+        console.error('Error al guardar el seguimiento:', error);
+        // Manejar errores de forma adecuada, como mostrar un mensaje de error al usuario
+    });
+}
 
 
+// Ruta para guardar el seguimiento en la base de datos
+app.post('/api/guardar_seguimiento', (req, res) => {
+    // Obtener los datos del cuerpo de la solicitud
+    const { id, nombreSeguimiento, detalleSeguimiento } = req.body;
 
+    // Query para insertar el seguimiento en la base de datos
+    const query = 'INSERT INTO novedades_completadas (id_novedad, nombre_seguimiento, detalle_seguimiento, fecha_registro) VALUES (?, ?, ?, NOW())';
+    const values = [id, nombreSeguimiento, detalleSeguimiento];
 
-
-
-
-
-
-
-
-
+    // Ejecutar la consulta SQL
+    connection.query(query, values, (error, results, fields) => {
+        if (error) {
+            console.error('Error al guardar el seguimiento en la base de datos:', error);
+            res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
+        } else {
+            console.log('Seguimiento guardado correctamente en la base de datos');
+            res.status(200).json({ message: 'Seguimiento guardado correctamente' });
+        }
+    });
+});
 
 
 // Iniciar el servidor
