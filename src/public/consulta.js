@@ -77,6 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
            <p><strong>FECHA INICIAL:</strong> ${vehiculo.Fecha_inicial_preventiva_1}</p>
            <p><strong>FECHA VIGENCIA:</strong> ${vehiculo.Fecha_final_preventiva_1}</p>
            
+            
+           <p><strong>N° DE CONVENIO:</strong> ${vehiculo.n_convenio}</p>
+           <p><strong>FECHA DE VIGENCIA:</strong> ${vehiculo.fecha_vigencia_convenio}</p>
+
 
            <hr>
 
