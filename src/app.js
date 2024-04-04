@@ -1414,11 +1414,11 @@ app.get('/api/obtener_novedades', (req, res) => {
 // Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento', (req, res) => {
     // Obtener los datos del cuerpo de la solicitud
-    const { id, nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas (id_novedad, nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [id, nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma];
+    const query = 'INSERT INTO novedades_completadas ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
