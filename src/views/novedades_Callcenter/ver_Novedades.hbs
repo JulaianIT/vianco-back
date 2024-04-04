@@ -340,18 +340,110 @@ const formularioSeguimiento = document.createElement('div');
 formularioSeguimiento.id = `formularioSeguimiento-${novedad.id}`;
 formularioSeguimiento.style.display = 'none';
 formularioSeguimiento.innerHTML = `
-    <h4>Seguimiento</h4>
+    <h4>REALIZAR SEGUIMIENTO</h4>
+
+
     <div id="formularioSeguimientoContenido-${novedad.id}">
         <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
             <!-- Campos del formulario -->
-            <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre">
-            <input type="text" id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="Detalle">
+
+            <label for="fechaseguimiento">FECHA DEL SEGUIMIENTO:</label>
+            <input type="date" id="fechaseguimiento-${novedad.id}" name="fechaseguimiento" ><BR>
+            
+       <label for="fecha_registro-${novedad.id}" >FECHA DE ENTREGA DE LA NOVEDAD:</label>
+        <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value=""><BR>
+
+
+            <label for="nombreSeguimiento-${novedad.id}">NOMBRE:</label>
+            <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento"><BR>
+
+        <label for="detalleSeguimiento-${novedad.id}">RESULTADOS DE LA AUDITORIA:</label><br>
+<textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="SOLUCION" rows="5" cols="50"></textarea><br>
+
             <!-- Otros campos del formulario -->
             
 <button type="submit">Guardar Seguimiento</button>
         </form>
     </div>
     <br>
+
+            
+        <label for="fecha-${novedad.id}" style="display: none;">fecha:</label>
+        <input type="text" id="fecha-${novedad.id}" name="fecha" placeholder="realiza" value="${novedad.fecha}" style="display: none;"><BR>
+
+
+        <label for="turno-${novedad.id}"style="display: none;">turno:</label>
+        <input type="text" id="turno-${novedad.id}" name="turno" placeholder="turno" value="${novedad.turno }" style="display: none;"><BR>
+
+
+        <label for="realiza-${novedad.id}" style="display: none;">realiza:</label>
+        <input type="text" id="realiza-${novedad.id}" name="realiza" placeholder="realiza" value="${novedad.realiza}" style="display: none;"><BR>
+
+
+
+        <label for="entrega-${novedad.id}" style="display: none;">entrega:</label>
+        <input type="text" id="entrega-${novedad.id}" name="entrega" placeholder="realiza" value="${novedad.entrega}" style="display: none;"><BR>
+
+
+
+
+        <label for="novedad_hoteleria-${novedad.id}"  style="display: none;">hotel:</label>
+        <input type="text" id="novedad_hoteleria-${novedad.id}" name="novedad_hoteleria" placeholder="realiza" value="${novedad.novedad_hoteleria}" style="display: none;"><BR>
+
+
+        <label for="novedad_ejecutivos-${novedad.id}"  style="display: none;">hotel:</label>
+        <input type="text" id="novedad_ejecutivos-${novedad.id}" name="novedad_ejecutivos" placeholder="novedad_ejecutivos" value="${novedad.novedad_ejecutivos}" style="display: none;"><BR>
+
+
+
+
+        <label for="novedad_empresas_privadas-${novedad.id}"  style="display: none;">novedad_empresas_privadas:</label>
+        <input type="text" id="novedad_empresas_privadas-${novedad.id}" name="novedad_empresas_privadas" placeholder="novedad_empresas_privadas" value="${novedad.novedad_empresas_privadas}"style="display: none;" ><BR>
+
+
+
+
+
+
+
+        <label for="NOVEDADES_TASKGO-${novedad.id}"  style="display: none;">NOVEDADES_TASKGO:</label>
+        <input type="text" id="NOVEDADES_TASKGO-${novedad.id}" name="NOVEDADES_TASKGO" placeholder="novedad_empresas_privadas" value="${novedad.NOVEDADES_TASKGO}"style="display: none;" ><BR>
+
+
+
+
+
+<label for="novedad_ACTAS-${novedad.id}"  style="display: none;">novedad_ACTAS:</label>
+        <input type="text" id="novedad_ACTAS-${novedad.id}" name="novedad_ACTAS" placeholder="novedad_ACTAS" value="${novedad.novedad_ACTAS}"style="display: none;" ><BR>
+
+
+
+
+
+<label for="otras_novedades-${novedad.id}"  style="display: none;">otras_novedades:</label>
+        <input type="text" id="otras_novedades-${novedad.id}" name="novedad_ACTAS" placeholder="otras_novedades" value="${novedad.otras_novedades}"style="display: none;" ><BR>
+
+
+
+
+
+<label for="firma-${novedad.id}"  style="display: none;">firma:</label>
+        <input type="text" id="firma-${novedad.id}" name="firma" placeholder="firma" value="${novedad.firma}"style="display: none;" ><BR>
+
+
+
+
+
+
+
+
+            <label for="novedadestripulacion-${novedad.id}" style="display: none;">TRIPULACION: </label>
+             <input type="text" id="novedadestripulacion-${novedad.id}" name="novedadestripulacion" placeholder="Detalle" value="${novedad.novedad_tripulacion}" style="display: none;"><BR>
+
+
+         
+
+
 `;
 
 novedadesContainer.appendChild(formularioSeguimiento);
@@ -439,7 +531,6 @@ function mostrarDetallesNovedad(novedad) {
     // Implementa aquí la lógica para mostrar los detalles de la novedad
     console.log('Detalles de la novedad:', novedad);
 }
-
 function guardarSeguimiento(event, idNovedad) {
     console.log('Guardando seguimiento...'); // Agregar un console.log para verificar si la función se llama correctamente
     event.preventDefault(); // Evitar que el formulario se envíe de forma predeterminada
@@ -447,14 +538,55 @@ function guardarSeguimiento(event, idNovedad) {
     // Obtener los valores de los campos de nombre y detalle del seguimiento
     const nombreSeguimiento = document.getElementById(`nombreSeguimiento-${idNovedad}`).value;
     const detalleSeguimiento = document.getElementById(`detalleSeguimiento-${idNovedad}`).value;
+    const novedadestripulacion = document.getElementById(`novedadestripulacion-${idNovedad}`).value;
+    const fechaseguimiento = document.getElementById(`fechaseguimiento-${idNovedad}`).value;
+    const turno = document.getElementById(`turno-${idNovedad}`).value;
+    const realiza = document.getElementById(`realiza-${idNovedad}`).value;
+    const entrega = document.getElementById(`entrega-${idNovedad}`).value;
+    const fecha = document.getElementById(`fecha-${idNovedad}`).value;
+    const novedad_hoteleria = document.getElementById(`novedad_hoteleria-${idNovedad}`).value;
+    const fecha_registro = document.getElementById(`fecha_registro-${idNovedad}`).value;
+    const novedad_ejecutivos = document.getElementById(`novedad_ejecutivos-${idNovedad}`).value;
+    const novedad_empresas_privadas = document.getElementById(`novedad_empresas_privadas-${idNovedad}`).value;
+    const NOVEDADES_TASKGO = document.getElementById(`NOVEDADES_TASKGO-${idNovedad}`).value;
+    const novedad_ACTAS = document.getElementById(`novedad_ACTAS-${idNovedad}`).value;
+    const otras_novedades = document.getElementById(`otras_novedades-${idNovedad}`).value;
+    const firma = document.getElementById(`firma-${idNovedad}`).value;
+
+
+
+
+
+
 
     // Crear un objeto con los datos del seguimiento
-const seguimientoData = {
+    const seguimientoData = {
     id: idNovedad,
     nombreSeguimiento: nombreSeguimiento,
     detalleSeguimiento: detalleSeguimiento,
-    fecha_registro: new Date().toISOString(), // Establecer la fecha y hora actuales como valor de fecha_registro
-    nombre: 'NombreEjemplo' // Aquí debes proporcionar el valor deseado para el campo nombre
+    novedadestripulacion: novedadestripulacion,
+    fechaseguimiento: fechaseguimiento, // Asegúrate de que este valor sea una fecha válida
+    nombre: 'NombreEjemplo', // Aquí debes proporcionar el valor deseado para el campo nombre
+    turno:turno,
+    realiza:realiza,
+    entrega:entrega,
+    fecha:fecha,
+    novedad_hoteleria:novedad_hoteleria,
+    fecha_registro:fecha_registro,
+    novedad_ejecutivos:novedad_ejecutivos,
+    novedad_empresas_privadas:novedad_empresas_privadas,
+    NOVEDADES_TASKGO:NOVEDADES_TASKGO,
+    novedad_ACTAS:novedad_ACTAS,
+    otras_novedades:otras_novedades,
+firma:firma,
+
+
+
+
+
+
+
+
 };
 
 

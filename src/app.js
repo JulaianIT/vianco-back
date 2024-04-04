@@ -1409,70 +1409,17 @@ app.get('/api/obtener_novedades', (req, res) => {
 
 
 
-function obtenerNovedadesPorFecha(connection, fechaSeleccionada) {
-    console.log('Fecha seleccionada:', fechaSeleccionada); // Comprobar la fecha seleccionada
-    const query = 'SELECT * FROM novedades WHERE fecha = ?';
-    console.log('Query SQL:', query); // Comprobar la consulta SQL
-    return new Promise((resolve, reject) => {
-        connection.query(query, [fechaSeleccionada], (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                console.log('Resultados:', results); // Comprobar los resultados de la consulta
-                resolve(results);
-            }
-        });
-    });
-}
-
-function guardarSeguimiento(event, idNovedad) {
-    event.preventDefault(); // Evitar que el formulario se envíe de forma predeterminada
-
-    // Obtener los valores de los campos de nombre y detalle del seguimiento
-    const nombreSeguimiento = document.getElementById(`nombreSeguimiento-${idNovedad}`).value;
-    const detalleSeguimiento = document.getElementById(`detalleSeguimiento-${idNovedad}`).value;
-
-    // Crear un objeto con los datos del seguimiento
-    const seguimientoData = {
-        id: idNovedad,
-        nombreSeguimiento: nombreSeguimiento,
-        detalleSeguimiento: detalleSeguimiento
-    };
-
-    // Enviar los datos del seguimiento al servidor usando una solicitud fetch
-    fetch('/api/guardar_seguimiento', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(seguimientoData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error al guardar el seguimiento');
-        }
-        // Eliminar el formulario de seguimiento del DOM después de guardar exitosamente
-        const formularioSeguimiento = document.getElementById(`formularioSeguimiento-${idNovedad}`);
-        formularioSeguimiento.parentNode.removeChild(formularioSeguimiento);
-        // Mostrar un mensaje de éxito o realizar otras acciones necesarias
-        console.log('Seguimiento guardado correctamente');
-    })
-    .catch(error => {
-        console.error('Error al guardar el seguimiento:', error);
-        // Manejar errores de forma adecuada, como mostrar un mensaje de error al usuario
-    });
-}
 
 
 // Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento', (req, res) => {
     // Obtener los datos del cuerpo de la solicitud
-    const { id, nombreSeguimiento, detalleSeguimiento } = req.body;
+    const { id, nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas (id_novedad, nombre_seguimiento, detalle_seguimiento, fecha_registro) VALUES (?, ?, ?, NOW())';
-    const values = [id, nombreSeguimiento, detalleSeguimiento];
-
+    const query = 'INSERT INTO novedades_completadas (id_novedad, nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [id, nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma];
+    
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
         if (error) {
@@ -1484,6 +1431,8 @@ app.post('/api/guardar_seguimiento', (req, res) => {
         }
     });
 });
+
+
 
 
 // Iniciar el servidor
