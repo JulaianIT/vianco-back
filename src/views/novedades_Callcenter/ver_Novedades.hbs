@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Novedades por Fecha</title>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <style>
+        *{
+    
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -141,6 +157,80 @@ background-color: white;
 
 
 }
+.segui{
+        font-size: 20px;
+    border-radius: 5px;
+    padding: 25px;
+    margin: 20px;
+    background-color:white;
+    border: 3px solid black;
+
+}
+ input[type="text"],
+textarea {
+  font-size: 16px;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border: 2px solid black;
+}
+   .enviar {
+            position:relative;
+                    
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 25px 38px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            left: 10px;
+            font-size: 30px;
+
+
+    }
+
+    /* Estilo cuando el cursor está sobre el botón */
+    .SEGUIMIENTO:hover {
+            background-color: #d9d9d9;
+    }
+       .SEGUIMIENTO{
+            position:relative;
+                    
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 20px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            left: 10px;
+            font-size: 30px;
+
+
+    }
+
+    /* Estilo cuando el cursor está sobre el botón */
+    .enviar:hover {
+            background-color: #d9d9d9;
+    }
     </style>
 </head>
 <body>
@@ -323,7 +413,7 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                         </div>` : ''}
 
                         <div class="campo">
-<button type="button" onclick="mostrarFormularioSeguimiento(${novedad.id})">Seguimiento</button>
+<button type="button" class="SEGUIMIENTO"  onclick="mostrarFormularioSeguimiento(${novedad.id})">Seguimiento</button>
                         </div>
 
                     </div>
@@ -340,6 +430,8 @@ const formularioSeguimiento = document.createElement('div');
 formularioSeguimiento.id = `formularioSeguimiento-${novedad.id}`;
 formularioSeguimiento.style.display = 'none';
 formularioSeguimiento.innerHTML = `
+                    <div class="segui">
+
     <h4>REALIZAR SEGUIMIENTO</h4>
 
 
@@ -347,26 +439,29 @@ formularioSeguimiento.innerHTML = `
         <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
             <!-- Campos del formulario -->
 
-            <label for="fechaseguimiento">FECHA DEL SEGUIMIENTO:</label>
+            <label for="fechaseguimiento"><strong>FECHA DEL SEGUIMIENTO:</strong></label>
             <input type="date" id="fechaseguimiento-${novedad.id}" name="fechaseguimiento" ><BR>
-            
-       <label for="fecha_registro-${novedad.id}" >FECHA DE ENTREGA DE LA NOVEDAD:</label>
+            <BR>
+       <label for="fecha_registro-${novedad.id}" ><strong>FECHA DE ENTREGA DE LA NOVEDAD:</strong></label>
         <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value=""><BR>
+<BR>
 
-
-            <label for="nombreSeguimiento-${novedad.id}">NOMBRE:</label>
+            <label for="nombreSeguimiento-${novedad.id}"><strong>NOMBRE:</strong></label>
             <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento"><BR>
+<BR>
+        <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>
+<textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="POR FAVOR DIGITE EL SEGUIMIENTO QUE REALIZO" rows="5" cols="50"></textarea><br>
 
-        <label for="detalleSeguimiento-${novedad.id}">RESULTADOS DE LA AUDITORIA:</label><br>
-<textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="SOLUCION" rows="5" cols="50"></textarea><br>
+          <label for="ACCIONES-${novedad.id}"><strong>ACCIONES A TOMAR:</strong></label><br>
+<textarea id="ACCIONES-${novedad.id}" name="ACCIONES" placeholder="POR FAVOR DIGITE LAS ACCIONES QUE TOMO ANTE ESTA NOVEDAD " rows="5" cols="50"></textarea><br>
 
             <!-- Otros campos del formulario -->
             
-<button type="submit">Guardar Seguimiento</button>
+<button type="submit" class="enviar">Guardar Seguimiento</button>
         </form>
     </div>
     <br>
-
+</div>
             
         <label for="fecha-${novedad.id}" style="display: none;">fecha:</label>
         <input type="text" id="fecha-${novedad.id}" name="fecha" placeholder="realiza" value="${novedad.fecha}" style="display: none;"><BR>
@@ -552,6 +647,7 @@ function guardarSeguimiento(event, idNovedad) {
     const novedad_ACTAS = document.getElementById(`novedad_ACTAS-${idNovedad}`).value;
     const otras_novedades = document.getElementById(`otras_novedades-${idNovedad}`).value;
     const firma = document.getElementById(`firma-${idNovedad}`).value;
+    const ACCIONES = document.getElementById(`ACCIONES-${idNovedad}`).value;
 
 
 
@@ -579,7 +675,7 @@ function guardarSeguimiento(event, idNovedad) {
     novedad_ACTAS:novedad_ACTAS,
     otras_novedades:otras_novedades,
 firma:firma,
-
+ACCIONES:ACCIONES,
 
 
 
