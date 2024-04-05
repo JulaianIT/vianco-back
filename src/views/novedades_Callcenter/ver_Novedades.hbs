@@ -294,7 +294,6 @@ textarea {
                 })
                 .catch(error => console.error('Error al obtener las fechas disponibles:', error));
         }
-
 function obtenerNovedadesPorFecha(fechaSeleccionada) {
     // Formatear la fecha como 'YYYY-MM-DD'
     const fechaFormateada = new Date(fechaSeleccionada).toISOString().split('T')[0];
@@ -418,51 +417,54 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
 
                     </div>
                     <hr>`;
-// Agregar evento click para mostrar detalles de la novedad
-fila.addEventListener('click', function() {
-    mostrarDetallesNovedad(novedad);
-});
+                    // Agregar evento click para mostrar detalles de la novedad
+                    fila.addEventListener('click', function() {
+                        mostrarDetallesNovedad(novedad);
+                    });
 
-formulario.appendChild(fila);
+                    formulario.appendChild(fila);
 
-// Aquí se agrega el contenedor del formulario de seguimiento
-const formularioSeguimiento = document.createElement('div');
-formularioSeguimiento.id = `formularioSeguimiento-${novedad.id}`;
-formularioSeguimiento.style.display = 'none';
-formularioSeguimiento.innerHTML = `
+                    // Aquí se agrega el contenedor del formulario de seguimiento
+                    const formularioSeguimiento = document.createElement('div');
+                    formularioSeguimiento.id = `formularioSeguimiento-${novedad.id}`;
+                    formularioSeguimiento.style.display = 'none';
+  formularioSeguimiento.innerHTML = `
                     <div class="segui">
 
-    <h4>REALIZAR SEGUIMIENTO</h4>
+            <h4>REALIZAR SEGUIMIENTO</h4>
 
 
-    <div id="formularioSeguimientoContenido-${novedad.id}">
-        <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
-            <!-- Campos del formulario -->
+                <div id="formularioSeguimientoContenido-${novedad.id}">
+                <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
+                <!-- Campos del formulario -->
 
             <label for="fechaseguimiento"><strong>FECHA DEL SEGUIMIENTO:</strong></label>
             <input type="date" id="fechaseguimiento-${novedad.id}" name="fechaseguimiento" ><BR>
             <BR>
-       <label for="fecha_registro-${novedad.id}" ><strong>FECHA DE ENTREGA DE LA NOVEDAD:</strong></label>
-        <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value=""><BR>
-<BR>
+            <label for="fecha_registro-${novedad.id}" ><strong>FECHA DE ENTREGA DE LA NOVEDAD:</strong></label>
+            <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value=""><BR>
+            <BR>
 
             <label for="nombreSeguimiento-${novedad.id}"><strong>NOMBRE:</strong></label>
             <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento"><BR>
-<BR>
-        <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>
-<textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="POR FAVOR DIGITE EL SEGUIMIENTO QUE REALIZO" rows="5" cols="50"></textarea><br>
+            <BR>
 
-          <label for="ACCIONES-${novedad.id}"><strong>ACCIONES A TOMAR:</strong></label><br>
-<textarea id="ACCIONES-${novedad.id}" name="ACCIONES" placeholder="POR FAVOR DIGITE LAS ACCIONES QUE TOMO ANTE ESTA NOVEDAD " rows="5" cols="50"></textarea><br>
+              <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>
+                <textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="POR FAVOR DIGITE EL SEGUIMIENTO QUE REALIZO" rows="5" cols="50"></textarea><br>
 
-            <!-- Otros campos del formulario -->
+            <label for="ACCIONES-${novedad.id}"><strong>ACCIONES A TOMAR:</strong></label><br>
+            <textarea id="ACCIONES-${novedad.id}" name="ACCIONES" placeholder="POR FAVOR DIGITE LAS ACCIONES QUE TOMO ANTE ESTA NOVEDAD " rows="5" cols="50"></textarea><br>
+
+           
             
-<button type="submit" class="enviar">Guardar Seguimiento</button>
-        </form>
-    </div>
-    <br>
-</div>
+        <button type="submit" class="enviar">Guardar Seguimiento</button>
+            </form>
+            </div>
+            <br>
+            </div>
             
+
+             <!-- CAMPOS DE LA OTRA NOVEDAD -->
         <label for="fecha-${novedad.id}" style="display: none;">fecha:</label>
         <input type="text" id="fecha-${novedad.id}" name="fecha" placeholder="realiza" value="${novedad.fecha}" style="display: none;"><BR>
 
@@ -508,21 +510,21 @@ formularioSeguimiento.innerHTML = `
 
 
 
-<label for="novedad_ACTAS-${novedad.id}"  style="display: none;">novedad_ACTAS:</label>
+        <label for="novedad_ACTAS-${novedad.id}"  style="display: none;">novedad_ACTAS:</label>
         <input type="text" id="novedad_ACTAS-${novedad.id}" name="novedad_ACTAS" placeholder="novedad_ACTAS" value="${novedad.novedad_ACTAS}"style="display: none;" ><BR>
 
 
 
 
 
-<label for="otras_novedades-${novedad.id}"  style="display: none;">otras_novedades:</label>
+        <label for="otras_novedades-${novedad.id}"  style="display: none;">otras_novedades:</label>
         <input type="text" id="otras_novedades-${novedad.id}" name="novedad_ACTAS" placeholder="otras_novedades" value="${novedad.otras_novedades}"style="display: none;" ><BR>
 
 
 
 
 
-<label for="firma-${novedad.id}"  style="display: none;">firma:</label>
+        <label for="firma-${novedad.id}"  style="display: none;">firma:</label>
         <input type="text" id="firma-${novedad.id}" name="firma" placeholder="firma" value="${novedad.firma}"style="display: none;" ><BR>
 
 
@@ -532,32 +534,31 @@ formularioSeguimiento.innerHTML = `
 
 
 
-            <label for="novedadestripulacion-${novedad.id}" style="display: none;">TRIPULACION: </label>
-             <input type="text" id="novedadestripulacion-${novedad.id}" name="novedadestripulacion" placeholder="Detalle" value="${novedad.novedad_tripulacion}" style="display: none;"><BR>
+        <label for="novedadestripulacion-${novedad.id}" style="display: none;">TRIPULACION: </label>
+        <input type="text" id="novedadestripulacion-${novedad.id}" name="novedadestripulacion" placeholder="Detalle" value="${novedad.novedad_tripulacion}" style="display: none;"><BR>
 
 
          
 
 
 `;
-
-novedadesContainer.appendChild(formularioSeguimiento);
-                    });
+                    formulario.appendChild(formularioSeguimiento);
+                });
 
                 novedadesContainer.appendChild(formulario);
-                    // Agregar evento click al botón de guardar en el formulario de seguimiento
-    const botonGuardar = document.getElementById(`guardarSeguimiento-${novedad.id}`);
-    botonGuardar.addEventListener('click', function() {
-        guardarSeguimiento(novedad.id, novedad); // Llama a la función guardarSeguimiento
-    });
-
             } else {
-                novedadesContainer.innerHTML = '<p>No hay novedades disponibles para esta fecha.</p>';
+                // Mostrar mensaje de que no hay novedades
+                const mensaje = document.createElement('p');
+                mensaje.textContent = 'No hay novedades para la fecha seleccionada.';
+                novedadesContainer.appendChild(mensaje);
             }
         })
-        .catch(error => console.error('Error al obtener las novedades:', error));
+        .catch(error => {
+            console.error('Error al obtener las novedades:', error);
+            const novedadesContainer = document.getElementById('novedadesContainer');
+            novedadesContainer.innerHTML = '<p>Ocurrió un error al cargar las novedades. Por favor, inténtalo de nuevo más tarde.</p>';
+        });
 }
-
 
 function formatFechaRegistro(fechaRegistro) {
     const date = new Date(fechaRegistro);
@@ -570,14 +571,12 @@ function padNumber(num) {
 }
 
 // Suponiendo que 'response' contiene los datos de la respuesta JSON del backend que incluye la firma binaria
-const firmaBinaria = response.firma;
 
 // Convierte los datos binarios en una URL de objeto
-const urlFirma = URL.createObjectURL(new Blob([firmaBinaria]));
 
 // Muestra la firma en una imagen en el HTML
 const imagenFirma = document.getElementById('imagenFirma');
-imagenFirma.src = urlFirma;
+
 
 
 // Función para obtener la novedad por su ID
