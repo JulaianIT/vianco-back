@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Novedades</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
@@ -41,26 +42,167 @@
     padding: 30px;
 }
 
+body{
 
+
+    background-color: rgb(217, 217, 217,0.3);
+
+}
+header{
+background-color: white;
+}
 .GENERAL{
+    
     border-radius: 5px;
     position: relative;
     left: 30px;
     width: 470px;
     padding: 20px;
-background-color: aqua;
+background-color: white;
+border: 2px solid black;
+
+
+}
+.DETALLES{
+    border-radius: 5px;
+    position: relative;
+    top: -598px;
+    left: 600px;
+    width: 470px;
+    padding: 20px;
+background-color: white;
+border: 2px solid black;
+
+
 
 
 }
 
 
+.SEGUIMIENTO{
+   border-radius: 5px;
+    position: relative;
+    top: -815px;
+    left: 1150px;
+    width: 470px;
+    padding: 20px;
+background-color: white;
+border: 2px solid black;
 
 
 
 
+}
+      .ver:hover {
+            background-color: #d9d9d9;
+            }
+       
+                 .ver {
+           position: relative;
+           left: 20px;
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 20px ;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+
+  footer{
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+            top: 438PX;
+            margin: 0;
+        }
+        footer section{
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a{
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover{
+            color: rgb(162, 204, 170);
+        }
+        footer p{
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad{
+            font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+            }
+.BUSCAR {
+    background-color: rgb(144, 201, 167, 0.6);
+    padding: 30px;
+    text-align: center; /* Alinear el contenido al centro */
+}
+
+#fecha {
+    width: 300px; /* Aumentar el ancho del campo de entrada de fecha */
+    height: 40px; /* Aumentar la altura del campo de entrada de fecha */
+    font-size: 18px; /* Aumentar el tamaño de la fuente del campo de entrada de fecha */
+    margin-right: 20px; /* Agregar un margen derecho para separar el campo de entrada de fecha del botón */
+}
+.fehcaa{
+    text-transform: uppercase;
+margin-right: 23px;
+font-size: 20px;
+            font-weight: bold;
 
 
+}
+     .volver-btn:hover {
+            background-color: #d9d9d9;
+            }
+       
+                 .volver-btn {
+                    position:relative;
+                    top: 0px;
+                    left: 45px;
 
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 20px ;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
 
 </sTyle>
 
@@ -78,10 +220,15 @@ background-color: aqua;
     <div class="BUSCAR">
     <h1>BUSCAR NOVEDAD</h1>
     <br>
+
     <form id="formFecha">
-        <label for="fecha">Selecciona una fecha:</label>
+        <label class="fehcaa"  for="fecha">Selecciona una fecha:</label>
         <input type="date" id="fecha" name="fecha">
-        <button type="submit">Ver Novedades</button>
+            
+
+        <button type="submit" class="ver" >Ver Novedades</button>
+                           <a href="/" class="volver-btn"><strong> Volver al Menú </strong></a>
+
     </form>
     </div>
     <hr>
@@ -89,7 +236,17 @@ background-color: aqua;
     <br>
 
     <div id="novedadesContainer"></div>
-
+  <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+   </footer>
     <script>
         document.getElementById("formFecha").addEventListener("submit", function(event) {
             event.preventDefault();
@@ -120,15 +277,16 @@ function mostrarNovedades(novedades) {
                 contenidoHTML += `
                     <div class="GENERAL">
                         <h2> INFORMACION GENERAL:</h2>
+                         <br>
                 `;
                 if (novedad.fecha_novedad)
-                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE LA NOVEDAD:</strong> ${novedad.fecha_novedad}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE LA NOVEDAD:</strong> ${novedad.fecha_novedad}</p></div> <br>`;
                 if (novedad.fecha_registro)
-                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE ENVIO:</strong> ${novedad.fecha_registro}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE ENVIO:</strong> ${novedad.fecha_registro}</p> <br></div>`;
                 if (novedad.realiza)
-                    contenidoHTML += `<div class="novedad"><p><strong>ENVIADA POR:</strong> ${novedad.realiza}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>ENVIADA POR:</strong> ${novedad.realiza}</p> <br></div>`;
                 if (novedad.entrega)
-                    contenidoHTML += `<div class="novedad"><p><strong>RECIBIDA POR:</strong> ${novedad.entrega}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>RECIBIDA POR:</strong> ${novedad.entrega}</p> <br></div>`;
                 if (novedad.firma)
                     contenidoHTML += `<div class="novedad"><label><strong>FIRMA DE RECIBIDO:</strong></label><br><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></div>`;
                 
@@ -140,21 +298,22 @@ function mostrarNovedades(novedades) {
                 contenidoHTML += `
                     <div class="DETALLES">
                         <h2> DETALLES DE LA NOVEDAD</h2>
+                        <br>
                 `;
                 if (novedad.novedad_tripulacion)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD DE TRIPULACION:</strong> ${novedad.novedad_tripulacion}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD DE TRIPULACION:</strong> ${novedad.novedad_tripulacion}</p><br></div>`;
                 if (novedad.novedad_hoteleria)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD HOTELERIA:</strong> ${novedad.novedad_hoteleria}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD HOTELERIA:</strong> ${novedad.novedad_hoteleria}</p><br></div>`;
                 if (novedad.novedad_ejecutivos)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EJECUTIVOS:</strong> ${novedad.novedad_ejecutivos}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EJECUTIVOS:</strong> ${novedad.novedad_ejecutivos}</p><br></div>`;
                 if (novedad.novedad_empresas_privadas)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EMPRESAS:</strong> ${novedad.novedad_empresas_privadas}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EMPRESAS:</strong> ${novedad.novedad_empresas_privadas}</p><br></div>`;
                 if (novedad.NOVEDADES_TASKGO)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD TASKGO:</strong> ${novedad.NOVEDADES_TASKGO}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD TASKGO:</strong> ${novedad.NOVEDADES_TASKGO}</p><br></div>`;
                 if (novedad.novedad_actas)
-                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD ACTAS:</strong> ${novedad.novedad_actas}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD ACTAS:</strong> ${novedad.novedad_actas}</p><br></div>`;
                 if (novedad.otras_novedades)
-                    contenidoHTML += `<div class="novedad"><p><strong>OTRAS NOVEDADES:</strong> ${novedad.otras_novedades}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>OTRAS NOVEDADES:</strong> ${novedad.otras_novedades}</p><br></div>`;
                 
                 contenidoHTML += `</div>`; // Cerrar div DETALLES
             }
@@ -164,15 +323,16 @@ function mostrarNovedades(novedades) {
                 contenidoHTML += `
                     <div class="SEGUIMIENTO">
                         <h2> DETALLES DEL SEGUIMIENTO</h2>
+                        <br>
                 `;
                 if (novedad.fecha_seguimiento)
-                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE SEGUIMIENTO:</strong> ${novedad.fecha_seguimiento}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE SEGUIMIENTO:</strong> ${novedad.fecha_seguimiento}</p><br></div>`;
                 if (novedad.nombre_seguimiento)
-                    contenidoHTML += `<div class="novedad"><p><strong>REALIZADO POR:</strong> ${novedad.nombre_seguimiento}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>RESPONSABLE:</strong> ${novedad.nombre_seguimiento}</p><br></div>`;
                 if (novedad.detalle_seguimiento)
-                    contenidoHTML += `<div class="novedad"><p><strong>ANALISIS DE CAUSA:</strong> ${novedad.detalle_seguimiento}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>ANALISIS DE CAUSA:</strong> ${novedad.detalle_seguimiento}</p><br></div>`;
                 if (novedad.ACCIONES)
-                    contenidoHTML += `<div class="novedad"><p><strong>ACCIONES A TOMAR:</strong> ${novedad.ACCIONES}</p></div>`;
+                    contenidoHTML += `<div class="novedad"><p><strong>ACCIONES A TOMAR:</strong> ${novedad.ACCIONES}</p><br></div>`;
                 
                 contenidoHTML += `</div>`; // Cerrar div SEGUIMIENTO
             }
