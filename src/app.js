@@ -1433,6 +1433,28 @@ app.post('/api/guardar_seguimiento', (req, res) => {
 });
 
 
+
+
+
+// Backend (Endpoint /api/eliminar_fecha)
+app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
+    const fecha = req.params.fecha;
+    connection.query('DELETE FROM novedades WHERE fecha = ?', fecha, (error, results) => {
+        if (error) {
+            console.error('Error al eliminar la fecha:', error);
+            res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
+        } else {
+            res.json({ message: 'Fecha eliminada correctamente' });
+        }
+    });
+});
+
+
+
+
+
+
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
