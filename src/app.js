@@ -1413,6 +1413,7 @@ app.get('/api/obtener_novedades', (req, res) => {
 
 // Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento', (req, res) => {
+    
     // Obtener los datos del cuerpo de la solicitud
     const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES} = req.body;
 
@@ -1452,8 +1453,26 @@ app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
 
 
 
+app.get('/ver_novedades_C', (req, res) => {
+    res.render('novedades_Callcenter/ver_novedades_C.hbs');
+});
 
+app.get('/novedadess', (req, res) => {
+    const fecha = req.query.fecha;
 
+    // Preparar la consulta SQL para obtener las novedades de la fecha seleccionada
+    const sql = "SELECT * FROM novedades_completadas WHERE fecha_novedad = ?";
+
+    // Ejecutar la consulta
+    connection.query(sql, [fecha], (err, result) => {
+        if (err) {
+            console.error("Error al obtener las novedades:", err);
+            res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
+        } else {
+            res.status(200).json(result); // Devuelve los datos como JSON
+        }
+    });
+});
 
 // Iniciar el servidor
 app.listen(app.get("port"), () => {

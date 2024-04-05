@@ -1,0 +1,191 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Novedades</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+</head>
+<sTyle>
+
+        *{
+    
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+               #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+.BUSCAR {
+   
+    background-color: rgb(144, 201, 167, 0.6); /* Cambiar a rgb(144, 201, 167) */
+    padding: 30px;
+}
+
+
+.GENERAL{
+    border-radius: 5px;
+    position: relative;
+    left: 30px;
+    width: 470px;
+    padding: 20px;
+background-color: aqua;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+</sTyle>
+
+<body>
+               <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+
+        <hr>
+        
+    
+
+    </header>
+    <div class="BUSCAR">
+    <h1>BUSCAR NOVEDAD</h1>
+    <br>
+    <form id="formFecha">
+        <label for="fecha">Selecciona una fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+        <button type="submit">Ver Novedades</button>
+    </form>
+    </div>
+    <hr>
+    <br>
+    <br>
+
+    <div id="novedadesContainer"></div>
+
+    <script>
+        document.getElementById("formFecha").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const fecha = document.getElementById("fecha").value;
+            obtenerNovedades(fecha);
+        });
+
+        function obtenerNovedades(fecha) {
+            fetch(`/novedadess?fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => mostrarNovedades(data))
+            .catch(error => console.error('Error:', error));
+        }
+function mostrarNovedades(novedades) {
+    const novedadesContainer = document.getElementById("novedadesContainer");
+    novedadesContainer.innerHTML = ""; // Limpiar el contenedor
+
+    if (novedades.length === 0) {
+        novedadesContainer.innerHTML = "<p>No hay novedades para esta fecha</p>";
+    } else {
+        const listaNovedades = document.createElement("ul");
+        novedades.forEach(novedad => {
+            const listItem = document.createElement("li");
+            let contenidoHTML = ""; // Variable para almacenar el contenido HTML
+
+            // Verificar si hay información general
+            if (novedad.fecha_novedad || novedad.fecha_registro || novedad.realiza || novedad.entrega || novedad.firma) {
+                contenidoHTML += `
+                    <div class="GENERAL">
+                        <h2> INFORMACION GENERAL:</h2>
+                `;
+                if (novedad.fecha_novedad)
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE LA NOVEDAD:</strong> ${novedad.fecha_novedad}</p></div>`;
+                if (novedad.fecha_registro)
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE ENVIO:</strong> ${novedad.fecha_registro}</p></div>`;
+                if (novedad.realiza)
+                    contenidoHTML += `<div class="novedad"><p><strong>ENVIADA POR:</strong> ${novedad.realiza}</p></div>`;
+                if (novedad.entrega)
+                    contenidoHTML += `<div class="novedad"><p><strong>RECIBIDA POR:</strong> ${novedad.entrega}</p></div>`;
+                if (novedad.firma)
+                    contenidoHTML += `<div class="novedad"><label><strong>FIRMA DE RECIBIDO:</strong></label><br><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></div>`;
+                
+                contenidoHTML += `</div>`; // Cerrar div GENERAL
+            }
+
+            // Verificar si hay detalles de la novedad
+            if (novedad.novedad_tripulacion || novedad.novedad_hoteleria || novedad.novedad_ejecutivos || novedad.novedad_empresas_privadas || novedad.NOVEDADES_TASKGO || novedad.novedad_actas || novedad.otras_novedades) {
+                contenidoHTML += `
+                    <div class="DETALLES">
+                        <h2> DETALLES DE LA NOVEDAD</h2>
+                `;
+                if (novedad.novedad_tripulacion)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD DE TRIPULACION:</strong> ${novedad.novedad_tripulacion}</p></div>`;
+                if (novedad.novedad_hoteleria)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD HOTELERIA:</strong> ${novedad.novedad_hoteleria}</p></div>`;
+                if (novedad.novedad_ejecutivos)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EJECUTIVOS:</strong> ${novedad.novedad_ejecutivos}</p></div>`;
+                if (novedad.novedad_empresas_privadas)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD EMPRESAS:</strong> ${novedad.novedad_empresas_privadas}</p></div>`;
+                if (novedad.NOVEDADES_TASKGO)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD TASKGO:</strong> ${novedad.NOVEDADES_TASKGO}</p></div>`;
+                if (novedad.novedad_actas)
+                    contenidoHTML += `<div class="novedad"><p><strong>NOVEDAD ACTAS:</strong> ${novedad.novedad_actas}</p></div>`;
+                if (novedad.otras_novedades)
+                    contenidoHTML += `<div class="novedad"><p><strong>OTRAS NOVEDADES:</strong> ${novedad.otras_novedades}</p></div>`;
+                
+                contenidoHTML += `</div>`; // Cerrar div DETALLES
+            }
+
+            // Verificar si hay detalles del seguimiento
+            if (novedad.fecha_seguimiento || novedad.nombre_seguimiento || novedad.detalle_seguimiento || novedad.ACCIONES) {
+                contenidoHTML += `
+                    <div class="SEGUIMIENTO">
+                        <h2> DETALLES DEL SEGUIMIENTO</h2>
+                `;
+                if (novedad.fecha_seguimiento)
+                    contenidoHTML += `<div class="novedad"><p><strong>FECHA DE SEGUIMIENTO:</strong> ${novedad.fecha_seguimiento}</p></div>`;
+                if (novedad.nombre_seguimiento)
+                    contenidoHTML += `<div class="novedad"><p><strong>REALIZADO POR:</strong> ${novedad.nombre_seguimiento}</p></div>`;
+                if (novedad.detalle_seguimiento)
+                    contenidoHTML += `<div class="novedad"><p><strong>ANALISIS DE CAUSA:</strong> ${novedad.detalle_seguimiento}</p></div>`;
+                if (novedad.ACCIONES)
+                    contenidoHTML += `<div class="novedad"><p><strong>ACCIONES A TOMAR:</strong> ${novedad.ACCIONES}</p></div>`;
+                
+                contenidoHTML += `</div>`; // Cerrar div SEGUIMIENTO
+            }
+
+            // Agregar el contenido HTML al elemento de lista
+            listItem.innerHTML = contenidoHTML;
+            listaNovedades.appendChild(listItem);
+        });
+        novedadesContainer.appendChild(listaNovedades);
+    }
+}
+
+
+    </script>
+</body>
+</html>
