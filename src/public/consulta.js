@@ -1,4 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const busquedaInput = document.getElementById('busqueda-placa');
+    const placaSelect = document.getElementById('placa');
+    const opcionesPlacas = Array.from(placaSelect.querySelectorAll('option'));
+
+    busquedaInput.addEventListener('input', () => {
+        const busqueda = busquedaInput.value.trim().toLowerCase();
+
+        // Vaciar la lista desplegable
+        placaSelect.innerHTML = '';
+
+        // Filtrar las opciones y volver a llenar la lista desplegable
+        opcionesPlacas.forEach(opcion => {
+            const placa = opcion.textContent.trim().toLowerCase();
+            if (placa.includes(busqueda)) {
+                placaSelect.appendChild(opcion.cloneNode(true));
+            }
+        });
+    });
+
+    const consultaForm = document.getElementById('consulta-form');
+
+    consultaForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Evitar que el formulario se envíe por defecto
+
+        const placaSeleccionada = placaSelect.value;
+        const infoVehiculoDiv = document.getElementById('info-vehiculo');
+
+        // Enviar la solicitud POST al servidor
+        fetch('/consulta-vehiculos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ placa: placaSeleccionada })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al consultar el vehículo');
+            }
+            return response.json();
+        })
+        .then(vehiculo => {
+            // Mostrar la información del vehículo como se muestra en tu código actual
+        })
+        .catch(error => {
+            console.error('Error al consultar el vehículo:', error);
+            infoVehiculoDiv.textContent = 'Error al consultar el vehículo';
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     const consultaForm = document.getElementById('consulta-form');
 
     consultaForm.addEventListener('submit', (event) => {

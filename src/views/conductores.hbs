@@ -37,8 +37,13 @@ main{
     margin: auto;
     margin-top: 100px;
 
-}
+}   .busqu{
+            margin-bottom: 25px;
+        border: 2px solid black;
+        padding: 10px;
+        width: 97%;
 
+        }
 
     </style>
 </head>
@@ -200,6 +205,8 @@ main{
         <h1>Hoja de Vida del conductor</h1>
         <form id="consulta-form">
             <div class="form-group">
+                               <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+
                 <label for="placa">Selecciona una placa:</label>
                 <select id="placa" name="placa">
                     {{#each placas}}
@@ -213,6 +220,7 @@ main{
             <h2>Información del Conductor</h2>
             <hr>
             <div class="campo">
+                
                 <span class="label">SELECCIONA UNA PLACA</span>
             </div>
             <!-- Agregar el botón de editar después de mostrar la información del vehículo -->

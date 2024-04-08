@@ -185,7 +185,13 @@ main{
         .volver-btn:hover {
             background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
         }
-        
+             .busqu{
+            margin-bottom: 25px;
+        border: 2px solid black;
+        padding: 10px;
+        width: 97%;
+
+        }
    </style>
 </head>
 <body>
@@ -193,6 +199,8 @@ main{
         <h1> CONDICIONES ADMINISTRATIVAS DEL VEHICULO</h1>
         <form id="consulta-form" action="/consulta-contabilidad" method="POST">
             <div class="form-group">
+                                <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+
                 <label for="placa">Selecciona una placa:</label>
                 <select id="placa" name="placa">
                     {{#each placas}}

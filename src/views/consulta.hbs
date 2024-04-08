@@ -143,7 +143,7 @@ main{
         .label {
             font-weight: bold; /* Texto en negrita */
             float: left; /* Flotar a la izquierda */
-            width: 220px; /* Ancho de 120px */
+            width: 230px; /* Ancho de 120px */
             color: #555; /* Color del texto */
         }
         
@@ -185,7 +185,13 @@ main{
         .volver-btn:hover {
             background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
         }
-        
+        .busqu{
+            margin-bottom: 25px;
+        border: 2px solid black;
+        padding: 10px;
+        width: 97%;
+
+        }
     </style>
 </head>
 <body>
@@ -193,6 +199,8 @@ main{
         <h1>Hoja de Vida del Vehículo</h1>
         <form id="consulta-form">
             <div class="form-group">
+                <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+
                 <label for="placa">Selecciona una placa:</label>
                 <select id="placa" name="placa">
                     {{#each placas}}
@@ -219,6 +227,7 @@ main{
             <!-- Agregar más campos de información técnica aquí -->
         </div>
     </div>
+    
     <script src="consulta.js"></script>
 </body>
 </html>

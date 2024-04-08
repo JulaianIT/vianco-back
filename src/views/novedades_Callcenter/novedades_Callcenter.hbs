@@ -279,11 +279,6 @@ label {
         <br>
 <label for="entrega"><strong>A quién se entrega la novedad:</strong></label><br>
 <input type="text" id="entrega" name="entrega" required><br>
-<br>
-    <label for="firma"><strong>Firma de quien recibe:</strong></label><br>
-    <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
-    <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
-<input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
 
         <br>
         <div class="contenedor-checkboxes">
@@ -347,6 +342,12 @@ label {
     </div>
    
     <br>
+    <br>
+    <label for="firma"><strong>Firma de quien recibe:</strong></label><br>
+    <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
+    <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
+<input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
+
 <hr>
 </div>
 <input class="enviar" type="submit" value="Enviar" onclick="guardarFirma()">
