@@ -543,8 +543,8 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
 
   // Insertar los datos en la base de datos
   connection.query(
-    `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen, contacto_emergencia, celular_emergencia, foto) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, foto) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       formData.placa,
       formData.conductor,
@@ -562,6 +562,9 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
       formData.eps,
       formData.seguridad_social,
       formData.fecha_vencimiento_examen,
+      formData.certificado_1,
+      formData.fecha_certificado_1,
+
       formData.contacto_emergencia,
       formData.celular_emergencia,
       formData.foto
@@ -613,7 +616,7 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
     }
 
     // Obtener otros datos del conductor desde el cuerpo de la solicitud
-    const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia } = req.body;
+    const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia } = req.body;
 
     // Construir la consulta SQL para la actualización
     let sqlQuery;
@@ -621,12 +624,12 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
 
     if (fotoData) {
         // Si se ha cargado una nueva foto, actualizar también el campo de foto
-        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?';
-        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, fotoData, placa];
+        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, certificado_1 = ?,fecha_certificado_1 = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, fotoData, placa];
     } else {
         // Si no se ha cargado una nueva foto, mantener la foto existente
-        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?';
-        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, contacto_emergencia, celular_emergencia, placa];
+        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?,certificado_1 = ?,fecha_certificado_1 = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, placa];
     }
 
     // Realizar la actualización en la base de datos con los datos recibidos

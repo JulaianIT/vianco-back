@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
        <div class="conductor-image">
            <img class="image" src="${fotoURL}" alt="Foto del Conductor">
        </div>
-       <div class="conductor-infoe">
+       <div  id="infoo" class="conductor-infoe">
            <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
            <p><strong>BASE:</strong> ${vehiculo.Base}</p>
            <p><strong>CONDUCTOR:</strong> ${vehiculo.Conductor}</p>

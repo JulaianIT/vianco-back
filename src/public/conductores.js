@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2>Información del Conductor</h2>
             <div class="conductor-container">
                 <div class="conductor-image">
-                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 350px; float: left;">
+                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 360px; float: left;">
                 </div>
                 <div class="conductor-info">
                     <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
@@ -110,15 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
                     <p><strong>FECHA DE NACIMIENTO :</strong> ${conductor.fecha_nacimiento}</p>
                     <p><strong>FECHA DE EXPEDICION :</strong> ${conductor.fecha_expedicion}</p>
-                </div>
+                    <p><strong>CELULAR :</strong> ${conductor.celular}</p>
+                    <p><strong>EMAIL :</strong> ${conductor.email}</p>
+                    </div>
                 <div style="clear: both;"></div> <!-- Para limpiar los floats -->
             </div>
             
                 <p><strong>TIPO DE SANGRE :</strong> ${conductor.tipo_sangre}</p>
                 <p><strong>DIRECCION :</strong> ${conductor.direccion}</p>
 
-                <p><strong>CELULAR :</strong> ${conductor.celular}</p>
-                <p><strong>EMAIL :</strong> ${conductor.email}</p>
+              
                 <p><strong>CATEGORIA LICENCIA:</strong> ${conductor.categoria}</p>
                 <p><strong>FECHA DE VIGENCIA:</strong> ${conductor.fecha_vigencia}</p>
 
@@ -126,6 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>EPS :</strong> ${conductor.eps}</p>
                 <p><strong>SEGURIDAD SOCIAL:</strong> ${conductor.seguridad_social}</p>
                 <p><strong>EXAMENES MEDICOS:</strong> ${conductor.fecha_vencimiento_examen}</p>
+                <p><strong>CERTIFICADO N°1:</strong> ${conductor.certificado_1}</p>
+                <p><strong>FECHA DE VIGENCIA:</strong> ${conductor.fecha_certificado_1}</p>
 
 
                 <p><strong> CONTACTO EN CASO DE EMERGENCIA :</strong> ${conductor.contacto_emergencia}</p>

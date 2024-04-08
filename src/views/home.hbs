@@ -183,6 +183,14 @@ img {
     float: right; /* Alinea la imagen a la izquierda dentro del header */
     width: 300px;
 }
+p{
+    
+    padding: 30px 15px;
+    color: white;
+    text-decoration: none;
+
+
+}
 
 </style>
 
@@ -207,7 +215,8 @@ img {
                       
 
                         {{#if isControl}}
-                        <li><a class="active" href="">CONTROL OPERATIVO</a> 
+                        
+                        <li><p class="active"> CONTROL OPERATIVO</p>  
                             <ul class="menu-vertical" >
                                <li><a href=" /ver_novedades_C">NOVEDADES</a></li>
                                 <li><a href="https://docs.google.com/spreadsheets/d/1pTFbY3-Qp76hAiNQ7JLC84uYwuu-np7MdGupLfvni4s/edit?usp=sharing" target="_blank" >PROGRAMACION VEHICULOS</a></li>
@@ -220,7 +229,7 @@ img {
 
 
               {{#if isControl}}
-                        <li><a class="active" href="">CallCENTER</a> 
+                        <li><p class="active">CallCENTER</p> 
                             <ul class="menu-vertical" >
                                 <li><a href="/novedades" >NOVEDADES</a></li>
                             </ul>
@@ -237,28 +246,24 @@ img {
 
 
                         {{#if isOperative}}
-                        <li><a class="active" href="">Operaciones</a> 
+                        <li><p class="active" >Operaciones</p> 
                             <ul class="menu-vertical" >
                                 <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="/consulta-conductores">Conductores</a></li>
                                 <li><a href="/consulta-contabilidad">ADmin vehiculo</a></li>
-                                <li><a href="#">Contratos</a></li>
                             </ul>
                         </li>
                         {{/if}}
 
                         {{#if isAdmin}}
-                        <li><a class="menu-horizontal" href="">Gerencia</a> 
+                        <li><p class="menu-horizontal" >Gerencia</p> 
                             <ul class="menu-vertical">
-                            <li ><a href="#">Reportes</a></li>
-                            <li><a href="#">Estadísticas</a></li>
-                            <li><a href="#">Configuración</a></li>
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
                             </ul>
                         </li>
                         {{/if}}
                         {{#if isExecutive}}
-                        <li><a class="menu-horizontal" href="">Ejecutivo</a>
+                        <li><p class="menu-horizontal">Ejecutivo</p>
                             <ul class="menu-vertical">
                                 <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
                                 <li><a href="#">COTIZACIONES</a></li>
