@@ -80,24 +80,33 @@ document.addEventListener('DOMContentLoaded', () => {
         
             infoVehiculoDiv.innerHTML = `
             <div class="png">
-
-            <div class="containerr">
-            <div class="arriba">
-            <img id="logoo" src="/imagenes/logo vianco.png" alt="Logo">
-            <div class="contenidoo">
-                <h3>TRASPORTE</h3>
-                <h3>HOJA DE VIDA VEHICULO</h3>
-            </div>
-            <div class="info">
-                <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
-                <p><strong>BASE:</strong> ${vehiculo.Base}</p>
-                <p><strong>CONDUCTOR:</strong> ${vehiculo.Conductor}</p>
-            </div>
-        </div>
-            </div>
-            <div class="conductor-image">
-                <img class="image"  src="${fotoURL}" alt="Foto del Conductor" >
-            </div>
+            <header>
+            <img id="membrete"   src="/imagenes/menbrete.png"/>
+           <img  id="logo"      src="/imagenes/logo vianco.png"/>
+           <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+           <hr>
+           
+          
+    
+   
+   
+   
+   
+       </header>
+       <div class="conductor-info-container">
+       <div class="conductor-image">
+           <img class="image" src="${fotoURL}" alt="Foto del Conductor">
+       </div>
+       <div class="conductor-infoe">
+           <p><strong>PLACA:</strong> ${vehiculo.Placa}</p>
+           <p><strong>BASE:</strong> ${vehiculo.Base}</p>
+           <p><strong>CONDUCTOR:</strong> ${vehiculo.Conductor}</p>
+       </div>
+   </div>
+   
+   
+           
+       
             <h2>INFORMACION VEHICULO</h2>
 
             <div class="contenedor-columnas">

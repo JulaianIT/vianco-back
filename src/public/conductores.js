@@ -84,16 +84,36 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Mostrar la información del conductor
             infoConductoresDiv.innerHTML = `
-                <h2>Información del Conductor</h2>
-                <div class="conductor-image">
-                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
-                <p><strong>TIPO DE DOCUMENTO :</strong> ${conductor.tipo_documento}</p>
-                <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
-                <p><strong>FECHA DE NACIMIENTO :</strong> ${conductor.fecha_nacimiento}</p>
-                <p><strong>FECHA DE EXPEDICION :</strong> ${conductor.fecha_expedicion}</p>
+            <div class="png">
+                <header>
+         <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
 
+
+
+
+    </header>
+
+            <h2>Información del Conductor</h2>
+            <div class="conductor-container">
+                <div class="conductor-image">
+                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 350px; float: left;">
+                </div>
+                <div class="conductor-info">
+                    <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
+                    <p><strong>TIPO DE DOCUMENTO :</strong> ${conductor.tipo_documento}</p>
+                    <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
+                    <p><strong>FECHA DE NACIMIENTO :</strong> ${conductor.fecha_nacimiento}</p>
+                    <p><strong>FECHA DE EXPEDICION :</strong> ${conductor.fecha_expedicion}</p>
+                </div>
+                <div style="clear: both;"></div> <!-- Para limpiar los floats -->
+            </div>
+            
                 <p><strong>TIPO DE SANGRE :</strong> ${conductor.tipo_sangre}</p>
                 <p><strong>DIRECCION :</strong> ${conductor.direccion}</p>
 
@@ -111,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong> CONTACTO EN CASO DE EMERGENCIA :</strong> ${conductor.contacto_emergencia}</p>
                 <p><strong>TELEFONO EN CASO DE EMERGENCIA:</strong> ${conductor.celular_emergencia}</p>
                 <!-- Agrega más campos de información del conductor aquí -->
+                </div>
                 <button id="editar-conductor-btn" class="btn editar-btn">Editar Información</button>
             `;
             

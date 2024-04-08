@@ -211,9 +211,11 @@ main{
 
         }
         .image{
+            margin-right: 50px;
+           margin-left: 40px;
             position: relative;
-            width: 50%;
-            left: 23%;
+            width: 600px;
+            left: -6%;
             border:  6px solid black;
             border-radius: 6px;
 
@@ -250,22 +252,13 @@ main{
     margin-right: 10px; /* Margen derecho reducido */
 }
 
-.contenidoo,
-.info {
-    flex-grow: 1;
-    padding: 10px;
-    margin: 0; /* Eliminar márgenes */
-}
+
 
 strong {
-    font-size: 25px;
-    margin-right: 5px;
+    font-size: 20px;
 }
 
-.info {
-    font-size: 18px;
-    padding: 25px; /* Relleno adicional para la info */
-}
+
 
 h3 {
     text-transform: uppercase;
@@ -277,7 +270,7 @@ h3 {
 
 p {
     
-    font-size: 20px;
+    font-size: 15px;
     margin: 0;
     padding: 13px;
     border: 3px solid black;
@@ -308,7 +301,8 @@ margin-bottom: 80px;
 }
    *{
     
-  font-family: "Rubik", sans-serif,
+  font-family: "Rubik", sans-serif,;
+
   }
  h2{
         border: 3px solid black;
@@ -324,6 +318,34 @@ align-items: center;
 
     padding: 20px;
   }
+header{
+
+
+    background-color: white;
+}
+     .conductor-info-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .conductor-image {
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+
+        .conductor-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .conductor-info p {
+            margin: 5px 0; /* Reducir el margen vertical de los párrafos */
+        }
+
+        .image {
+            max-width: 100%; /* Asegurarse de que la imagen no se salga del contenedor */
+            height: auto; /* Mantener la proporción de la imagen */
+        }
 
     </style>
 </head>
