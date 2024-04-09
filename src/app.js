@@ -1510,11 +1510,58 @@ app.post('/inicio-turno', (req, res) => {
         }
         console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
         // Renderiza la plantilla 'tareas.hbs' y pasa cualquier dato adicional necesario
-        res.render('centro_operaciones/tareas', { nombre: nombre, turno: turno });
+        res.render('centro_operaciones/tareas_diarias', { nombre: nombre, turno: turno });
     });
 });
 
-// Iniciar el servidor
+
+
+
+
+
+// Ruta para manejar la solicitud de guardar tareas marcadas
+app.post('/marcar-tarea', (req, res) => {
+    const formData = req.body;
+
+    // Obtener los valores de formData
+    const {
+        nombre,
+        fecha,
+        turno,
+        // Aquí se incluyen todas las variables correspondientes a las tareas marcadas
+    } = formData;
+
+    // Consulta SQL para insertar los datos en la tabla 'tareas'
+    const sqlQuery = `
+        INSERT INTO tareas (nombre, fecha, turno,
+                            // Aquí se incluyen todos los campos correspondientes a las tareas
+                            firma_base64)
+        VALUES (?, ?, ?,
+                // Aquí se incluyen los placeholders para los valores de las tareas
+                ?)
+    `;
+
+    // Valores para la consulta SQL
+    const values = [
+        nombre,
+        fecha,
+        turno,
+        // Aquí se incluyen todos los valores de las tareas marcadas
+        firmaBase64 || null
+    ];
+
+    // Ejecutar la consulta SQL
+    connection.query(sqlQuery, values, (err, result) => {
+        if (err) {
+            console.error('Error al insertar datos en la base de datos:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        console.log('Datos insertados correctamente en la base de datos');
+        res.status(200).send('Datos insertados correctamente');
+    });
+});
+
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });
