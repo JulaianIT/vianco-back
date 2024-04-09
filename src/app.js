@@ -1477,6 +1477,43 @@ app.get('/novedadess', (req, res) => {
     });
 });
 
+
+
+
+
+
+// Configura el directorio de vistas como 'centro_operaciones'
+
+
+// Definir una ruta para la página principal
+// Definir una ruta para la página principal
+app.get('/inicio', (req, res) => {
+    res.render('centro_operaciones/inicio_turno.hbs', { title: 'Iniciar Turno' });
+  });
+  
+// Manejar la solicitud POST para iniciar el turno
+app.post('/inicio-turno', (req, res) => {
+    // Obtén el nombre del trabajador y el turno de la solicitud POST
+    const nombre = req.body.nombre;
+    const turno = req.body.turno;
+
+    // Obtén la fecha y hora actual en la zona horaria local
+    const fechaHoraActual = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });
+
+    // Inserta la hora de inicio, el nombre del trabajador y el turno en la tabla centro_operaciones_inicio
+    const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
+    connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
+        if (error) {
+            console.error('Error al guardar la hora de inicio en la base de datos:', error);
+            res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
+            return;
+        }
+        console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
+        // Renderiza la plantilla 'tareas.hbs' y pasa cualquier dato adicional necesario
+        res.render('centro_operaciones/tareas', { nombre: nombre, turno: turno });
+    });
+});
+
 // Iniciar el servidor
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

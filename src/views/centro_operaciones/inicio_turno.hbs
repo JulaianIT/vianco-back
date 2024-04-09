@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Turno</title>
+</head>
+<body>
+    <h1>Iniciar Turno</h1>
+    <form action="/inicio-turno" method="post">
+        <label for="nombre">Seleccione su nombre:</label>
+        <select id="nombre" name="nombre" required>
+            <option value="">Seleccione un empleado...</option>
+            <option value="JAMER CORTEZ">JAMER CORTEZ</option>
+            <option value="CARLOS SERNA">CARLOS SERNA</option>
+            <option value="STIVEN GALINDO">STIVEN GALINDO</option>
+             <option value="JUAN GONZALES">JUAN GONZALES</option>
+            <option value="ORCAR CAYAMBE">ORCAR CAYAMBE</option>
+             <option value="SEBASTIAN MENDOZA">SEBASTIAN MENDOZA</option>
+
+            <!-- Agrega más opciones según sea necesario -->
+        </select>
+        <br>
+        <label for="turno">Seleccione el turno:</label>
+        <select id="turno" name="turno" required>
+            <option value="">Seleccione el turno...</option>
+            <option value="Dia">Día</option>
+            <option value="Noche">Noche</option>
+        </select>
+        <br>
+        <button type="submit">Iniciar Turno</button>
+    </form>
+</body>
+</html>
