@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
@@ -378,90 +377,71 @@ label {
 
 
 <script>
-function mostrarNovedad(id) {
-    var elemento = document.getElementById('campoNovedad_' + id);
-    if (elemento.style.display === 'none') {
-        elemento.style.display = 'block';
-    } else {
-        elemento.style.display = 'none';
-    }
-}
-  // Obtener el canvas y el contexto
-    var canvas = document.getElementById('firmaCanvas');
-    var ctx = canvas.getContext('2d');
+     var canvas = document.getElementById('firmaCanvas');
+        var ctx = canvas.getContext('2d');
 
-    // Variables para controlar el estado de la firma
-    var firmaActiva = false;
-    var lastX = 0;
-    var lastY = 0;
+        // Variables para controlar el estado de la firma
+        var firmaActiva = false;
+        var lastX = 0;
+        var lastY = 0;
 
-    // Eventos de ratón y táctiles para dibujar la firma
-    canvas.addEventListener('mousedown', startFirma);
-    canvas.addEventListener('mousemove', drawFirma);
-    canvas.addEventListener('mouseup', endFirma);
-    canvas.addEventListener('touchstart', startFirma);
-    canvas.addEventListener('touchmove', drawFirma);
-    canvas.addEventListener('touchend', endFirma);
+        // Eventos de ratón para dibujar la firma
+        canvas.addEventListener('mousedown', function(e) {
+            firmaActiva = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
 
-    // Función para iniciar la firma
-    function startFirma(e) {
-        firmaActiva = true;
-        [lastX, lastY] = [e.offsetX || e.touches[0].clientX, e.offsetY || e.touches[0].clientY];
-    }
+        canvas.addEventListener('mousemove', function(e) {
+            if (firmaActiva) {
+                var currentX = e.offsetX;
+                var currentY = e.offsetY;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(currentX, currentY);
+                ctx.stroke();
+                [lastX, lastY] = [currentX, currentY];
+            }
+        });
 
-    // Función para dibujar la firma
-    function drawFirma(e) {
-        if (!firmaActiva) return;
-        e.preventDefault(); // Evitar el desplazamiento de la página en dispositivos táctiles
-        var currentX = e.offsetX || e.touches[0].clientX;
-        var currentY = e.offsetY || e.touches[0].clientY;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(currentX, currentY);
-        ctx.stroke();
-        [lastX, lastY] = [currentX, currentY];
-    }
+        canvas.addEventListener('mouseup', function() {
+            firmaActiva = false;
+        });
 
-    // Función para finalizar la firma
-    function endFirma() {
-        firmaActiva = false;
-    }
+        // Convertir la firma en base64 y almacenarla en el campo oculto
+        function guardarFirma() {
+            var firmaBase64 = canvas.toDataURL();
+            console.log("Firma en formato base64:", firmaBase64);
+            document.getElementById('firmaBase64').value = firmaBase64;
+        }
 
-    // Convertir la firma en base64 y almacenarla en el campo oculto
-    function guardarFirma() {
-        var firmaBase64 = canvas.toDataURL();
-        document.getElementById('firmaBase64').value = firmaBase64;
-    }
+        function limpiarFirma() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('firmaBase64').value = '';
+            console.log("Firma borrada");
+        }
+        canvas.addEventListener('touchstart', function(e) {
+            firmaActiva = true;
+            var touch = e.touches[0];
+            [lastX, lastY] = [touch.clientX - canvas.offsetLeft, touch.clientY - canvas.offsetTop];
+        });
 
-    // Función para limpiar la firma
-    function limpiarFirma() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        document.getElementById('firmaBase64').value = '';
-    }
-canvas.addEventListener('touchstart', function(e) {
-    firmaActiva = true;
-    var touch = e.touches[0];
-    [lastX, lastY] = [touch.clientX - canvas.offsetLeft, touch.clientY - canvas.offsetTop];
-});
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault(); // Evita el desplazamiento de la página en dispositivos táctiles
+            if (firmaActiva) {
+                var touch = e.touches[0];
+                var currentX = touch.clientX - canvas.offsetLeft;
+                var currentY = touch.clientY - canvas.offsetTop;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(currentX, currentY);
+                ctx.stroke();
+                [lastX, lastY] = [currentX, currentY];
+            }
+        });
 
-canvas.addEventListener('touchmove', function(e) {
-    e.preventDefault(); // Evita el desplazamiento de la página en dispositivos táctiles
-    if (firmaActiva) {
-        var touch = e.touches[0];
-        var currentX = touch.clientX - canvas.offsetLeft;
-        var currentY = touch.clientY - canvas.offsetTop;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(currentX, currentY);
-        ctx.stroke();
-        [lastX, lastY] = [currentX, currentY];
-    }
-});
-
-canvas.addEventListener('touchend', function() {
-    firmaActiva = false;
-});
-
+        canvas.addEventListener('touchend', function() {
+            firmaActiva = false;
+        });
 
 
 </script>
