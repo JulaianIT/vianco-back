@@ -13,8 +13,10 @@
         <label for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
         <input type="date" name="fecha">
         <br>
-        <label for="turno">turno seleccionado</label>
-        <input type="text" name="turno" value="{{turno}}" >
+
+<input type="hidden" name="nombre" value="{{nombre}}">
+        <br>
+<input type="hidden" name="turno" value="{{turno}}">
         <br>
         
         <!-- Tarea: Recepciones Aeropuerto -->
@@ -90,23 +92,12 @@
         
     
         
-        <!-- Tarea: Despacho de facturación -->
-        <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="despacho_facturacion">DESPACHO DE FACTURACION</label>
-            <div>
-                <input type="checkbox" id="despacho_facturacion_realizado" name="despacho_facturacion_realizado" value="realizado">
-                <label for="despacho_facturacion_realizado">Realizado</label>
-                <input type="checkbox" id="despacho_facturacion_no_aplica" name="despacho_facturacion_no_aplica" value="no_aplica">
-                <label for="despacho_facturacion_no_aplica">No Aplica</label>
-                <input type="checkbox" id="despacho_facturacion_no_realizado" name="despacho_facturacion_no_realizado" value="no_realizado">
-                <label for="despacho_facturacion_no_realizado">No Realizado</label>
-            </div>
-        </div>
+  
         <br>
         
         <!-- Tarea: Entrega de documentos -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="entrega_documentos">ENTREGA DE DOCUMENTOS:</label>
+            <label style="text-align: left;" for="entrega_documentos">ENVIAR ACTAS DE TRIPULACION:</label>
             <div>
                 <input type="checkbox" id="entrega_documentos_realizado" name="entrega_documentos_realizado" value="realizado">
                 <label for="entrega_documentos_realizado">Realizado</label>
@@ -189,29 +180,30 @@
         <br>
         
         <!-- Tarea: Revisión de condiciones de vehículos -->
-        <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="revision_vehiculos">REVICION DE CONDICIONES DE VEHICULOS:</label>
+   
+        <br>
+            <div style="display: flex; justify-content: space-between;">
+            <label style="text-align: left;" for="salida_ejecutivos">SALIDA EJECUTIVOS:</label>
             <div>
-                <input type="checkbox" id="revision_vehiculos_realizado" name="revision_vehiculos_realizado" value="realizado">
-                <label for="revision_vehiculos_realizado">Realizado</label>
-                <input type="checkbox" id="revision_vehiculos_no_aplica" name="revision_vehiculos_no_aplica" value="no_aplica">
-                <label for="revision_vehiculos_no_aplica">No Aplica</label>
-                <input type="checkbox" id="revision_vehiculos_no_realizado" name="revision_vehiculos_no_realizado" value="no_realizado">
-                <label for="revision_vehiculos_no_realizado">No Realizado</label>
+                <input type="checkbox" id="salida_ejecutivos" name="salida_ejecutivos_realizado" value="realizado">
+                <label for="salida_ejecutivos_realizado">Realizado</label>
+                <input type="checkbox" id="salida_ejecutivos_no_aplica" name="salida_ejecutivos_no_aplica" value="no_aplica">
+                <label for="salida_ejecutivos_no_aplica">No Aplica</label>
+                <input type="checkbox" id="salida_ejecutivos_no_realizado" name="salida_ejecutivos_no_realizado" value="no_realizado">
+                <label for="salida_ejecutivos_no_realizado">No Realizado</label>
             </div>
         </div>
-        <br>
-        
         <!-- Tarea: Comunicación con proveedores -->
-        <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="comunicacion_proveedores">COMUNICACION CON PROVEEDORES:</label>
+     <br>
+            <div style="display: flex; justify-content: space-between;">
+            <label style="text-align: left;" for="reciclaje">REVISION ACTAS DE RECICLAJE:</label>
             <div>
-                <input type="checkbox" id="comunicacion_proveedores_realizado" name="comunicacion_proveedores_realizado" value="realizado">
-                <label for="comunicacion_proveedores_realizado">Realizado</label>
-                <input type="checkbox" id="comunicacion_proveedores_no_aplica" name="comunicacion_proveedores_no_aplica" value="no_aplica">
-                <label for="comunicacion_proveedores_no_aplica">No Aplica</label>
-                <input type="checkbox" id="comunicacion_proveedores_no_realizado" name="comunicacion_proveedores_no_realizado" value="no_realizado">
-                <label for="comunicacion_proveedores_no_realizado">No Realizado</label>
+                <input type="checkbox" id="reciclaje" name="reciclaje_realizado" value="realizado">
+                <label for="reciclaje_realizado">Realizado</label>
+                <input type="checkbox" id="reciclaje_no_aplica" name="reciclaje_no_aplica" value="no_aplica">
+                <label for="salida_ejecutivos_no_aplica">No Aplica</label>
+                <input type="checkbox" id="reciclaje_no_realizado" name="reciclaje_no_realizado" value="no_realizado">
+                <label for="reciclajeno_realizado">No Realizado</label>
             </div>
         </div>
         <br>
@@ -239,6 +231,8 @@
         <!-- Botón de enviar -->
         <button type="submit">Enviar</button>
     </form>
+                <a href="/" class="volver-btn">Volver al Menú</a>
+
     <script>
    // Obtener el valor del turno seleccionado anteriormente
     
@@ -310,7 +304,13 @@
 
 
     </script>
-    
+  <script>
+    // Cierra la ventana después de 2 segundos
+    setTimeout(function() {
+        window.close();
+    }, 2000); // 2000 milisegundos = 2 segundos
+</script>
+
 </body>
 </html>
 
