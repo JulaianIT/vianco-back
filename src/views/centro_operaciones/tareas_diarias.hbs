@@ -4,13 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tareas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
 </head>
+<style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+                        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+
+    
+
+       *{
+    
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+ }
+    header {
+        background-color: white;
+    }
+    header img {
+        max-width: 100%;
+        height: auto;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    form {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 4px solid black;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+ input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.5); /* Ajusta el tamaño del cuadro de verificación */
+        margin-right: 10px; /* Añade espacio entre el cuadro de verificación y el texto */
+    }
+    #fecha{
+
+        font-size: 15px;
+        margin-right: 15px;
+
+    }
+
+    /* Estilos para el texto que acompaña a los checkboxes */
+    label {
+        font-size: 18px; /* Ajusta el tamaño del texto */
+    }
+     footer{
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+            margin: 0;
+        }
+        footer section{
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a{
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover{
+            color: rgb(162, 204, 170);
+        }
+        footer p{
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad{
+            font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        #sele{
+            font-size: 30px;
+
+
+        }
+        h1{
+            font-size: 50px;
+
+        }
+        /* Estilos para el label */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            margin-bottom: 50px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+        .fond{
+          width: 100%;
+    }
+      .volver-btn:hover {
+            background-color: #d9d9d9;
+            }
+       
+                 .volver-btn {
+                    position:relative;
+                    left: 29%;
+                    top: 0px;
+
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+                 .CERRAR {
+                    position:relative;
+                    left: 29%;
+                    top: 0px;
+
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+           .CERRAR:hover {
+            background-color: #d9d9d9;
+            }
+        
+</style>
+
 <body>
+                   <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+
+        <hr>
+        
+    
+    </header>
+<br>
+  <br>
+        
+    
     <h1>Tareas para el turno de {{nombre}}</h1>
     <h2>Turno: {{turno}}</h2>
-
+    <div class="tareas">
     <form  id="tareaForm"        action="/marcar-tarea" method="post">
-        <label for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
+        <label id="fecha" for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
         <input type="date" name="fecha">
         <br>
 
@@ -23,12 +225,12 @@
         <div style="display: flex; justify-content: space-between;">
             <label style="text-align: left;" for="recepciones">CUADRO DE RECEPCIONES DE AEROPUERTO:</label>
             <div>
-                <input type="checkbox" id="recepciones_realizado" name="recepciones_realizado" value="realizado">
-                <label for="recepciones_realizado">Realizado</label>
-                <input type="checkbox" id="recepciones_no_aplica" name="recepciones_no_aplica" value="no_aplica">
-                <label for="recepciones_no_aplica">No Aplica</label>
-                <input type="checkbox" id="recepciones_no_realizado" name="recepciones_no_realizado" value="no_realizado">
-                <label for="recepciones_no_realizado">No Realizado</label>
+                <input  type="checkbox"    class="checkbox-group"  id="recepciones_realizado" name="recepciones_realizado" value="realizado">
+                <label      class="checkbox-group"   for="recepciones_realizado">Realizado</label>
+                <input   class="checkbox-group"   type="checkbox" id="recepciones_no_aplica" name="recepciones_no_aplica" value="no_aplica">
+                <label      class="checkbox-group"   for="recepciones_no_aplica">No Aplica</label>
+                <input    class="checkbox-group"    type="checkbox" id="recepciones_no_realizado" name="recepciones_no_realizado" value="no_realizado">
+                <label   for="recepciones_no_realizado">No Realizado</label>
             </div>
         </div>
         <br>
@@ -64,7 +266,7 @@
         
         <!-- Tarea: Revisión de servicios en efectivo -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="revision_servicios">REVICION DE SERVICIOS EN EFECTIVO:</label>
+            <label style="text-align: left;" for="revision_servicios">REVISION DE SERVICIOS EN EFECTIVO:</label>
             <div>
                 <input type="checkbox" id="revision_servicios_realizado" name="revision_servicios_realizado" value="realizado">
                 <label for="revision_servicios_realizado">Realizado</label>
@@ -93,7 +295,7 @@
     
         
   
-        <br>
+       
         
         <!-- Tarea: Entrega de documentos -->
         <div style="display: flex; justify-content: space-between;">
@@ -125,7 +327,7 @@
         
         <!-- Tarea: Cierre de operaciones -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="cierre_operaciones">CIERRE DE OPERACIONES:</label>
+            <label style="text-align: left;" for="cierre_operaciones">SOLICITUDES AL DIA:</label>
             <div>
                 <input type="checkbox" id="cierre_operaciones_realizado" name="cierre_operaciones_realizado" value="realizado">
                 <label for="cierre_operaciones_realizado">Realizado</label>
@@ -139,7 +341,7 @@
         
         <!-- Tarea: Reporte de actividades -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="reporte_actividades">REPORTE DE ACTIVIDADES:</label>
+            <label style="text-align: left;" for="reporte_actividades">REPORTE DE TAREAS TIPO  ACTIVIDAD:</label>
             <div>
                 <input type="checkbox" id="reporte_actividades_realizado" name="reporte_actividades_realizado" value="realizado">
                 <label for="reporte_actividades_realizado">Realizado</label>
@@ -167,7 +369,7 @@
         
         <!-- Tarea: Coordinación de servicios -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="coordinacion_servicios">COORDINACION DE SERVICIOS:</label>
+            <label style="text-align: left;" for="coordinacion_servicios">REVISION DE GMAIL:</label>
             <div>
                 <input type="checkbox" id="coordinacion_servicios_realizado" name="coordinacion_servicios_realizado" value="realizado">
                 <label for="coordinacion_servicios_realizado">Realizado</label>
@@ -181,7 +383,7 @@
         
         <!-- Tarea: Revisión de condiciones de vehículos -->
    
-        <br>
+        
             <div style="display: flex; justify-content: space-between;">
             <label style="text-align: left;" for="salida_ejecutivos">SALIDA EJECUTIVOS:</label>
             <div>
@@ -210,7 +412,7 @@
         
         <!-- Tarea: Otras actividades -->
         <div style="display: flex; justify-content: space-between;">
-            <label style="text-align: left;" for="otras_actividades">OTRAS ACTIVIDADES:</label>
+            <label style="text-align: left;" for="otras_actividades">REVISION ACTAS DE PRUEBA:</label>
             <div>
                 <input type="checkbox" id="otras_actividades_realizado" name="otras_actividades_realizado" value="realizado">
                 <label for="otras_actividades_realizado">Realizado</label>
@@ -220,8 +422,9 @@
                 <label for="otras_actividades_no_realizado">No Realizado</label>
             </div>
         </div>
-        <br>        <!-- Agregar firma -->
-        <label for="firma"><strong>Firma de quien recibe:</strong></label><br>
+        <br>    
+          <br>    <!-- Agregar firma -->
+        <label for="firma"><strong>FIRMA DE {{nombre}} : </strong></label><br>
     <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
     <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
 <input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
@@ -229,9 +432,27 @@
         <!-- Agregar campo oculto para el nombre -->
         
         <!-- Botón de enviar -->
-        <button type="submit" onclick="guardarFirma()">CERRAR TURNO</button>
+        <button  class="CERRAR" type="submit" onclick="guardarFirma()">CERRAR TURNO</button>
     </form>
+    </div>
                 <a href="/" class="volver-btn">Volver al Menú</a>
+                  <br>
+        
+    
+      <br>
+        
+    
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+   </footer>
 
     <script>
    // Obtener el valor del turno seleccionado anteriormente
@@ -302,6 +523,22 @@
             firmaActiva = false;
         });
 
+     // JavaScript para deseleccionar otros checkboxes del mismo grupo
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.checkbox-group');
+
+            function uncheckOthers(event) {
+                checkboxes.forEach(checkbox => {
+                    if (checkbox !== event.target && checkbox.name === event.target.name) {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', uncheckOthers);
+            });
+        });
 
     </script>
   <script>
