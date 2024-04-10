@@ -1480,116 +1480,37 @@ app.get('/novedadess', (req, res) => {
 });
 
 
-
-// Configurar el middleware de sesión
-app.use(session({
-    secret: 'secreto', // Cambia 'secreto' por una cadena de texto aleatoria y segura
-    resave: false,
-    saveUninitialized: true
-}));
-
-app.use(flash());
-
-
-// Configura el directorio de vistas como 'centro_operaciones'
-
-
-// Definir una ruta para la página principal
-
-// Lógica para verificar si el turno está en progreso
-function turnoEnProgreso(callback) {
-    const consulta = 'SELECT COUNT(*) AS count FROM centro_operaciones_inicio WHERE hora_fin IS NULL';
-    connection.query(consulta, (error, results) => {
-        if (error) {
-            console.error('Error al verificar el estado del turno en la base de datos:', error);
-            callback(error, false); // Si hay un error, asumimos que el turno no está en progreso
-        } else {
-            const count = results[0].count;
-            callback(null, count > 0); // Devuelve true si hay registros de inicio de turno sin hora de finalización
-        }
-    });
-}
-
-// Definir una ruta para la página principal
+// Ruta para la página principal
 app.get('/inicio', (req, res) => {
-    // Verificar si el turno ya está iniciado
-    if (turnoIniciado) {
-        // Si el turno ya está iniciado, redireccionar a la página de tareas
-        res.redirect('/centro_operaciones/tareas_diarias');
-    } else {
-        // Si el turno no está iniciado, renderizar la plantilla de inicio de turno
-        res.render('centro_operaciones/inicio_turno.hbs', { title: 'Iniciar Turno' });
-    }
+    res.render('centro_operaciones/inicio_turno.hbs', { title: 'Iniciar Turno' });
 });
 
 // Manejar la solicitud POST para iniciar el turno
 app.post('/inicio-turno', (req, res) => {
-    // Verificar si la solicitud proviene de la página de inicio de sesión
-    if (req.headers.referer && req.headers.referer.includes('/inicio')) {
-        // Obtén el nombre del trabajador y el turno de la solicitud POST
-        const nombre = req.body.nombre;
-        const turno = req.body.turno;
+    const nombre = req.body.nombre;
+    const turno = req.body.turno;
 
-        // Obtén la fecha y hora actual en la zona horaria local
-        const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-        // Inserta la hora de inicio, el nombre del trabajador y el turno en la tabla centro_operaciones_inicio
-        const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
-        connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
-            if (error) {
-                console.error('Error al guardar la hora de inicio en la base de datos:', error);
-                res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
-                return;
-            }
-            console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
-            turnoIniciado = true; // Actualiza la variable turnoIniciado
-            // Renderiza la plantilla 'tareas_diarias.hbs' y pasa cualquier dato adicional necesario
-            res.render('centro_operaciones/tareas_diarias', { nombre: nombre, turno: turno });
-        });
-    } else {
-        // Si la solicitud no proviene de la página de inicio de sesión, redireccionar a la página de inicio
-        res.redirect('/inicio');
-    }
+    const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
+    connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
+        if (error) {
+            console.error('Error al guardar la hora de inicio en la base de datos:', error);
+            res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
+            return;
+        }
+        console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
+        res.render('centro_operaciones/tareas_diarias', { nombre: nombre, turno: turno });
+    });
 });
 
-// Definir una ruta para la página de tareas diarias
+// Ruta para la página de tareas diarias
 app.get('/centro_operaciones/tareas_diarias', (req, res) => {
-    // Renderizar la plantilla 'tareas_diarias.hbs'
     res.render('centro_operaciones/tareas_diarias', { title: 'Tareas Diarias' });
 });
 
-// Manejar la solicitud POST para iniciar el turno
-app.post('/inicio-turno', (req, res) => {
-    // Verificar si la solicitud proviene de la página de inicio de sesión
-    if (req.headers.referer && req.headers.referer.includes('/inicio')) {
-        // Obtén el nombre del trabajador y el turno de la solicitud POST
-        const nombre = req.body.nombre;
-        const turno = req.body.turno;
-
-        // Obtén la fecha y hora actual en la zona horaria local
-        const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-        // Inserta la hora de inicio, el nombre del trabajador y el turno en la tabla centro_operaciones_inicio
-        const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
-        connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
-            if (error) {
-                console.error('Error al guardar la hora de inicio en la base de datos:', error);
-                res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
-                return;
-            }
-            console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
-            turnoIniciado = true; // Actualiza la variable turnoIniciado
-            // Renderiza la plantilla 'tareas.hbs' y pasa cualquier dato adicional necesario
-            res.render('centro_operaciones/tareas_diarias', { nombre: nombre, turno: turno });
-        });
-    } else {
-        // Si la solicitud no proviene de la página de inicio de sesión, redireccionar a la página de inicio
-        res.redirect('/inicio');
-    }
-});
-
-
-app.post('/marcar-tarea', (req, res) => {
+// Manejar la solicitud POST para marcar una tarea
+// Manejar la solicitud POST para marcar una tarea
+app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
     const tarea = {
         fecha: req.body.fecha,
         nombre: req.body.nombre,
@@ -1608,12 +1529,11 @@ app.post('/marcar-tarea', (req, res) => {
         salidaEjecutivos: req.body.salida_ejecutivos_realizado || req.body.salida_ejecutivos_no_aplica || req.body.salida_ejecutivos_no_realizado,
         reciclaje: req.body.reciclaje_realizado || req.body.reciclaje_no_aplica || req.body.reciclaje_no_realizado,
         otrasActividades: req.body.otras_actividades_realizado || req.body.otras_actividades_no_aplica || req.body.otras_actividades_no_realizado,
+        firmaBase64: req.body.firmaBase64 || '', // Corregido aquí
         hora_realizada: new Date() // Obtener la hora actual
     };
-    
 
     const sql = 'INSERT INTO tareas SET ?';
-
     connection.query(sql, tarea, (err, result) => {
         if (err) {
             console.error('Error al insertar tarea en la base de datos:', err.message);
@@ -1621,22 +1541,33 @@ app.post('/marcar-tarea', (req, res) => {
         }
         console.log('Tarea insertada correctamente en la base de datos');
 
-        // Obtener las tareas almacenadas en la sesión del usuario
-        let tareas = req.session.tareas || [];
+        // Actualizar la hora de finalización del turno
+        const nombre = req.body.nombre;
+        const turno = req.body.turno;
+        const horaFin = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const updateQuery = 'UPDATE centro_operaciones_inicio SET hora_fin = ? WHERE nombre_trabajador = ? AND turno = ?';
+        connection.query(updateQuery, [horaFin, nombre, turno], (updateErr, updateResult) => {
+            if (updateErr) {
+                console.error('Error al actualizar la hora de finalización del turno:', updateErr.message);
+                return res.status(500).send('Error al actualizar la hora de finalización del turno');
+            }
+            console.log('Hora de finalización del turno actualizada en la base de datos');
 
-        // Agregar la nueva tarea a la lista de tareas
-        tareas.push(tarea);
-
-        // Actualizar las tareas almacenadas en la sesión del usuario
-        req.session.tareas = tareas;
-
-        // Redirigir a la página de inicio con un mensaje de éxito
-        req.flash('success', '¡Turno finalizado exitosamente!');
-        res.redirect('/inicio');
+            // Envía el mensaje de finalización de turno exitosa
+            res.locals.successMessage = 'Finalización de turno exitosa.';
+            setTimeout(() => {
+                next(); // Llamamos a next después de un breve período de tiempo
+            }, 1000); // Espera 1 segundo antes de llamar a next()
+        });
     });
+}, (req, res) => {
+    // Middleware para mostrar el mensaje de éxito y redireccionar
+    if (res.locals.successMessage) {
+        res.send(res.locals.successMessage + ' Redireccionando...');
+    } else {
+        res.redirect('/inicio'); // Redirige al usuario a la página de inicio si no hay mensaje de éxito
+    }
 });
-
-
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });

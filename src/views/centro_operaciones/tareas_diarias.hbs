@@ -9,7 +9,7 @@
     <h1>Tareas para el turno de {{nombre}}</h1>
     <h2>Turno: {{turno}}</h2>
 
-    <form action="/marcar-tarea" method="post">
+    <form  id="tareaForm"        action="/marcar-tarea" method="post">
         <label for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
         <input type="date" name="fecha">
         <br>
@@ -221,15 +221,15 @@
             </div>
         </div>
         <br>        <!-- Agregar firma -->
-        <label for="firma"><strong>FIRMA DE {{nombre}}</strong></label><br>
-        <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
-        <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
-        <input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
-        
+        <label for="firma"><strong>Firma de quien recibe:</strong></label><br>
+    <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
+    <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
+<input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
+
         <!-- Agregar campo oculto para el nombre -->
         
         <!-- Botón de enviar -->
-        <button type="submit">Enviar</button>
+        <button type="submit" onclick="guardarFirma()">CERRAR TURNO</button>
     </form>
                 <a href="/" class="volver-btn">Volver al Menú</a>
 
@@ -305,11 +305,13 @@
 
     </script>
   <script>
-    // Cierra la ventana después de 2 segundos
-    setTimeout(function() {
-        window.close();
-    }, 2000); // 2000 milisegundos = 2 segundos
-</script>
+        // Después de enviar el formulario, redirigir al usuario a la página de inicio
+        document.getElementById('tareaForm').addEventListener('submit', function() {
+            setTimeout(function() {
+                window.location.href = '/inicio';
+            }, 1000); // Redirigir después de 1 segundo (ajusta este valor según tus necesidades)
+        });
+    </script>
 
 </body>
 </html>
