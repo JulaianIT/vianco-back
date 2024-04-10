@@ -1340,7 +1340,7 @@ function generateMessageId() {
 // Enviar correo electrónico
 transporter.sendMail({
     from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
-    to: 'soporte.it.vianco@gmail.com', // El destinatario del correo electrónico
+    to: 'nidia.vianco@gmail.com,calidad.vianco@gmail.com', // El destinatario del correo electrónico
     subject: 'alerta no denovedad centro operaciones', // El asunto del correo electrónico
     html: '<p><strong>Estimados,</strong></p><br>' +
           '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
@@ -1568,6 +1568,12 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
         res.redirect('/inicio'); // Redirige al usuario a la página de inicio si no hay mensaje de éxito
     }
 });
+
+
+
+
+
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });
+
