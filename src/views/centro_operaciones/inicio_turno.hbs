@@ -5,10 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Turno</title>
 </head>
+   <style>
+        /* Estilo para el cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif; /* Fuente del texto */
+            margin: 0; /* Elimina los márgenes predeterminados */
+            padding: 0; /* Elimina el relleno predeterminado */
+            background-color: #f4f4f4; /* Color de fondo */
+            font-size: 20px;
+        }
+   header{
+background-color: white;
+
+   }
+        /* Estilo para el título principal */
+        h1 {
+            text-align: center; /* Alineación del texto */
+            margin-top: 30px; /* Margen superior */
+        }
+        /* Estilo para el formulario */
+        form {
+            max-width: 600px;
+            height: 500px; /* Ancho máximo del formulario */
+            margin: 0 auto; /* Centra el formulario horizontalmente */
+            background-color: #fff; /* Color de fondo */
+            padding: 20px; /* Espaciado interno */
+            border-radius: 5px; /* Borde redondeado */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra */
+            border: 3px solid black;
+        }
+        /* Estilo par
+        a las etiquetas */
+        label {
+           
+            font-size: 20px;
+            display: block; /* Muestra las etiquetas como bloques */
+            margin-bottom: 10px; /* Margen inferior */
+        }
+        /* Estilo para los select y botones */
+        select, button {
+            width: 100%; /* Ancho completo */
+            padding: 10px; /* Espaciado interno */
+            margin-bottom: 20px; /* Margen inferior */
+            border: 1px solid #ccc; /* Borde */
+            border-radius: 5px; /* Borde redondeado */
+            box-sizing: border-box; /* Incluye el borde en el tamaño total */
+        }
+        /* Estilo para el botón */
+        button {
+       background-color:#90c9a7;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            left: 10px;
+            font-size: 30px;
+        }
+        /* Estilo para el botón al pasar el ratón */
+        button:hover {
+            background-color: #555; /* Color de fondo al pasar el ratón */
+        }
+        /* Estilo para el enlace de volver al menú */
+        .volver-btn {
+            display: block; /* Muestra el enlace como bloque */
+            text-align: center; /* Alineación del texto */
+            margin-top: 20px; /* Margen superior */
+            color: #333; /* Color del texto */
+            text-decoration: none; /* Sin subrayado */
+        }
+            /* Estilo cuando el cursor está sobre el botón */
+ 
+            select{
+                font-size: 17px;
+                text-align: justify;
+
+            }        
+      footer{
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position:relative;
+            margin: 0;
+        }
+        footer section{
+            float:right ;
+            margin:0;
+            position: relative;
+            top: -60px;
+        }
+        footer a{
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover{
+            color: rgb(162, 204, 170);
+        }
+        footer p{
+            position:relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad{
+            font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        #sele{
+            font-size: 30px;
+
+
+}
+    
+                        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+strong{
+    text-transform: uppercase;
+
+}
+    </style>
 <body>
-    <h1>Iniciar Turno</h1>
+               <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+
+        <hr>
+        
+    
+
+    </header>
+<br>
+<br>
+<br>
+
     <form action="/inicio-turno" method="post">
-        <label for="nombre">Seleccione su nombre:</label>
+        <h1>INICIAR LABORES</h1>
+        <br>
+        <label for="nombre">    <strong>Seleccione su nombre:</strong></label>
+      
+    
         <select id="nombre" name="nombre" required>
             <option value="">Seleccione un empleado...</option>
             <option value="JAMER CORTEZ">JAMER CORTEZ</option>
@@ -17,20 +178,48 @@
              <option value="JUAN GONZALES">JUAN GONZALES</option>
             <option value="ORCAR CAYAMBE">ORCAR CAYAMBE</option>
              <option value="SEBASTIAN MENDOZA">SEBASTIAN MENDOZA</option>
-
+             <br>
+        <br>
+  <br>
+        <br>
+        <br>
+  <br>
+        <br>
             <!-- Agrega más opciones según sea necesario -->
         </select>
         <br>
-        <label for="turno">Seleccione el turno:</label>
+                <br>
+  <br>
+        <br>
+        <label for="turno"> <strong>Seleccione el turno:</strong></label>
         <select id="turno" name="turno" required>
             <option value="">Seleccione el turno...</option>
-            <option value="Dia">Día</option>
-            <option value="Noche">Noche</option>
+            <option value="Dia">DIURNO</option>
+            <option value="Noche">NOCTURNO</option>
         </select>
         <br>
-        <button type="submit">Iniciar Turno</button>
+        <br>
+        
+     
+        <button type="submit">INICIAR TURNO</button>
+         <br>
+
     </form>
                     <a href="/" class="volver-btn">Volver al Menú</a>
+<br>
+<br>
+<br>
 
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+   </footer>
 </body>
 </html>
