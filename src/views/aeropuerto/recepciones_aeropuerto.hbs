@@ -87,9 +87,16 @@ function mostrarRecepciones(recepciones) {
 
 
 function crearTablaClientes(clientes) {
-    // Ordenar los clientes por hora de forma ascendente
-    clientes.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
+    // Convertir la hora en formato militar a minutos desde la medianoche
+    clientes.forEach(cliente => {
+        const [hora, minutos, segundos] = cliente.hora.split(':').map(Number);
+        cliente.horaNumerica = hora * 60 + minutos + segundos / 60;
+    });
 
+    // Ordenar los clientes por hora numérica de forma ascendente
+    clientes.sort((a, b) => a.horaNumerica - b.horaNumerica);
+
+    // Crear la tabla HTML
     const tablaHTML = `
         <table>
             <thead>
