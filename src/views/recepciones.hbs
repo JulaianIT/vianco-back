@@ -327,12 +327,15 @@
 </div>
  <div class="input-field">
 
-     <label for="placa">Placa:</label>
+     <label for="placa">lista de placas:</label>
             <select id="placa" name="placa" required>
                 {{#each placas}}
                     <option value="{{this.placa}}">{{this.placa}}</option>
                 {{/each}}
             </select><br><br>
+            <!-- Agrega este campo de entrada antes del select de placa -->
+<label for="busquedaPlaca">Buscar Placa:</label>
+<input type="text" id="busquedaPlaca" name="busquedaPlaca">
             </div>
              <div class="input-field">
 
@@ -428,9 +431,14 @@
     </div>
     </div>
     </div>
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Script para manejar el cambio en el select de placa
     $('#placa').change(function() {
         var placaSeleccionada = $(this).val();
         $.ajax({
@@ -440,7 +448,7 @@ $(document).ready(function() {
             success: function(response) {
                 $('#conductor').val(response.conductor);
                 $('#celular_conductor').val(response.celular);
-                $('#foto_conductor').attr('src', response.fotoURL); // Mostrar la imagen en un elemento de imagen con id "foto_conductor"
+                $('#foto_conductor').attr('src', response.fotoURL);
             },
             error: function(error) {
                 console.error('Error al obtener el conductor:', error);
@@ -448,11 +456,34 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Script para manejar la búsqueda de placa
+    $('#busquedaPlaca').on('input', function() {
+        var valorBusqueda = $(this).val().toLowerCase();
+        var opcionesVisibles = $('#placa option').filter(function() {
+            return $(this).text().toLowerCase().includes(valorBusqueda);
+        });
+
+        // Mostrar todas las opciones primero
+        $('#placa option').show();
+
+        // Si hay resultados de búsqueda, ocultar todas las opciones y mostrar solo las coincidencias
+        if (opcionesVisibles.length > 0) {
+            $('#placa option').hide();
+            opcionesVisibles.show();
+
+            // Si solo hay una opción visible, seleccionarla automáticamente
+            if (opcionesVisibles.length === 1) {
+                $('#placa').val(opcionesVisibles.val()).change(); // Seleccionar automáticamente la opción visible
+            }
+        } else {
+            $('#placa').val(''); // Limpiar la selección si no hay coincidencias
+        }
+    });
 });
-
-
-
 </script>
+
+
 
 
         
@@ -499,5 +530,10 @@ clienteCostoSelect.addEventListener('change', function() {
 
 
     </script>
+
+
+
+
+
 </body>
 </html>
