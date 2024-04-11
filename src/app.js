@@ -947,11 +947,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 /// Modifica la función post para enviar los datos al Google Sheet
+
 // Ruta para procesar el formulario
 app.post('/procesar_formulario', async (req, res) => {
-    const { cliente, costo, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor } = req.body;
-
+    const { cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor } = req.body;
+  
     try {
+        // Insertar los datos en la base de datos
+        const query = 'INSERT INTO aeropuerto (cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        connection.query(query, [cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor]);
+        console.log('Datos insertados correctamente en la base de datos');
+
         // Enviar los datos al Google Sheet
         const responseSheet = await fetch('https://script.google.com/macros/s/AKfycbwJsR7Thyn0Kq1dKOF87W080FGrUmvwsquVd1NluDpxo_oU0kqGs9XalUD4VAepSx2G/exec', {
             method: 'POST',
@@ -975,6 +981,7 @@ app.post('/procesar_formulario', async (req, res) => {
         res.status(500).send('Error en el procesamiento del formulario');
     }
 });
+
 
 // Ruta para mostrar los detalles del formulario y generar el PDF
 app.get('/mostrar_formulario', (req, res) => {
@@ -1570,6 +1577,30 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
 });
 
 
+
+
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/buscar_por_fecha', (req, res) => {
+    res.render('aeropuerto/recepciones_aeropuerto.hbs'); // Renderiza el formulario de búsqueda
+});
+
+// Ruta para procesar la búsqueda por fecha
+app.post('/buscar_por_fecha', async (req, res) => {
+    const { fecha } = req.body;
+  
+    try {
+        // Consultar la base de datos por la fecha especificada
+        const query = 'SELECT * FROM aeropuerto WHERE fecha = ?';
+        const [rows, fields] = await connection.promise().query(query, [fecha]);
+        console.log('Datos encontrados:', rows);
+
+        // Enviar los resultados como respuesta JSON
+        res.json(rows);
+    } catch (error) {
+        console.error('Error en la búsqueda por fecha:', error);
+        res.status(500).send('Error en la búsqueda por fecha');
+    }
+});
 
 
 
