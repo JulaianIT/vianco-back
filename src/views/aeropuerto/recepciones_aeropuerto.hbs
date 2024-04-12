@@ -1,33 +1,194 @@
-<!-- Recepciones aeropuerto -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
 </head>
 <style>
+    * {
+        font-family: "Rubik", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        
+    }
+ body  {
+    /* Define la imagen de fondo sin opacidad */
+    background-image: url("/imagenes/Terminal-aeropuerto-1-850x491.jpg");
+    /* Establece la apariencia de la imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    width: auto;
+    margin: 0; /* Asegura que no haya margen alrededor del cuerpo */
+}
+
+
     table {
+    
         border-collapse: collapse;
         width: 100%;
+        margin: 20px 0; /* Agrega margen arriba y abajo */
     }
 
-    th, td {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    }
+th, td {
+    font-size: 20px;
+    border: 6px solid black;
+    text-align: center;
+    padding: 8px;
+    width: auto; /* Ajusta el ancho de las celdas automáticamente */
+}
 
     th {
-        background-color: #f2f2f2;
+        text-transform: uppercase;
+    border: 6px solid black;
+        font-size: 25px;
+    color: white;
+        background-color: #666567
     }
 
     tr:nth-child(even) {
-        background-color: #f2f2f2;
+                border: 3px solid black;
+
+        background-color: #d9d9d9;
     }
+    tr:nth-child(odd) {
+    background-color: #ffffff; /* Color de fondo para las filas impares */
+}
+
+    .tabla-container {
+        margin: 30px; /* Agrega espacio alrededor del contenedor */
+    }
+
+    .BUSCAR {
+        background-color: rgba(144, 201, 167);
+        padding: 30px;
+        text-align: center;
+    }
+
+    #fecha {
+        width: 300px;
+        height: 40px;
+        font-size: 18px;
+        margin-right: 20px;
+    }
+
+    .fehcaa {
+        text-transform: uppercase;
+        margin-right: 23px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .volver-btn:hover, .ver:hover {
+        background-color: #d9d9d9;
+    }
+
+    .volver-btn, .ver {
+        position: relative;
+        left: 20px;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 15px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    footer {
+            opacity: 0.6;
+
+        background-color: #222;
+        padding: 4.9rem;
+        color: #ffff;
+        position: relative;
+        top: 438px;
+        margin: 0;
+    }
+
+    footer section {
+        float: right;
+        margin: 0;
+        position: relative;
+        top: -60px;
+    }
+
+    footer a {
+        transition: color 0.3s ease;
+        color: #ffff;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: rgb(162, 204, 170);
+    }
+
+    footer p {
+        position: relative;
+        float: left;
+        left: -1199px;
+        color: #ffff;
+        font-size: 20px;
+    }
+
+    .bad {
+        font-size: 20px;
+        position: relative;
+        color: rgb(113, 112, 111);
+        right: -20px;
+        top: 6px;
+    }
+
+    .ok {
+        font-size: 20px;
+        position: relative;
+        top: 30px;
+    }
+#logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+
+header {
+    background-color: white; /* Fondo blanco para el encabezado */
+}
+#formFecha{
+
+        opacity: 0.6;
+
+}
+
 </style>
 <body>
-    <form id="formFecha" class="BUSCAR">
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img  id="logo" src="/imagenes/logo vianco.png"/>
+    <img  id="vigilado" src="/imagenes/vigilado.png"/>
+</header>
+
+<form id="formFecha" class="BUSCAR">
     <h1>RECEPCIONES AEROPUERTO</h1>
     <br>
     <label class="fehcaa" for="fecha">Selecciona una fecha:</label>
@@ -36,8 +197,27 @@
     <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
 </form>
 <hr>
-<div id="recepcionesContainer"></div>
+<br>
+<br>
+<div class="fondo">
 
+<div class="tabla-container">
+    <div id="recepcionesContainer"></div>
+</div>
+    </div>
+
+<br>
+<br>
+</div>
+<footer>
+    <section>
+        <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+        <p>Copyrigt soporteVianco</p>
+        <nav class="">
+            <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+        </nav>
+</footer>
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -56,86 +236,84 @@
                 }
             });
         });
-function mostrarRecepciones(recepciones) {
-    const recepcionesContainer = $('#recepcionesContainer');
-    recepcionesContainer.empty(); // Limpiar el contenedor
+        function mostrarRecepciones(recepciones) {
+            const recepcionesContainer = $('#recepcionesContainer');
+            recepcionesContainer.empty(); // Limpiar el contenedor
 
-    // Filtrar los clientes que contienen "NH" en su nombre
-    const clientesNH = recepciones.filter(recepcion => recepcion.cliente.includes('NH'));
+            // Filtrar los clientes que contienen "NH" en su nombre
+            const clientesNH = recepciones.filter(recepcion => recepcion.cliente.includes('NH'));
 
-    // Filtrar los clientes que no contienen "NH" en su nombre
-    const otrosClientes = recepciones.filter(recepcion => !recepcion.cliente.includes('NH'));
+            // Filtrar los clientes que no contienen "NH" en su nombre
+            const otrosClientes = recepciones.filter(recepcion => !recepcion.cliente.includes('NH'));
 
-    // Ordenar los clientes por hora de forma ascendente
-    clientesNH.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
-    otrosClientes.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
+            // Ordenar los clientes por hora de forma ascendente
+            clientesNH.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
+            otrosClientes.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
 
-    if (clientesNH.length === 0 && otrosClientes.length === 0) {
-        recepcionesContainer.html("<p>No hay recepciones de aeropuerto para esta fecha</p>");
-    } else {
-        // Crear tabla para clientes que contienen "NH"
-        const tablaClientesNH = crearTablaClientes(clientesNH);
+            if (clientesNH.length === 0 && otrosClientes.length === 0) {
+                recepcionesContainer.html("<p>No hay recepciones de aeropuerto para esta fecha</p>");
+            } else {
+                // Crear tabla para clientes que contienen "NH"
+                const tablaClientesNH = crearTablaClientes(clientesNH, 'Clientes NH');
 
-        // Crear tabla para otros clientes
-        const tablaOtrosClientes = crearTablaClientes(otrosClientes);
+                // Crear tabla para otros clientes
+                const tablaOtrosClientes = crearTablaClientes(otrosClientes, 'Otros Clientes');
 
-        // Agregar ambas tablas al contenedor principal
-        recepcionesContainer.append(tablaClientesNH);
-        recepcionesContainer.append(tablaOtrosClientes);
-    }
-}
+                // Agregar ambas tablas al contenedor principal
+                recepcionesContainer.append(tablaClientesNH);
+                recepcionesContainer.append(tablaOtrosClientes);
+            }
+        }
 
+        function crearTablaClientes(clientes, tipoCliente) {
+            // Convertir la hora en formato militar a minutos desde la medianoche
+            clientes.forEach(cliente => {
+                const [hora, minutos, segundos] = cliente.hora.split(':').map(Number);
+                cliente.horaNumerica = hora * 60 + minutos + segundos / 60;
+            });
 
-function crearTablaClientes(clientes) {
-    // Convertir la hora en formato militar a minutos desde la medianoche
-    clientes.forEach(cliente => {
-        const [hora, minutos, segundos] = cliente.hora.split(':').map(Number);
-        cliente.horaNumerica = hora * 60 + minutos + segundos / 60;
-    });
+            // Ordenar los clientes por hora numérica de forma ascendente
+            clientes.sort((a, b) => a.horaNumerica - b.horaNumerica);
 
-    // Ordenar los clientes por hora numérica de forma ascendente
-    clientes.sort((a, b) => a.horaNumerica - b.horaNumerica);
+            // Crear la tabla HTML
+            const tablaHTML = `
+            <br>
+            <h2>   ${tipoCliente} :</h2>
+            <br>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Nombre del Pasajero</th>
+                            <th>N° de Vuelo</th>
+                            <th>Placa</th>
+                            <th>Conductor</th>
+                            <th>Celular del Conductor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${clientes.map(recepcion => `
+                            <tr>
+                                <td>${recepcion.cliente}</td>
+                                <td>${new Date(recepcion.fecha).toLocaleDateString()}</td>
+                                <td>${recepcion.hora}</td>
+                                <td>${recepcion.nombre_pasajero}</td>
+                                <td>${recepcion.vuelo}</td>
+                                <td>${recepcion.placa}</td>
+                                <td>${recepcion.conductor}</td>
+                                <td>${recepcion.celular_conductor}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
 
-    // Crear la tabla HTML
-    const tablaHTML = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Nombre del Pasajero</th>
-                    <th>N° de Vuelo</th>
-                    <th>Placa</th>
-                    <th>Conductor</th>
-                    <th>Celular del Conductor</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${clientes.map(recepcion => `
-                    <tr>
-                        <td>${recepcion.cliente}</td>
-                        <td>${new Date(recepcion.fecha).toLocaleDateString()}</td>
-                        <td>${recepcion.hora}</td>
-                        <td>${recepcion.nombre_pasajero}</td>
-                        <td>${recepcion.vuelo}</td>
-                        <td>${recepcion.placa}</td>
-                        <td>${recepcion.conductor}</td>
-                        <td>${recepcion.celular_conductor}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-
-    return tablaHTML;
-}
-
-
-
+            return tablaHTML;
+        }
     });
 </script>
 
 </body>
 </html>
-
