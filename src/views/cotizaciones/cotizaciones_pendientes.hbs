@@ -4,13 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotizaciones Pendientes</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/imagenes/logo_pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo_pestaña.PNG" type="image/x-icon">
+    <style>
+        * {
+            font-family: "Rubik", sans-serif;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: white;
+        }
+
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .cotizaciones {
+            border-radius: 6px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 50%;
+            background-color: #f8f9fa;
+            border: 2px solid black;
+        }
+
+        .cotizaciones ol {
+            padding: 10px;
+        }
+
+        .cotizaciones li {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cotizaciones li a {
+            color: #413d4b;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cotizaciones li a:hover {
+            color: #90c9a7;
+        }
+
+        .cliente {
+            flex: 1;
+        }
+
+        .id {
+            text-align: right;
+            margin-left: 10px;
+        }
+            footer {
+
+        background-color: #222;
+        padding: 4.9rem;
+        color: #ffff;
+        position: relative;
+        top: 400px;
+        margin: 0;
+    }
+
+    footer section {
+        float: right;
+        margin: 0;
+        position: relative;
+        top: -60px;
+    }
+
+    footer a {
+        transition: color 0.3s ease;
+        color: #ffff;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: rgb(162, 204, 170);
+    }
+
+    footer p {
+        position: relative;
+        float: left;
+        left: -1199px;
+        color: #ffff;
+        font-size: 20px;
+    }
+
+    .bad {
+        font-size: 20px;
+        position: relative;
+        color: rgb(113, 112, 111);
+        right: -20px;
+        top: 6px;
+    }
+
+    .ok {
+        font-size: 20px;
+        position: relative;
+        top: 30px;
+    }
+    </style>
 </head>
 <body>
-    <h1>Cotizaciones Pendientes</h1>
-    <ul>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="/imagenes/vigilado.png"/>
+    <hr>
+</header>
+<h1>Cotizaciones Pendientes</h1>
+<br>
+<br>
+<br>
+<div class="cotizaciones">
+    <ol>
         {{#each cotizaciones}}
-        <li><a href="/cotizaciones_pendientes/{{id}}">{{cliente}}</a></li>
+        <li><a href="/cotizaciones_pendientes/{{id}}">
+                <span class="cliente">{{cliente}}</span>
+                <span class="id">N° {{id}}</span>
+            </a>
+        </li>
         {{/each}}
-    </ul>
+    </ol>
+</div>
+
+
+        <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+               <nav class="">
+        <ul class="w-full ml-auto flex justify-end pt-1">
+          
+            
+        </ul>
+    </nav>
+        </section>
+    </footer>
 </body>
 </html>
+

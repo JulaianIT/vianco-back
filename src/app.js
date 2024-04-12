@@ -1603,9 +1603,20 @@ app.post('/buscar_por_fecha', async (req, res) => {
 });
 
 
+const Handlebars = require('handlebars');
 
 
+// Define la función formatDate
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${month}/${day}/${year}`;
+}
 
+// Registra la función formatDate como un helper de Handlebars
+Handlebars.registerHelper('formatDate', formatDate);
 
 
 
@@ -1670,7 +1681,6 @@ app.get('/cotizaciones_pendientes', (req, res) => {
     });
 });
 
-// Ruta para ver los detalles de una cotización seleccionada
 app.get('/cotizaciones_pendientes/:id', (req, res) => {
     const cotizacionId = req.params.id;
     connection.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
@@ -1701,43 +1711,56 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
             servicios.push(servicio);
         }
 
-        // Renderizar la plantilla detalles_cotizacion.hbs con los detalles de la cotización y los servicios obtenidos de la base de datos
-        res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios });
+        // Renderizar la plantilla detalles_cotizacion.hbs con los detalles de la cotización, los servicios y los detalles del cliente
+        res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios, cliente: cotizacion });
     });
 });
-// Ruta para generar la plantilla personalizada
-app.post('/generar_plantilla', (req, res) => {
+// Ruta para generar la plantilla personalizadaapp.post('/generar_plantilla', (req, res) => {
     // Extraer todos los datos de la cotización del cuerpo de la solicitud
-    const cotizacionId = req.body.cotizacionId;
-    const valorTotal = req.body.valorTotal;
-
-    // Extraer todos los demás datos de la cotización
-    const cliente = req.body.cliente;
-    const nombre = req.body.nombre;
-    const correo = req.body.correo;
-    // Asegúrate de agregar todos los demás campos aquí
-
-    // Renderizar la plantilla personalizada con todos los datos de la cotización
-    res.render('cotizaciones/plantilla_personalizada', { 
-        cotizacionId: cotizacionId, 
-        valorTotal: valorTotal,
-        cliente: cliente,
-        nombre: nombre,
-        correo: correo
-        // Asegúrate de agregar todos los demás campos aquí
-    }, (err, html) => {
-        if (err) {
-            console.error('Error al renderizar la plantilla:', err);
-            res.status(500).send('Error al generar la plantilla');
-            return;
-        }
-
-        // Aquí podrías enviar el HTML generado por correo electrónico o guardarlo en un archivo, etc.
-        // Por ahora, simplemente lo enviaremos como respuesta HTTP
-        res.send(html);
+    app.post('/generar_plantilla', (req, res) => {
+        // Extraer todos los datos de la cotización del cuerpo de la solicitud
+        const cotizacionId = req.body.cotizacionId;
+        const valorTotal = req.body.valorTotal;
+        const fecha = req.body.fecha;
+        const hora = req.body.hora;
+        const origen = req.body.origen;
+        const destino = req.body.destino;
+        const itinerario = req.body.itinerario;
+        const tipoCarro = req.body.tipoCarro;
+    
+    
+        // Extraer los datos del cliente del cuerpo de la solicitud
+        const cliente = {
+            nombre: req.body.nombre,
+            cliente: req.body.cliente,
+            correo: req.body.correo,
+            contacto: req.body.contacto,
+            ciudad: req.body.ciudad,
+            num_servicios: req.body.num_servicios,
+            fecha_creacion: req.body.fecha_creacion
+        };
+    
+        // Extraer todos los detalles de los servicios de la cotización
+        const servicios = req.body.servicios;
+    
+        // Renderizar la plantilla personalizada con todos los datos de la cotización
+        res.render('cotizaciones/plantilla_personalizada', { 
+            cotizacionId: cotizacionId, 
+            valorTotal: valorTotal,
+            cliente: cliente, 
+            servicios: servicios
+        }, (err, html) => {
+            if (err) {
+                console.error('Error al renderizar la plantilla:', err);
+                res.status(500).send('Error al generar la plantilla');
+                return;
+            }
+    
+            // Enviar el HTML generado como respuesta HTTP
+            res.send(html);
+        });
     });
-});
-
+    
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });

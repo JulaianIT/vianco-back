@@ -7,11 +7,35 @@
 </head>
 <body>
     <h1>Plantilla Personalizada de Cotización</h1>
+    <p>FECHA DE ENVIO:  {{cliente.fecha_creacion}}</p>
     <p>ID de Cotización: {{cotizacionId}}</p>
     <p>Valor Total: {{valorTotal}}</p>
-    <p>Cliente: {{cliente}}</p>
-    <p>Nombre: {{nombre}}</p>
-    <p>Correo: {{correo}}</p>
+    <p>QUIEN COTIZA: {{cliente.nombre}}</p>
+    <p>CLIENTE: {{cliente.cliente}}</p>
+    <p>Correo:  {{cliente.correo}}</p>
+    <p>CONTACTO:  {{cliente.contacto}}</p>
+    <p>ciudad:  {{cliente.ciudad}}</p>
+    <p>N° DE SERVICIOS:  {{cliente.num_servicios}}</p>
+
+<h2>Servicios</h2>
+<ul>
+    {{#each servicios}}
+        <li>
+            <p>Fecha: {{fecha}}</p>
+            <p>Hora: {{hora}}</p>
+            <p>Origen: {{origen}}</p>
+            <p>Destino: {{destino}}</p>
+            <p>Itinerario: {{itinerario}}</p>
+            <p>Tipo de Carro: {{tipoCarro}}</p>
+            <!-- Agregamos el valor del servicio -->
+        </li>
+    {{/each}}
+</ul>
+
     <!-- Puedes agregar más campos aquí según sea necesario -->
+  
+<p>SUBTOTAL: {{this.subtotal}}</p>
+    <p>Valor Total: {{valorTotal}}</p>
+
 </body>
 </html>

@@ -1,50 +1,231 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles de la Cotización</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: white;
+        }
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+        .servicios-table {
+            margin: 35px;
+            width: 86%;
+            border-collapse: collapse;
+        }
+        .servicios-table th, .servicios-table td {
+            border: 2px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        .servicios-table th {
+            background-color: white;
+        }
+        .servicios-table tr:nth-child(even) {
+            background-color: rgb(102, 101, 103, 0.3);
+        }
+        .servicios-table tr:nth-child(odd) {
+            background-color: rgb(144, 201, 167,0.3);
+        }
+        .servicios-table tr:hover {
+            background-color: #90c9a7;
+        }
+        .CLIENTE {
+            position: relative;
+            left: 10%;
+            border-radius: 10px;
+            border: 3px solid black;
+            text-align: justify;
+            padding: 15px;
+            background-color: white;
+            width: 30%;
+        }
+        strong {
+            margin-left: 3px;
+            margin-right: 5px;
+            text-transform: uppercase;
+        }
+        #servicios {
+            padding: 10px;
+            background-color: #90c9a7;
+            text-align: center;
+        }
+        footer {
+            background-color: #222;
+            padding: 4.9rem;
+            color: #ffff;
+            position: relative;
+            top: 438px;
+            margin: 0;
+        }
+        footer section {
+            float: right;
+            margin: 0;
+            position: relative;
+            top: -60px;
+        }
+        footer a {
+            transition: color 0.3s ease;
+            color: #ffff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: rgb(162, 204, 170);
+        }
+        footer p {
+            position: relative;
+            float: left;
+            left: -1199px;
+            color: #ffff;
+            font-size: 20px;
+        }
+        .bad {
+            font-size: 20px;
+            position: relative;
+            color: rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
+        }
+        .ok {
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        .volver-btn:hover, .ver:hover {
+            background-color: #d9d9d9;
+        }
+        .volver-btn, .ver {
+            position: relative;
+            left: 50px;
+            text-transform: uppercase;
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Detalles de la Cotización</h1>
-    <form action="/generar_plantilla" method="POST">
-        <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
-        <input type="hidden" name="valorTotal" value="50"> <!-- Aquí debería ser un valor dinámico -->
-        <!-- Agregar campos ocultos para los detalles de la cotización -->
-        <input type="hidden" name="cliente" value="{{cotizacion.cliente}}">
-        <input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
-        <input type="hidden" name="correo" value="{{cotizacion.correo}}">
-        <!-- Asegúrate de agregar todos los demás campos necesarios aquí -->
-        <h2>Servicios</h2>
-        <ul>
-            {{#each servicios}}
-                <li>
-                    <p>Fecha: {{fecha}}</p>
-                    <p>Hora: {{hora}}</p>
-                    <p>Origen: {{origen}}</p>
-                    <p>Destino: {{destino}}</p>
-                    <p>Itinerario: {{itinerario}}</p>
-                    <p>Tipo de Carro: {{tipoCarro}}</p>
-                    <label for="valor{{@index}}">Valor del servicio:</label>
-                    <input type="number" id="valor{{@index}}" name="valor{{@index}}" value="50" required>
-                </li>
-            {{/each}}
-        </ul>
-        <button type="submit">Generar Plantilla</button>
-    </form>
-    <script>
-        function generarPlantilla() {
-            // Obtener todos los campos de valor de servicio
-            const camposValor = document.querySelectorAll('input[type="number"]');
-            let valorTotal = 0;
-            // Calcular el valor total sumando los valores de cada servicio
-            camposValor.forEach(campo => {
-                valorTotal += parseFloat(campo.value);
-            });
-            // Mostrar el valor total en el elemento HTML correspondiente
-            document.getElementById('valorTotal').textContent = `Valor Total: $${valorTotal}`;
-        }
-    </script>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="/imagenes/vigilado.png"/>
+    <hr>
+</header>
+<br>
+<br>
+<form action="/generar_plantilla" method="POST">
+    <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
+    <input type="hidden" name="valorTotal" value="50">
+    <input type="hidden" name="cliente" value="{{cotizacion.cliente}}">
+    <input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
+    <input type="hidden" name="correo" value="{{cotizacion.correo}}">
+    <input type="hidden" name="contacto" value="{{cotizacion.contacto}}">
+    <input type="hidden" name="ciudad" value="{{cotizacion.ciudad}}">
+    <input type="hidden" name="num_servicios" value="{{cotizacion.num_servicios}}">
+    <input type="hidden" name="fecha_creacion" value="{{formatDate cotizacion.fecha_creacion}}">
+<input type="hidden" name="fecha" value="{{this.fecha}}">
+<input type="hidden" name="hora" value="{{this.hora}}">
+<input type="hidden" name="origen" value="{{this.origen}}">
+<input type="hidden" name="destino" value="{{this.destino}}">
+<input type="hidden" name="itinerario" value="{{this.itinerario}}">
+<input type="hidden" name="tipoCarro" value="{{this.tipoCarro}}">
+
+    
+    
+    
+    
+    
+    
+    
+    <div class="CLIENTE">
+        <h2>DATOS DEL CLIENTE</h2>
+        <p><strong>Realizada el:</strong> {{formatDate cotizacion.fecha_creacion}}</p>
+        <p><strong>Quien cotiza:</strong> {{cotizacion.nombre}}</p>
+        <p><strong>CLIENTE:</strong> {{cotizacion.cliente}}</p>
+        <p><strong>CORREO:</strong> {{cotizacion.correo}}</p>
+        <p><strong>CONTACTO:</strong> {{cotizacion.contacto}}</p>
+        <p><strong>CIUDAD:</strong> {{cotizacion.ciudad}}</p>
+        <p><strong>Número de servicios:</strong> {{cotizacion.num_servicios}}</p>
+    </div>
+    <br>
+    <br>
+    <br>
+    <h2 id="servicios">DETALLES SERVICIOS</h2>
+    <br>
+    <table class="servicios-table">
+        <thead>
+        <tr>
+            <th>FECHA</th>
+            <th>TIPO DE CARRO</th>
+            <th>ITINERARIO</th>
+            <th>ORIGEN</th>
+            <th>DESTINO</th>
+            <th>HORA</th>
+            <th>VALOR POR TRASLADO</th>
+            <th>OBSERVACIONES</th> <!-- Nueva columna para observaciones -->
+        </tr>
+        </thead>
+        <tbody>
+        {{#each servicios}}
+        <tr>
+            <td>{{formatDate fecha}}</td>
+            <td>{{tipoCarro}}</td>
+            <td>{{itinerario}}</td>
+            <td>{{origen}}</td>
+            <td>{{destino}}</td>
+             <td>{{hora}}</td>
+            <td><input type="number" name="servicios[{{@index}}][valor]" value="{{this.valor}}" required></td>
+            <td><input type="text" name="servicios[{{@index}}][observaciones]"></td> <!-- Campo para observaciones -->
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <button class="volver-btn" type="submit">Generar Plantilla</button>
+</form>
+<footer>
+    <section>
+        <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+        <p>Copyrigt soporteVianco</p>
+        <nav class="">
+            <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+        </nav>
+</footer>
+<script>
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString();
+        return `${day}/${month}/${year}`;
+    }
+</script>
 </body>
 </html>
