@@ -1656,7 +1656,87 @@ app.post('/cotizacion', (req, res) => {
         });
     });
 });
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/cotizaciones_pendientes', (req, res) => {
+    // Realizar la consulta a la base de datos para obtener las cotizaciones pendientes
+    connection.query('SELECT id, cliente FROM cotizaciones WHERE realizada = 0', (err, rows) => {
+        if (err) {
+            console.error('Error al obtener cotizaciones pendientes:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        // Renderizar la plantilla cotizaciones_pendientes.hbs con los datos obtenidos de la base de datos
+        res.render('cotizaciones/cotizaciones_pendientes', { cotizaciones: rows });
+    });
+});
 
+// Ruta para ver los detalles de una cotización seleccionada
+app.get('/cotizaciones_pendientes/:id', (req, res) => {
+    const cotizacionId = req.params.id;
+    connection.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
+        if (err) {
+            console.error('Error al obtener detalles de la cotización:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        if (cotizacionRows.length === 0) {
+            res.status(404).send('Cotización no encontrada');
+            return;
+        }
+        
+        // Una vez que tengas los detalles de la cotización, extrae los servicios asociados a esa cotización
+        const cotizacion = cotizacionRows[0];
+        const servicios = [];
+
+        // Iterar sobre las columnas de la cotización para encontrar los servicios
+        for (let i = 1; i <= cotizacion.num_servicios; i++) {
+            const servicio = {
+                fecha: cotizacion[`fecha${i}`],
+                hora: cotizacion[`hora${i}`],
+                origen: cotizacion[`origen${i}`],
+                destino: cotizacion[`destino${i}`],
+                itinerario: cotizacion[`itinerario${i}`],
+                tipoCarro: cotizacion[`tipoCarro${i}`]
+            };
+            servicios.push(servicio);
+        }
+
+        // Renderizar la plantilla detalles_cotizacion.hbs con los detalles de la cotización y los servicios obtenidos de la base de datos
+        res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios });
+    });
+});
+// Ruta para generar la plantilla personalizada
+app.post('/generar_plantilla', (req, res) => {
+    // Extraer todos los datos de la cotización del cuerpo de la solicitud
+    const cotizacionId = req.body.cotizacionId;
+    const valorTotal = req.body.valorTotal;
+
+    // Extraer todos los demás datos de la cotización
+    const cliente = req.body.cliente;
+    const nombre = req.body.nombre;
+    const correo = req.body.correo;
+    // Asegúrate de agregar todos los demás campos aquí
+
+    // Renderizar la plantilla personalizada con todos los datos de la cotización
+    res.render('cotizaciones/plantilla_personalizada', { 
+        cotizacionId: cotizacionId, 
+        valorTotal: valorTotal,
+        cliente: cliente,
+        nombre: nombre,
+        correo: correo
+        // Asegúrate de agregar todos los demás campos aquí
+    }, (err, html) => {
+        if (err) {
+            console.error('Error al renderizar la plantilla:', err);
+            res.status(500).send('Error al generar la plantilla');
+            return;
+        }
+
+        // Aquí podrías enviar el HTML generado por correo electrónico o guardarlo en un archivo, etc.
+        // Por ahora, simplemente lo enviaremos como respuesta HTTP
+        res.send(html);
+    });
+});
 
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));

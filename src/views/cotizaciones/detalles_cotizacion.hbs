@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de la Cotización</title>
+</head>
+<body>
+    <h1>Detalles de la Cotización</h1>
+    <form action="/generar_plantilla" method="POST">
+        <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
+        <input type="hidden" name="valorTotal" value="50"> <!-- Aquí debería ser un valor dinámico -->
+        <!-- Agregar campos ocultos para los detalles de la cotización -->
+        <input type="hidden" name="cliente" value="{{cotizacion.cliente}}">
+        <input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
+        <input type="hidden" name="correo" value="{{cotizacion.correo}}">
+        <!-- Asegúrate de agregar todos los demás campos necesarios aquí -->
+        <h2>Servicios</h2>
+        <ul>
+            {{#each servicios}}
+                <li>
+                    <p>Fecha: {{fecha}}</p>
+                    <p>Hora: {{hora}}</p>
+                    <p>Origen: {{origen}}</p>
+                    <p>Destino: {{destino}}</p>
+                    <p>Itinerario: {{itinerario}}</p>
+                    <p>Tipo de Carro: {{tipoCarro}}</p>
+                    <label for="valor{{@index}}">Valor del servicio:</label>
+                    <input type="number" id="valor{{@index}}" name="valor{{@index}}" value="50" required>
+                </li>
+            {{/each}}
+        </ul>
+        <button type="submit">Generar Plantilla</button>
+    </form>
+    <script>
+        function generarPlantilla() {
+            // Obtener todos los campos de valor de servicio
+            const camposValor = document.querySelectorAll('input[type="number"]');
+            let valorTotal = 0;
+            // Calcular el valor total sumando los valores de cada servicio
+            camposValor.forEach(campo => {
+                valorTotal += parseFloat(campo.value);
+            });
+            // Mostrar el valor total en el elemento HTML correspondiente
+            document.getElementById('valorTotal').textContent = `Valor Total: $${valorTotal}`;
+        }
+    </script>
+</body>
+</html>
