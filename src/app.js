@@ -1604,6 +1604,60 @@ app.post('/buscar_por_fecha', async (req, res) => {
 
 
 
+
+
+
+
+
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/formulario_cotizaciones', (req, res) => {
+    res.render('cotizaciones/formulario_cotizacion.hbs'); // Renderiza el formulario de búsqueda
+});
+app.post('/cotizacion', (req, res) => {
+    const cotizacionData = req.body;
+    const numServicios = parseInt(cotizacionData.numServicios);
+
+    // Eliminar el campo numServicios del objeto principal de cotización
+    delete cotizacionData.numServicios;
+
+    // Agregar numServicios a cotizacionData antes de la inserción
+    cotizacionData.num_servicios = numServicios;
+
+    // Insertar los datos de la cotización en la base de datos
+    connection.beginTransaction(err => {
+        if (err) {
+            console.error('Error al iniciar la transacción:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        // Insertar los datos de la cotización en la tabla cotizaciones
+        connection.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
+            if (err) {
+                console.error('Error al insertar la cotización en la base de datos:', err);
+                connection.rollback(() => {
+                    res.status(500).send('Error interno del servidor');
+                });
+                return;
+            }
+
+            // Commit si la inserción es exitosa
+            connection.commit(err => {
+                if (err) {
+                    console.error('Error al realizar commit:', err);
+                    connection.rollback(() => {
+                        res.status(500).send('Error interno del servidor');
+                    });
+                    return;
+                }
+                console.log('Cotización insertada correctamente');
+                res.send('Cotización enviada exitosamente');
+            });
+        });
+    });
+});
+
+
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });
