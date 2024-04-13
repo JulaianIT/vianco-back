@@ -1726,6 +1726,7 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
         const origen = req.body.origen;
         const destino = req.body.destino;
         const itinerario = req.body.itinerario;
+
         const tipoCarro = req.body.tipoCarro;
     
     
