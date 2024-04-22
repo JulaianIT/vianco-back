@@ -1765,8 +1765,8 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
 
 // Define la ruta para el endpoint '/consulta-contabilidad-todos'
 app.get('/consulta-contabilidad-todos', (req, res) => {
-    // Realizar la consulta a la base de datos
-    connection.query('SELECT * FROM contabilidad', (error, results, fields) => {
+    // Realizar la consulta a la base de datos seleccionando solo las columnas necesarias
+    connection.query('SELECT placa, Nombre, tipo_documento,Cedula,Nombre_del_banco,Tipo_de_cuenta_bancaria,Numero_de_cuenta FROM contabilidad', (error, results, fields) => {
         if (error) {
             console.error('Error al consultar la contabilidad:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
