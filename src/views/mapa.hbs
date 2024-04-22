@@ -14,6 +14,7 @@
 <body>
 <br>
 <div id="map"></div>
+<p>{{nombreUsuario}} </p>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
@@ -35,6 +36,7 @@
         iconAnchor: [16, 32], // Punto de anclaje del icono
         popupAnchor: [0, -32] // Punto de anclaje del popup
     });
+
     function onLocationFound(e) {
         var radius = e.accuracy / 2;
 
@@ -43,8 +45,9 @@
 
         L.circle(e.latlng, radius).addTo(map);
 
-        // Enviar la ubicación al servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng });
+        // Enviar la ubicación al servidor con la hora actual
+        var currentTime = new Date().toLocaleTimeString();
+        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime });
     }
 
     function onLocationError(e) {
@@ -59,8 +62,9 @@
     // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
     socket.on('userLocation', function (data) {
         var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup('Otro usuario').openPopup();
+        marker.bindPopup('Otro usuario<br>' + 'Hora: ' + data.time).openPopup();
     });
+
 </script>
 </body>
 </html>

@@ -1831,45 +1831,53 @@ const socketIo = require("socket.io");
 
 const server = http.createServer(app);
 const io = socketIo(server);
+// Objeto para mantener un registro de las ubicaciones de los usuarios conectados
+let connectedUsers = {};
 
-// Almacenamiento de ubicaciones en MySQL
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
+    // Agregar el ID de socket del usuario conectado al objeto connectedUsers
+    connectedUsers[socket.id] = true;
+
+    // Recuperar todas las ubicaciones almacenadas y emitirlas al cliente recién conectado
+    connection.query('SELECT * FROM ubicaciones', (error, results) => {
+        if (error) {
+            console.error('Error al recuperar las ubicaciones desde MySQL:', error);
+            return;
+        }
+        // Emitir las ubicaciones al cliente recién conectado
+        socket.emit('userLocations', results);
+    });
+
     // Manejar la recepción de ubicaciones de los usuarios
     socket.on('location', (data) => {
-        // Inserta la ubicación en la tabla de ubicaciones
+        // Insertar la ubicación en la tabla de ubicaciones
         const query = 'INSERT INTO ubicaciones (latitud, longitud) VALUES (?, ?)';
         connection.query(query, [data.lat, data.lng], (error, results) => {
             if (error) {
                 console.error('Error al insertar la ubicación en MySQL:', error);
                 return;
             }
-            // Emitir la ubicación a todos los clientes
+            // Emitir la ubicación a todos los clientes conectados
             io.emit('userLocation', data);
         });
-    });
-
-    // Recuperación de ubicaciones desde MySQL al cargar la página
-    connection.query('SELECT * FROM ubicaciones', (error, results) => {
-        if (error) {
-            console.error('Error al recuperar las ubicaciones desde MySQL:', error);
-            return;
-        }
-        // Emitir las ubicaciones a todos los clientes
-        socket.emit('userLocations', results);
     });
 
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
+        // Eliminar las ubicaciones del usuario desconectado
+        delete connectedUsers[socket.id];
+        // Emitir un mensaje para eliminar las ubicaciones del usuario desconectado
+        io.emit('removeUserLocations', { userId: socket.id });
     });
 });
 
-// Ruta para la página de búsqueda y visualización de datos
-app.get('/mapa', (req, res) => {
-    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
-});
+
+
+
+
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
