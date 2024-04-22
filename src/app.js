@@ -174,6 +174,13 @@ app.get("/programacion-vehiculos", (req, res) => {
 
 
 
+function otraFuncion(req, res, next) {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+    } else {
+        console.log('El usuario no está autenticado.');
+    }
+}
 
 
 
@@ -181,6 +188,10 @@ app.get("/programacion-vehiculos", (req, res) => {
 // Ruta para la página principal
 app.get("/", (req, res) => {
     if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
+
         const rolesString = req.session.roles;
         const roles = Array.isArray(rolesString) ? rolesString : [];
         otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
@@ -1797,15 +1808,6 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
 
 // Define la función otraFuncion
 // Define la función otraFuncion
-function otraFuncion(req, res, next) {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        console.log(`El usuario ${nombreUsuario} está autenticado.`);
-        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
-    } else {
-        console.log('El usuario no está autenticado.');
-    }
-}
 
 
 // Ruta para la página de búsqueda y visualización de datos

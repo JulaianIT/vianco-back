@@ -8,6 +8,8 @@
     <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
     <title>Document</title>
 </head>
 <style>
@@ -191,10 +193,19 @@ p{
 
 
 }
-   #map {
-            height: 400px;
-        }
+nav {
+    position: relative; /* Ajusta el posicionamiento */
+    left: 0; /* Ajusta la posición a la izquierda */
+    z-index: 2; /* Ajusta el índice Z para que esté por encima del mapa */
+}
 
+#map {
+    position: relative; /* Ajusta el posicionamiento */
+    left: 15%; /* Ajusta la posición a la izquierda */
+    width: calc(100vw - 300px); /* Ancho del mapa es el ancho de la ventana menos 300px */
+    height: calc(100vh - 120px); /* Alto del mapa es el alto de la ventana menos 120px */
+    z-index: 1; /* Ajusta el índice Z para que esté detrás del menú */
+}
 </style>
 
 <body>
@@ -202,6 +213,7 @@ p{
          <img id="membrete"   src="/imagenes/menbrete.png"/>
         <img  id="logo"      src="/imagenes/logo vianco.png"/>
         <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+
         <hr>
         
        
@@ -215,7 +227,6 @@ p{
     <label class="logo" for=""></label>
 
       <ul class="menu-horizontal">
-                      
 
                         {{#if isControl}}
                         
@@ -305,24 +316,13 @@ p{
 
                     </ul>
 </nav>
-<div class="fondo">
 
-        <img class="fond" src="/imagenes/carro menu.png" alt="">
-
+<div id="map"></div>
 
 
 
-</div>
-    <footer>
-        <section>
-            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
-            <p>Copyrigt soporteVianco</p>
-               <nav class="">
-        <ul class="w-full ml-auto flex justify-end pt-1">
-          
-            
-        </ul>
-    </nav>
+
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
 <script>
@@ -338,7 +338,7 @@ p{
 
     // Define el icono personalizado para el marcador de otros usuarios (antena)
     var antennaIcon = L.icon({
-        iconUrl: 'ruta/al/archivo/antena.png',
+        iconUrl: '/imagenes/Gelocalizacion.png',
         iconSize: [32, 32], // Tamaño del icono
         iconAnchor: [16, 32], // Punto de anclaje del icono
         popupAnchor: [0, -32] // Punto de anclaje del popup
@@ -347,17 +347,25 @@ p{
     function onLocationFound(e) {
         var radius = e.accuracy / 2;
 
+        // Verificar la precisión antes de mostrar la ubicación
+        if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
+            alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
+            return;
+        }
+
         L.marker(e.latlng).addTo(map)
             .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
 
         L.circle(e.latlng, radius).addTo(map);
 
-        // Enviar la ubicación al servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng });
+        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
+        var currentTime = new Date().toLocaleTimeString();
+        var username = "{{name}}"; // Obtener el nombre de usuario del servidor
+        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
     }
 
     function onLocationError(e) {
-        alert(e.message);
+        alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
     }
 
     map.on('locationfound', onLocationFound);
@@ -368,8 +376,9 @@ p{
     // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
     socket.on('userLocation', function (data) {
         var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup('Otro usuario').openPopup();
+        marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
     });
+
 </script>
 
 </body>
