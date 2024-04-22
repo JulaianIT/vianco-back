@@ -153,19 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>EMAIL:</strong> ${contabilidad.EMAIL_CONTRATO}</p>
                 <p><strong>ACTIVIDAD ECONOMICA:</strong> ${contabilidad.ACTIVIDAD_ECONOMICA_CONTRATO}</p>
                 <p><strong>VALOR ADMINISTRACION:</strong> ${contabilidad.VALOR_ADMINISTRACION}</p>
-
-
-
-
-
                 <hr>
                 <br>
                 <h2>Cuenta bancaria</h2>
-
+        
                 <p><strong>NOMBRES Y APELLIDOS:</strong> ${contabilidad.Nombre}</p>
                 <p><strong>TIPO DE DOCUMENTO:</strong> ${contabilidad.tipo_documento}</p>
                 <p><strong>N° DE DOCUMENTO:</strong> ${contabilidad.Cedula}</p>
-
+        
                 <p><strong> BANCO:</strong> ${contabilidad.Nombre_del_banco}</p>
                 <p><strong>TIPO DE CUENTA BANCARIA:</strong> ${contabilidad.Tipo_de_cuenta_bancaria}</p>
                 <p><strong>N° CUENTA:</strong> ${contabilidad.Numero_de_cuenta}</p>
@@ -174,26 +169,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>EMAIL:</strong> ${contabilidad.Email}</p>
                 <!-- Agregar más campos de contabilidad aquí -->
                 <button id="editar-btn" class="btn editar-btn">Editar Información</button>
-
+        
                 <a href="/agregar-contabilidad" class="volver-btn">Agregar contabilidad</a>
                 <a href="/" class="volver-btn">Volver al Menú</a>
-
-            
+        
+        
                 `;
-            
-        // Obtener el botón de editar
-const editarBtn = document.getElementById('editar-btn');
-editarBtn.addEventListener('click', () => {
-    // Obtener la placa del vehículo seleccionado
-    const placaSeleccionada = document.getElementById('placa').value;
-    // Redirigir a la página de edición de contabilidad
-    window.location.href = `/edicion-contabilidad/${placaSeleccionada}`;
-});
-
+        
+            // Obtener el botón de editar
+            const editarBtn = document.getElementById('editar-btn');
+            editarBtn.addEventListener('click', () => {
+                // Obtener la placa del vehículo seleccionado
+                const placaSeleccionada = document.getElementById('placa').value;
+                // Redirigir a la página de edición de contabilidad
+                window.location.href = `/edicion-contabilidad/${placaSeleccionada}`;
+            });
+        
         })
+        
         .catch(error => {
             console.error('Error al consultar el vehículo:', error);
             infoVehiculoDiv.textContent = 'Error al consultar el vehículo';
         });
     });
 });
+
+

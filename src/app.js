@@ -1762,6 +1762,23 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
         });
     });
     
+
+// Define la ruta para el endpoint '/consulta-contabilidad-todos'
+app.get('/consulta-contabilidad-todos', (req, res) => {
+    // Realizar la consulta a la base de datos
+    connection.query('SELECT * FROM contabilidad', (error, results, fields) => {
+        if (error) {
+            console.error('Error al consultar la contabilidad:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+            return;
+        }
+
+        // Enviar los resultados de la consulta como respuesta en formato JSON
+        res.json(results);
+    });
+});
+
+
 app.listen(app.get("port"), () => {
     console.log("Listening on port ", app.get("port"));
 });

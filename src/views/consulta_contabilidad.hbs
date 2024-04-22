@@ -6,6 +6,8 @@
     <title>Hoja de Vida de la Contabilidad del Vehículo</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
 
@@ -195,6 +197,7 @@ main{
    </style>
 </head>
 <body>
+
     <div class="container">
         <h1> CONDICIONES ADMINISTRATIVAS DEL VEHICULO</h1>
         <form id="consulta-form" action="/consulta-contabilidad" method="POST">
@@ -220,8 +223,33 @@ main{
             <button id="editar-btn" class="btn editar-btn">Editar Información</button>
             <a href="/agregar-contabilidad" class="volver-btn">AGREGAR INFORMACION</a>
             <a href="/" class="volver-btn">Volver al Menú</a>
+            <button id="descargar-excel-btn" class="btn">Descargar Excel</button>
+
             <!-- Agregar más campos de información técnica aquí -->
         </div>
     </div>
+    
+  <script>
+        document.getElementById('descargar-excel-btn').addEventListener('click', () => {
+            fetch('/consulta-contabilidad-todos')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al consultar la contabilidad');
+                    }
+                    return response.json();
+                })
+                .then(contabilidadData => {
+                    const workbook = XLSX.utils.book_new();
+                    const contabilidadSheet = XLSX.utils.json_to_sheet(contabilidadData);
+                    XLSX.utils.book_append_sheet(workbook, contabilidadSheet, "Contabilidad");
+                    XLSX.writeFile(workbook, "informe_contabilidad.xlsx");
+                })
+                .catch(error => {
+                    console.error('Error al consultar la contabilidad:', error);
+                    // Manejar el error de manera adecuada
+                });
+        });
+    </script>
     <script src="consulta_contabilidad.js"></script>
+
 </body>
