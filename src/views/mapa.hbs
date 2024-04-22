@@ -27,6 +27,14 @@
     // Conectar al servidor Socket.IO
     var socket = io();
 
+    // Define el icono personalizado para el marcador de otros usuarios (antena)
+    var antennaIcon = L.icon({
+        iconUrl: 'ruta/al/archivo/antena.png',
+        iconSize: [32, 32], // Tamaño del icono
+        iconAnchor: [16, 32], // Punto de anclaje del icono
+        popupAnchor: [0, -32] // Punto de anclaje del popup
+    });
+
     function onLocationFound(e) {
         var radius = e.accuracy / 2;
 
@@ -48,9 +56,9 @@
 
     map.locate({ setView: true, maxZoom: 16 });
 
-    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa
+    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
     socket.on('userLocation', function (data) {
-        var marker = L.marker([data.lat, data.lng]).addTo(map);
+        var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
         marker.bindPopup('Otro usuario').openPopup();
     });
 </script>
