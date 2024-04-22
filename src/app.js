@@ -1777,35 +1777,38 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
         res.json(results);
     });
 });
-
-// Ruta para la página de búsqueda y visualización de datos
-app.get('/mapa', (req, res) => {
-    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
-});
-
 const http = require("http");
 const socketIo = require("socket.io");
 
 const server = http.createServer(app);
 const io = socketIo(server);
 
-
-// Ruta para la página de búsqueda y visualización de datos
-const PORT = process.env.PORT || 3000;
-
-
-// Middleware para servir archivos estáticos desde la carpeta "public"
-app.use(express.static(__dirname + '/public'));
-
-// Manejar la conexión de los clientes a través de Socket.IO
+// Almacenamiento de ubicaciones en MySQL
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
     // Manejar la recepción de ubicaciones de los usuarios
     socket.on('location', (data) => {
-        console.log('Ubicación recibida:', data);
-        // Emitir la ubicación recibida a todos los clientes excepto al remitente
-        socket.broadcast.emit('userLocation', data);
+        // Inserta la ubicación en la tabla de ubicaciones
+        const query = 'INSERT INTO ubicaciones (latitud, longitud) VALUES (?, ?)';
+        connection.query(query, [data.lat, data.lng], (error, results) => {
+            if (error) {
+                console.error('Error al insertar la ubicación en MySQL:', error);
+                return;
+            }
+            // Emitir la ubicación a todos los clientes
+            io.emit('userLocation', data);
+        });
+    });
+
+    // Recuperación de ubicaciones desde MySQL al cargar la página
+    connection.query('SELECT * FROM ubicaciones', (error, results) => {
+        if (error) {
+            console.error('Error al recuperar las ubicaciones desde MySQL:', error);
+            return;
+        }
+        // Emitir las ubicaciones a todos los clientes
+        socket.emit('userLocations', results);
     });
 
     // Manejar la desconexión de los clientes
@@ -1814,10 +1817,18 @@ io.on('connection', (socket) => {
     });
 });
 
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/mapa', (req, res) => {
+    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
+});
+
 // Inicia el servidor de Socket.IO en el puerto especificado
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
 });
+
+
 
 const EXPRESS_PORT = 3001; // Elige el puerto que desees para la aplicación Express
 app.listen(EXPRESS_PORT, () => {
