@@ -1852,9 +1852,9 @@ io.on('connection', (socket) => {
 
     // Manejar la recepción de ubicaciones de los usuarios
     socket.on('location', (data) => {
-        // Insertar la ubicación en la tabla de ubicaciones
-        const query = 'INSERT INTO ubicaciones (latitud, longitud) VALUES (?, ?)';
-        connection.query(query, [data.lat, data.lng], (error, results) => {
+        // Insertar la ubicación y el nombre de usuario en la tabla de ubicaciones
+        const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario) VALUES (?, ?, ?)';
+        connection.query(query, [data.lat, data.lng, data.username], (error, results) => {
             if (error) {
                 console.error('Error al insertar la ubicación en MySQL:', error);
                 return;
@@ -1873,9 +1873,6 @@ io.on('connection', (socket) => {
         io.emit('removeUserLocations', { userId: socket.id });
     });
 });
-
-
-
 
 
 

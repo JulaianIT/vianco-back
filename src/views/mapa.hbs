@@ -45,9 +45,10 @@
 
         L.circle(e.latlng, radius).addTo(map);
 
-        // Enviar la ubicación al servidor con la hora actual
+        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
         var currentTime = new Date().toLocaleTimeString();
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime });
+        var username = "{{nombreUsuario}}"; // Obtener el nombre de usuario del servidor
+        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
     }
 
     function onLocationError(e) {
@@ -62,7 +63,7 @@
     // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
     socket.on('userLocation', function (data) {
         var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup('Otro usuario<br>' + 'Hora: ' + data.time).openPopup();
+        marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
     });
 
 </script>
