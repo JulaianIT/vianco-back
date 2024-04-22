@@ -1795,18 +1795,36 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
 
 
 
-
-function otraFuncion(req, res) {
+// Define la función otraFuncion
+// Define la función otraFuncion
+function otraFuncion(req, res, next) {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
         console.log(`El usuario ${nombreUsuario} está autenticado.`);
-        req.session.nombreGuardado = nombreUsuario; // Guardar el nombre en la sesión
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
     } else {
         console.log('El usuario no está autenticado.');
     }
 }
 
 
+// Ruta para la página de búsqueda y visualización de datos
+// Ruta para la página de búsqueda y visualización de datos
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/mapa', (req, res) => {
+    // Realizar autenticación de usuario u otras tareas aquí
+    if (req.session.loggedin) {
+        // El usuario está autenticado, realizar tareas adicionales si es necesario
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        res.render('mapa.hbs', { nombreUsuario: nombreUsuario }); // Pasar el nombre de usuario como una variable de contexto
+    } else {
+        // El usuario no está autenticado, redirigir o mostrar un mensaje de error
+        console.log('El usuario no está autenticado.');
+        // Puedes redirigir al usuario a una página de inicio de sesión, por ejemplo
+        res.redirect('/login');
+    }
+});
 
 
 const http = require("http");
@@ -1816,23 +1834,25 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Almacenamiento de ubicaciones en MySQL
+// Almacenamiento de ubicaciones en MySQL
+// Almacenamiento de ubicaciones en MySQL
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
-    // Manejar la recepción de ubicaciones de los usuarios
     socket.on('location', (data) => {
-        // Inserta la ubicación en la tabla de ubicaciones
-        const query = 'INSERT INTO ubicaciones (latitud, longitud) VALUES (?, ?)';
-        connection.query(query, [data.lat, data.lng], (error, results) => {
+        const nombreUsuario = data.username; // Obtener el nombre de usuario enviado desde el cliente
+        const query = 'INSERT INTO ubicaciones (latitud, longitud, usuario) VALUES (?, ?, ?)';
+        connection.query(query, [data.lat, data.lng, nombreUsuario], (error, results) => {
             if (error) {
                 console.error('Error al insertar la ubicación en MySQL:', error);
                 return;
             }
+            console.log('Ubicación insertada correctamente en la base de datos:', results);
             // Emitir la ubicación a todos los clientes
             io.emit('userLocation', data);
         });
     });
-
+    
     // Recuperación de ubicaciones desde MySQL al cargar la página
     connection.query('SELECT * FROM ubicaciones', (error, results) => {
         if (error) {
@@ -1849,10 +1869,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Ruta para la página de búsqueda y visualización de datos
-app.get('/mapa', (req, res) => {
-    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
-});
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;

@@ -42,10 +42,13 @@
             .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
 
         L.circle(e.latlng, radius).addTo(map);
-
-        // Enviar la ubicación al servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng });
-    }
+}
+  // En el lado del cliente, después de conectar al servidor Socket.IO
+// Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
+socket.on('userLocation', function (data) {
+    var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
+    marker.bindPopup('Usuario: ' + data.usuario).openPopup(); // Mostrar el nombre de usuario en el popup del marcador
+});
 
     function onLocationError(e) {
         alert(e.message);
