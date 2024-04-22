@@ -191,6 +191,9 @@ p{
 
 
 }
+   #map {
+            height: 400px;
+        }
 
 </style>
 
@@ -276,6 +279,8 @@ p{
                         <li><p class="menu-horizontal" >Gerencia</p> 
                             <ul class="menu-vertical">
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
+                             <li><a href="/mapa">Geolocalización</a></li>
+
                             </ul>
                         </li>
                         {{/if}}
@@ -286,7 +291,6 @@ p{
                                 <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
                                 <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
                                 <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
-                                <li><a href="#">METAS</a></li>
                             </ul>
                         </li>
                         {{/if}}
@@ -319,6 +323,38 @@ p{
             
         </ul>
     </nav>
-   
+   <script>
+    // Inicializar el mapa
+    var map = L.map('map');
+
+    // Añadir capa de OpenStreetMap al mapa
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Obtener la ubicación del usuario
+    map.locate({setView: true, maxZoom: 16});
+
+    // Manejar el evento de ubicación encontrada
+    function onLocationFound(e) {
+        var radius = e.accuracy / 2;
+
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("Estás dentro de " + radius + " metros de este punto").openPopup();
+
+        L.circle(e.latlng, radius).addTo(map);
+    }
+
+    map.on('locationfound', onLocationFound);
+
+    // Manejar el evento de error de ubicación
+    function onLocationError(e) {
+        alert(e.message);
+    }
+
+    map.on('locationerror', onLocationError);
+</script>
+
 </body>
 </html>

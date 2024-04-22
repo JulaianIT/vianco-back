@@ -1777,6 +1777,46 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
         res.json(results);
     });
 });
+const http = require('http');
+const socketIo = require('socket.io');
+
+
+
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io/client-dist'));
+
+io.on('connection', (socket) => {
+    console.log('Usuario conectado');
+
+    socket.on('location', (data) => {
+        console.log('Ubicación recibida:', data);
+        // Emitir la ubicación recibida a todos los clientes
+        io.emit('userLocation', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Usuario desconectado');
+    });
+});
+
+
+
+
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/mapa', (req, res) => {
+    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
+});
+
+
+
+
+
+
+
+
 
 
 app.listen(app.get("port"), () => {
