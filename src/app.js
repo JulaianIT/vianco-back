@@ -1826,7 +1826,6 @@ app.get('/mapa', (req, res) => {
     }
 });
 
-
 const http = require("http");
 const socketIo = require("socket.io");
 
@@ -1834,25 +1833,23 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Almacenamiento de ubicaciones en MySQL
-// Almacenamiento de ubicaciones en MySQL
-// Almacenamiento de ubicaciones en MySQL
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
+    // Manejar la recepción de ubicaciones de los usuarios
     socket.on('location', (data) => {
-        const nombreUsuario = data.username; // Obtener el nombre de usuario enviado desde el cliente
-        const query = 'INSERT INTO ubicaciones (latitud, longitud, usuario) VALUES (?, ?, ?)';
-        connection.query(query, [data.lat, data.lng, nombreUsuario], (error, results) => {
+        // Inserta la ubicación en la tabla de ubicaciones
+        const query = 'INSERT INTO ubicaciones (latitud, longitud) VALUES (?, ?)';
+        connection.query(query, [data.lat, data.lng], (error, results) => {
             if (error) {
                 console.error('Error al insertar la ubicación en MySQL:', error);
                 return;
             }
-            console.log('Ubicación insertada correctamente en la base de datos:', results);
             // Emitir la ubicación a todos los clientes
             io.emit('userLocation', data);
         });
     });
-    
+
     // Recuperación de ubicaciones desde MySQL al cargar la página
     connection.query('SELECT * FROM ubicaciones', (error, results) => {
         if (error) {
@@ -1869,6 +1866,10 @@ io.on('connection', (socket) => {
     });
 });
 
+// Ruta para la página de búsqueda y visualización de datos
+app.get('/mapa', (req, res) => {
+    res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
+});
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
