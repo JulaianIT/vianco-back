@@ -10,14 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jersey+25&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <title>Document</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jersey+25&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <title>PRINCIPAÑ</title>
 </head>
 <style>
 
 * {
-    font-family: "Poppins", sans-serif;
+  font-family: "Outfit", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
@@ -239,7 +241,6 @@ p{
 }
 
 
-}
 
 @media only screen and (max-width: 600px) {
   /* Estilos para pantallas más pequeñas, como teléfonos móviles */
@@ -327,7 +328,7 @@ nav {
     left: 0;
     width: 200px; /* Ancho de la barra de navegación */
     height: 100%;
-    background-color: #666567;
+    background-color: rgb(102, 101, 103,0.9);
     font-size: 20px;
     border: solid 6px black;
     z-index: 1500; /* Asegura que esté por encima del encabezado */
@@ -357,6 +358,67 @@ nav {
     left: 100%; /* Coloca el menú vertical a la derecha del elemento activador */
 }
 
+
+
+
+#calll {
+height: 70px;
+align-items: center;
+left: 12%;
+    position: relative;
+ }
+
+
+
+.call {
+    
+    position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+}
+
+.call:hover::after {
+    content: "Callcenter"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+#eje{
+
+width: 70px;
+align-items: center;
+
+    position: relative;
+left: 12%;
+
+
+
+}
+
+.ejee{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.ejee:hover::after {
+    content: "EJECUTIVO"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
 </style>
 
 <body>
@@ -385,7 +447,7 @@ nav {
 
                         {{#if isControl}}
                         
-                        <li><p class="active"> CONTROL OPERATIVO</p>  
+                        <li><p class="active">CONTROL OPERATIVO</p>  
                             <ul class="menu-vertical" >
                                                                 <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
 
@@ -412,14 +474,17 @@ nav {
 
 
               {{#if isControl}}
-                        <li><p class="active">CallCENTER</p> 
-                            <ul class="menu-vertical" >
-                                <li><a href="/inicio" >INICIAR TURNO</a></li>
-                                <li><a href="/novedades" >NOVEDADES</a></li>
+<li class="call">
+    <p class="active">
+        <img id="calll" src="/imagenes/call.png" alt="">
+    </p>
+    <ul class="menu-vertical">
+        <li><a href="/inicio">INICIAR TURNO</a></li>
+        <li><a href="/novedades">NOVEDADES</a></li>
+    </ul>
+</li>
 
-                               
-                            </ul>
-                        </li>
+
                         {{/if}}
 
 
@@ -436,7 +501,7 @@ nav {
                             <ul class="menu-vertical" >
                                 <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="/consulta-conductores">Conductores</a></li>
-                                <li><a href="/consulta-contabilidad">ADmin vehiculo</a></li>
+                                <li><a href="/consulta-contabilidad">administracion</a></li>
                             </ul>
                         </li>
                         {{/if}}
@@ -449,16 +514,21 @@ nav {
                             </ul>
                         </li>
                         {{/if}}
-                        {{#if isExecutive}}
-                        <li><p class="menu-horizontal">Ejecutivo</p>
-                            <ul class="menu-vertical">
-                                <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
-                                <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
-                                <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
-                                <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
-                            </ul>
-                        </li>
-                        {{/if}}
+{{#if isExecutive}}
+<li class="ejee">
+    <p class="menu-horizontal">
+        <img id="eje" src="/imagenes/perfil.png" alt="">
+    </p>
+    <ul class="menu-vertical">
+        <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
+        <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
+        <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
+        <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
+    </ul>
+</li>
+{{/if}}
+
+
                         <li><a  class="menu-horizontal" href="#">Soporte IT</a> 
                             <ul class="menu-vertical">
                                 <li><a href="#">Citas</a></li>
@@ -472,8 +542,6 @@ nav {
 </nav>
 
 <div id="map"></div>
-
-
 
 
 
