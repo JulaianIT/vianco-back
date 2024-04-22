@@ -9,22 +9,27 @@
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jersey+25&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <title>Document</title>
 </head>
 <style>
-*{
-    
-  font-family: "Rubik", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: <weight>;
-  font-style: normal;
 
+* {
+    font-family: "Poppins", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-
 }
+
+/* Otras reglas CSS aquí... */
+
+
+
 body{
         background-color: rgb(144,201,167, 0.5);
 
@@ -48,13 +53,67 @@ nav{
 
 
 }
-.menu-horizontal{
-text-transform: uppercase;
+.menu-horizontal {
+    text-transform: uppercase;
     list-style: none;
     display: flex;
-    justify-content: space-around;
+    /*justify-content: space-around;*/ /* Elimina esta línea */
+    flex-direction: column; /* Agrega esta línea */
+}
+.menu-horizontal >li > a{
+
+    display: block;
+    padding: 30px 15px;
+    color: black;
+    text-decoration: none;
 
 
+}
+.menu-horizontal >li:hover{
+
+
+    background-color: #d9d9d9;
+}
+.menu-vertical{
+    text-transform: uppercase;
+    position: absolute;
+    display: none;
+    list-style: none;
+    width: 300px;
+    background-color: rgb(0,0,0, 0.9) ;
+
+
+}
+.menu-horizontal li:hover .menu-vertical{
+    display: block;
+
+}
+.menu-vertical li:hover{
+
+    background-color: rgb(144,201,167, 0.5);
+
+}
+
+
+
+
+nav{
+    max-width: 100%;
+    margin: auto;
+    background-color: #666567;
+    font-size: 30px;
+    margin-top: 0px;
+              border: solid 6px black;
+              
+
+
+}
+.menu-horizontal {
+    text-transform: uppercase;
+    list-style: none;
+    display: flex;
+    /*justify-content: space-around;*/ /* Elimina esta línea */
+    flex-direction: column; /* Agrega esta línea */
 }
 .menu-horizontal >li > a{
 
@@ -76,7 +135,7 @@ text-transform: uppercase;
     display: none;
     list-style: none;
     width: 300px;
-    background-color: rgb(0,0,0, .6) ;
+    background-color: rgb(0,0,0, 0.9) ;
 
 
 }
@@ -86,7 +145,7 @@ text-transform: uppercase;
 }
 .menu-vertical li:hover{
 
-    background-color: black;
+    background-color: rgb(144,201,167, 0.5);
 
 }
 .menu-vertical li a{
@@ -111,35 +170,93 @@ img {
   max-width: 100%;
   height: auto;
 }
-   footer{
-            background-color: #222;
-            padding: 4.9rem;
-            color: #ffff;
-            position:relative;
-         
-            margin: 0;
-        }
-        footer section{
-            float:right ;
-            margin:0;
-            position: relative;
-            top: -60px;
-        }
-        footer a{
-            transition: color 0.3s ease;
-            color: #ffff;
-            text-decoration: none;
-        }
-        footer a:hover{
-            color: rgb(162, 204, 170);
-        }
-        footer p{
-            position:relative;
-            float: left;
-            left: -1199px;
-            color: #ffff;
+  
+    
+     
+        .bad{
             font-size: 20px;
+            position: relative;
+            color:rgb(113, 112, 111);
+            right: -20px;
+            top: 6px;
         }
+        .ok{
+            font-size: 20px;
+            position: relative;
+            top: 30px;
+        }
+        #sele{
+            font-size: 30px;
+
+
+        }
+        h1{
+            font-size: 50px;
+
+        }
+        /* Estilos para el label */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            margin-bottom: 50px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+        .fond{
+          width: 100%;
+    
+      
+        }
+
+
+#logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+p{
+    
+    padding: 30px 15px;
+    color: black;
+    text-decoration: none;
+
+
+}
+
+
+
+#map {
+    position: absolute;
+    top: 0;
+    left: 200px; /* Ancho de la barra de navegación */
+    width: calc(100% - 200px); /* Ancho del mapa */
+    height: 100%;
+    z-index: 1;
+}
+
+
+}
+
+@media only screen and (max-width: 600px) {
+  /* Estilos para pantallas más pequeñas, como teléfonos móviles */
+  body {
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+  }
+  .menu-horizontal {
+    font-size: 20px; /* Tamaño de fuente más pequeño para el menú horizontal */
+  }
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+  
+    
+     
         .bad{
             font-size: 20px;
             position: relative;
@@ -193,19 +310,53 @@ p{
 
 
 }
-nav {
-    position: relative; /* Ajusta el posicionamiento */
-    left: 0; /* Ajusta la posición a la izquierda */
-    z-index: 2; /* Ajusta el índice Z para que esté por encima del mapa */
+
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 1000; /* Asegura que esté por debajo de la barra de navegación */
 }
 
-#map {
-    position: relative; /* Ajusta el posicionamiento */
-    left: 15%; /* Ajusta la posición a la izquierda */
-    width: calc(100vw - 300px); /* Ancho del mapa es el ancho de la ventana menos 300px */
-    height: calc(100vh - 120px); /* Alto del mapa es el alto de la ventana menos 120px */
-    z-index: 1; /* Ajusta el índice Z para que esté detrás del menú */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px; /* Ancho de la barra de navegación */
+    height: 100%;
+    background-color: #666567;
+    font-size: 20px;
+    border: solid 6px black;
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+    color: black !important; /* Cambia el color del texto a negro y da prioridad */
 }
+
+
+
+#map {
+    position: absolute;
+    top: 0;
+    left: 200px; /* Ancho de la barra de navegación */
+    width: calc(100% - 200px); /* Ancho del mapa */
+    height: 100%;
+    z-index: 1;
+}
+
+.menu-horizontal li {
+    position: relative;
+}
+
+.menu-horizontal li:hover .menu-vertical {
+    display: block;
+    position: absolute;
+    top: 0; /* Alinea el menú vertical con la parte superior del elemento activador */
+
+    left: 100%; /* Coloca el menú vertical a la derecha del elemento activador */
+}
+
 </style>
 
 <body>
@@ -223,6 +374,10 @@ nav {
 
 
     </header>
+    <br>
+    <br><br>
+    
+    
     <nav>
     <label class="logo" for=""></label>
 
@@ -290,7 +445,6 @@ nav {
                         <li><p class="menu-horizontal" >Gerencia</p> 
                             <ul class="menu-vertical">
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
-                             <li><a href="/mapa">Geolocalización</a></li>
 
                             </ul>
                         </li>
