@@ -1777,49 +1777,49 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
         res.json(results);
     });
 });
-const http = require('http');
-const socketIo = require('socket.io');
-
-
-
-
-const server = http.createServer(app);
-const io = socketIo(server);
-
-app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io/client-dist'));
-
-io.on('connection', (socket) => {
-    console.log('Usuario conectado');
-
-    socket.on('location', (data) => {
-        console.log('Ubicación recibida:', data);
-        // Emitir la ubicación recibida a todos los clientes
-        io.emit('userLocation', data);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Usuario desconectado');
-    });
-});
-
-
-
 
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/mapa', (req, res) => {
     res.render('mapa.hbs'); // Renderiza el formulario de búsqueda
 });
 
+const http = require("http");
+const socketIo = require("socket.io");
+
+const server = http.createServer(app);
+const io = socketIo(server);
 
 
+// Ruta para la página de búsqueda y visualización de datos
+const PORT = process.env.PORT || 3000;
 
 
+// Middleware para servir archivos estáticos desde la carpeta "public"
+app.use(express.static(__dirname + '/public'));
 
+// Manejar la conexión de los clientes a través de Socket.IO
+io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
 
+    // Manejar la recepción de ubicaciones de los usuarios
+    socket.on('location', (data) => {
+        console.log('Ubicación recibida:', data);
+        // Emitir la ubicación recibida a todos los clientes excepto al remitente
+        socket.broadcast.emit('userLocation', data);
+    });
 
-
-
-app.listen(app.get("port"), () => {
-    console.log("Listening on port ", app.get("port"));
+    // Manejar la desconexión de los clientes
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
 });
 
+// Inicia el servidor de Socket.IO en el puerto especificado
+server.listen(PORT, () => {
+    console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
+});
+
+const EXPRESS_PORT = 3001; // Elige el puerto que desees para la aplicación Express
+app.listen(EXPRESS_PORT, () => {
+    console.log(`Aplicación Express escuchando en el puerto ${EXPRESS_PORT}`);
+});

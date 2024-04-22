@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de OpenStreetMap con Geolocalización</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
     <style>
         #map {
             height: 400px;
@@ -13,44 +12,47 @@
     </style>
 </head>
 <body>
-
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
 <script>
-    var map = L.map('map');
+    var map = L.map('map').setView([0, 0], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    map.locate({setView: true, maxZoom: 16});
+    // Conectar al servidor Socket.IO
+    var socket = io();
 
     function onLocationFound(e) {
         var radius = e.accuracy / 2;
 
         L.marker(e.latlng).addTo(map)
-            .bindPopup("Estás dentro de " + radius + " metros de este punto").openPopup();
+            .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
 
         L.circle(e.latlng, radius).addTo(map);
-    }
 
-    map.on('locationfound', onLocationFound);
+        // Enviar la ubicación al servidor
+        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng });
+    }
 
     function onLocationError(e) {
         alert(e.message);
     }
 
+    map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
 
-    var socket = io();
-    socket.on('userLocation', function(data) {
-        // Agregar marcador para la ubicación del usuario
+    map.locate({ setView: true, maxZoom: 16 });
+
+    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa
+    socket.on('userLocation', function (data) {
         var marker = L.marker([data.lat, data.lng]).addTo(map);
-        marker.bindPopup(data.username).openPopup();
+        marker.bindPopup('Otro usuario').openPopup();
     });
 </script>
-
 </body>
 </html>
