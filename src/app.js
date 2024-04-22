@@ -183,7 +183,8 @@ app.get("/", (req, res) => {
     if (req.session.loggedin === true) {
         const rolesString = req.session.roles;
         const roles = Array.isArray(rolesString) ? rolesString : [];
-        
+        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
+
 //EJECUTIVOS
 
 const ejecutivo1 = roles.includes('ejecutivo1');
@@ -1763,6 +1764,11 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
     });
     
 
+
+
+
+
+
 // Define la ruta para el endpoint '/consulta-contabilidad-todos'
 app.get('/consulta-contabilidad-todos', (req, res) => {
     // Realizar la consulta a la base de datos seleccionando solo las columnas necesarias
@@ -1777,6 +1783,32 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
         res.json(results);
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+function otraFuncion(req, res) {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guardar el nombre en la sesión
+    } else {
+        console.log('El usuario no está autenticado.');
+    }
+}
+
+
+
+
 const http = require("http");
 const socketIo = require("socket.io");
 
