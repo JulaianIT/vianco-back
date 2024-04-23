@@ -1903,7 +1903,7 @@ app.get('/clientess', (req, res) => {
 
 // Ruta para actualizar un cliente específico
 app.post('/actualizar_cliente', (req, res) => {
-    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños } = req.body;
+    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto} = req.body;
 
     console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
@@ -1927,11 +1927,22 @@ app.post('/actualizar_cliente', (req, res) => {
                 clienteActual.nit !== nit ||
                 clienteActual.rut !== rut ||
                 clienteActual.camara_comercio !== camara_comercio ||
-                clienteActual.cumpleaños !== cumpleaños
+                clienteActual.cumpleaños !== cumpleaños ||
+                clienteActual.responsable !== responsable ||
+                clienteActual.celular !== celular ||
+                clienteActual.cedula !== cedula ||
+                clienteActual.objeto !== objeto ||
+                clienteActual.direccion !== direccion
+
+
+                
+
+                
+                
             ) {
                 connection.query(
-                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ? WHERE nombre = ?', 
-                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, nombre], 
+                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? ,responsable = ? , celular = ?,cedula = ?,objeto = ? WHERE nombre = ?', 
+                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,responsable,celular,cedula, objeto,nombre], 
                     (error, results) => {
                         if (error) {
                             console.error('Error al actualizar el cliente:', error);
