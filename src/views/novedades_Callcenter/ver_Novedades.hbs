@@ -339,6 +339,29 @@ textarea {
             text-decoration: none;
        
         }
+        .NO{
+
+
+                    
+
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+          .NO:hover {
+            background-color: #d9d9d9;
+            }
     </style>
 </head>
 <body>
@@ -624,7 +647,8 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
             <label for="ACCIONES-${novedad.id}"><strong>ACCIONES A TOMAR:</strong></label><br>
             <textarea id="ACCIONES-${novedad.id}" name="ACCIONES" placeholder="POR FAVOR DIGITE LAS ACCIONES QUE TOMO ANTE ESTA NOVEDAD " rows="5" cols="50"></textarea><br>
 
-           
+           <button type="button"   class="NO" onclick="marcarNoAplica(${novedad.id})">No Aplica</button>
+
             
         <button type="submit" class="enviar">Guardar Seguimiento</button>
             </form>
@@ -891,6 +915,15 @@ function eliminarFecha(fecha) {
         }
     })
     .catch(error => console.error('Error al eliminar la fecha:', error));
+}
+function marcarNoAplica(idNovedad) {
+    // Obtener todos los campos del formulario de seguimiento
+    const campos = document.querySelectorAll(`#formularioSeguimientoContenido-${idNovedad} input[type="text"], #formularioSeguimientoContenido-${idNovedad} textarea`);
+
+    // Iterar sobre los campos y establecer su valor como "No Aplica"
+    campos.forEach(campo => {
+        campo.value = "No Aplica";
+    });
 }
 
     </script>
