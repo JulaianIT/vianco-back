@@ -15,36 +15,39 @@
            background-color: white;
         }
        
-#logo{
-    position: relative;
-    left: 90px;
-
-    width: 400px;
-
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 300px;
-}
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
 
         #clientes-container {
             text-align: center;
             margin: 0 auto;
             max-width: 1100px;
         }
+        
         h1 {
             margin-bottom: 20px;
         }
+        
         select {
             padding: 10px;
             font-size: 16px;
             margin-bottom: 20px;
         }
+        
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+        
         .cliente-info {
             width: 300px;
             margin: 10px;
@@ -55,21 +58,29 @@
             background-color: #f9f9f9;
             transition: all 0.3s ease;
         }
+        
         .cliente-info:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        
         img {
             max-width: 100%;
             height: auto;
             border-radius: 5px;
         }
+        
         .info {
             text-align: justify;
             margin-top: 10px;
         }
+        
         p {
             margin: 5px 0;
+        }
+        
+        .input-container {
+            display: none;
         }
     </style>
 </head>
@@ -95,31 +106,78 @@
                     <img src="{{imagen}}" alt="{{nombre}}">
                     <div class="info">
                         <h2>{{nombre}}</h2>
-                                                <p><strong>CONTRATANTE:</strong> {{contratante}}</p>
-
-                        <p><strong>N° DE CONTRATO</strong> {{N_contrato}}</p>
-                        <p><strong>NIT:</strong> {{nit}}</p>
-                        <p><strong>RUT:</strong> {{rut}}</p>
-                        <p><strong>CAMARA Y COMERCIO:</strong> {{camara_comercio}}</p>
-                         <p><strong>FECHA DE CUMPLEAÑOS:</strong> {{cumpleaños}}</p>
-
-
-
+                        <p><strong>CONTRATANTE:</strong> <div class="input-container"><input class="contratante" type="text" value="{{contratante}}"></div><span class="info-value contratante">{{contratante}}</span></p>
+                        <p><strong>N° DE CONTRATO:</strong> <div class="input-container"><input class="N_contrato" type="text" value="{{N_contrato}}"></div><span class="info-value N_contrato">{{N_contrato}}</span></p>
+                        <p><strong>NIT:</strong> <div class="input-container"><input class="nit" type="text" value="{{nit}}"></div><span class="info-value nit">{{nit}}</span></p>
+                        <p><strong>RUT:</strong> <div class="input-container"><input class="rut" type="text" value="{{rut}}"></div><span class="info-value rut">{{rut}}</span></p>
+                        <p><strong>CAMARA Y COMERCIO:</strong> <div class="input-container"><input class="camara_comercio" type="text" value="{{camara_comercio}}"></div><span class="info-value camara_comercio">{{camara_comercio}}</span></p>
+                        <p><strong>FECHA DE CUMPLEAÑOS:</strong> <div class="input-container"><input class="cumpleaños" type="text" value="{{cumpleaños}}"></div><span class="info-value cumpleaños">{{cumpleaños}}</span></p>
+                        <button class="edit-btn">Editar</button>
+                        <button class="save-btn" style="display: none;">Guardar</button>
                     </div>
                 </div>
             {{/each}}
         </div>
     </div>
     <script>
-        document.getElementById('clientes-select').addEventListener('change', function() {
-            var selectedClient = this.value;
-            var clienteInfos = document.querySelectorAll('.cliente-info');
-            clienteInfos.forEach(function(clienteInfo) {
-                if (clienteInfo.dataset.nombre === selectedClient) {
-                    clienteInfo.style.display = 'block';
-                } else {
-                    clienteInfo.style.display = 'none';
-                }
+        document.querySelectorAll('.edit-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var clienteInfo = this.closest('.cliente-info');
+                clienteInfo.querySelectorAll('.input-container').forEach(function(container) {
+                    container.style.display = 'block';
+                });
+                clienteInfo.querySelectorAll('.info-value').forEach(function(span) {
+                    span.style.display = 'none';
+                });
+                clienteInfo.querySelector('.edit-btn').style.display = 'none';
+                clienteInfo.querySelector('.save-btn').style.display = 'inline-block';
+            });
+        });
+        document.querySelectorAll('.save-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var clienteInfo = this.closest('.cliente-info');
+                var changes = {};
+                clienteInfo.classList.add('editing'); // Agregado
+
+                clienteInfo.querySelectorAll('.info input').forEach(function(input) {
+                    changes[input.className] = input.value;
+                });
+
+                console.log('Cambios a guardar:', changes); // Agregado para depuración
+
+                fetch('/actualizar_cliente', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: clienteInfo.dataset.nombre,
+                        ...changes
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al actualizar el cliente');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Cliente actualizado correctamente:', data);
+                    // Aquí puedes agregar lógica adicional si es necesario
+                    // Ocultar campos de edición y mostrar campos de información
+                    clienteInfo.querySelectorAll('.input-container').forEach(function(container) {
+                        container.style.display = 'none';
+                    });
+                    clienteInfo.querySelectorAll('.info-value').forEach(function(span) {
+                        span.style.display = 'inline-block';
+                    });
+                    clienteInfo.querySelector('.edit-btn').style.display = 'inline-block';
+                    clienteInfo.querySelector('.save-btn').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error al actualizar el cliente:', error);
+                    // Mostrar mensaje de error al usuario si es necesario
+                });
             });
         });
     </script>

@@ -515,6 +515,25 @@ left: 12%;
     border-radius: 5px;
     z-index: 1;
 }
+
+.CI{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.CI:hover::after {
+    content: "clientes"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
 </style>
 
 <body>
@@ -585,7 +604,7 @@ left: 12%;
 
 
                         {{#if isOperative}}
-                        <li class="opeee">
+                        <li class="CI">
                  <p class="menu-horizontal">
                             <img id="ope" src="/imagenes/acuerdo-de-contribuyente.png" alt="">
                             </p> 

@@ -1901,8 +1901,53 @@ app.get('/clientess', (req, res) => {
 
 
 
+// Ruta para actualizar un cliente específico
+app.post('/actualizar_cliente', (req, res) => {
+    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños } = req.body;
 
+    console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
+    connection.query(
+        'SELECT * FROM clientes WHERE nombre = ?', 
+        [nombre], 
+        (error, results) => {
+            if (error) {
+                console.error('Error al buscar el cliente:', error);
+                return res.status(500).send('Error interno del servidor');
+            }
+            if (results.length === 0) {
+                return res.status(404).send('Cliente no encontrado');
+            }
+
+            const clienteActual = results[0];
+
+            if (
+                clienteActual.contratante !== contratante ||
+                clienteActual.N_contrato !== N_contrato ||
+                clienteActual.nit !== nit ||
+                clienteActual.rut !== rut ||
+                clienteActual.camara_comercio !== camara_comercio ||
+                clienteActual.cumpleaños !== cumpleaños
+            ) {
+                connection.query(
+                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ? WHERE nombre = ?', 
+                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, nombre], 
+                    (error, results) => {
+                        if (error) {
+                            console.error('Error al actualizar el cliente:', error);
+                            return res.status(500).send('Error interno del servidor');
+                        }
+                        console.log('Cliente actualizado correctamente:', results);
+                        return res.json({ message: 'Cliente actualizado correctamente' });
+                    }
+                );
+            } else {
+                console.log('Los valores son los mismos, no es necesario actualizar');
+                return res.json({ message: 'Los valores son los mismos, no es necesario actualizar' });
+            }
+        }
+    );
+});
 
 
 
