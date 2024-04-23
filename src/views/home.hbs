@@ -656,14 +656,6 @@ left: 12%;
 <script>
     var map = L.map('map').setView([0, 0], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Conectar al servidor Socket.IO
-    var socket = io();
-
     // Define el icono personalizado para el marcador de otros usuarios (antena)
     var antennaIcon = L.icon({
         iconUrl: '/imagenes/marcador-de-posicion.png',
@@ -671,6 +663,17 @@ left: 12%;
         iconAnchor: [16, 32], // Punto de anclaje del icono
         popupAnchor: [0, -32] // Punto de anclaje del popup
     });
+
+    // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
+    var lastKnownLocations = {};
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Conectar al servidor Socket.IO
+    var socket = io();
 
     function onLocationFound(e) {
         var radius = e.accuracy / 2;
@@ -701,13 +704,23 @@ left: 12%;
 
     map.locate({ setView: true, maxZoom: 16 });
 
-    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
-    socket.on('userLocation', function (data) {
-        var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
-    });
+// Cuando el cliente se conecta o recarga la página, solicitar las últimas ubicaciones conocidas
+socket.on('connect', () => {
+    socket.emit('loadUserLocations');
+});
+
+// Recibir las últimas ubicaciones conocidas del servidor
+socket.on('userLocations', function (locations) {
+    for (const username in locations) {
+        const location = locations[username];
+        // Mostrar el marcador en el mapa para cada ubicación
+        L.marker([location.lat, location.lng]).addTo(map)
+            .bindPopup(username + '<br>' + 'Última ubicación conocida').openPopup();
+    }
+});
 
 </script>
+
 
 </body>
 </html>
