@@ -653,61 +653,68 @@ left: 12%;
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
-<script>
-    var map = L.map('map').setView([0, 0], 13);
+    <script>
+        var map = L.map('map').setView([0, 0], 13);
+        var userMarker = null; // Variable para almacenar el marcador del usuario
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    // Conectar al servidor Socket.IO
-    var socket = io();
+        // Conectar al servidor Socket.IO
+        var socket = io();
 
-    // Define el icono personalizado para el marcador de otros usuarios (antena)
-    var antennaIcon = L.icon({
-        iconUrl: '/imagenes/marcador-de-posicion.png',
-        iconSize: [32, 32], // Tamaño del icono
-        iconAnchor: [16, 32], // Punto de anclaje del icono
-        popupAnchor: [0, -32] // Punto de anclaje del popup
-    });
+        // Define el icono personalizado para el marcador de otros usuarios (antena)
+        var antennaIcon = L.icon({
+            iconUrl: '/imagenes/marcador-de-posicion.png',
+            iconSize: [32, 32], // Tamaño del icono
+            iconAnchor: [16, 32], // Punto de anclaje del icono
+            popupAnchor: [0, -32] // Punto de anclaje del popup
+        });
 
-    function onLocationFound(e) {
-        var radius = e.accuracy / 2;
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
 
-        // Verificar la precisión antes de mostrar la ubicación
-        if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
-            alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
-            return;
+            // Verificar la precisión antes de mostrar la ubicación
+            if (e.accuracy > 100) {
+                alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
+                return;
+            }
+
+            // Eliminar el marcador anterior del usuario si existe
+            if (userMarker !== null) {
+                map.removeLayer(userMarker);
+            }
+
+            // Crear y añadir el marcador del usuario con la nueva ubicación
+            userMarker = L.marker(e.latlng).addTo(map)
+                .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
+
+            L.circle(e.latlng, radius).addTo(map);
+
+            // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
+            var currentTime = new Date().toLocaleTimeString();
+            var username = "{{name}}"; // Obtener el nombre de usuario del servidor
+            socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
         }
 
-        L.marker(e.latlng).addTo(map)
-            .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
+        function onLocationError(e) {
+            alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
+        }
 
-        L.circle(e.latlng, radius).addTo(map);
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
 
-        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
-        var currentTime = new Date().toLocaleTimeString();
-        var username = "{{name}}"; // Obtener el nombre de usuario del servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
-    }
+        map.locate({ setView: true, maxZoom: 16 });
 
-    function onLocationError(e) {
-        alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
-    }
+        // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
+        socket.on('userLocation', function (data) {
+            var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
+            marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
+        });
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
-
-    map.locate({ setView: true, maxZoom: 16 });
-
-    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
-    socket.on('userLocation', function (data) {
-        var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
-    });
-
-</script>
+    </script>
 
 </body>
 </html>
