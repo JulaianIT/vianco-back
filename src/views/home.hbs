@@ -672,6 +672,42 @@ left: 12%;
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+ var hotelIcon = L.icon({
+    iconUrl: '/imagenes/ubicacion.png', // Ruta a tu imagen personalizada
+    iconSize: [55, 55], // Tamaño del icono
+    iconAnchor: [16, 32], // Punto de anclaje del icono
+    popupAnchor: [0, -32] // Punto de anclaje del popup
+});
+
+
+var hoteles = [
+    { nombre: " NH HACIENDA", latitud: 4.6919549, longitud: -74.0344995},
+    { nombre: " NH TELEPORT", latitud: 4.6917653, longitud: -74.0381019},
+    { nombre: "NH WTC", latitud: 4.6805553, longitud: -74.0429719 },
+    { nombre: "HOTEL ESTELAR CALLE 100", latitud: 4.6847219, longitud: -74.0496408},
+    { nombre: "NH URBAN 93", latitud: 4.6800893, longitud: -74.0562079 },
+      { nombre: "NH pavillon", latitud: 4.6772523, longitud: -74.0494349 },
+    { nombre: "HOTEL ESTELAR PARQUE 93", latitud: 4.674325, longitud: -74.0528475 },
+    { nombre: "NH ANDINO", latitud: 4.6687927, longitud: -74.0549873 },
+    { nombre: "AVANI ZONA T", latitud:4.6665003, longitud:-74.0571342 },
+    { nombre: "CLUB EL NOGAL", latitud: 4.6601913, longitud: -74.0556019},
+    { nombre: "HILTON 72", latitud:4.6557042, longitud: -74.0581079 },
+    { nombre: "URBAN 26", latitud: 4.6309813, longitud: -74.086538},
+    { nombre: "HILTON CORFERIAS", latitud: 4.6287861, longitud: -74.0954723},
+    { nombre: "GRAND HYATT", latitud:4.6440714, longitud: -74.10482},
+
+
+    // Agrega más hoteles según sea necesario
+];
+
+// Agregar marcadores de hoteles al mapa
+// Agregar marcadores de hoteles al mapa
+hoteles.forEach(function(hotel) {
+    L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map) // Utiliza hotelIcon en lugar de antennaIcon
+        .bindPopup(hotel.nombre).openPopup();
+});
+
+
     // Conectar al servidor Socket.IO
     var socket = io();
 
