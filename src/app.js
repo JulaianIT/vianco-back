@@ -1806,11 +1806,8 @@ app.get('/consulta-contabilidad-todos', (req, res) => {
 
 
 
-// Define la función otraFuncion
-// Define la función otraFuncion
 
 
-// Ruta para la página de búsqueda y visualización de datos
 // Ruta para la página de búsqueda y visualización de datos
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/mapa', (req, res) => {
@@ -1828,12 +1825,15 @@ app.get('/mapa', (req, res) => {
     }
 });
 
+
+
+
+
 const http = require("http");
 const socketIo = require("socket.io");
 
-const server = http.createServer();
+const server = http.createServer(app);
 const io = socketIo(server);
-
 // Objeto para mantener un registro de las ubicaciones de los usuarios conectados
 let connectedUsers = {};
 
@@ -1870,11 +1870,20 @@ io.on('connection', (socket) => {
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
-        // No eliminar las ubicaciones del usuario desconectado
+        // Eliminar las ubicaciones del usuario desconectado
+        delete connectedUsers[socket.id];
         // Emitir un mensaje para eliminar las ubicaciones del usuario desconectado
         io.emit('removeUserLocations', { userId: socket.id });
     });
 });
+
+
+
+
+
+
+
+
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
