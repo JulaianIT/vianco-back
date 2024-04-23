@@ -1831,8 +1831,9 @@ app.get('/mapa', (req, res) => {
 const http = require("http");
 const socketIo = require("socket.io");
 
-const server = http.createServer(app);
+const server = http.createServer();
 const io = socketIo(server);
+
 // Objeto para mantener un registro de las ubicaciones de los usuarios conectados
 let connectedUsers = {};
 
@@ -1869,13 +1870,11 @@ io.on('connection', (socket) => {
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
-        // Eliminar las ubicaciones del usuario desconectado
-        delete connectedUsers[socket.id];
+        // No eliminar las ubicaciones del usuario desconectado
         // Emitir un mensaje para eliminar las ubicaciones del usuario desconectado
         io.emit('removeUserLocations', { userId: socket.id });
     });
 });
-
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
