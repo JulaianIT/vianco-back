@@ -654,37 +654,37 @@ left: 12%;
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
 <script>
-    var map = L.map('map').setView([0, 0], 13);
+var map = L.map('map').setView([0, 0], 13);
 
-    // Define el icono personalizado para el marcador de otros usuarios (antena)
-    var antennaIcon = L.icon({
-        iconUrl: '/imagenes/marcador-de-posicion.png',
-        iconSize: [32, 32], // Tamaño del icono
-        iconAnchor: [16, 32], // Punto de anclaje del icono
-        popupAnchor: [0, -32] // Punto de anclaje del popup
-    });
+// Define el icono personalizado para el marcador de otros usuarios (antena)
+var antennaIcon = L.icon({
+    iconUrl: '/imagenes/marcador-de-posicion.png',
+    iconSize: [32, 32], // Tamaño del icono
+    iconAnchor: [16, 32], // Punto de anclaje del icono
+    popupAnchor: [0, -32] // Punto de anclaje del popup
+});
 
-    // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
-    var lastKnownLocations = {};
+// Objeto para mantener las últimas ubicaciones conocidas de los usuarios
+var lastKnownLocations = {};
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
- var hotelIcon = L.icon({
+var hotelIcon = L.icon({
     iconUrl: '/imagenes/ubicacion.png', // Ruta a tu imagen personalizada
     iconSize: [55, 55], // Tamaño del icono
     iconAnchor: [16, 32], // Punto de anclaje del icono
     popupAnchor: [0, -32] // Punto de anclaje del popup
 });
 
-
-var hoteles = [
+// Agregar marcadores de hoteles al mapa
+    var hoteles = [
     { nombre: " NH HACIENDA", latitud: 4.6919549, longitud: -74.0344995},
     { nombre: " NH TELEPORT", latitud: 4.6917653, longitud: -74.0381019},
     { nombre: "NH WTC", latitud: 4.6805553, longitud: -74.0429719 },
-    { nombre: "HOTEL ESTELAR CALLE 100", latitud:4.6851603, longitud: -74.0470997},
+    { nombre: "HOTEL ESTELAR CALLE 100", latitud: 4.6847219, longitud: -74.0496408},
     { nombre: "NH URBAN 93", latitud: 4.6800893, longitud: -74.0562079 },
       { nombre: "NH pavillon", latitud: 4.6772523, longitud: -74.0494349 },
     { nombre: "HOTEL ESTELAR PARQUE 93", latitud: 4.674325, longitud: -74.0528475 },
@@ -695,80 +695,71 @@ var hoteles = [
     { nombre: "URBAN 26", latitud: 4.6309813, longitud: -74.086538},
     { nombre: "HILTON CORFERIAS", latitud: 4.6287861, longitud: -74.0954723},
     { nombre: "GRAND HYATT", latitud:4.6440714, longitud: -74.10482},
-
-
     // Agrega más hoteles según sea necesario
 ];
 
-// Agregar marcadores de hoteles al mapa
+hoteles.forEach(function(hotel) {
+    L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
+        .bindPopup(hotel.nombre).openPopup();
+});
 
+// Conectar al servidor Socket.IO
+var socket = io();
 
+function onLocationFound(e) {
+    var radius = e.accuracy / 2;
 
-    // Conectar al servidor Socket.IO
-    var socket = io();
-
-    function onLocationFound(e) {
-        var radius = e.accuracy / 2;
-
-        // Verificar la precisión antes de mostrar la ubicación
-        if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
-            alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
-            return;
-        }
-
-        L.marker(e.latlng).addTo(map)
-            .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
-
-        L.circle(e.latlng, radius).addTo(map);
-
-        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
-        var currentTime = new Date().toLocaleTimeString();
-        var username = "{{name}}"; // Obtener el nombre de usuario del servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
+    // Verificar la precisión antes de mostrar la ubicación
+    if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
+        alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
+        return;
     }
 
-    function onLocationError(e) {
-        alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
-    }
+    L.marker(e.latlng).addTo(map)
+        .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
+    L.circle(e.latlng, radius).addTo(map);
 
-    map.locate({ setView: true, maxZoom: 16 });
+    // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
+    var currentTime = new Date().toLocaleTimeString();
+    var username = "{{name}}"; // Obtener el nombre de usuario del servidor
+    socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
+}
+
+function onLocationError(e) {
+    alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
+}
+
+map.on('locationfound', onLocationFound);
+map.on('locationerror', onLocationError);
+
+map.locate({ setView: true, maxZoom: 16 });
 
 // Cuando el cliente se conecta o recarga la página, solicitar las últimas ubicaciones conocidas
 socket.on('connect', () => {
     socket.emit('loadUserLocations');
 });
 
-// Agregar marcadores de hoteles al mapa
-hoteles.forEach(function(hotel) {
-    L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
-        .bindPopup(hotel.nombre).openPopup();
-});
-
 // Recibir las últimas ubicaciones conocidas del servidor
 socket.on('userLocations', function (locations) {
-    var userMarkers = []; // Almacena los marcadores de ubicación de los usuarios
-
     for (const username in locations) {
         const location = locations[username];
-        const date = new Date(location.created_at); // Convertir la fecha y hora de la base de datos a un objeto de fecha
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`; // Formatear la fecha y hora
 
-        // Crear el marcador en el mapa para cada ubicación y agregarlo al array userMarkers
-        var userMarker = L.marker([location.latitud, location.longitud]).addTo(map)
-            .bindPopup(username + '<br>' + `Última ubicación conocida: ${formattedDate}`).openPopup();
-        userMarkers.push(userMarker);
+        // Verificar que la ubicación tenga coordenadas de latitud y longitud
+        if (location.latitud !== undefined && location.longitud !== undefined) {
+            const date = new Date(location.created_at);
+            const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+
+            // Crear y agregar el marcador al mapa
+            L.marker([location.latitud, location.longitud]).addTo(map)
+                .bindPopup(username + '<br>' + `Última ubicación conocida: ${formattedDate}`).openPopup();
+        }
     }
-
-    // Ajustar el mapa para que se ajuste a la vista de todos los marcadores de hoteles y usuarios
-    var allMarkers = userMarkers.concat(hoteles.map(function(hotel) {
-        return L.marker([hotel.latitud, hotel.longitud]);
-    }));
-    map.fitBounds(L.featureGroup(allMarkers).getBounds());
 });
+
 </script>
+
+
 
 
 </body>
