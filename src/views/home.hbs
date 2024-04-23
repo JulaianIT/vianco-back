@@ -713,11 +713,15 @@ socket.on('connect', () => {
 socket.on('userLocations', function (locations) {
     for (const username in locations) {
         const location = locations[username];
+        const date = new Date(location.created_at); // Convertir la fecha y hora de la base de datos a un objeto de fecha
+        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`; // Formatear la fecha y hora
+
         // Mostrar el marcador en el mapa para cada ubicación
-        L.marker([location.lat, location.lng]).addTo(map)
-            .bindPopup(username + '<br>' + 'Última ubicación conocida').openPopup();
+        L.marker([location.latitud, location.longitud]).addTo(map)
+            .bindPopup(username + '<br>' + `Última ubicación conocida: ${formattedDate}`).openPopup();
     }
 });
+
 
 </script>
 
