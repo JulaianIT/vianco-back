@@ -1878,6 +1878,41 @@ io.on('connection', (socket) => {
 
 
 
+
+
+
+
+
+// Ruta para clientes
+app.get('/clientess', (req, res) => {
+    // Consulta a la base de datos para obtener la información de los clientes
+    connection.query('SELECT * FROM clientes', (error, results) => {
+        if (error) {
+            console.error('Error al obtener los clientes:', error);
+            res.status(500).send('Error interno del servidor');
+        } else {
+          
+            // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta
+            res.render('clientes/clientes.hbs', { clientes: results });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
