@@ -419,6 +419,102 @@ left: 12%;
     border-radius: 5px;
     z-index: 1;
 }
+#tec{
+
+width: 70px;
+align-items: center;
+
+    position: relative;
+left: 12%;
+
+
+}
+.tecc{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.tecc:hover::after {
+    content: "SOPORTE"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.opeee{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.opeee:hover::after {
+    content: "OPERACIONES"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+#ope{
+width: 70px;
+align-items: center;
+
+    position: relative;
+left: 12%;
+
+
+
+
+}
+
+.geree{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.geree:hover::after {
+    content: "GERENCIA"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.contro{
+
+   position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+
+}
+.contro:hover::after {
+    content: "CONTROL OPERATIVO"; /* El texto que deseas mostrar */
+    position: absolute;
+    top: 50%; /* Alinea el texto verticalmente */
+    left: 50%; /* Alinea el texto horizontalmente */
+    transform: translate(-50%, -50%); /* Centra el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
 </style>
 
 <body>
@@ -446,8 +542,10 @@ left: 12%;
       <ul class="menu-horizontal">
 
                         {{#if isControl}}
-                        
-                        <li><p class="active">CONTROL OPERATIVO</p>  
+          <li class="contro">
+    <p class="active">
+        <img id="calll" src="/imagenes/sistema-de-monitoreo.png" alt="">
+    </p>
                             <ul class="menu-vertical" >
                                                                 <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
 
@@ -497,7 +595,10 @@ left: 12%;
 
 
                         {{#if isOperative}}
-                        <li><p class="active" >Operaciones</p> 
+                        <li class="opeee">
+                 <p class="menu-horizontal">
+                            <img id="ope" src="/imagenes/consultante.png" alt="">
+                            </p> 
                             <ul class="menu-vertical" >
                                 <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="/consulta-conductores">Conductores</a></li>
@@ -507,7 +608,10 @@ left: 12%;
                         {{/if}}
 
                         {{#if isAdmin}}
-                        <li><p class="menu-horizontal" >Gerencia</p> 
+                      <li class="geree">
+    <p class="active">
+        <img id="calll" src="/imagenes/mujer-de-negocios.png" alt="">
+    </p>
                             <ul class="menu-vertical">
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
 
@@ -527,9 +631,11 @@ left: 12%;
     </ul>
 </li>
 {{/if}}
+<li class="tecc">
 
-
-                        <li><a  class="menu-horizontal" href="#">Soporte IT</a> 
+<p class="active">
+        <img id="tec" src="/imagenes/apoyo-tecnico.png" alt="">
+    </p>
                             <ul class="menu-vertical">
                                 <li><a href="#">Citas</a></li>
                                 <li><a href="#">Ayuda</a></li>
@@ -560,7 +666,7 @@ left: 12%;
 
     // Define el icono personalizado para el marcador de otros usuarios (antena)
     var antennaIcon = L.icon({
-        iconUrl: '/imagenes/Gelocalizacion.png',
+        iconUrl: '/imagenes/marcador-de-posicion.png',
         iconSize: [32, 32], // Tamaño del icono
         iconAnchor: [16, 32], // Punto de anclaje del icono
         popupAnchor: [0, -32] // Punto de anclaje del popup
