@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jersey+25&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+       * {
+  font-family: "Outfit", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
         }
         header {
            background-color: white;
@@ -29,8 +42,15 @@
         #clientes-container {
             text-align: center;
             margin: 0 auto;
-            max-width: 1100px;
+            max-width: 1300px;
         }
+          #clientes-container  select{
+            font-size: 30px;
+            text-align: justify;
+            margin: 0 auto;
+            max-width: 50%;
+        }
+        
         
         h1 {
             margin-bottom: 20px;
@@ -41,22 +61,43 @@
             font-size: 16px;
             margin-bottom: 20px;
         }
+        body{
+
+            background-color: #f9f9f9;
+
+        }
         
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
-        
+        .cliente-info img{
+
+                    width: 350px;
+                                border: 2px solid black;
+
+
+
+        }
+          .cliente-info h2{
+
+            font-size: 40px;
+
+
+
+
+          }
         .cliente-info {
-            width: 300px;
+            width: 1000px;
             margin: 10px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 30px;
+            border: 3px solid black;
+            border-radius: 7px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             background-color: #f9f9f9;
             transition: all 0.3s ease;
+            font-size: 23px;
         }
         
         .cliente-info:hover {
@@ -82,6 +123,86 @@
         .input-container {
             display: none;
         }
+          footer {
+
+        background-color: #222;
+        padding: 4.9rem;
+        color: #ffff;
+        position: relative;
+        top: 908px;
+        margin: 0;
+    }
+
+    footer section {
+        float: right;
+        margin: 0;
+        position: relative;
+        top: -60px;
+    }
+
+    footer a {
+        transition: color 0.3s ease;
+        color: #ffff;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: rgb(162, 204, 170);
+    }
+
+    footer p {
+        position: relative;
+        float: left;
+        left: -1199px;
+        color: #ffff;
+        font-size: 20px;
+    }
+    .edit-btn:hover {
+        background-color: #d9d9d9;
+    }
+
+    .edit-btn {
+        position: relative;
+        left: 20px;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 35px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+       .save-btn:hover {
+        background-color: #d9d9d9;
+    }
+
+    .save-btn {
+        position: relative;
+        left: 20px;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 35px;
+        font-weight: bold;
+        text-decoration: none;
+        
+    }
+  
     </style>
 </head>
 <body>
@@ -100,33 +221,77 @@
                 <option value="{{nombre}}">{{nombre}}</option>
             {{/each}}
         </select>
+            <br>
+        <br>
+          <br>
         <div class="container">
             {{#each clientes}}
                 <div class="cliente-info" data-nombre="{{nombre}}">
                     <img src="{{imagen}}" alt="{{nombre}}">
                     <div class="info">
+                        <br>
                         <h2>{{nombre}}</h2>
+                        <hr>
                         <p><strong>CONTRATANTE:</strong> <div class="input-container"><input class="contratante" type="text" value="{{contratante}}"></div><span class="info-value contratante">{{contratante}}</span></p>
+                        <br>
                         <p><strong>N° DE CONTRATO:</strong> <div class="input-container"><input class="N_contrato" type="text" value="{{N_contrato}}"></div><span class="info-value N_contrato">{{N_contrato}}</span></p>
+                        <br>
                         <p><strong>NIT:</strong> <div class="input-container"><input class="nit" type="text" value="{{nit}}"></div><span class="info-value nit">{{nit}}</span></p>
+                        <br>
                         <p><strong>RUT:</strong> <div class="input-container"><input class="rut" type="text" value="{{rut}}"></div><span class="info-value rut">{{rut}}</span></p>
+                        <br>
                         <p><strong>CAMARA Y COMERCIO:</strong> <div class="input-container"><input class="camara_comercio" type="text" value="{{camara_comercio}}"></div><span class="info-value camara_comercio">{{camara_comercio}}</span></p>
+                        <br>
                         <p><strong>FECHA DE CUMPLEAÑOS:</strong> <div class="input-container"><input class="cumpleaños" type="text" value="{{cumpleaños}}"></div><span class="info-value cumpleaños">{{cumpleaños}}</span></p>
+                        <br>
+
                          <p><strong>DIRECCION:</strong> <div class="input-container"><input class="direccion" type="text" value="{{direccion}}"></div><span class="info-value direccion">{{direccion}}</span></p>
+                         <br>
                          <p><strong>RESPONSABLE:</strong> <div class="input-container"><input class="responsable" type="text" value="{{responsable}}"></div><span class="info-value responsable">{{responsable}}</span></p>
+                         <br>
                                                   <p><strong>CEDULA:</strong> <div class="input-container"><input class="cedula" type="text" value="{{cedula}}"></div><span class="info-value celular">{{cedula}}</span></p>
+                                                  <br>
 
                          <p><strong>CELULAR:</strong> <div class="input-container"><input class="celular" type="text" value="{{celular}}"></div><span class="info-value celular">{{celular}}</span></p>
+                         <br>
                          <p><strong>OBJETO CONTRATO:</strong> <div class="input-container"><input class="objeto" type="text" value="{{objeto}}"></div><span class="info-value objeto">{{objeto}}</span></p>
 
-                        
+                        <br>
                         <button class="edit-btn">Editar</button>
+                        
                         <button class="save-btn" style="display: none;">Guardar</button>
                     </div>
                 </div>
             {{/each}}
         </div>
-    </div>
+    </div><footer>
+    <section>
+        <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+        <p>Copyrigt soporteVianco</p>
+        <nav class="">
+            <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+        </nav>
+</footer>
+        <script>
+        // Primero, ocultamos todos los detalles de los clientes
+        document.querySelectorAll('.cliente-info').forEach(function(cliente) {
+            cliente.style.display = 'none';
+        });
+
+        // Luego, agregamos un event listener al select para mostrar solo el cliente seleccionado
+        document.getElementById('clientes-select').addEventListener('change', function() {
+            var nombreClienteSeleccionado = this.value;
+            // Ocultamos todos los detalles de los clientes
+            document.querySelectorAll('.cliente-info').forEach(function(cliente) {
+                cliente.style.display = 'none';
+            });
+            // Mostramos solo los detalles del cliente seleccionado
+            var clienteSeleccionado = document.querySelector('.cliente-info[data-nombre="' + nombreClienteSeleccionado + '"]');
+            if (clienteSeleccionado) {
+                clienteSeleccionado.style.display = 'block';
+            }
+        });
+    </script>
     <script>
         document.querySelectorAll('.edit-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
