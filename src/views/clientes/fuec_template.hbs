@@ -126,7 +126,7 @@ width: 50%;
       <P><strong>ORIGEN-DESTINO: </strong></P>
       <!-- Utiliza el atributo style para definir el tamaño del campo -->
       <textarea id="texto" style="width: 100%; height: 100px;"></textarea>
-      <p><strong>CONVENIO DE COLABORACION:</strong> {{Afiliado_a}}</p>
+      <p><strong>CONVENIO DE COLABORACION:</strong> {{vehiculo.Afiliado_a}}</p>
       <h3 id="unico">VIGENCIA DEL CONTRATO</h3>
       <div class="FECH">
         <P id="iniii" ><strong>FECHA DE INICIAL:</strong>
@@ -154,10 +154,10 @@ width: 50%;
                 <th>CLASE</th>
               </tr>
               <tr>
-                <td>{{placa}}</td>
-                <td>{{Modelo}}</td>
-                <td>{{Marca}}</td>
-                <td>{{Clase_vehiculo}}</td>
+                <td>{{vehiculo.placa}}</td>
+                <td>{{vehiculo.Modelo}}</td>
+                <td>{{vehiculo.Marca}}</td>
+                <td>{{vehiculo.Clase_vehiculo}}</td>
               </tr>
             </table>
             <div class="MOVI"></div>
@@ -168,50 +168,70 @@ width: 50%;
             
               </tr>
               <tr>
-                <td id="movia" >{{No_movil}}</td>
-                <td id="movia" >{{Modelo}}</td>
+                <td id="movia" >{{vehiculo.No_movil}}</td>
+                <td id="movia" >{{vehiculo.Modelo}}</td>
  
               </tr>
             </table>
+{{#if conductores}}
+    <table>
+        <tr>
+            <th>DATOS DEL CONDUCTOR 1</th>
+            <th>CEDULA</th>
+              <th>LICENCIA</th>
+            <th>FECHA VIGENCIA</th>
+        </tr>
+        {{#if conductores.[0]}}
+            <tr>
+                <td>{{conductores.[0].conductor}}</td>
+                <td>{{conductores.[0].cedula}}</td>
+                 <td>{{conductores.[0].cedula}}</td>
+                <td>{{conductores.[0].fecha_vigencia}}</td>
+            </tr>
+        {{/if}}
+        <!-- Repite lo mismo para conductores 2 y 3 -->
+    </table>
+{{else}}
+    <p>No se encontraron conductores disponibles.</p>
+{{/if}}
+
+<table>
+  <tr>
+    <th>DATOS DEL CONDUCTOR 2</th>
+    <th>CEDULA</th>
+     <th>LICENCIA</th>
+    <th>FECHA VIGENCIA</th>
+  </tr>
+  <tr>
+    {{#if conductores.[1]}}
+      <td>{{conductores.[1].conductor}}</td>
+      <td>{{conductores.[1].cedula}}</td>
+            <td>{{conductores.[1].cedula}}</td>
+
+      <td>{{conductores.[1].fecha_vigencia}}</td>
+    {{/if}}
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>DATOS DEL CONDUCTOR 3</th>
+    <th>CEDULA</th>
+    <th>LICENCIA</th>
+    <th>FECHA VIGENCIA</th>
+  </tr>
+  <tr>
+    {{#if conductores.[2]}}
+      <td>{{conductores.[2].conductor}}</td>
+      <td>{{conductores.[2].cedula}}</td>
+      <td>{{conductores.[2].cedula}}</td>
+
+      <td>{{conductores.[2].fecha_vigencia}}</td>
+    {{/if}}
+  </tr>
+</table>
 
 
-             <table>
-              <tr>
-                <th >DATOS DEL CONDUCTOR 1</th>
-         <th>
-  <select id="conductores">
-            <!-- Las opciones de conductores se llenarán dinámicamente con JavaScript -->
-          </select>
-
-</th>
-                 <th  >CEDULA</th>
-              <th  >PASE</th>
-               <th  >FECHA</th>
-              </tr>
-                   <td>
-          
-        </td>
-            </table>
-                 <table>
-              <tr>
-                <th >DATOS DEL CONDUCTOR 2</th>
-                <th  >NOMBRE </th>
-                 <th  >CEDULA</th>
-              <th  >PASE</th>
-               <th  >FECHA</th>
-              </tr>
-         
-            </table>
-                 <table>
-              <tr>
-                <th >DATOS DEL CONDUCTOR 3</th>
-                <th  >NOMBRE </th>
-                 <th  >CEDULA</th>
-              <th  >PASE</th>
-               <th  >FECHA</th>
-              </tr>
-         
-            </table>
                   <table>
               <tr>
                 <th >RESPONSABLE DEL CONTRATANTE</th>

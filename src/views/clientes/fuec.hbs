@@ -3,87 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seleccionar Cliente y Placa</title>
+  <title>Seleccionar Cliente, Placa y Conductor</title>
 </head>
 <body>
-  <h1>Seleccionar Cliente y Placa</h1>
+  <h1>Seleccionar Cliente, Placa y Conductor</h1>
   <label for="cliente">Selecciona el cliente:</label>
-  <select id="cliente">
-    <!-- Las opciones de cliente se llenarán dinámicamente con JavaScript -->
-  </select>
+  <select id="cliente"></select>
   <br>
   <label for="placa">Selecciona la placa del vehículo:</label>
-  <select id="placa">
-    <!-- Las opciones de placa se llenarán dinámicamente con JavaScript -->
-  </select>
+  <select id="placa"></select>
+  <br>
+  <label for="conductor1">Selecciona el primer conductor:</label>
+  <select id="conductor1"></select>
+  <br>
+  <label for="conductor2">Selecciona el segundo conductor:</label>
+  <select id="conductor2"></select>
+  <br>
+  <label for="conductor3">Selecciona el tercer conductor:</label>
+  <select id="conductor3"></select>
   <br>
   <button onclick="buscarInformacion()">Buscar Información</button>
 
   <div id="resultado"></div>
 
+<script>
+    function buscarInformacion() {
+        const clienteSelect = document.getElementById('cliente');
+        const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text;
 
-  <script>
+        const placaSelect = document.getElementById('placa');
+        const placa = placaSelect.value;
 
+        const conductorSelect1 = document.getElementById('conductor1');
+        const conductor1 = conductorSelect1.value;
 
-document.addEventListener('DOMContentLoaded', function() {
-  fetch('/clientes')
-    .then(response => response.json())
-    .then(data => {
-      console.log('Clientes cargados:', data);
-      const clienteSelect = document.getElementById('cliente');
-      data.forEach(cliente => {
-        const option = document.createElement('option');
-        option.value = cliente.id;
-        option.textContent = cliente.nombre;
-        clienteSelect.appendChild(option);
-      });
+        const conductorSelect2 = document.getElementById('conductor2');
+        const conductor2 = conductorSelect2.value;
+
+        const conductorSelect3 = document.getElementById('conductor3');
+        const conductor3 = conductorSelect3.value;
+
+        fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById('resultado').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al buscar información. Por favor, inténtalo de nuevo.');
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Llenar select de clientes, vehículos y conductores al cargar la página
+        Promise.all([
+            fetch('/clientes').then(response => response.json()),
+            fetch('/vehiculos').then(response => response.json()),
+            fetch('/conductoress').then(response => response.json())
+        ]).then(([clientes, vehiculos, conductores]) => {
+            // Llenar select de clientes
+            const clienteSelect = document.getElementById('cliente');
+            clientes.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.nombre;
+                clienteSelect.appendChild(option);
+            });
+
+            // Llenar select de conductores
+            const conductorSelect1 = document.getElementById('conductor1');
+            const conductorSelect2 = document.getElementById('conductor2');
+            const conductorSelect3 = document.getElementById('conductor3');
+            conductores.forEach(conductor => {
+                const option1 = document.createElement('option');
+                const option2 = document.createElement('option');
+                const option3 = document.createElement('option');
+                option1.value = conductor.id;
+                option2.value = conductor.id;
+                option3.value = conductor.id;
+                option1.textContent = conductor.conductor;
+                option2.textContent = conductor.conductor;
+                option3.textContent = conductor.conductor;
+                conductorSelect1.appendChild(option1);
+                conductorSelect2.appendChild(option2);
+                conductorSelect3.appendChild(option3);
+            });
+
+            // Llenar select de placas
+            const placaSelect = document.getElementById('placa');
+            vehiculos.forEach(vehiculo => {
+                const option = document.createElement('option');
+                option.value = vehiculo.placa;
+                option.textContent = vehiculo.placa;
+                placaSelect.appendChild(option);
+            });
+        }).catch(error => {
+            console.error('Error al cargar datos:', error);
+            alert('Error al cargar datos. Por favor, inténtalo de nuevo.');
+        });
     });
-});
-
-// Llenar select de placas al cargar la página
-fetch('/vehiculos')
-  .then(response => response.json())
-  .then(data => {
-    const placaSelect = document.getElementById('placa');
-    data.forEach(vehiculo => {
-      const option = document.createElement('option');
-      option.value = vehiculo.placa;
-      option.textContent = vehiculo.placa;
-      placaSelect.appendChild(option);
-    });
-  });
-function buscarInformacion() {
-  const clienteSelect = document.getElementById('cliente');
-  const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text; // Obtener el nombre del cliente
-
-  console.log('Nombre del cliente seleccionado:', nombreCliente);
-
-  if (!nombreCliente || nombreCliente === 'undefined' || nombreCliente === '' || nombreCliente === null) {
-    alert('Por favor selecciona un cliente válido.');
-    return;
-  }
-
-  const placaSelect = document.getElementById('placa');
-  const placa = placaSelect.value;
-
-  console.log('Placa seleccionada:', placa);
-
-  if (!placa || placa === 'undefined' || placa === '' || placa === null) {
-    alert('Por favor selecciona una placa válida.');
-    return;
-  }
-
-  fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}`) // Codificar el nombre del cliente
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('resultado').innerHTML = html;
-    });
-}
-
-
-
 </script>
 
-  </script>
 </body>
 </html>
