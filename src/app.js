@@ -1969,6 +1969,138 @@ app.post('/actualizar_cliente', (req, res) => {
 
 
 
+
+// Ruta para renderizar la página de selección de cliente y placa
+app.get('/seleccionar', (req, res) => {
+    res.render('clientes/fuec.hbs');
+  });
+  
+
+
+
+  
+  // Ruta para obtener clientes
+  app.get('/clientes', (req, res) => {
+    const consultaClientes = 'SELECT id, nombre FROM clientes';
+    connection.query(consultaClientes, (error, resultados) => {
+      if (error) {
+        console.error('Error al obtener clientes:', error);
+        res.status(500).json({ error: 'Error al obtener clientes' });
+        return;
+      }
+      res.json(resultados);
+    });
+  });
+  
+// Ruta para obtener todas las placas de vehículos disponibles
+app.get('/vehiculos', (req, res) => {
+    const consultaVehiculos = 'SELECT placa FROM vehiculos';
+    connection.query(consultaVehiculos, (error, resultados) => {
+      if (error) {
+        console.error('Error al obtener vehículos:', error);
+        res.status(500).json({ error: 'Error al obtener vehículos' });
+        return;
+      }
+      res.json(resultados);
+    });
+  });
+
+
+  const hbs = require('hbs'); // Agrega esta línea para importar Handlebars
+
+
+  app.get('/fuec/:nombreCliente/:placa', (req, res) => {
+    const nombreCliente = req.params.nombreCliente;
+    const placa = req.params.placa;
+    
+    const consultaCliente = `
+      SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular 
+      FROM clientes 
+      WHERE nombre = '${nombreCliente}'`; // Buscar por nombre en lugar de ID
+  
+    connection.query(consultaCliente, (errorCliente, resultadosCliente) => {
+      if (errorCliente) {
+        console.error('Error al obtener datos del cliente:', errorCliente);
+        res.status(500).json({ error: 'Error al obtener datos del cliente' });
+        return;
+      }
+  
+      if (resultadosCliente.length === 0) {
+        res.status(404).json({ error: 'Cliente no encontrado' });
+        return;
+      }
+  
+      // Consulta SQL para obtener datos del vehículo
+      const consultaVehiculo = `
+        SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil,Afiliado_a
+        FROM vehiculos 
+        WHERE placa = '${placa}'`;
+      
+      connection.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
+        if (errorVehiculo) {
+          console.error('Error al obtener datos del vehículo:', errorVehiculo);
+          res.status(500).json({ error: 'Error al obtener datos del vehículo' });
+          return;
+        }
+  
+        if (resultadosVehiculo.length === 0) {
+          res.status(404).json({ error: 'Vehículo no encontrado' });
+          return;
+        }
+  
+        // Renderizar la plantilla HBS con los datos del cliente y del vehículo
+        const cliente = resultadosCliente[0];
+        const vehiculo = resultadosVehiculo[0];
+        
+        // Leer el contenido del archivo HBS
+        fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
+          if (err) {
+            console.error('Error al leer el archivo de la plantilla HBS:', err);
+            res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+            return;
+          }
+  
+          // Compilar la plantilla HBS
+          const template = hbs.compile(data);
+  
+          // Renderizar la plantilla con los datos del cliente y del vehículo
+          const html = template({
+            contratante: cliente.contratante,
+            nit: cliente.nit,
+            N_contrato: cliente.N_contrato,
+            objeto: cliente.objeto,
+            direccion: cliente.direccion,
+            responsable: cliente.responsable,
+            cedula: cliente.cedula,
+            celular: cliente.celular,
+            placa: vehiculo.placa,
+            Modelo: vehiculo.Modelo,
+            Marca: vehiculo.Marca,
+            Clase_vehiculo: vehiculo.Clase_vehiculo,
+            No_movil: vehiculo.No_movil,
+            Afiliado_a: vehiculo.Afiliado_a
+          });
+          
+          // Enviar la respuesta al cliente con la plantilla HBS renderizada
+          res.send(html);
+        });
+      });
+    });
+  });
+// Ruta para obtener conductores
+app.get('/conductores', (req, res) => {
+    const consultaConductores = 'SELECT id, conductor, cedula, fecha_vigencia FROM conductores';
+    connection.query(consultaConductores, (error, resultados) => {
+      if (error) {
+        console.error('Error al obtener conductores:', error);
+        res.status(500).json({ error: 'Error al obtener conductores' });
+        return;
+      }
+      res.json(resultados);
+    });
+  });
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha Única de Empleado y Cliente (FUEC)</title>
+</head>
+<body>
+  <style>
+    .FUEC {
+      position: relative;
+      left: 20%;
+      max-width: 65%;
+            border: 3px solid black;
+
+      padding: 10px;
+    }
+
+    #logo {
+      width: 420px;
+      margin-right: 200px;
+    }
+
+    #vida {
+      width: 750px;
+      margin-right: 50px;
+    }
+
+    #qr {
+      width: 150px;
+    }
+
+    header {
+      margin-top: 30px;
+    }
+
+    #unico {
+      text-align: center;
+    }
+
+    .ARRIBA {
+      border: 3px solid black;
+    }
+
+    .FECH input {
+      width: 300px; /* Ajusta el ancho de los campos de entrada */
+    }
+
+    .FECH p {
+      display: inline-block;
+    }
+
+    .campos-derecha {
+      display: inline-block;
+    }
+
+    .campos-derecha input {
+      width: 100px; /* Ajusta el ancho de los campos de entrada */
+    }
+
+    #iniii {
+      margin-right: 70%;
+    }
+
+    #finii {
+      margin-right: 67%;
+    }
+
+    #texto {
+
+      width: 100%; /* Ocupa todo el ancho disponible */
+      height: 100px; /* Establece la altura del campo de entrada */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+#movia{
+text-align: center;
+}
+#firma img{
+    position: relative;
+    left: 30%;
+align-items: center;
+width: 50%;
+
+}
+.dire {
+    position: relative;
+    left: 30%;
+    text-align: center;
+align-items: center;
+width: 50%;
+
+}
+
+
+  </style>
+
+  <div class="FUEC">
+    <div class="ARRIBA">
+      <header>
+        <img id="vida" src="/imagenes/Imagen de WhatsApp 2024-04-23 a las 12.20.22_fb115ef7.jpg"/>
+        <img id="logo" src="/imagenes/logo vianco.png"/>
+        <img id="qr" src="/imagenes/Codigo QR_Mesa de trabajo 1.png"/>
+        <hr>
+      </header>
+      <h3 id="unico">FORMATO UNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PUBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL</h3>
+      <h3 id="unico">NO.</h3>
+    </div>
+    <br>
+    <hP><strong>RAZON SOCIAL DE LA EMPRESA DE TRANSPORTE DE SERVICIO ESPECIAL:</strong> VIANCO TE TRANSPORTA</P>
+    <hP><strong>NIT:</strong> 901242715</P>
+    <div id="cliente-info">
+      <p><strong>CONTRATO N°:</strong> {{N_contrato}}</p>
+      <p><strong>CONTRATANTE:</strong> {{contratante}}</p>
+      <p><strong>NIT/CC:</strong> {{nit}}</p>
+      <p><strong>OBJETO CONTRATO:</strong> {{objeto}}</p>
+      <P><strong>ORIGEN-DESTINO: </strong></P>
+      <!-- Utiliza el atributo style para definir el tamaño del campo -->
+      <textarea id="texto" style="width: 100%; height: 100px;"></textarea>
+      <p><strong>CONVENIO DE COLABORACION:</strong> {{Afiliado_a}}</p>
+      <h3 id="unico">VIGENCIA DEL CONTRATO</h3>
+      <div class="FECH">
+        <P id="iniii" ><strong>FECHA DE INICIAL:</strong>
+          <div class="campos-derecha">
+            <input type="text" placeholder="DIA">
+            <input type="text" placeholder="MES">
+            <input type="text" placeholder="AÑO">
+          </div>
+        </P>
+        <br>
+        <P  id="finii" ><strong>FECHA DE VENCIMIENTO:</strong>
+          <div class="campos-derecha">
+            <input type="text" placeholder="DIA">
+            <input type="text" placeholder="MES">
+            <input type="text" placeholder="AÑO">
+          </div>
+        </P>
+      </div>
+            <h3 id="unico">CARACTERISTICAS DEL VEHICULO</h3>
+            <table>
+              <tr>
+                <th>PLACA</th>
+                <th>MODELO</th>
+                <th>MARCA</th>
+                <th>CLASE</th>
+              </tr>
+              <tr>
+                <td>{{placa}}</td>
+                <td>{{Modelo}}</td>
+                <td>{{Marca}}</td>
+                <td>{{Clase_vehiculo}}</td>
+              </tr>
+            </table>
+            <div class="MOVI"></div>
+             <table>
+              <tr>
+                <th id="movia" >NUMERO INTERNO</th>
+                <th id="movia" >TARJETA OPERACION</th>
+            
+              </tr>
+              <tr>
+                <td id="movia" >{{No_movil}}</td>
+                <td id="movia" >{{Modelo}}</td>
+ 
+              </tr>
+            </table>
+
+
+             <table>
+              <tr>
+                <th >DATOS DEL CONDUCTOR 1</th>
+         <th>
+  <select id="conductores">
+            <!-- Las opciones de conductores se llenarán dinámicamente con JavaScript -->
+          </select>
+
+</th>
+                 <th  >CEDULA</th>
+              <th  >PASE</th>
+               <th  >FECHA</th>
+              </tr>
+                   <td>
+          
+        </td>
+            </table>
+                 <table>
+              <tr>
+                <th >DATOS DEL CONDUCTOR 2</th>
+                <th  >NOMBRE </th>
+                 <th  >CEDULA</th>
+              <th  >PASE</th>
+               <th  >FECHA</th>
+              </tr>
+         
+            </table>
+                 <table>
+              <tr>
+                <th >DATOS DEL CONDUCTOR 3</th>
+                <th  >NOMBRE </th>
+                 <th  >CEDULA</th>
+              <th  >PASE</th>
+               <th  >FECHA</th>
+              </tr>
+         
+            </table>
+                  <table>
+              <tr>
+                <th >RESPONSABLE DEL CONTRATANTE</th>
+                <th  >{{responsable}} </th>
+                 <th  >{{cedula}}</th>
+              <th  >{{celular}}</th>
+               <th  >{{direccion}}</th>
+              </tr>
+         
+            </table>
+    </div>
+                      <table>
+              <tr>
+               
+                <th style="width: 50%;"> <br>
+                <div class="dire">
+                <br  id="dire">DIRECCION: CR 13 96 67 OF 401 <br> TELEFONO: 7035175 <br> correo electronico: vianco@gmail.com</th>
+                </div>
+                <th  id="firma" style="width:50%;"> <img src="/imagenes/firma jefe.png" alt=""></th>
+         
+              </tr>
+         
+            </table>
+
+
+
+    </div>
+  </div>
+  <select id="conductores">
+  <!-- Opciones de conductores se llenarán dinámicamente -->
+</select>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/conductoress')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Datos recibidos:', data); // Agregar mensaje de consola
+      const conductoresSelect = document.getElementById('conductores');
+      data.forEach(conductor => {
+        console.log('Creando opción para conductor:', conductor); // Agregar mensaje de consola
+        const option = document.createElement('option');
+        option.value = conductor.id;
+        option.textContent = conductor.conductor;
+        conductoresSelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error al obtener conductores:', error));
+});
+</script>
+
+
+</body>
+</html>
+
+   
