@@ -1967,11 +1967,15 @@ app.post('/actualizar_cliente', (req, res) => {
 
 
 
+
+
 const hbs = require('handlebars'); // Importa Handlebars
 
 
 
 
+const { JSDOM } = require('jsdom');
+const qrcode = require('qrcode');
 
 
 
@@ -1979,38 +1983,33 @@ const hbs = require('handlebars'); // Importa Handlebars
 // Ruta para renderizar la página de selección de cliente y placa
 app.get('/seleccionar', (req, res) => {
     res.render('clientes/fuec.hbs');
-  });
-  
+});
 
-  // Ruta para obtener clientes
-  app.get('/clientes', (req, res) => {
+// Ruta para obtener clientes
+app.get('/clientes', (req, res) => {
     const consultaClientes = 'SELECT id, nombre FROM clientes';
     connection.query(consultaClientes, (error, resultados) => {
-      if (error) {
-        console.error('Error al obtener clientes:', error);
-        res.status(500).json({ error: 'Error al obtener clientes' });
-        return;
-      }
-      res.json(resultados);
+        if (error) {
+            console.error('Error al obtener clientes:', error);
+            res.status(500).json({ error: 'Error al obtener clientes' });
+            return;
+        }
+        res.json(resultados);
     });
-  });
-  
+});
 
 // Ruta para obtener todas las placas de vehículos disponibles
 app.get('/vehiculos', (req, res) => {
     const consultaVehiculos = 'SELECT placa FROM vehiculos';
     connection.query(consultaVehiculos, (error, resultados) => {
-      if (error) {
-        console.error('Error al obtener vehículos:', error);
-        res.status(500).json({ error: 'Error al obtener vehículos' });
-        return;
-      }
-      res.json(resultados);
+        if (error) {
+            console.error('Error al obtener vehículos:', error);
+            res.status(500).json({ error: 'Error al obtener vehículos' });
+            return;
+        }
+        res.json(resultados);
     });
-  });
-
-
-
+});
 
   // Obtener el último consecutivo al iniciar la aplicación
   connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
@@ -2025,8 +2024,6 @@ app.get('/vehiculos', (req, res) => {
   });
 
 
-
-
 // Ruta para obtener conductores
 app.get('/conductoress', (req, res) => {
     const consultaConductores = 'SELECT id, conductor, cedula, fecha_vigencia FROM conductores';
@@ -2039,7 +2036,9 @@ app.get('/conductoress', (req, res) => {
         res.json(resultados);
     });
 });
+
 let ultimoConsecutivo = 3000;
+
 // Ruta para obtener los datos del cliente, vehículo y conductores seleccionados
 app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
@@ -2047,259 +2046,212 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
     const idConductor1 = req.params.idConductor1;
     const idConductor2 = req.params.idConductor2;
     const idConductor3 = req.params.idConductor3;
-    ultimoConsecutivo++;
-    const consultaCliente = `
-        SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular,fecha_inicio,fecha_final 
-        FROM clientes 
-        WHERE nombre = '${nombreCliente}'`;
+    let ultimoConsecutivo = 3000; // Ajusta el valor inicial según tu lógica
+    const fechaInicio = req.params.fechaInicio; // Obtenemos la fecha de inicio desde los parámetros
 
-    connection.query(consultaCliente, (errorCliente, resultadosCliente) => {
-        if (errorCliente) {
-            console.error('Error al obtener datos del cliente:', errorCliente);
-            res.status(500).json({ error: 'Error al obtener datos del cliente' });
+    // Construir la consulta para obtener los conductores seleccionados excluyendo los 'NA'
+    let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
+    const fuecURL = `/fuec/${encodeURIComponent(nombreCliente)}/${encodeURIComponent(fechaInicio)}/${encodeURIComponent(placa)}/${encodeURIComponent(idConductor1)}/${encodeURIComponent(idConductor2)}/${encodeURIComponent(idConductor3)}`;
+
+    // Genera el código QR con la URL del FUEC en el servidor
+    qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
+        if (err) {
+            console.error('Error al generar el código QR:', err);
+            res.status(500).json({ error: 'Error al generar el código QR' });
             return;
         }
 
-        if (resultadosCliente.length === 0) {
-            res.status(404).json({ error: 'Cliente no encontrado' });
-            return;
-        }
+        const consultaCliente = `
+            SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular, fecha_inicio, fecha_final 
+            FROM clientes 
+            WHERE nombre = '${nombreCliente}'`;
 
-        const consultaVehiculo = `
-            SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a
-            FROM vehiculos 
-            WHERE placa = '${placa}'`;
-
-        connection.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
-            if (errorVehiculo) {
-                console.error('Error al obtener datos del vehículo:', errorVehiculo);
-                res.status(500).json({ error: 'Error al obtener datos del vehículo' });
+        connection.query(consultaCliente, (errorCliente, resultadosCliente) => {
+            if (errorCliente) {
+                console.error('Error al obtener datos del cliente:', errorCliente);
+                res.status(500).json({ error: 'Error al obtener datos del cliente' });
                 return;
             }
 
-            if (resultadosVehiculo.length === 0) {
-                res.status(404).json({ error: 'Vehículo no encontrado' });
+            if (resultadosCliente.length === 0) {
+                res.status(404).json({ error: 'Cliente no encontrado' });
                 return;
             }
 
-            
-            // Construir la consulta para obtener los conductores seleccionados excluyendo los 'NA'
-            let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
+            const consultaVehiculo = `
+                SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a
+                FROM vehiculos 
+                WHERE placa = '${placa}'`;
 
-            if (conductoresIds.length === 1) {
-                // Si solo se selecciona un conductor, cambiar la consulta para obtener solo ese conductor
-                const consultaConductorUnico = `
-                    SELECT conductor, cedula, fecha_vigencia
-                    FROM conductores
-                    WHERE id = ${conductoresIds[0]}`;
-                
-                connection.query(consultaConductorUnico, (errorConductor, resultadoConductor) => {
-                    if (errorConductor) {
-                        console.error('Error al obtener datos del conductor:', errorConductor);
-                        res.status(500).json({ error: 'Error al obtener datos del conductor' });
-                        return;
-                    }
+            connection.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
+                if (errorVehiculo) {
+                    console.error('Error al obtener datos del vehículo:', errorVehiculo);
+                    res.status(500).json({ error: 'Error al obtener datos del vehículo' });
+                    return;
+                }
 
-                    if (resultadoConductor.length === 0) {
-                        res.status(404).json({ error: 'Conductor no encontrado' });
-                        return;
-                    }
+                if (resultadosVehiculo.length === 0) {
+                    res.status(404).json({ error: 'Vehículo no encontrado' });
+                    return;
+                }
 
-                    const cliente = resultadosCliente[0];
-                    const vehiculo = resultadosVehiculo[0];
-                    const conductor = resultadoConductor[0];
-
-                    // Construir la plantilla HTML con un solo conductor
-                    fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
-                        if (err) {
-                            console.error('Error al leer el archivo de la plantilla HBS:', err);
-                            res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                if (conductoresIds.length === 1) {
+                    // Si solo se selecciona un conductor, cambiar la consulta para obtener solo ese conductor
+                    const consultaConductorUnico = `
+                        SELECT conductor, cedula, fecha_vigencia
+                        FROM conductores
+                        WHERE id = ${conductoresIds[0]}`;
+                    
+                    connection.query(consultaConductorUnico, (errorConductor, resultadoConductor) => {
+                        if (errorConductor) {
+                            console.error('Error al obtener datos del conductor:', errorConductor);
+                            res.status(500).json({ error: 'Error al obtener datos del conductor' });
                             return;
                         }
 
-                        const template = hbs.compile(data);
-
-                        const html = template({
-                            contratante: cliente.contratante,
-                            nit: cliente.nit,
-                            N_contrato: cliente.N_contrato,
-                            objeto: cliente.objeto,
-                            celular: cliente.celular,
-                            cedula: cliente.cedula,
-                            direccion: cliente.direccion,
-                            responsable: cliente.responsable,
-                            fecha_inicio: cliente.fecha_inicio,
-                            fecha_final: cliente.fecha_final,
-                            conductores: [{
-                                conductor: conductor.conductor,
-                                cedula: conductor.cedula,
-                                fecha_vigencia: conductor.fecha_vigencia
-                            }],
-                            vehiculo: {
-                                placa: vehiculo.placa,
-                                Modelo: vehiculo.Modelo,
-                                Marca: vehiculo.Marca,
-                                Clase_vehiculo: vehiculo.Clase_vehiculo,
-                                No_movil: vehiculo.No_movil,
-                                Afiliado_a: vehiculo.Afiliado_a
-                                
-                            },
-                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
-                        });
-
-                        res.send(html);
-                    });
-                });
-            } else if (conductoresIds.length === 2) {
-                // Si se seleccionan dos conductores, pero no tres
-                // Obtener datos de los conductores seleccionados
-                const consultaConductores = `
-                    SELECT conductor, cedula, fecha_vigencia
-                    FROM conductores
-                    WHERE id IN (${conductoresIds.join(', ')})`;
-
-                connection.query(consultaConductores, (errorConductores, resultadosConductores) => {
-                    if (errorConductores) {
-                        console.error('Error al obtener datos de los conductores:', errorConductores);
-                        res.status(500).json({ error: 'Error al obtener datos de los conductores' });
-                        return;
-                    }
-
-                    if (resultadosConductores.length !== 2) {
-                        res.status(404).json({ error: 'No se encontraron dos conductores' });
-                        return;
-                    }
-
-                    const cliente = resultadosCliente[0];
-                    const vehiculo = resultadosVehiculo[0];
-
-                    // Construir la plantilla HTML con los conductores seleccionados
-                    fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
-                        if (err) {
-                            console.error('Error al leer el archivo de la plantilla HBS:', err);
-                            res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                        if (resultadoConductor.length === 0) {
+                            res.status(404).json({ error: 'Conductor no encontrado' });
                             return;
                         }
 
-                        const template = hbs.compile(data);
+                        const cliente = resultadosCliente[0];
+                        const vehiculo = resultadosVehiculo[0];
+                        const conductor = resultadoConductor[0];
 
-                        const html = template({
-                            contratante: cliente.contratante,
-                            nit: cliente.nit,
-                            N_contrato: cliente.N_contrato,
-                            objeto: cliente.objeto,
-                            celular: cliente.celular,
-                            cedula: cliente.cedula,
-                            direccion: cliente.direccion,
-                            responsable: cliente.responsable,
-                            fecha_inicio: cliente.fecha_inicio,
-                            fecha_final: cliente.fecha_final,
-                            conductores: resultadosConductores.map(conductor => {
-                                return {
+                        // Construir la plantilla HTML con un solo conductor
+                        fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
+                            if (err) {
+                                console.error('Error al leer el archivo de la plantilla HBS:', err);
+                                res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                                return;
+                            }
+
+                            const template = hbs.compile(data);
+
+                            const html = template({
+                                contratante: cliente.contratante,
+                                nit: cliente.nit,
+                                N_contrato: cliente.N_contrato,
+                                objeto: cliente.objeto,
+                                celular: cliente.celular,
+                                cedula: cliente.cedula,
+                                direccion: cliente.direccion,
+                                responsable: cliente.responsable,
+                                fecha_inicio: cliente.fecha_inicio,
+                                fecha_final: cliente.fecha_final,
+                                conductores: [{
                                     conductor: conductor.conductor,
                                     cedula: conductor.cedula,
                                     fecha_vigencia: conductor.fecha_vigencia
-                                };
-                            }),
-                            vehiculo: {
-                                placa: vehiculo.placa,
-                                Modelo: vehiculo.Modelo,
-                                Marca: vehiculo.Marca,
-                                Clase_vehiculo: vehiculo.Clase_vehiculo,
-                                No_movil: vehiculo.No_movil,
-                                Afiliado_a: vehiculo.Afiliado_a
-                            },
-                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
+                                }],
+                                vehiculo: {
+                                    placa: vehiculo.placa,
+                                    Modelo: vehiculo.Modelo,
+                                    Marca: vehiculo.Marca,
+                                    Clase_vehiculo: vehiculo.Clase_vehiculo,
+                                    No_movil: vehiculo.No_movil,
+                                    Afiliado_a: vehiculo.Afiliado_a
+                                },
+                                ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
+                                qrDataURL: qrDataURL // Agregar la URL del código QR al template
+                            });
+
+                            res.send(html);
                         });
 
-                        res.send(html);
                     });
-                });
-            } else {
-                // Si se seleccionan tres conductores
-                const consultaConductores = `
-                    SELECT conductor, cedula, fecha_vigencia
-                    FROM conductores
-                    WHERE id IN (${conductoresIds.join(', ')})`;
 
-                connection.query(consultaConductores, (errorConductores, resultadosConductores) => {
-                    if (errorConductores) {
-                        console.error('Error al obtener datos de los conductores:', errorConductores);
-                        res.status(500).json({ error: 'Error al obtener datos de los conductores' });
-                        return;
-                    }
+                } else if (conductoresIds.length === 2 || conductoresIds.length === 3) {
+                    // Si se seleccionan dos o tres conductores
+                    const consultaConductores = `
+                        SELECT conductor, cedula, fecha_vigencia
+                        FROM conductores
+                        WHERE id IN (${conductoresIds.join(', ')})`;
 
-                    if (resultadosConductores.length !== 3) {
-                        res.status(404).json({ error: 'No se encontraron los tres conductores' });
-                        return;
-                    }
-
-                    const cliente = resultadosCliente[0];
-                    const vehiculo = resultadosVehiculo[0];
-
-                    // Construir la plantilla HTML con los conductores seleccionados
-                    fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
-                        if (err) {
-                            console.error('Error al leer el archivo de la plantilla HBS:', err);
-                            res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                    connection.query(consultaConductores, (errorConductores, resultadosConductores) => {
+                        if (errorConductores) {
+                            console.error('Error al obtener datos de los conductores:', errorConductores);
+                            res.status(500).json({ error: 'Error al obtener datos de los conductores' });
                             return;
                         }
 
-                        const template = hbs.compile(data);
+                        if (resultadosConductores.length !== conductoresIds.length) {
+                            res.status(404).json({ error: `No se encontraron ${conductoresIds.length} conductores` });
+                            return;
+                        }
 
-                        const html = template({
-                            contratante: cliente.contratante,
-                            nit: cliente.nit,
-                            N_contrato: cliente.N_contrato,
-                            objeto: cliente.objeto,
-                            celular: cliente.celular,
-                            cedula: cliente.cedula,
-                            direccion: cliente.direccion,
-                            responsable: cliente.responsable,
-                            fecha_inicio: cliente.fecha_inicio,
-                            fecha_final: cliente.fecha_final,
-                            conductores: resultadosConductores.map(conductor => {
-                                return {
-                                    conductor: conductor.conductor,
-                                    cedula: conductor.cedula,
-                                    fecha_vigencia: conductor.fecha_vigencia
-                                };
-                            }),
-                            vehiculo: {
-                                placa: vehiculo.placa,
-                                Modelo: vehiculo.Modelo,
-                                Marca: vehiculo.Marca,
-                                Clase_vehiculo: vehiculo.Clase_vehiculo,
-                                No_movil: vehiculo.No_movil,
-                                Afiliado_a: vehiculo.Afiliado_a
-                            },
-                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
+                        const cliente = resultadosCliente[0];
+                        const vehiculo = resultadosVehiculo[0];
+
+                        // Construir la plantilla HTML con los conductores seleccionados
+                        fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
+                            if (err) {
+                                console.error('Error al leer el archivo de la plantilla HBS:', err);
+                                res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                                return;
+                            }
+
+                            const template = hbs.compile(data);
+
+                            const html = template({
+                                contratante: cliente.contratante,
+                                nit: cliente.nit,
+                                N_contrato: cliente.N_contrato,
+                                objeto: cliente.objeto,
+                                celular: cliente.celular,
+                                cedula: cliente.cedula,
+                                direccion: cliente.direccion,
+                                responsable: cliente.responsable,
+                                fecha_inicio: cliente.fecha_inicio,
+                                fecha_final: cliente.fecha_final,
+                                conductores: resultadosConductores.map(conductor => {
+                                    return {
+                                        conductor: conductor.conductor,
+                                        cedula: conductor.cedula,
+                                        fecha_vigencia: conductor.fecha_vigencia
+                                    };
+                                }),
+                                vehiculo: {
+                                    placa: vehiculo.placa,
+                                    Modelo: vehiculo.Modelo,
+                                    Marca: vehiculo.Marca,
+                                    Clase_vehiculo: vehiculo.Clase_vehiculo,
+                                    No_movil: vehiculo.No_movil,
+                                    Afiliado_a: vehiculo.Afiliado_a
+                                },
+                                ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
+                                qrDataURL: qrDataURL // Agregar la URL del código QR al template
+                            });
+
+                            res.send(html);
                         });
 
-                        res.send(html);
                     });
-                });
-            }
+                } else {
+                    // Si no se seleccionan conductores válidos
+                    res.status(404).json({ error: 'No se seleccionaron conductores válidos' });
+                }
+            });
         });
     });
-
-    // Después de aumentar el último consecutivo exitosamente, actualiza su valor en la base de datos
-    connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
-        if (err) {
-            console.error('Error al actualizar el último consecutivo en la base de datos:', err);
-            return;
-        }
-        console.log('Último consecutivo actualizado en la base de datos:', ultimoConsecutivo);
-    });
 });
+
+
+   // Después de aumentar el último consecutivo exitosamente, actualiza su valor en la base de datos
+   connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
+    if (err) {
+        console.error('Error al actualizar el último consecutivo en la base de datos:', err);
+        return;
+    }
+    console.log('Último consecutivo actualizado en la base de datos:', ultimoConsecutivo);
+});
+
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
 });
-
-
 
 const EXPRESS_PORT = 3001; // Elige el puerto que desees para la aplicación Express
 app.listen(EXPRESS_PORT, () => {
