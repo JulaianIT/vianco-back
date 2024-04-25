@@ -100,7 +100,7 @@ align-items: center;
 width: 50%;
 
 }
-
+    
 
   </style>
 
@@ -128,23 +128,37 @@ width: 50%;
       <textarea id="texto" style="width: 100%; height: 100px;"></textarea>
       <p><strong>CONVENIO DE COLABORACION:</strong> {{vehiculo.Afiliado_a}}</p>
       <h3 id="unico">VIGENCIA DEL CONTRATO</h3>
-      <div class="FECH">
-        <P id="iniii" ><strong>FECHA DE INICIAL:</strong>
-          <div class="campos-derecha">
-            <input type="text" placeholder="DIA">
-            <input type="text" placeholder="MES">
-            <input type="text" placeholder="AÑO">
-          </div>
-        </P>
-        <br>
-        <P  id="finii" ><strong>FECHA DE VENCIMIENTO:</strong>
-          <div class="campos-derecha">
-            <input type="text" placeholder="DIA">
-            <input type="text" placeholder="MES">
-            <input type="text" placeholder="AÑO">
-          </div>
-        </P>
-      </div>
+
+
+
+
+
+
+
+<table>
+              <tr>
+                <th><strong>FECHA DE INICIO:</strong> </th>
+                <td  id="fecha_inicio">{{fecha_inicio}}</td>
+        
+               
+              </tr>
+              <tr>
+                      <th><strong>FECHA FINAL:</strong> </th>
+                <td>{{fecha_final}}</td>
+               
+              </tr>
+            </table>
+
+
+     
+
+
+
+
+
+
+
+
             <h3 id="unico">CARACTERISTICAS DEL VEHICULO</h3>
             <table>
               <tr>
@@ -280,6 +294,18 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => console.error('Error al obtener conductores:', error));
 });
+
+  // Obtener el elemento que contiene la fecha de inicio
+    var fechaInicioElement = document.getElementById('fecha_inicio');
+    // Obtener la fecha de inicio en el formato '{{fecha_inicio}}' (string)
+    var fechaInicioString = fechaInicioElement.textContent;
+    // Convertir la fecha de inicio a un objeto Date
+    var fechaInicio = new Date(fechaInicioString);
+    // Formatear la fecha en el formato 'día mes año'
+    var formattedFechaInicio = fechaInicio.getDate() + ' ' + getMesString(fechaInicio.getMonth()) + ' ' + fechaInicio.getFullYear();
+    // Actualizar el contenido del elemento con la fecha formateada
+    fechaInicioElement.textContent = formattedFechaInicio;
+
 </script>
 
 

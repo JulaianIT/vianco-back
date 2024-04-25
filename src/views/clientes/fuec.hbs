@@ -14,99 +14,112 @@
   <select id="placa"></select>
   <br>
   <label for="conductor1">Selecciona el primer conductor:</label>
-  <select id="conductor1"></select>
+  <select id="conductor1">    <option value="NA">N/A</option> <!-- Agregar la opción N/A -->
+</select>
   <br>
   <label for="conductor2">Selecciona el segundo conductor:</label>
-  <select id="conductor2"></select>
+  <select id="conductor2">    <option value="NA">N/A</option> <!-- Agregar la opción N/A -->
+</select>
   <br>
   <label for="conductor3">Selecciona el tercer conductor:</label>
-  <select id="conductor3"></select>
+  <select id="conductor3">    <option value="NA">N/A</option> <!-- Agregar la opción N/A -->
+</select>
   <br>
   <button onclick="buscarInformacion()">Buscar Información</button>
 
   <div id="resultado"></div>
 
 <script>
-    function buscarInformacion() {
-        const clienteSelect = document.getElementById('cliente');
-        const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text;
+function buscarInformacion() {
+    const clienteSelect = document.getElementById('cliente');
+    const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text;
 
-        const placaSelect = document.getElementById('placa');
-        const placa = placaSelect.value;
+    const placaSelect = document.getElementById('placa');
+    const placa = placaSelect.value;
 
-        const conductorSelect1 = document.getElementById('conductor1');
-        const conductor1 = conductorSelect1.value;
+    const conductorSelect1 = document.getElementById('conductor1');
+    const conductor1 = conductorSelect1.value;
 
-        const conductorSelect2 = document.getElementById('conductor2');
-        const conductor2 = conductorSelect2.value;
+    const conductorSelect2 = document.getElementById('conductor2');
+    const conductor2 = conductorSelect2.value;
 
-        const conductorSelect3 = document.getElementById('conductor3');
-        const conductor3 = conductorSelect3.value;
+    const conductorSelect3 = document.getElementById('conductor3');
+    const conductor3 = conductorSelect3.value;
 
-        fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                document.getElementById('resultado').innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al buscar información. Por favor, inténtalo de nuevo.');
-            });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Llenar select de clientes, vehículos y conductores al cargar la página
-        Promise.all([
-            fetch('/clientes').then(response => response.json()),
-            fetch('/vehiculos').then(response => response.json()),
-            fetch('/conductoress').then(response => response.json())
-        ]).then(([clientes, vehiculos, conductores]) => {
-            // Llenar select de clientes
-            const clienteSelect = document.getElementById('cliente');
-            clientes.forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.id;
-                option.textContent = cliente.nombre;
-                clienteSelect.appendChild(option);
-            });
-
-            // Llenar select de conductores
-            const conductorSelect1 = document.getElementById('conductor1');
-            const conductorSelect2 = document.getElementById('conductor2');
-            const conductorSelect3 = document.getElementById('conductor3');
-            conductores.forEach(conductor => {
-                const option1 = document.createElement('option');
-                const option2 = document.createElement('option');
-                const option3 = document.createElement('option');
-                option1.value = conductor.id;
-                option2.value = conductor.id;
-                option3.value = conductor.id;
-                option1.textContent = conductor.conductor;
-                option2.textContent = conductor.conductor;
-                option3.textContent = conductor.conductor;
-                conductorSelect1.appendChild(option1);
-                conductorSelect2.appendChild(option2);
-                conductorSelect3.appendChild(option3);
-            });
-
-            // Llenar select de placas
-            const placaSelect = document.getElementById('placa');
-            vehiculos.forEach(vehiculo => {
-                const option = document.createElement('option');
-                option.value = vehiculo.placa;
-                option.textContent = vehiculo.placa;
-                placaSelect.appendChild(option);
-            });
-        }).catch(error => {
-            console.error('Error al cargar datos:', error);
-            alert('Error al cargar datos. Por favor, inténtalo de nuevo.');
+    fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('resultado').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al buscar información. Por favor, inténtalo de nuevo.');
         });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Llenar select de clientes, vehículos y conductores al cargar la página
+    Promise.all([
+        fetch('/clientes').then(response => response.json()),
+        fetch('/vehiculos').then(response => response.json()),
+        fetch('/conductoress').then(response => response.json())
+    ]).then(([clientes, vehiculos, conductores]) => {
+        // Llenar select de clientes
+        const clienteSelect = document.getElementById('cliente');
+        clientes.forEach(cliente => {
+            const option = document.createElement('option');
+            option.value = cliente.id;
+            option.textContent = cliente.nombre;
+            clienteSelect.appendChild(option);
+        });
+
+        // Llenar select de conductores
+        const conductorSelect1 = document.getElementById('conductor1');
+        const conductorSelect2 = document.getElementById('conductor2');
+        const conductorSelect3 = document.getElementById('conductor3');
+        
+        conductores.forEach(conductor => {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            const option3 = document.createElement('option');
+            option1.value = conductor.id;
+            option2.value = conductor.id;
+            option3.value = conductor.id;
+            option1.textContent = conductor.conductor;
+            option2.textContent = conductor.conductor;
+            option3.textContent = conductor.conductor;
+            conductorSelect1.appendChild(option1);
+            conductorSelect2.appendChild(option2);
+            conductorSelect3.appendChild(option3);
+        });
+
+        // Agregar la opción N/A en cada select de conductores
+        const optionNA = document.createElement('option');
+        optionNA.value = "NA";
+        optionNA.textContent = "N/A";
+        conductorSelect1.appendChild(optionNA.cloneNode(true));
+        conductorSelect2.appendChild(optionNA.cloneNode(true));
+        conductorSelect3.appendChild(optionNA.cloneNode(true));
+
+        // Llenar select de placas
+        const placaSelect = document.getElementById('placa');
+        vehiculos.forEach(vehiculo => {
+            const option = document.createElement('option');
+            option.value = vehiculo.placa;
+            option.textContent = vehiculo.placa;
+            placaSelect.appendChild(option);
+        });
+    }).catch(error => {
+        console.error('Error al cargar datos:', error);
+        alert('Error al cargar datos. Por favor, inténtalo de nuevo.');
     });
+});
+
 </script>
 
 </body>
