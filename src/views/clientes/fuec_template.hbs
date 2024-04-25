@@ -113,7 +113,7 @@ width: 50%;
         <hr>
       </header>
       <h3 id="unico">FORMATO UNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PUBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL</h3>
-      <h3 id="unico">NO.</h3>
+      <h3 id="unico">NO.4250427192024{{N_contrato}}{{ultimoConsecutivo}}</h3>
     </div>
     <br>
     <hP><strong>RAZON SOCIAL DE LA EMPRESA DE TRANSPORTE DE SERVICIO ESPECIAL:</strong> VIANCO TE TRANSPORTA</P>
@@ -295,16 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => console.error('Error al obtener conductores:', error));
 });
 
-  // Obtener el elemento que contiene la fecha de inicio
-    var fechaInicioElement = document.getElementById('fecha_inicio');
-    // Obtener la fecha de inicio en el formato '{{fecha_inicio}}' (string)
-    var fechaInicioString = fechaInicioElement.textContent;
-    // Convertir la fecha de inicio a un objeto Date
-    var fechaInicio = new Date(fechaInicioString);
-    // Formatear la fecha en el formato 'día mes año'
-    var formattedFechaInicio = fechaInicio.getDate() + ' ' + getMesString(fechaInicio.getMonth()) + ' ' + fechaInicio.getFullYear();
-    // Actualizar el contenido del elemento con la fecha formateada
-    fechaInicioElement.textContent = formattedFechaInicio;
 
 </script>
 

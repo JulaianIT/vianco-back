@@ -2012,6 +2012,18 @@ app.get('/vehiculos', (req, res) => {
 
 
 
+  // Obtener el último consecutivo al iniciar la aplicación
+  connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
+    if (err) {
+      console.error('Error al obtener el último consecutivo:', err);
+      return;
+    }
+    if (rows.length > 0) {
+      ultimoConsecutivo = rows[0].valor;
+      console.log('Último consecutivo obtenido de la base de datos:', ultimoConsecutivo);
+    }
+  });
+
 
 
 
@@ -2027,6 +2039,7 @@ app.get('/conductoress', (req, res) => {
         res.json(resultados);
     });
 });
+let ultimoConsecutivo = 3000;
 // Ruta para obtener los datos del cliente, vehículo y conductores seleccionados
 app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
@@ -2034,7 +2047,7 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
     const idConductor1 = req.params.idConductor1;
     const idConductor2 = req.params.idConductor2;
     const idConductor3 = req.params.idConductor3;
-
+    ultimoConsecutivo++;
     const consultaCliente = `
         SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular,fecha_inicio,fecha_final 
         FROM clientes 
@@ -2069,6 +2082,7 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                 return;
             }
 
+            
             // Construir la consulta para obtener los conductores seleccionados excluyendo los 'NA'
             let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
 
@@ -2128,7 +2142,9 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                                 Clase_vehiculo: vehiculo.Clase_vehiculo,
                                 No_movil: vehiculo.No_movil,
                                 Afiliado_a: vehiculo.Afiliado_a
-                            }
+                                
+                            },
+                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
                         });
 
                         res.send(html);
@@ -2192,7 +2208,8 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                                 Clase_vehiculo: vehiculo.Clase_vehiculo,
                                 No_movil: vehiculo.No_movil,
                                 Afiliado_a: vehiculo.Afiliado_a
-                            }
+                            },
+                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
                         });
 
                         res.send(html);
@@ -2255,7 +2272,8 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                                 Clase_vehiculo: vehiculo.Clase_vehiculo,
                                 No_movil: vehiculo.No_movil,
                                 Afiliado_a: vehiculo.Afiliado_a
-                            }
+                            },
+                            ultimoConsecutivo: ultimoConsecutivo // Agregar esta línea
                         });
 
                         res.send(html);
@@ -2263,6 +2281,15 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                 });
             }
         });
+    });
+
+    // Después de aumentar el último consecutivo exitosamente, actualiza su valor en la base de datos
+    connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
+        if (err) {
+            console.error('Error al actualizar el último consecutivo en la base de datos:', err);
+            return;
+        }
+        console.log('Último consecutivo actualizado en la base de datos:', ultimoConsecutivo);
     });
 });
 
