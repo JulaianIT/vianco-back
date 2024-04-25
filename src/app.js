@@ -2044,10 +2044,27 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
     const idConductor2 = req.params.idConductor2;
     const idConductor3 = req.params.idConductor3;
     const fechaInicio = req.params.fechaInicio;
-
-    // Construir la consulta para obtener los conductores seleccionados excluyendo los 'NA'
     let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
-    const fuecURL = `/fuec/${encodeURIComponent(nombreCliente)}/${encodeURIComponent(fechaInicio)}/${encodeURIComponent(placa)}/${encodeURIComponent(idConductor1)}/${encodeURIComponent(idConductor2)}/${encodeURIComponent(idConductor3)}`;
+
+// Valida y asigna valores predeterminados a los parámetros si son undefined
+// Función para codificar un parámetro y manejar casos indefinidos
+// Función para formatear un parámetro y su valor
+function formatParam(key, value) {
+    return `${key.toUpperCase()} :${value}`;
+}
+
+// Función para codificar un parámetro y manejar casos indefinidos
+function encodeParam(param, defaultValue = 'INDEFINIDO') {
+    return encodeURIComponent(param !== undefined ? param : defaultValue);
+}
+
+// Valida y codifica cada parámetro de la URL
+const clienteFormatted = formatParam("Cliente", nombreCliente || "INDEFINIDO");
+const fechaInicioFormatted = formatParam("Fecha inicio", fechaInicio || "INDEFINIDA");
+const placaFormatted = formatParam("Placa", placa || "INDEFINIDA");
+
+// Construye la URL de forma más clara y organizada
+const fuecURL = `${clienteFormatted}\n${fechaInicioFormatted}\n${placaFormatted}`;
 
     // Genera el código QR con la URL del FUEC en el servidor
     qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
