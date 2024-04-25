@@ -2065,7 +2065,6 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3',
                 return;
             }
 
-            let ultimoConsecutivo = 3000; // Valor inicial por defecto
             if (rows.length > 0) {
                 ultimoConsecutivo = rows[0].valor + 1; // Incrementa el último consecutivo obtenido
             }
