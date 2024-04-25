@@ -4,9 +4,126 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seleccionar Cliente, Placa y Conductor</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
 </head>
+ <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header{
+
+
+        background-color: white;
+    }
+
+ #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+
+    h1 {
+      color: #90c9a7;
+      text-align: center;
+      margin-top: 30px;
+      font-size: 40px;
+    }
+
+    form {
+      max-width: 50%;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+            font-size: 40px;
+
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-size: 26px;
+      color: #333;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+            font-size: 23px;
+
+      transition: border-color 0.3s ease;
+    }
+
+    select:focus, button:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    button {
+      background-color:#90c9a7
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #90c9a7;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .FO{
+
+        padding: 16px;
+        background-color: white;
+        border: 3px solid #d9d9d9;
+position: relative;
+left: 20%;
+align-items: center;
+width: 50%;
+
+    }
+  </style>
+
 <body>
-  <h1>Seleccionar Cliente, Placa y Conductor</h1>
+        <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+   
+        
+       
+ 
+
+
+
+
+    </header>
+    <br>
+    <br>
+    <div class="FO">
+  <h1 id="fu" >GENERAR FUEC</h1>
   <label for="cliente">Selecciona el cliente:</label>
   <select id="cliente"></select>
   <br>
@@ -26,9 +143,9 @@
 </select>
   <br>
   <button onclick="buscarInformacion()">Buscar Información</button>
-
+</div>
+<br>
   <div id="resultado"></div>
-<img id="qr" src="" alt="Código QR">
 
 <script>
 function buscarInformacion() {
