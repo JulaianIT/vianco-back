@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información de la base de datos</title>
+</head>
+<body>
+    <h1>Información de la base de datos</h1>
+    <div>
+        <form action="/buscar" method="GET">
+            <label for="numero_fuec">Buscar por número fuec:</label>
+            <input type="text" id="numero_fuec" name="numero_fuec">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+    <div>
+        <h2>Resultado de la búsqueda:</h2>
+        <ul>
+            {{#if resultados.length}}
+                {{#each resultados}}
+                <li>
+                    <p><strong>ID:</strong> {{this.id}}</p>
+                    <p><strong>Nombre del cliente:</strong> {{this.nombre_cliente}}</p>
+                    <p><strong>Placa:</strong> {{this.placa}}</p>
+                    <!-- Agrega aquí más campos según tu necesidad -->
+                </li>
+                {{/each}}
+            {{else}}
+                <li>No se encontraron resultados.</li>
+            {{/if}}
+        </ul>
+    </div>
+</body>
+</html>

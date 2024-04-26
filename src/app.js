@@ -2287,6 +2287,7 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:
 });
 });
 
+
 // Ruta para descargar el template en formato PNG
 app.get('/descargar/png', (req, res) => {
     // Renderiza el template
@@ -2309,6 +2310,36 @@ app.get('/descargar/png', (req, res) => {
                 console.error('Error al generar la imagen PNG:', error);
                 res.status(500).json({ error: 'Error al generar la imagen PNG' });
             });
+    });
+});
+
+
+
+
+
+
+
+// Ruta para mostrar el formulario de búsqueda
+app.get('/dat', (req, res) => {
+    res.render('ver_fuec');
+});
+
+// Ruta para manejar la búsqueda
+app.get('/buscar', (req, res) => {
+    const numeroFuec = req.query.numero_fuec;
+    if (!numeroFuec) {
+        res.redirect('/dat'); // Redirige de vuelta al formulario si no se proporciona un número_fuec
+        return;
+    }
+
+    const sql = `SELECT * FROM fuec_data WHERE numero_fuec = ?`;
+    connection.query(sql, [numeroFuec], (err, resultados) => {
+        if (err) {
+            console.error('Error al ejecutar la consulta:', err);
+            res.render('error');
+            return;
+        }
+        res.render('ver_fuec', { resultados }); // Renderiza la misma plantilla con los resultados de la búsqueda
     });
 });
 
