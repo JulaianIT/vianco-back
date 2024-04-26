@@ -2273,6 +2273,31 @@ const fuecURL = `${clienteFormatted}\n${placaFormatted}`;
     });
 });
 
+// Ruta para descargar el template en formato PNG
+app.get('/descargar/png', (req, res) => {
+    // Renderiza el template
+    res.render('src/views/clientes/fuec_template.hbs', (err, html) => {
+        if (err) {
+            console.error('Error al renderizar el template:', err);
+            res.status(500).json({ error: 'Error al renderizar el template' });
+            return;
+        }
+        // Convierte el HTML en una imagen PNG
+        html2canvas(html)
+            .then(canvas => {
+                // Convierte el canvas a base64
+                const base64Data = canvas.toDataURL('image/png');
+                // Envía la imagen al cliente para descargar
+                res.set('Content-Type', 'image/png');
+                res.send(Buffer.from(base64Data.split(',')[1], 'base64'));
+            })
+            .catch(error => {
+                console.error('Error al generar la imagen PNG:', error);
+                res.status(500).json({ error: 'Error al generar la imagen PNG' });
+            });
+    });
+});
+
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado

@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seleccionar Cliente, Placa y Conductor</title>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+
 </head>
  <style>
     body {
@@ -142,10 +143,16 @@ width: 50%;
   <select id="conductor3">    <option value="NA">N/A</option> <!-- Agregar la opción N/A -->
 </select>
   <br>
-  <button onclick="buscarInformacion()">Buscar Información</button>
+  <button onclick="buscarInformacion()">GENERAR FUEC</button>
 </div>
 <br>
+   <div class="contenido" id="contenido">
+
   <div id="resultado"></div>
+
+
+</div>
+<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 
 <script>
 function buscarInformacion() {
@@ -238,6 +245,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+  document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('convertirBtn').addEventListener('click', function() {
+            // Captura el elemento contenedor que deseas convertir en imagen
+            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
+
+            // Opciones de configuración para html2canvas (opcional)
+            const options = {
+                // Configura tus opciones aquí
+            };
+
+            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
+            html2canvas(container, options).then(canvas => {
+                // Convierte el canvas en una URL de datos
+                const dataUrl = canvas.toDataURL();
+
+                // Crea un enlace para descargar la imagen
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'FUEC_VIANCO';
+                a.textContent = 'Descargar Imagen';
+                document.body.appendChild(a);
+
+                // Simula un clic en el enlace para iniciar la descarga
+                a.click();
+            });
+        });
+    });
 </script>
 
 </body>

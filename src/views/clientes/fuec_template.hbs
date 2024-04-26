@@ -12,11 +12,11 @@
 <body>
   <style>
     .FUEC {
+      margin: 5%;
       position: relative;
-      max-width: 80%;
+      max-width: 100%;
             border: 3px solid black;
-
-      padding: 10px;
+      padding: 30px;
     }
 
     #logo {
@@ -110,7 +110,7 @@ width: 10%;
     }
 
   </style>
-
+   <div class="contenido" id="contenido">
   <div class="FUEC">
     <div class="ARRIBA">
       <header>
@@ -281,6 +281,7 @@ width: 10%;
 
     </div>
   </div>
+  </div>
 
 <br>
 <br>
@@ -304,7 +305,33 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => console.error('Error al obtener conductores:', error));
 });
+  document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('convertirBtn').addEventListener('click', function() {
+            // Captura el elemento contenedor que deseas convertir en imagen
+            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
 
+            // Opciones de configuración para html2canvas (opcional)
+            const options = {
+                // Configura tus opciones aquí
+            };
+
+            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
+            html2canvas(container, options).then(canvas => {
+                // Convierte el canvas en una URL de datos
+                const dataUrl = canvas.toDataURL();
+
+                // Crea un enlace para descargar la imagen
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'miImagen.png';
+                a.textContent = 'Descargar Imagen';
+                document.body.appendChild(a);
+
+                // Simula un clic en el enlace para iniciar la descarga
+                a.click();
+            });
+        });
+    });
 </script>
 
 
