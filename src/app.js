@@ -17,7 +17,6 @@ const flash = require('express-flash');
 // Establecer la zona horaria de la aplicación Node.js
 process.env.TZ = 'America/Bogota';
 
-
 function htmlToPdf(html, options, callback) {
     pdf.create(html, options).toBuffer((err, buffer) => {
         if (err) {

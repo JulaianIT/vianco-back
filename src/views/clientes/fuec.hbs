@@ -146,7 +146,7 @@ width: 50%;
   <button onclick="buscarInformacion()">GENERAR FUEC</button>
 </div>
 <br>
-   <div class="contenido" id="contenido">
+<div class="contenido" id="contenido" style="display: inline-block; width: auto; height: auto;">
 
   <div id="resultado"></div>
 
@@ -282,12 +282,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('convertirBtn').addEventListener('click', function() {
             // Captura el elemento contenedor que deseas convertir en imagen
-            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
+            const container = document.getElementById('FUEC'); // Cambia el ID a "contenido"
 
             // Opciones de configuración para html2canvas (opcional)
-            const options = {
-                // Configura tus opciones aquí
-            };
+          const options = {
+    windowWidth: document.getElementById('contenido').scrollWidth,
+    windowHeight: document.getElementById('contenido').scrollHeight
+};
 
             // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
             html2canvas(container, options).then(canvas => {
