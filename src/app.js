@@ -1116,7 +1116,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/clientes', (req, res) => {
     // Realiza una consulta a la base de datos para obtener los nombres y fotos de los clientes
-    connection.query('SELECT nombre, foto FROM clientes', (error, results, fields) => {
+    connection.query('SELECT nombre,  foto FROM clientes', (error, results, fields) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1986,18 +1986,6 @@ app.get('/seleccionar', (req, res) => {
     res.render('clientes/fuec.hbs');
 });
 
-// Ruta para obtener clientes
-app.get('/clientes', (req, res) => {
-    const consultaClientes = 'SELECT id, nombre FROM clientes';
-    connection.query(consultaClientes, (error, resultados) => {
-        if (error) {
-            console.error('Error al obtener clientes:', error);
-            res.status(500).json({ error: 'Error al obtener clientes' });
-            return;
-        }
-        res.json(resultados);
-    });
-});
 
 // Ruta para obtener todas las placas de vehículos disponibles
 app.get('/vehiculos', (req, res) => {
@@ -2038,14 +2026,34 @@ app.get('/conductoress', (req, res) => {
         res.json(resultados);
     });
 });
+
+app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /clientes2
+    const consultaClientes = 'SELECT nombre,contratante, N_contrato  FROM clientes';
+    connection.query(consultaClientes, (error, resultados) => {
+      if (error) {
+        console.error('Error al obtener clientes:', error);
+        res.status(500).json({ error: 'Error al obtener clientes' });
+        return;
+      }
+  
+      const clientesData = resultados.map(cliente => ({
+        nombre: cliente.nombre,
+        N_contrato: cliente.N_contrato,
+        contratante: cliente.contratante
+      }));
+  
+      res.json(clientesData);
+    });
+  });
+
 // Ruta para obtener los datos del cliente, vehículo y conductores seleccionados
-app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3', (req, res) => {
+app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
     const placa = req.params.placa;
     const idConductor1 = req.params.idConductor1;
     const idConductor2 = req.params.idConductor2;
     const idConductor3 = req.params.idConductor3;
- 
+    const N_contrato = req.params.N_contrato;
     let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
 
 // Valida y asigna valores predeterminados a los parámetros si son undefined
@@ -2056,17 +2064,15 @@ function formatParam(key, value) {
 }
 
 // Función para codificar un parámetro y manejar casos indefinidos
-function encodeParam(param, defaultValue = 'INDEFINIDO') {
-    return encodeURIComponent(param !== undefined ? param : defaultValue);
-}
+function encodeParam(param, defaultValue = '') {
+    return param !== undefined ? encodeURIComponent(param) : defaultValue;
+  }
 
 // Valida y codifica cada parámetro de la URL
 const clienteFormatted = formatParam("Cliente", nombreCliente || "INDEFINIDO");
 const placaFormatted = formatParam("Placa", placa || "INDEFINIDA");
-
-// Construye la URL de forma más clara y organizada
-const fuecURL = `${clienteFormatted}\n${placaFormatted}`;
-
+const contratoFormatted = N_contrato !== undefined ? formatParam("N° DE CONTRATO", N_contrato) : '';
+const fuecURL = `${clienteFormatted}\n${placaFormatted}\n${contratoFormatted}`;
     // Genera el código QR con la URL del FUEC en el servidor
     qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
         if (err) {

@@ -77,7 +77,7 @@
     }
 
     button {
-      background-color:#90c9a7
+      background-color:#90c9a7;
       color: #fff;
       border: none;
       cursor: pointer;
@@ -155,24 +155,48 @@ width: 50%;
 <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 
 <script>
+  let clientes = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/clientes2') // Cambiar la ruta a /clientes2
+    .then(response => response.json())
+    .then(clientesData => {
+      clientesData.forEach(cliente => {
+        clientes[cliente.nombre] = cliente;
+      });
+      // Llenar el select de clientes
+      const clienteSelect = document.getElementById('cliente');
+      for (const nombre in clientes) {
+        const option = document.createElement('option');
+        option.text = nombre;
+        clienteSelect.add(option);
+      }
+    })
+    .catch(error => {
+      console.error('Error al obtener clientes:', error);
+    });
+});
+
 function buscarInformacion() {
-    const clienteSelect = document.getElementById('cliente');
-    const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text;
+  const clienteSelect = document.getElementById('cliente');
+  const nombreCliente = clienteSelect.options[clienteSelect.selectedIndex].text;
+  if (!clientes[nombreCliente]) {
+    console.error('No se encontraron datos para el cliente seleccionado.');
+    return;
+  }
+  const N_contrato = clientes[nombreCliente].N_contrato;
+  console.log('Valor de N_contrato:', N_contrato);
+  const placaSelect = document.getElementById('placa');
+  const placa = placaSelect.value;
+  const conductorSelect1 = document.getElementById('conductor1');
+  const conductor1 = conductorSelect1.value;
+  const conductorSelect2 = document.getElementById('conductor2');
+  const conductor2 = conductorSelect2.value;
+  const conductorSelect3 = document.getElementById('conductor3');
+  const conductor3 = conductorSelect3.value;
 
-    const placaSelect = document.getElementById('placa');
-    const placa = placaSelect.value;
-
-    const conductorSelect1 = document.getElementById('conductor1');
-    const conductor1 = conductorSelect1.value;
-
-    const conductorSelect2 = document.getElementById('conductor2');
-    const conductor2 = conductorSelect2.value;
-
-    const conductorSelect3 = document.getElementById('conductor3');
-    const conductor3 = conductorSelect3.value;
-
-    fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}`)
-        .then(response => {
+  fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}/${encodeURIComponent(N_contrato)}`)
+    .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -190,7 +214,7 @@ function buscarInformacion() {
 document.addEventListener('DOMContentLoaded', function() {
     // Llenar select de clientes, vehículos y conductores al cargar la página
     Promise.all([
-        fetch('/clientes').then(response => response.json()),
+        fetch('/clientes2').then(response => response.json()), // Cambiar la ruta a /clientes2
         fetch('/vehiculos').then(response => response.json()),
         fetch('/conductoress').then(response => response.json())
     ]).then(([clientes, vehiculos, conductores]) => {
