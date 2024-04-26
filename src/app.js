@@ -2047,7 +2047,6 @@ app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /cliente
     });
   });
 
-// Ruta para obtener los datos del cliente, vehículo y conductores seleccionados
 app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato/:contratante/:fecha_inicio/:fecha_final', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
     const placa = req.params.placa;
@@ -2059,29 +2058,10 @@ app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:
     const fecha_inicio = req.params.fecha_inicio;
     const fecha_final = req.params.fecha_final;
 
-    
-
     let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
 
-// Valida y asigna valores predeterminados a los parámetros si son undefined
-// Función para codificar un parámetro y manejar casos indefinidos
-// Función para formatear un parámetro y su valor
-function formatParam(key, value) {
-    return `${key.toUpperCase()} :${value}`;
-}
+    const fuecURL = `${N_contrato}`; // Supongo que aquí es donde está tu URL del FUEC
 
-// Función para codificar un parámetro y manejar casos indefinidos
-function encodeParam(param, defaultValue = '') {
-    return param !== undefined ? encodeURIComponent(param) : defaultValue;
-  }
-
-// Valida y codifica cada parámetro de la URL
-const placaFormatted = formatParam("Placa", placa || "INDEFINIDA");
-const contratoFormatted = N_contrato !== undefined ? formatParam("Contrato No ", N_contrato) : '';
-const contratanteFormatted = contratante !== undefined ? formatParam("Cliente ", contratante) : '';
-const fecha_inicioFormatted = fecha_inicio !== undefined ? formatParam("Fecha inicio", fecha_inicio) : '';
-const fecha_finalFormatted = fecha_final !== undefined ? formatParam("Fecha final", fecha_final) : '';
-const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFormatted} \n${fecha_finalFormatted}\n${placaFormatted}\n`;
     // Genera el código QR con la URL del FUEC en el servidor
     qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
         if (err) {
@@ -2098,6 +2078,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                 return;
             }
 
+            let ultimoConsecutivo = 1; // Valor predeterminado si no se encuentra en la base de datos
             if (rows.length > 0) {
                 ultimoConsecutivo = rows[0].valor + 1; // Incrementa el último consecutivo obtenido
             }
@@ -2110,7 +2091,18 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                     return;
                 }
 
-                console.log('Último consecutivo actualizado en la base de datos:', ultimoConsecutivo);
+                // Generar el número FUEC con el formato específico
+                const numeroFUEC = `NO.4250427192024${N_contrato}${ultimoConsecutivo}`;
+
+                // Guardar los datos en la base de datos
+                connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, idConductor1, idConductor2, idConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC], (err, result) => {
+                    if (err) {
+                        console.error('Error al guardar los datos en la base de datos:', err);
+                        res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
+                        return;
+                    }
+
+
 
                 // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
                 const consultaCliente = `
@@ -2292,6 +2284,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
             });
         });
     });
+});
 });
 
 // Ruta para descargar el template en formato PNG
