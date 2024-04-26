@@ -184,8 +184,18 @@ function buscarInformacion() {
     console.error('No se encontraron datos para el cliente seleccionado.');
     return;
   }
-  const N_contrato = clientes[nombreCliente].N_contrato;
+  const contratante = clientes[nombreCliente].contratante;
+  console.log('contratante', contratante);
+  
+   const N_contrato = clientes[nombreCliente].N_contrato;
   console.log('Valor de N_contrato:', N_contrato);
+
+     const fecha_inicio = clientes[nombreCliente].fecha_inicio;
+  console.log('fecha_inicio', fecha_inicio);
+  
+    const fecha_final = clientes[nombreCliente].fecha_final;
+  console.log('fecha_final', fecha_final);
+  
   const placaSelect = document.getElementById('placa');
   const placa = placaSelect.value;
   const conductorSelect1 = document.getElementById('conductor1');
@@ -195,7 +205,7 @@ function buscarInformacion() {
   const conductorSelect3 = document.getElementById('conductor3');
   const conductor3 = conductorSelect3.value;
 
-  fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}/${encodeURIComponent(N_contrato)}`)
+  fetch(`/fuec/${encodeURIComponent(nombreCliente)}/${placa}/${encodeURIComponent(conductor1)}/${encodeURIComponent(conductor2)}/${encodeURIComponent(conductor3)}/${encodeURIComponent(N_contrato)}/${encodeURIComponent(contratante)}/${encodeURIComponent(fecha_inicio)}/${encodeURIComponent(fecha_final)}`)
     .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

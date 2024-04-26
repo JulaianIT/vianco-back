@@ -2028,7 +2028,7 @@ app.get('/conductoress', (req, res) => {
 });
 
 app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /clientes2
-    const consultaClientes = 'SELECT nombre,contratante, N_contrato  FROM clientes';
+    const consultaClientes = 'SELECT nombre,contratante,fecha_inicio, N_contrato ,fecha_final  FROM clientes';
     connection.query(consultaClientes, (error, resultados) => {
       if (error) {
         console.error('Error al obtener clientes:', error);
@@ -2039,7 +2039,9 @@ app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /cliente
       const clientesData = resultados.map(cliente => ({
         nombre: cliente.nombre,
         N_contrato: cliente.N_contrato,
-        contratante: cliente.contratante
+        contratante: cliente.contratante,
+        fecha_inicio: cliente.fecha_inicio,
+        fecha_final: cliente.fecha_final
       }));
   
       res.json(clientesData);
@@ -2047,13 +2049,19 @@ app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /cliente
   });
 
 // Ruta para obtener los datos del cliente, vehículo y conductores seleccionados
-app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato', (req, res) => {
+app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato/:contratante/:fecha_inicio/:fecha_final', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
     const placa = req.params.placa;
     const idConductor1 = req.params.idConductor1;
     const idConductor2 = req.params.idConductor2;
     const idConductor3 = req.params.idConductor3;
     const N_contrato = req.params.N_contrato;
+    const contratante = req.params.contratante;
+    const fecha_inicio = req.params.fecha_inicio;
+    const fecha_final = req.params.fecha_final;
+
+    
+
     let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
 
 // Valida y asigna valores predeterminados a los parámetros si son undefined
@@ -2069,10 +2077,12 @@ function encodeParam(param, defaultValue = '') {
   }
 
 // Valida y codifica cada parámetro de la URL
-const clienteFormatted = formatParam("Cliente", nombreCliente || "INDEFINIDO");
 const placaFormatted = formatParam("Placa", placa || "INDEFINIDA");
-const contratoFormatted = N_contrato !== undefined ? formatParam("N° DE CONTRATO", N_contrato) : '';
-const fuecURL = `${clienteFormatted}\n${placaFormatted}\n${contratoFormatted}`;
+const contratoFormatted = N_contrato !== undefined ? formatParam("Contrato No ", N_contrato) : '';
+const contratanteFormatted = contratante !== undefined ? formatParam("Cliente ", contratante) : '';
+const fecha_inicioFormatted = fecha_inicio !== undefined ? formatParam("Fecha inicio", fecha_inicio) : '';
+const fecha_finalFormatted = fecha_final !== undefined ? formatParam("Fecha final", fecha_final) : '';
+const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFormatted} \n${fecha_finalFormatted}\n${placaFormatted}\n`;
     // Genera el código QR con la URL del FUEC en el servidor
     qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
         if (err) {
