@@ -1903,7 +1903,7 @@ app.get('/clientess', (req, res) => {
 
 // Ruta para actualizar un cliente específico
 app.post('/actualizar_cliente', (req, res) => {
-    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto,fecha_inicio,fecha_final} = req.body;
+    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto,fecha_inicio,fecha_final,destino} = req.body;
 
     console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
@@ -1932,9 +1932,10 @@ app.post('/actualizar_cliente', (req, res) => {
                 clienteActual.celular !== celular ||
                 clienteActual.cedula !== cedula ||
                 clienteActual.objeto !== objeto ||
+                clienteActual.destino !== destino ||
                 clienteActual.fecha_inicio !== fecha_inicio ||
                 clienteActual.fecha_final !== fecha_final ||
-
+                
                 clienteActual.direccion !== direccion
 
                 
@@ -1943,8 +1944,8 @@ app.post('/actualizar_cliente', (req, res) => {
                 
             ) {
                 connection.query(
-                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ? WHERE nombre = ?', 
-                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,nombre], 
+                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ?,destino = ? WHERE nombre = ?', 
+                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,destino,nombre], 
                     (error, results) => {
                         if (error) {
                             console.error('Error al actualizar el cliente:', error);
@@ -2010,6 +2011,7 @@ app.get('/vehiculos', (req, res) => {
         res.json(resultados);
     });
 });
+
 
   // Obtener el último consecutivo al iniciar la aplicación
   connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
@@ -2097,7 +2099,7 @@ const fuecURL = `${clienteFormatted}\n${placaFormatted}`;
 
                 // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
                 const consultaCliente = `
-                    SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular, fecha_inicio, fecha_final 
+                    SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular, fecha_inicio, fecha_final,destino 
                     FROM clientes 
                     WHERE nombre = '${nombreCliente}'`;
 
@@ -2168,6 +2170,8 @@ const fuecURL = `${clienteFormatted}\n${placaFormatted}`;
                                         nit: cliente.nit,
                                         N_contrato: cliente.N_contrato,
                                         objeto: cliente.objeto,
+                                        destino: cliente.destino,
+
                                         celular: cliente.celular,
                                         cedula: cliente.cedula,
                                         direccion: cliente.direccion,
@@ -2233,6 +2237,8 @@ const fuecURL = `${clienteFormatted}\n${placaFormatted}`;
                                         nit: cliente.nit,
                                         N_contrato: cliente.N_contrato,
                                         objeto: cliente.objeto,
+                                        destino: cliente.destino,
+
                                         celular: cliente.celular,
                                         cedula: cliente.cedula,
                                         direccion: cliente.direccion,
