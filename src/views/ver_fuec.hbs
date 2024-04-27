@@ -3,33 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+
     <title>Información de la base de datos</title>
 </head>
 <body>
-    <h1>Información de la base de datos</h1>
+     <style>
+          * {
+  font-family: "Outfit", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        }
+    .FUEC {
+      align-items: center;
+      margin: 5%;
+      position: relative;
+      width: 50%;
+            border: 1px solid black;
+      padding: 30px;
+    }
+
+    #logo {
+      left: -2%;
+      position: relative;
+      width: 30%;
+
+    }
+    p{
+    
+                  border: 1px solid black;
+
+    }
+
+    #vida {
+     width: 50%;
+    }
+
+   
+
+  
+
+    #unico {
+                  border: 1px solid black;
+
+      text-align: center;
+    }
+
+    .ARRIBA {
+      border: 3px solid black;
+    }
+
+    .FECH input {
+      width: 300px; /* Ajusta el ancho de los campos de entrada */
+    }
+
+    .FECH p {
+      display: inline-block;
+    }
+
+    .campos-derecha {
+      display: inline-block;
+    }
+
+    .campos-derecha input {
+      width: 100px; /* Ajusta el ancho de los campos de entrada */
+    }
+
+    #iniii {
+      margin-right: 70%;
+    }
+
+    #finii {
+      margin-right: 67%;
+    }
+
+    #texto {
+
+      width: 100%; /* Ocupa todo el ancho disponible */
+      height: 100px; /* Establece la altura del campo de entrada */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+#movia{
+text-align: center;
+}
+#firma img{
+    position: relative;
+    left: 30%;
+align-items: center;
+width: 50%;
+
+}
+.dire {
+    position: relative;
+    left: 30%;
+    text-align: center;
+align-items: center;
+width: 50%;
+
+}
+    #qrr{
+position: relative;
+left: 5%;
+width: 10%;
+
+    }
+    #dest{
+
+text-align:justify;
+
+    }
+#uno{
+                  border: 1px solid black;
+
+      text-align: center;
+
+
+}
+#GENE{
+align-items: center;
+text-align: center;
+
+}
+    header{
+
+
+        background-color: white;
+    }
+#logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+        /* Estilos para el encabezado */
+h1 {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    color: #333; /* Color de texto oscuro */
+    margin-bottom: 20px; /* Espacio inferior */
+}
+
+/* Estilos para el formulario de búsqueda */
+form {
+  background-color: #90c9a7;
+  width: 100%;
+    display: flex; /* Mostrar los elementos en línea */
+    align-items: center; /* Centrar verticalmente los elementos */
+}
+
+label {
+  padding: 30px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: #666; /* Color de texto gris */
+    margin-right: 10px; /* Espacio a la derecha del texto */
+}
+
+input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc; /* Borde del input */
+    border-radius: 4px; /* Bordes redondeados */
+    width: 200px; /* Ancho del input */
+}
+
+button[type="submit"] {
+  margin-left: 1%;
+    padding: 8px 16px; /* Espaciado interno */
+    font-size: 26px;
+    background-color: #d9d9d9; /* Color de fondo azul */
+    color: #fff; /* Color de texto blanco */
+    border: none; /* Eliminar borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+    transition: background-color 0.3s; /* Transición suave */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Cambiar el color de fondo al pasar el cursor */
+}
+   .volver-btn:hover, .ver:hover {
+        background-color: #0056b3;
+    }
+
+    .volver-btn, .ver {
+    position: relative;
+        left: 25px;
+        text-transform: uppercase;
+        background-color: #d9d9d9;
+        color: #000;
+        border: none;
+        padding: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+  </style>
+      <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+   
+        
+       
+ 
+
+
+
+
+    </header>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    <h1></h1>
     <div>
         <form action="/buscar" method="GET">
-            <label for="numero_fuec">Buscar por número fuec:</label>
+            <label for="numero_fuec"><h2> Buscar por número fuec:</h2></label>
             <input type="text" id="numero_fuec" name="numero_fuec">
             <button type="submit">Buscar</button>
+                                                        <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
+
         </form>
+
     </div>
     <div>
-        <h2>Resultado de la búsqueda:</h2>
-        <ul>
-            {{#if resultados.length}}
+      <br>
+      <br>
+
+           {{#if resultados.length}}
                 {{#each resultados}}
-                <li>
-                    <p><strong>ID:</strong> {{this.id}}</p>
-                    <p><strong>Nombre del cliente:</strong> {{this.nombre_cliente}}</p>
-                    <p><strong>Placa:</strong> {{this.placa}}</p>
-                    <!-- Agrega aquí más campos según tu necesidad -->
-                </li>
-                {{/each}}
+   
+        <h2 id="GENE" >FUEC GENERADO EN   {{this.fecha_creacion}} </h2>
+  
+  <div id="FUEC"  class="FUEC">
+    <div class="ARRIBA">
+      <header>
+        <img id="vida" src="/imagenes/Imagen de WhatsApp 2024-04-23 a las 12.20.22_fb115ef7.jpg"/>
+        <img id="logo" src="/imagenes/logo vianco.png"/>
+<img id="qrr"  src="{{this.qr_code_url}}" alt="Código QR">
+        <hr>
+      </header>
+      <h3 id="unico">FORMATO UNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PUBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL</h3>
+      <h3 id="uno">NO.{{this.numero_fuec}}</h3>
+    </div>
+    <br>
+    <P><strong>RAZON SOCIAL DE LA EMPRESA DE TRANSPORTE DE SERVICIO ESPECIAL:</strong> VIANCO TE TRANSPORTA</P>
+    <P><strong>NIT:</strong> 901242715</P>
+    <div id="cliente-info">
+      <p><strong>CONTRATO N°:</strong> {{N_contrato}}</p>
+      <p><strong>CONTRATANTE:</strong> {{contratante}}</p>
+      <p><strong>NIT/CC:</strong> {{nit}}</p>
+      <p><strong>OBJETO CONTRATO:</strong> {{objeto}}</p>
+      <!-- Utiliza el atributo style para definir el tamaño del campo -->
+      <p id="dest" ><strong>ORIGEN-DESTINO:</strong> {{destino}}</p>
+      <p><strong>CONVENIO DE COLABORACION:</strong> {{vehiculo.Afiliado_a}}</p>
+      <h3 id="unico">VIGENCIA DEL CONTRATO</h3>
+
+<table>
+                <tr>
+                <th><strong>FECHA DE INICIO:</strong> </th>
+                <td  id="fecha_inicio">{{this.fecha_inicio}}</td>
+                </tr>
+                <tr>
+                <th><strong>FECHA FINAL:</strong> </th>
+                <td>{{this.fecha_final}}</td>
+               
+              </tr>
+            </table>
+
+
+            <h3 id="unico">CARACTERISTICAS DEL VEHICULO</h3>
+            <table>
+              <tr>
+                <th>PLACA</th>
+                <th>MODELO</th>
+                <th>MARCA</th>
+                <th>CLASE</th>
+              </tr>
+              <tr>
+                <td>{{this.placa}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
+            <div class="MOVI"></div>
+             <table>
+              <tr>
+                <th id="movia" >NUMERO INTERNO</th>
+                <th id="movia" >TARJETA OPERACION</th>
+            
+              </tr>
+              <tr>
+                <td id="movia" ></td>
+                <td id="movia" ></td>
+ 
+              </tr>
+            </table>
+{{#if conductores}}
+    <table>
+        <tr>
+            <th>DATOS DEL CONDUCTOR 1</th>
+            <th>CEDULA</th>
+              <th>LICENCIA</th>
+            <th>FECHA VIGENCIA</th>
+        </tr>
+        {{#if conductores.[0]}}
+            <tr>
+                <td>{{conductores.[0].conductor}}</td>
+                <td>{{conductores.[0].cedula}}</td>
+                 <td>{{conductores.[0].cedula}}</td>
+                <td>{{conductores.[0].fecha_vigencia}}</td>
+            </tr>
+        {{/if}}
+        <!-- Repite lo mismo para conductores 2 y 3 -->
+    </table>
+{{else}}
+    <p>No se encontraron conductores disponibles.</p>
+{{/if}}
+
+<table>
+  <tr>
+    <th>DATOS DEL CONDUCTOR 2</th>
+    <th>CEDULA</th>
+     <th>LICENCIA</th>
+    <th>FECHA VIGENCIA</th>
+  </tr>
+  <tr>
+    {{#if conductores.[1]}}
+      <td>{{conductores.[1].conductor}}</td>
+      <td>{{conductores.[1].cedula}}</td>
+            <td>{{conductores.[1].cedula}}</td>
+
+      <td>{{conductores.[1].fecha_vigencia}}</td>
+    {{/if}}
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>DATOS DEL CONDUCTOR 3</th>
+    <th>CEDULA</th>
+    <th>LICENCIA</th>
+    <th>FECHA VIGENCIA</th>
+  </tr>
+  <tr>
+    {{#if conductores.[2]}}
+      <td>{{conductores.[2].conductor}}</td>
+      <td>{{conductores.[2].cedula}}</td>
+      <td>{{conductores.[2].cedula}}</td>
+
+      <td>{{conductores.[2].fecha_vigencia}}</td>
+    {{/if}}
+  </tr>
+</table>
+
+
+                  <table>
+              <tr>
+                <th >RESPONSABLE DEL CONTRATANTE</th>
+                <th  >{{responsable}} </th>
+                 <th  >{{cedula}}</th>
+              <th  >{{celular}}</th>
+               <th  >{{direccion}}</th>
+              </tr>
+         
+            </table>
+    </div>
+                      <table>
+              <tr>
+               
+                <th style="width: 50%;"> <br>
+                <div class="dire">
+                <br  id="dire">DIRECCION: CR 13 96 67 OF 401 <br> TELEFONO: 7035175 <br> correo electronico: vianco@gmail.com</th>
+                </div>
+                <th  id="firma" style="width:50%;"> <img src="/imagenes/firma jefe.png" alt=""></th>
+         
+              </tr>
+         
+            </table>
+
+
+
+    </div>
+  </div>
+  </div>
+    {{/each}}
             {{else}}
                 <li>No se encontraron resultados.</li>
             {{/if}}
-        </ul>
-    </div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/conductoress')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Datos recibidos:', data); // Agregar mensaje de consola
+      const conductoresSelect = document.getElementById('conductores');
+      data.forEach(conductor => {
+        console.log('Creando opción para conductor:', conductor); // Agregar mensaje de consola
+        const option = document.createElement('option');
+        option.value = conductor.id;
+        option.textContent = conductor.conductor;
+        conductoresSelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error al obtener conductores:', error));
+});
+  document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('convertirBtn').addEventListener('click', function() {
+            // Captura el elemento contenedor que deseas convertir en imagen
+            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
+
+            // Opciones de configuración para html2canvas (opcional)
+            const options = {
+                // Configura tus opciones aquí
+            };
+
+            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
+            html2canvas(container, options).then(canvas => {
+                // Convierte el canvas en una URL de datos
+                const dataUrl = canvas.toDataURL();
+
+                // Crea un enlace para descargar la imagen
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'miImagen.png';
+                a.textContent = 'Descargar Imagen';
+                document.body.appendChild(a);
+
+                // Simula un clic en el enlace para iniciar la descarga
+                a.click();
+            });
+        });
+    });
+</script>
+
+
 </body>
 </html>
+
+   
