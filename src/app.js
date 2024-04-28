@@ -35,6 +35,7 @@ const webhookHandler = require("./webhook/webhookHandler");
 // Importar las rutas de login
 const loginRoutes = require("./routes/login");
 
+
 // Crear una instancia de la aplicación Express
 const app = express();
 
@@ -118,8 +119,13 @@ app.use("/login", loginRoutes);
 
 
 
+// Crear un nuevo router
+const router = express.Router();
 
 
+
+// Usar el router en la aplicación
+app.use(router);
 
 
 
@@ -2365,15 +2371,31 @@ app.get('/buscar', (req, res) => {
 
 
 
+const loginController = require("./controllers/loginController.js");
+
+// Ruta para mostrar la página de olvido de contraseña
+app.get("/login/forgot-password", loginController.forgotPasswordPage);
+
+// Ruta para manejar el formulario de olvido de contraseña
+app.post("/login/forgot-password", (req, res) => {
+    const connection = req.db; // Suponiendo que la conexión se pasa a través de req.db
+    loginController.forgotPassword(req, res, connection);
+});
 
 
+// Ruta para mostrar la página de restablecimiento de contraseña
+app.get('/reset-password', (req, res) => {
+    // Renderiza la página de restablecimiento de contraseña
+    res.render('reset-password.hbs'); // Reemplaza 'reset-password' con el nombre de tu vista
+});
 
-
-
-
-
-
-
+// Ruta para manejar el formulario de restablecimiento de contraseña
+app.post('/reset-password', (req, res) => {
+    const newPassword = req.body['new-password']; // Obtén la nueva contraseña del cuerpo de la solicitud
+    // Aquí debes agregar la lógica para procesar la nueva contraseña y actualizarla en tu base de datos
+    // Por ejemplo, puedes usar esta contraseña para actualizar el registro del usuario en tu base de datos
+    res.send('Password reset successful!'); // Envía una respuesta indicando que el restablecimiento de contraseña fue exitoso
+});
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
