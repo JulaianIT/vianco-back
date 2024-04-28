@@ -2361,6 +2361,21 @@ app.get('/buscar', (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

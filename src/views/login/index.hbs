@@ -67,6 +67,8 @@ main{
 
 
     </header>
+                                                                   <a href="/login/register" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">.</a>
+
     <style>
         body {
             margin: 0;
@@ -214,49 +216,12 @@ main{
                 position: relative;
             }
         }
-        footer{
-            background-color: #222;
-            padding: 4.9rem;
-            color: #ffff;
-            position:relative;
-            top: 279px;
-            margin: 0;
-        }
-        footer section{
-            float:right ;
-            margin:0;
-            position: relative;
-            top: -60px;
-        }
-        footer a{
-            transition: color 0.3s ease;
-            color: #ffff;
-            text-decoration: none;
-        }
-        footer a:hover{
-            color: rgb(162, 204, 170);
-        }
-        footer p{
-            position:relative;
-            float: left;
-            left: -1199px;
-            color: #ffff;
-            font-size: 20px;
-        }
-        .bad{
-            font-size: 20px;
-            position: relative;
-            color:rgb(113, 112, 111);
-            right: -20px;
-            top: 6px;
-        }
-        .ok{
-            font-size: 20px;
-            position: relative;
-            top: 30px;
-        }
+      
     </style>
 </head>
+<br>
+<br>
+<br>
 <body>
        <!-- imagen de la parte de arriba de mi html-->
 
@@ -278,7 +243,9 @@ main{
                     <h2>inicia sesion</h2>
                     <input name="email" type="email" placeholder="Correo electrónico">
                     <input name="password" type="password" placeholder="Contraseña">
+
                     <button class="entrar">entrar</button>
+
                 </form>
                 <!--formulario de registro-->
                 <form method="POST" action="" class="formulario__register">
@@ -292,32 +259,13 @@ main{
             </div>
         </div>
     </main>
-   
-    <footer>
-        <section>
-            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
-            <p>Copyrigt soporteVianco</p>
-               <nav class="">
-        <ul class="w-full ml-auto flex justify-end pt-1">
-            {{#if name }}
-                <li class="nav-item px-4">
-                    <p class="font-semibold">{{name}}</p>
-                </li>
-                <li class="nav-item px-4">
-                    <a href="/logout" class="nav-link font-semibold bg-red-500 text-white hover:bg-red-700 py-3 px-4 rounded-md">Cerrar</a>
-                </li>
-            {{else}}
-                <li class="nav-item px-4">
-                    <a href="/login/index" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">Iniciar Sesion</a>
-                </li>
-                <li class="nav-item px-4">
-                    <a href="/login/register" class="nav-link font-semibold border-white hover:bg-white hover:text-green-700 py-3 px-4 rounded-md">.</a>
-                </li>
-            {{/if}}
-        </ul>
-    </nav>
-        </section>
-    </footer>
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+
+    
     <script src="./pagina login/js/script.js"></script>
 </body>
 </html>
