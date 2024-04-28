@@ -814,18 +814,30 @@ socket.on('userLocations', function (locations) {
             .bindPopup(username + '<br>' + 'Última ubicación conocida').openPopup();
     }
 });
-// Agregar marcadores de hoteles al mapa
+// Agregar marcadores al mapa
+var markers = []; // Almacena los marcadores para poder limpiarlos después
+
 hoteles.forEach(function(hotel) {
     var marker = L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
         .bindPopup(hotel.nombre);
 
-    // Agregar evento de clic al marcador para mostrar movimientos del usuario
     marker.on('click', function (e) {
-        var username = ""; // Obtener el nombre de usuario asociado a este marcador
-        // Solicitar al servidor todos los movimientos de este usuario
+        var username = hotel.nombre; // El nombre del hotel será el nombre de usuario en este ejemplo
+        // Solicitar al servidor los movimientos de este usuario
         socket.emit('getUserMovements', { username: username });
     });
+
+    markers.push(marker); // Agregar el marcador al arreglo de marcadores
 });
+
+// Función para limpiar todos los marcadores del mapa
+function clearMarkers() {
+    markers.forEach(function(marker) {
+        map.removeLayer(marker); // Eliminar el marcador del mapa
+    });
+    markers = []; // Limpiar el arreglo de marcadores
+}
+
 
 // Escuchar los movimientos del usuario seleccionado
 socket.on('userMovements', function (movements) {
