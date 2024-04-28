@@ -2371,12 +2371,8 @@ app.get('/buscar', (req, res) => {
 
 
 
-// Configurar una ruta para manejar la solicitud de movimientos de un usuario
 app.get('/userMovements/:username', (req, res) => {
-    // Obtener el nombre de usuario de la solicitud
     const username = req.params.username;
-
-    // Consultar la base de datos para recuperar los movimientos del usuario
     const query = `SELECT latitud, longitud FROM ubicaciones WHERE username = ?`;
     connection.query(query, [username], (err, results) => {
         if (err) {
@@ -2384,7 +2380,6 @@ app.get('/userMovements/:username', (req, res) => {
             res.status(500).json({ error: 'Error al consultar la base de datos' });
             return;
         }
-        // Enviar los movimientos al cliente como respuesta
         res.json(results);
     });
 });

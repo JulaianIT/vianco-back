@@ -817,7 +817,8 @@ socket.on('userLocations', function (locations) {
 // Agregar marcadores al mapa
 var markers = []; // Almacena los marcadores para poder limpiarlos después
 
-hoteles.forEach(function(hotel) {
+// Dentro del bucle que agrega marcadores de hoteles al mapa
+markers.forEach(function(hotel) {
     var marker = L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
         .bindPopup(hotel.nombre);
 
@@ -829,6 +830,7 @@ hoteles.forEach(function(hotel) {
 
     markers.push(marker); // Agregar el marcador al arreglo de marcadores
 });
+
 
 // Función para limpiar todos los marcadores del mapa
 function clearMarkers() {
@@ -848,6 +850,14 @@ socket.on('userMovements', function (movements) {
         polylineCoords.push([movement.lat, movement.lng]);
     });
     // Dibujar la línea en el mapa
+    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
+});
+// Escuchar los movimientos del usuario seleccionado
+socket.on('userMovements', function (movements) {
+    var polylineCoords = [];
+    movements.forEach(function (movement) {
+        polylineCoords.push([movement.lat, movement.lng]);
+    });
     L.polyline(polylineCoords, { color: 'red' }).addTo(map);
 });
 
