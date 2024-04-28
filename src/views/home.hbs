@@ -853,12 +853,51 @@ socket.on('userMovements', function (movements) {
     L.polyline(polylineCoords, { color: 'red' }).addTo(map);
 });
 // Escuchar los movimientos del usuario seleccionado
+// Escuchar los movimientos del usuario seleccionado
 socket.on('userMovements', function (movements) {
     var polylineCoords = [];
     movements.forEach(function (movement) {
-        polylineCoords.push([movement.lat, movement.lng]);
+        polylineCoords.push([movement.latitud, movement.longitud]);
     });
-    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
+
+    // Dibujar la línea en el mapa
+    var polyline = L.polyline(polylineCoords, { color: 'red' }).addTo(map);
+    map.fitBounds(polyline.getBounds()); // Ajustar el mapa para que se ajuste a la línea
+});
+
+
+
+// Hacer una solicitud AJAX para obtener los datos del servidor
+$.ajax({
+  url: '/userMovements/:username',
+  method: 'GET',
+  success: function(data) {
+    // Procesar los datos recibidos
+    data.forEach(function(coordenada) {
+      // Obtener las coordenadas de latitud y longitud
+      var latitud = coordenada.latitud;
+      var longitud = coordenada.longitud;
+      
+      // Crear un objeto LatLng para cada coordenada
+      var latLng = new google.maps.LatLng(latitud, longitud);
+      
+      // Añadir la coordenada a la ruta
+      ruta.push(latLng);
+    });
+    
+    // Dibujar la ruta en el mapa
+    var linea = new google.maps.Polyline({
+      path: ruta,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    linea.setMap(mapa);
+  },
+  error: function(xhr, status, error) {
+    console.error('Error al obtener los datos del servidor:', error);
+  }
 });
 
 </script>

@@ -2373,7 +2373,7 @@ app.get('/buscar', (req, res) => {
 
 app.get('/userMovements/:username', (req, res) => {
     const username = req.params.username;
-    const query = `SELECT latitud, longitud FROM ubicaciones WHERE username = ?`;
+    const query = `SELECT latitud, longitud FROM ubicaciones WHERE nombre_usuario = ?`;
     connection.query(query, [username], (err, results) => {
         if (err) {
             console.error('Error al consultar la base de datos:', err);
