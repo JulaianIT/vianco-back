@@ -689,14 +689,14 @@ left: 12%;
         popupAnchor: [0, -32] // Punto de anclaje del popup
     });
 
-    // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
-    var lastKnownLocations = {};
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
 
+L.tileLayer('https://{s}.google.com/vt/lyrs={type}&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3'],
+    type: 's', // Cambia el estilo aquí ('s' para mapas de calle, 'y' para híbrido, 't' para terreno, 'm' para satélite)
+    attribution: 'Map data &copy; <a href="https://www.google.com/">Google</a>'
+}).addTo(map);
 
 
 
@@ -751,7 +751,7 @@ var hoteles = [
     { nombre: "HILTON 72", latitud:4.6557042, longitud: -74.0581079 },
     { nombre: "URBAN 26", latitud: 4.6309813, longitud: -74.086538},
     { nombre: "HILTON CORFERIAS", latitud: 4.6287861, longitud: -74.0954723},
-    { nombre: "GRAND HYATT", latitud:4.6440714, longitud: -74.10482}
+    { nombre: "GRAND HYATT", latitud:4.644140, longitud: -74.099788}
     // Agrega más hoteles según sea necesario
 ];
 // Agregar marcadores de hoteles al mapa
@@ -813,6 +813,30 @@ socket.on('userLocations', function (locations) {
         L.marker([location.lat, location.lng]).addTo(map)
             .bindPopup(username + '<br>' + 'Última ubicación conocida').openPopup();
     }
+});
+// Agregar marcadores de hoteles al mapa
+hoteles.forEach(function(hotel) {
+    var marker = L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
+        .bindPopup(hotel.nombre);
+
+    // Agregar evento de clic al marcador para mostrar movimientos del usuario
+    marker.on('click', function (e) {
+        var username = ""; // Obtener el nombre de usuario asociado a este marcador
+        // Solicitar al servidor todos los movimientos de este usuario
+        socket.emit('getUserMovements', { username: username });
+    });
+});
+
+// Escuchar los movimientos del usuario seleccionado
+socket.on('userMovements', function (movements) {
+    // Crear un arreglo de coordenadas para la línea
+    var polylineCoords = [];
+    // Recorrer todos los movimientos y agregar las coordenadas a la línea
+    movements.forEach(function (movement) {
+        polylineCoords.push([movement.lat, movement.lng]);
+    });
+    // Dibujar la línea en el mapa
+    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
 });
 
 </script>

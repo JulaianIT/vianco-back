@@ -2371,31 +2371,24 @@ app.get('/buscar', (req, res) => {
 
 
 
-const loginController = require("./controllers/loginController.js");
+// Configurar una ruta para manejar la solicitud de movimientos de un usuario
+app.get('/userMovements/:username', (req, res) => {
+    // Obtener el nombre de usuario de la solicitud
+    const username = req.params.username;
 
-// Ruta para mostrar la página de olvido de contraseña
-app.get("/login/forgot-password", loginController.forgotPasswordPage);
-
-// Ruta para manejar el formulario de olvido de contraseña
-app.post("/login/forgot-password", (req, res) => {
-    const connection = req.db; // Suponiendo que la conexión se pasa a través de req.db
-    loginController.forgotPassword(req, res, connection);
+    // Consultar la base de datos para recuperar los movimientos del usuario
+    const query = `SELECT latitud, longitud FROM ubicaciones WHERE username = ?`;
+    connection.query(query, [username], (err, results) => {
+        if (err) {
+            console.error('Error al consultar la base de datos:', err);
+            res.status(500).json({ error: 'Error al consultar la base de datos' });
+            return;
+        }
+        // Enviar los movimientos al cliente como respuesta
+        res.json(results);
+    });
 });
 
-
-// Ruta para mostrar la página de restablecimiento de contraseña
-app.get('/reset-password', (req, res) => {
-    // Renderiza la página de restablecimiento de contraseña
-    res.render('reset-password.hbs'); // Reemplaza 'reset-password' con el nombre de tu vista
-});
-
-// Ruta para manejar el formulario de restablecimiento de contraseña
-app.post('/reset-password', (req, res) => {
-    const newPassword = req.body['new-password']; // Obtén la nueva contraseña del cuerpo de la solicitud
-    // Aquí debes agregar la lógica para procesar la nueva contraseña y actualizarla en tu base de datos
-    // Por ejemplo, puedes usar esta contraseña para actualizar el registro del usuario en tu base de datos
-    res.send('Password reset successful!'); // Envía una respuesta indicando que el restablecimiento de contraseña fue exitoso
-});
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
