@@ -815,6 +815,18 @@ socket.on('userLocations', function (locations) {
     }
 });
 
+// Escuchar los movimientos del usuario seleccionado
+socket.on('userMovements', function (movements) {
+    // Crear un arreglo de coordenadas para la línea
+    var polylineCoords = [];
+    // Recorrer todos los movimientos y agregar las coordenadas a la línea
+    movements.forEach(function (movement) {
+        polylineCoords.push([movement.lat, movement.lng]);
+    });
+    // Dibujar la línea en el mapa
+    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
+});
+
 // Agregar marcadores al mapa
 var markers = []; // Almacena los marcadores para poder limpiarlos después
 
@@ -867,6 +879,13 @@ socket.on('userMovements', function (movements) {
 });
 
 
+// Función para obtener la ubicación del usuario y enviarla al servidor
+function getLocationAndSend() {
+    map.locate({ setView: false, maxZoom: 16 }); // No establecer vista y definir el zoom máximo
+}
+
+// Llamar a la función cada 10 segundos (10000 milisegundos)
+setInterval(getLocationAndSend, 10000);
 
 
 </script>
