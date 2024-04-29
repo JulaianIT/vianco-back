@@ -293,13 +293,7 @@ img {
         }
 
 
-#logo{
-    position: relative;
-    left: 90px;
 
-    width: 400px;
-
-}
 #vigilado {
     float: right; /* Alinea la imagen a la izquierda dentro del header */
     width: 300px;
@@ -314,15 +308,14 @@ p{
 }
 
 
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    z-index: 1000; /* Asegura que esté por debajo de la barra de navegación */
-}
 
+#logo{
+    position: relative;
+    left: 90px;
+ opacity: 0.6;
+    width: 400px;
+
+}
 nav {
     position: fixed;
     top: 0;
@@ -535,25 +528,33 @@ left: 12%;
     border-radius: 5px;
     z-index: 1;
 }
+#vi{
+        background-color: #666567;
+  width: 75%;
+}
 </style>
 
 <body>
-       <header>
-         <img id="membrete"   src="/imagenes/menbrete.png"/>
-        <img  id="logo"      src="/imagenes/logo vianco.png"/>
-        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+      
 
-        <hr>
-        
-       
-
-    </header>
     <br>
     <br><br>
     
     <nav>
     <label class="logo" for=""></label>
+        <img  id="logo"      src=""/>
+ <ul class="menu-horizontal">
 
+                     
+    
+    <p class="active">
+        <img id="vi" src="/imagenes/logo pestaña.PNG" alt="">
+    </p>
+                            <ul class="menu-vertical" >
+                            
+                            </ul>
+                        </li>
+                       
       <ul class="menu-horizontal">
 
                         {{#if isControl}}
