@@ -529,9 +529,21 @@ left: 12%;
     z-index: 1;
 }
 #vi{
-        background-color: #666567;
+        background-: #666567;
   width: 75%;
 }
+   #button-container {
+        position: absolute;
+        top: 20px; /* Ajusta la distancia desde arriba */
+        right: 10%; /* Ajusta la distancia desde la derecha */
+        z-index: 1000; /* Asegura que esté por encima del mapa */
+    }
+    #car{
+
+  width: 20%;
+
+
+    }
 </style>
 
 <body>
@@ -646,7 +658,8 @@ left: 12%;
     </p>
                             <ul class="menu-vertical">
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
-             <li><a href="/register">CREAR USUARIO</a></li>
+       
+
 
 
                             </ul>
@@ -665,6 +678,7 @@ left: 12%;
     </ul>
 </li>
 {{/if}}
+
 <li class="tecc">
 <p class="active">
         <img id="tec" src="/imagenes/apoyo-tecnico.png" alt="">
@@ -679,6 +693,15 @@ left: 12%;
 
   </ul>
 </nav>
+ {{#if isControl}}
+                        {{#if isAdmin}}
+   <div id="button-container">
+        <a id="rastreo" href="/ver_ubicaiones">
+            <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
+        </a>
+    </div>
+{{/if}}
+{{/if}}
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
@@ -742,17 +765,17 @@ L.marker([ubicacionEmpresa.latitud, ubicacionEmpresa.longitud], {icon: empresaIc
 
 // Agregar marcadores de hoteles al mapa
 var hoteles = [
-    { nombre: "NH HACIENDA", latitud: 4.6919549, longitud: -74.0344995},
-    { nombre: "NH TELEPORT", latitud: 4.6917653, longitud: -74.0381019},
+    { nombre: "NH HACIENDA", latitud: 4.6917879, longitud: -74.0319878},
+    { nombre: "NH TELEPORT", latitud: 4.691848, longitud: -74.035344},
     { nombre: "NH WTC", latitud: 4.6805553, longitud: -74.040445},
     { nombre: "HOTEL ESTELAR CALLE 100", latitud: 4.6847219, longitud: -74.0496408},
     { nombre: "NH URBAN 93", latitud: 4.6800893, longitud: -74.0562079 },
     { nombre: "NH pavillon", latitud: 4.6772523, longitud: -74.0494349 },
     { nombre: "HOTEL ESTELAR PARQUE 93", latitud: 4.674325, longitud: -74.0528475 },
-    { nombre: "NH ANDINO", latitud: 4.6687927, longitud: -74.0549873 },
+    { nombre: "NH ANDINO", latitud: 4.668843, longitud: -74.052698 },
     { nombre: "AVANI ZONA T", latitud:4.6665003, longitud:-74.0571342 },
-    { nombre: "CLUB EL NOGAL", latitud: 4.6601913, longitud: -74.0556019},
-    { nombre: "HILTON 72", latitud:4.6557042, longitud: -74.0581079 },
+    { nombre: "CLUB EL NOGAL", latitud: 4.6600933, longitud: -74.0510783},
+    { nombre: "HILTON 72", latitud:4.655751, longitud: -74.055407 },
     { nombre: "URBAN 26", latitud: 4.6309813, longitud: -74.086538},
     { nombre: "HILTON CORFERIAS", latitud: 4.6287861, longitud: -74.0954723},
     { nombre: "GRAND HYATT", latitud:4.644140, longitud: -74.099788}
@@ -809,43 +832,31 @@ socket.on('connect', () => {
     socket.emit('requestUserLocations');
 });
 
-// Escuchar las últimas ubicaciones conocidas del servidor
-socket.on('userLocations', (locations) => {
-    // Hacer algo con las ubicaciones, como mostrarlas en un mapa
-    console.log('Últimas ubicaciones conocidas:', locations);
-});
 
-// Escuchar las últimas ubicaciones conocidas del servidor
-socket.on('userLocations', (locations) => {
-    // Hacer algo con las ubicaciones, como mostrarlas en un mapa
-    console.log('Últimas ubicaciones conocidas:', locations);
-});
 
-// Escuchar las últimas ubicaciones conocidas del servidor
-socket.on('userLocations', function (locations) {
-    // Limpiar todos los marcadores existentes en el mapa
-    clearMarkers();
+// Función para limpiar los marcadores existentes en el mapa
+function clearMarkers() {
+    markers.forEach(function(marker) {
+        map.removeLayer(marker);
+    });
+    markers = []; // Vaciar el arreglo de marcadores
+}
 
-    // Recorrer las ubicaciones y agregar marcadores al mapa
+// Llamar a la función clearMarkers() antes de agregar nuevos marcadores
+socket.on('userLocations', function(locations) {
+    clearMarkers(); // Limpiar los marcadores existentes
     for (const username in locations) {
         const location = locations[username];
         // Agregar marcador para cada ubicación
-        L.marker([location.lat, location.lng]).addTo(map)
-            .bindPopup(username + '<br>' + 'Última ubicación conocida: ' + location.time).openPopup();
+        var marker = L.marker([location.lat, location.lng]).addTo(map)
+            .bindPopup(username + '<br>' + 'HORA:'  +  location.time).openPopup();
+        markers.push(marker); // Agregar el marcador al arreglo
     }
 });
 
-// Escuchar los movimientos del usuario seleccionado
-socket.on('userMovements', function (movements) {
-    // Crear un arreglo de coordenadas para la línea
-    var polylineCoords = [];
-    // Recorrer todos los movimientos y agregar las coordenadas a la línea
-    movements.forEach(function (movement) {
-        polylineCoords.push([movement.lat, movement.lng]);
-    });
-    // Dibujar la línea en el mapa
-    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
-});
+
+
+
 
 // Agregar marcadores al mapa
 var markers = []; // Almacena los marcadores para poder limpiarlos después
@@ -855,47 +866,7 @@ markers.forEach(function(hotel) {
     var marker = L.marker([hotel.latitud, hotel.longitud], {icon: hotelIcon}).addTo(map)
         .bindPopup(hotel.nombre);
 
-    marker.on('click', function (e) {
-        var username = hotel.nombre; // El nombre del hotel será el nombre de usuario en este ejemplo
-        // Solicitar al servidor los movimientos de este usuario
-        socket.emit('getUserMovements', { username: username });
-    });
-
     markers.push(marker); // Agregar el marcador al arreglo de marcadores
-});
-
-
-// Función para limpiar todos los marcadores del mapa
-function clearMarkers() {
-    markers.forEach(function(marker) {
-        map.removeLayer(marker); // Eliminar el marcador del mapa
-    });
-    markers = []; // Limpiar el arreglo de marcadores
-}
-
-
-// Escuchar los movimientos del usuario seleccionado
-socket.on('userMovements', function (movements) {
-    // Crear un arreglo de coordenadas para la línea
-    var polylineCoords = [];
-    // Recorrer todos los movimientos y agregar las coordenadas a la línea
-    movements.forEach(function (movement) {
-        polylineCoords.push([movement.lat, movement.lng]);
-    });
-    // Dibujar la línea en el mapa
-    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
-});
-// Escuchar los movimientos del usuario seleccionado
-// Escuchar los movimientos del usuario seleccionado
-socket.on('userMovements', function (movements) {
-    var polylineCoords = [];
-    movements.forEach(function (movement) {
-        polylineCoords.push([movement.latitud, movement.longitud]);
-    });
-
-    // Dibujar la línea en el mapa
-    var polyline = L.polyline(polylineCoords, { color: 'red' }).addTo(map);
-    map.fitBounds(polyline.getBounds()); // Ajustar el mapa para que se ajuste a la línea
 });
 
 
@@ -906,6 +877,20 @@ function getLocationAndSend() {
 
 // Llamar a la función cada 10 segundos (10000 milisegundos)
 setInterval(getLocationAndSend, 60000);
+// Agregar evento de clic a los marcadores de usuario
+
+
+// Escuchar los movimientos del usuario seleccionado desde el servidor
+socket.on('userMovements', function (movements) {
+    // Crear un arreglo de coordenadas para la línea
+    var polylineCoords = [];
+    // Recorrer todos los movimientos y agregar las coordenadas a la línea
+    movements.forEach(function (movement) {
+        polylineCoords.push([movement.lat, movement.lng]);
+    });
+    // Dibujar la línea en el mapa
+    L.polyline(polylineCoords, { color: 'red' }).addTo(map);
+});
 
 
 </script>

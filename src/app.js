@@ -1440,8 +1440,6 @@ app.get('/api/obtener_novedades', (req, res) => {
 
 
 
-
-
 // Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento', (req, res) => {
     
@@ -1466,8 +1464,6 @@ app.post('/api/guardar_seguimiento', (req, res) => {
 
 
 
-
-
 // Backend (Endpoint /api/eliminar_fecha)
 app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
     const fecha = req.params.fecha;
@@ -1480,6 +1476,8 @@ app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
         }
     });
 });
+
+
 
 
 
@@ -1504,8 +1502,6 @@ app.get('/novedadess', (req, res) => {
         }
     });
 });
-
-
 
 
 
@@ -1698,6 +1694,7 @@ app.post('/cotizacion', (req, res) => {
         });
     });
 });
+
 
 
 // Ruta para la página de búsqueda y visualización de datos
@@ -1935,6 +1932,20 @@ io.on('connection', (socket) => {
         socket.emit('userLocations', locations);
     });
 
+// Manejar la solicitud de selección de usuario
+socket.on('selectUser', ({ username }) => {
+    // Consultar la base de datos para obtener los movimientos del usuario seleccionado
+    const query = `SELECT * FROM ubicaciones WHERE nombre_usuario = '${username}'`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener los movimientos de MySQL:', error);
+            return;
+        }
+        // Emitir los movimientos al cliente que solicitó
+        socket.emit('userMovements', results);
+    });
+});
+
 
    // Emitir las últimas ubicaciones conocidas al cliente recién conectado
    socket.emit('userLocations', lastKnownLocations);
@@ -1962,6 +1973,8 @@ io.on('connection', (socket) => {
         // No necesitamos eliminar la última ubicación conocida del usuario
     });
 });
+
+
 
 
 
@@ -2460,6 +2473,47 @@ app.get('/userMovements/:username', (req, res) => {
         }
         res.json(results);
     });
+});
+
+
+
+
+
+
+
+
+
+
+
+// Define una ruta para obtener la lista de usuarios
+app.get('/usuarios', function(req, res) {
+    connection.query('SELECT DISTINCT nombre_usuario FROM ubicaciones', function(error, results, fields) {
+        if (error) throw error;
+        res.json(results);
+    });
+});
+
+// Define una ruta para obtener las ubicaciones de un usuario específico
+app.get('/ubicaciones/:nombreUsuario', function(req, res) {
+    const nombreUsuario = req.params.nombreUsuario;
+    connection.query('SELECT * FROM ubicaciones WHERE nombre_usuario = ?', [nombreUsuario], function(error, results, fields) {
+        if (error) throw error;
+        res.json(results);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+// Ruta para mostrar ubicaciones
+app.get('/ver_ubicaiones', (req, res) => {
+    res.render('ver_ubicaciones.hbs');
 });
 
 
