@@ -1838,27 +1838,21 @@ const socketIo = require("socket.io");
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Objeto para mantener un registro de los usuarios conectados
-let connectedUsers = {};
-
 // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
 let lastKnownLocations = {};
 
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
-    // Agregar el ID de socket del usuario conectado al objeto connectedUsers
-    connectedUsers[socket.id] = true;
+   // Emitir las últimas ubicaciones conocidas al cliente recién conectado
+   socket.emit('userLocations', lastKnownLocations);
 
-    // Emitir las últimas ubicaciones conocidas al cliente recién conectado
-    socket.emit('userLocations', lastKnownLocations);
-
-      // Manejar la recepción de ubicaciones de los usuarios
-      socket.on('location', (data) => {
+    // Manejar la recepción de ubicaciones de los usuarios
+    socket.on('location', (data) => {
         // Actualizar la última ubicación conocida del usuario
         lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time };
 
-        // Insertar la ubicación y el nombre de usuario en la tabla de ubicaciones (opcional)
+        // Insertar la ubicación y el nombre de usuario en la tabla de ubicaciones
         const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora) VALUES (?, ?, ?, ?)';
         connection.query(query, [data.lat, data.lng, data.username, data.time], (error, results) => {
             if (error) {
@@ -1873,14 +1867,9 @@ io.on('connection', (socket) => {
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
-        // Eliminar al usuario de los usuarios conectados
-        delete connectedUsers[socket.id];
         // No necesitamos eliminar la última ubicación conocida del usuario
-        // Mantendremos la última ubicación conocida hasta que se actualice con una nueva ubicación
     });
 });
-
-
 
 
 

@@ -800,33 +800,25 @@ hoteles.forEach(function(hotel) {
 
     map.locate({ setView: true, maxZoom: 16 });
 
-// Cuando el cliente se conecta, solicitar las ubicaciones de los usuarios al servidor
+/// Cuando se conecta el socket, solicitar las últimas ubicaciones conocidas
 socket.on('connect', () => {
-    // Solicitar al servidor las ubicaciones de los usuarios
-    socket.emit('loadUserLocations');
-
-    // Escuchar las actualizaciones de ubicación de los usuarios desde el servidor
-    socket.on('updateUserLocation', function (location) {
-        // Eliminar el marcador anterior si existe
-        if (markers[location.username]) {
-            map.removeLayer(markers[location.username]);
-        }
-
-        // Crear un nuevo marcador con la ubicación actualizada
-        var marker = L.marker([location.lat, location.lng], {icon: antennaIcon}).addTo(map)
-            .bindPopup(location.username + '<br>' + 'Última ubicación conocida: ' + location.time).openPopup();
-
-        // Almacenar el marcador en el diccionario de marcadores
-        markers[location.username] = marker;
-    });
+    socket.emit('requestUserLocations');
 });
 
-
-// Recibir las últimas ubicaciones conocidas del servidor
+// Escuchar las últimas ubicaciones conocidas del servidor
+socket.on('userLocations', (locations) => {
+    // Hacer algo con las ubicaciones, como mostrarlas en un mapa
+    console.log('Últimas ubicaciones conocidas:', locations);
+});
+// Escuchar las últimas ubicaciones conocidas del servidor
 socket.on('userLocations', function (locations) {
+    // Limpiar todos los marcadores existentes en el mapa
+    clearMarkers();
+
+    // Recorrer las ubicaciones y agregar marcadores al mapa
     for (const username in locations) {
         const location = locations[username];
-        // Mostrar el marcador en el mapa para cada ubicación
+        // Agregar marcador para cada ubicación
         L.marker([location.lat, location.lng]).addTo(map)
             .bindPopup(username + '<br>' + 'Última ubicación conocida: ' + location.time).openPopup();
     }
