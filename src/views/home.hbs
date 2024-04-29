@@ -811,9 +811,10 @@ socket.on('userLocations', function (locations) {
         const location = locations[username];
         // Mostrar el marcador en el mapa para cada ubicación
         L.marker([location.lat, location.lng]).addTo(map)
-            .bindPopup(username + '<br>' + 'Última ubicación conocida').openPopup();
+            .bindPopup(username + '<br>' + 'Última ubicación conocida: ' + location.time).openPopup();
     }
 });
+
 // Agregar marcadores al mapa
 var markers = []; // Almacena los marcadores para poder limpiarlos después
 
@@ -867,38 +868,6 @@ socket.on('userMovements', function (movements) {
 
 
 
-// Hacer una solicitud AJAX para obtener los datos del servidor
-$.ajax({
-  url: '/userMovements/:username',
-  method: 'GET',
-  success: function(data) {
-    // Procesar los datos recibidos
-    data.forEach(function(coordenada) {
-      // Obtener las coordenadas de latitud y longitud
-      var latitud = coordenada.latitud;
-      var longitud = coordenada.longitud;
-      
-      // Crear un objeto LatLng para cada coordenada
-      var latLng = new google.maps.LatLng(latitud, longitud);
-      
-      // Añadir la coordenada a la ruta
-      ruta.push(latLng);
-    });
-    
-    // Dibujar la ruta en el mapa
-    var linea = new google.maps.Polyline({
-      path: ruta,
-      geodesic: true,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-    linea.setMap(mapa);
-  },
-  error: function(xhr, status, error) {
-    console.error('Error al obtener los datos del servidor:', error);
-  }
-});
 
 </script>
 

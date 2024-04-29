@@ -1853,14 +1853,14 @@ io.on('connection', (socket) => {
     // Emitir las últimas ubicaciones conocidas al cliente recién conectado
     socket.emit('userLocations', lastKnownLocations);
 
-    // Manejar la recepción de ubicaciones de los usuarios
-    socket.on('location', (data) => {
+      // Manejar la recepción de ubicaciones de los usuarios
+      socket.on('location', (data) => {
         // Actualizar la última ubicación conocida del usuario
-        lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng };
+        lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time };
 
         // Insertar la ubicación y el nombre de usuario en la tabla de ubicaciones (opcional)
-        const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario) VALUES (?, ?, ?)';
-        connection.query(query, [data.lat, data.lng, data.username], (error, results) => {
+        const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora) VALUES (?, ?, ?, ?)';
+        connection.query(query, [data.lat, data.lng, data.username, data.time], (error, results) => {
             if (error) {
                 console.error('Error al insertar la ubicación en MySQL:', error);
                 return;

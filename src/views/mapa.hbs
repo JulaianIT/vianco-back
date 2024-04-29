@@ -1,77 +1,45 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de OpenStreetMap con Geolocalización</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        #map {
-            height: 400px;
-        }
-    </style>
+    <title>Document</title>
 </head>
 <body>
-<br>
-<div id="map"></div>
-<p>{{nombreUsuario}} </p>
+    
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
-<script>
-    var map = L.map('map').setView([0, 0], 13);
+    mapa con muchas calles 
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+mapa taskgo 
 
-    // Conectar al servidor Socket.IO
-    var socket = io();
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+}).addTo(map);
 
-    // Define el icono personalizado para el marcador de otros usuarios (antena)
-    var antennaIcon = L.icon({
-        iconUrl: '/imagenes/Gelocalizacion.png',
-        iconSize: [32, 32], // Tamaño del icono
-        iconAnchor: [16, 32], // Punto de anclaje del icono
-        popupAnchor: [0, -32] // Punto de anclaje del popup
-    });
 
-    function onLocationFound(e) {
-        var radius = e.accuracy / 2;
 
-        // Verificar la precisión antes de mostrar la ubicación
-        if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
-            alert('La precisión del GPS es baja. La ubicación puede no ser exacta.');
-            return;
-        }
 
-        L.marker(e.latlng).addTo(map)
-            .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
+L.tileLayer('https://{s}.google.com/vt/lyrs={type}&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3'],
+    type: 's', // Cambia el estilo aquí ('s' para mapas de calle, 'y' para híbrido, 't' para terreno, 'm' para satélite)
+    attribution: 'Map data &copy; <a href="https://www.google.com/">Google</a>'
+}).addTo(map);
 
-        L.circle(e.latlng, radius).addTo(map);
 
-        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
-        var currentTime = new Date().toLocaleTimeString();
-        var username = "{{nombreUsuario}}"; // Obtener el nombre de usuario del servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
-    }
 
-    function onLocationError(e) {
-        alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');
-    }
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
 
-    map.locate({ setView: true, maxZoom: 16 });
 
-    // Recibir ubicaciones de otros usuarios y mostrarlas en el mapa con el icono de antena
-    socket.on('userLocation', function (data) {
-        var marker = L.marker([data.lat, data.lng], { icon: antennaIcon }).addTo(map);
-        marker.bindPopup(data.username + '<br>' + 'Hora: ' + data.time).openPopup();
-    });
+    mapa calro 
 
-</script>
+    var lastKnownLocations = {};
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+}).addTo(map);
+
+
 </body>
 </html>
