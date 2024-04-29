@@ -125,6 +125,51 @@
         position: relative;
         top: 30px;
     }
+            .cotizaciones li form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cotizaciones li form button {
+            margin-left: 10px; /* Ajusta este valor según sea necesario */
+        }
+           .marcar-btn {
+            background-color: #90c9a7;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 20px; /* Ajusta este valor según sea necesario */
+        }
+
+        .marcar-btn:hover {
+            background-color: #6c9c82;
+        }
+           .volver-btn:hover, .ver:hover {
+        background-color: #d9d9d9;
+    }
+
+    .volver-btn, .ver {
+    position: relative;
+        left: 25px;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 25px;
+        font-weight: bold;
+        text-decoration: none;
+    }
     </style>
 </head>
 <body>
@@ -139,30 +184,25 @@
 <br>
 <br>
 <div class="cotizaciones">
-    <ol>
-        {{#each cotizaciones}}
-        <li><a href="/cotizaciones_pendientes/{{id}}">
-                <span class="cliente">{{cliente}}</span>
-                <span class="id">N° {{id}}</span>
-            </a>
-        </li>
-        {{/each}}
-    </ol>
+     <ol>
+            {{#each cotizaciones}}
+            <li>
+                <form action="/marcar_realizado" method="POST">
+                    <input type="hidden" name="cotizacionId" value="{{id}}">
+                    <a href="/cotizaciones_pendientes/{{id}}">
+                        <span class="cliente">{{cliente}}</span>
+                        <span class="id">N° {{id}}</span>
+                    </a>
+                    <button type="submit" class="marcar-btn" >COTIZACION REALIZADA</button>
+                </form>
+            </li>
+            {{/each}}
+        </ol>
 </div>
 
+                                    <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
 
-        <footer>
-        <section>
-            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
-            <p>Copyrigt soporteVianco</p>
-               <nav class="">
-        <ul class="w-full ml-auto flex justify-end pt-1">
-          
-            
-        </ul>
-    </nav>
-        </section>
-    </footer>
+   
 </body>
 </html>
 

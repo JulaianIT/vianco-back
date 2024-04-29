@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Personalizada de Cotización</title>
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-
+    <title>Document</title>
+</head>
+<body>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,15 +96,31 @@
             text-decoration: none;
         }
     </style>
-</head>
-<br>
-<br>
-<body>
-    
-     <a href="/cotizaciones_pendientes" class="volver-btn"><strong>Volver</strong></a>
-
-        <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
-    <div class="TO">
+    <header>
+        <img id="membrete" src="/imagenes/menbrete.png"/>
+        <img id="logo" src="/imagenes/logo vianco.png"/>
+        <img id="vigilado" src="/imagenes/vigilado.png"/>
+    </header>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1></h1>
+    <div>
+        <form action="/ver_cotizaciones" method="GET">
+            <label for="numero_fuec"><h2> Buscar por número fuec:</h2></label>
+            <input type="text" id="numero_fuec" name="numero_fuec">
+            <button type="submit">Buscar</button>
+            <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
+        </form>
+    </div>
+ <h1>Detalles de la Cotización</h1>
+    <div>
+        {{#if cotizacion}}
+        
+           
+           
+            <div class="TO">
     <div class="container" id="contenedor">
         <header>
             <img id="membrete" src="/imagenes/menbrete.png"/>
@@ -122,17 +135,17 @@
             <br>
             <table>
                 <tr>
-                    <td><strong>CLIENTE:</strong> {{cliente.cliente}}</td>
-                    <td><strong>COTIZACION N°:</strong> {{cotizacionId}}</td>
+                    <td><strong>CLIENTE:</strong> {{cotizacion.cliente}}</td>
+                    <td><strong>COTIZACION N°:</strong> {{cotizacion.id}}</td>
                     <td><strong>Valor Total: $</strong> {{valorTotal}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Correo:</strong> {{cliente.correo}}</td>
-                    <td><strong>Contacto:</strong> {{cliente.contacto}}</td>
-                    <td><strong>Ciudad:</strong> {{cliente.ciudad}}</td>
+                    <td><strong>Correo:</strong> {{cotizacion.correo}}</td>
+                    <td><strong>Contacto:</strong> {{cotizacion.contacto}}</td>
+                    <td><strong>Ciudad:</strong> {{cotizacion.ciudad}}</td>
                 </tr>
                 <tr>
-                    <td colspan="3"><strong>N° DE SERVICIOS:</strong> {{cliente.num_servicios}}</td>
+                    <td colspan="3"><strong>N° DE SERVICIOS:</strong> {{cotizacion.num_servicios}}</td>
                 </tr>
             </table>
 <br>
@@ -154,19 +167,71 @@
                         <th>VALOR POR TRASLADO</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {{#each servicios}}
-                    <tr>
-                        <td>{{formatDate fecha}}</td>
-                        <td>{{tipoCarro}}</td>
-                        <td>{{itinerario}}</td>
-                        <td>{{origen}}</td>
-                        <td>{{destino}}</td>
-                        <td>{{hora}}</td>
-                        <td>$ {{valor}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
+               <tbody>
+<tbody>
+    {{#if cotizacion.fecha1}}
+    <tr>
+        <!-- Accede a las propiedades del servicio actual (this) -->
+        <td>{{cotizacion.fecha1}}</td>
+        <td>{{cotizacion.tipoCarro1}}</td>
+        <td>{{cotizacion.itinerario1}}</td>
+        <td>{{cotizacion.origen1}}</td>
+        <td>{{cotizacion.destino1}}</td>
+        <td>{{cotizacion.hora1}}</td>
+        <td>$ {{cotizacion.valor1}}</td>
+    </tr>
+    {{/if}}
+    {{#if cotizacion.fecha2}}
+    <tr>
+        <!-- Accede a las propiedades del servicio actual (this) -->
+        <td>{{cotizacion.fecha2}}</td>
+        <td>{{cotizacion.tipoCarro2}}</td>
+        <td>{{cotizacion.itinerario2}}</td>
+        <td>{{cotizacion.origen2}}</td>
+        <td>{{cotizacion.destino2}}</td>
+        <td>{{cotizacion.hora2}}</td>
+        <td>$ {{cotizacion.valor2}}</td>
+    </tr>
+    {{/if}}
+    {{#if cotizacion.fecha3}}
+    <tr>
+        <!-- Accede a las propiedades del servicio actual (this) -->
+        <td>{{cotizacion.fecha3}}</td>
+        <td>{{cotizacion.tipoCarro3}}</td>
+        <td>{{cotizacion.itinerario3}}</td>
+        <td>{{cotizacion.origen3}}</td>
+        <td>{{cotizacion.destino3}}</td>
+        <td>{{cotizacion.hora3}}</td>
+        <td>$ {{cotizacion.valor3}}</td>
+    </tr>
+    {{/if}}
+    {{#if cotizacion.fecha4}}
+    <tr>
+        <!-- Accede a las propiedades del servicio actual (this) -->
+        <td>{{cotizacion.fecha4}}</td>
+        <td>{{cotizacion.tipoCarro4}}</td>
+        <td>{{cotizacion.itinerario4}}</td>
+        <td>{{cotizacion.origen4}}</td>
+        <td>{{cotizacion.destino4}}</td>
+        <td>{{cotizacion.hora4}}</td>
+        <td>$ {{cotizacion.valor4}}</td>
+    </tr>
+    {{/if}}
+    {{#if cotizacion.fecha5}}
+    <tr>
+        <!-- Accede a las propiedades del servicio actual (this) -->
+        <td>{{cotizacion.fecha5}}</td>
+        <td>{{cotizacion.tipoCarro5}}</td>
+        <td>{{cotizacion.itinerario5}}</td>
+        <td>{{cotizacion.origen5}}</td>
+        <td>{{cotizacion.destino5}}</td>
+        <td>{{cotizacion.hora5}}</td>
+        <td>$ {{cotizacion.valor5}}</td>
+    </tr>
+    {{/if}}
+</tbody>
+
+
             </table>
                 <br>
             <h2><strong>Total de la cotización: $</strong> {{valorTotal}}</h2>
@@ -192,36 +257,19 @@
 
         </div>
 
-
-   <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('convertirBtn').addEventListener('click', function() {
-                // Captura el contenedor específico por su ID
-                const container = document.getElementById('contenedor');
-                
-                // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
-                html2canvas(container, {
-                    width: container.scrollWidth, // Captura el ancho completo del contenedor
-                    height: container.scrollHeight // Captura la altura completa del contenedor
-                }).then(canvas => {
-                    // Convierte el canvas en una URL de datos
-                    const dataUrl = canvas.toDataURL();
-
-                    // Crea un enlace para descargar la imagen
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = 'FUEC_VIANCO';
-                    a.textContent = 'Descargar Imagen';
-                    document.body.appendChild(a);
-
-                    // Simula un clic en el enlace para iniciar la descarga
-                    a.click();
-                });
-            });
-        });
-    </script>
-
-
-
+           
+           
+    
+           
+           
+           
+           
+           
+           
+            <!-- Agrega los campos adicionales según sea necesario -->
+        {{else}}
+            <p>No se encontró ninguna cotización con el ID proporcionado.</p>
+        {{/if}}
+    </div>
 </body>
 </html>

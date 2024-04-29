@@ -1684,6 +1684,8 @@ app.post('/cotizacion', (req, res) => {
         });
     });
 });
+
+
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/cotizaciones_pendientes', (req, res) => {
     // Realizar la consulta a la base de datos para obtener las cotizaciones pendientes
@@ -1697,7 +1699,6 @@ app.get('/cotizaciones_pendientes', (req, res) => {
         res.render('cotizaciones/cotizaciones_pendientes', { cotizaciones: rows });
     });
 });
-
 app.get('/cotizaciones_pendientes/:id', (req, res) => {
     const cotizacionId = req.params.id;
     connection.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
@@ -1732,53 +1733,106 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
         res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios, cliente: cotizacion });
     });
 });
-// Ruta para generar la plantilla personalizadaapp.post('/generar_plantilla', (req, res) => {
-    // Extraer todos los datos de la cotización del cuerpo de la solicitud
-    app.post('/generar_plantilla', (req, res) => {
-        // Extraer todos los datos de la cotización del cuerpo de la solicitud
-        const cotizacionId = req.body.cotizacionId;
-        const valorTotal = req.body.valorTotal;
-        const fecha = req.body.fecha;
-        const hora = req.body.hora;
-        const origen = req.body.origen;
-        const destino = req.body.destino;
-        const itinerario = req.body.itinerario;
 
-        const tipoCarro = req.body.tipoCarro;
+app.post('/generar_plantilla', (req, res) => {
+    // Extraer todos los datos de la cotización del cuerpo de la solicitud
+    const cotizacionId = req.body.cotizacionId;
+    const valorTotal = req.body.valorTotal;
     
+    // Extraer los datos del cliente del cuerpo de la solicitud
+    const cliente = {
+        nombre: req.body.nombre,
+        cliente: req.body.cliente, // Cambiar a cliente si es el nombre correcto del campo en el formulario HTML
+        correo: req.body.correo,
+        contacto: req.body.contacto,
+        ciudad: req.body.ciudad,
+        num_servicios: req.body.num_servicios,
+        fecha_creacion: req.body.fecha_creacion
+    };
     
-        // Extraer los datos del cliente del cuerpo de la solicitud
-        const cliente = {
-            nombre: req.body.nombre,
-            cliente: req.body.cliente,
-            correo: req.body.correo,
-            contacto: req.body.contacto,
-            ciudad: req.body.ciudad,
-            num_servicios: req.body.num_servicios,
-            fecha_creacion: req.body.fecha_creacion
-        };
+    // Extraer todos los detalles de los servicios de la cotización
+    const servicios = req.body.servicios;
     
-        // Extraer todos los detalles de los servicios de la cotización
-        const servicios = req.body.servicios;
-    
-        // Renderizar la plantilla personalizada con todos los datos de la cotización
-        res.render('cotizaciones/plantilla_personalizada', { 
-            cotizacionId: cotizacionId, 
-            valorTotal: valorTotal,
-            cliente: cliente, 
-            servicios: servicios
-        }, (err, html) => {
-            if (err) {
-                console.error('Error al renderizar la plantilla:', err);
-                res.status(500).send('Error al generar la plantilla');
-                return;
-            }
-    
-            // Enviar el HTML generado como respuesta HTTP
-            res.send(html);
-        });
+    // Renderizar la plantilla personalizada con todos los datos de la cotización
+    res.render('cotizaciones/plantilla_personalizada', { 
+        cotizacionId: cotizacionId, 
+        valorTotal: valorTotal,
+        cliente: cliente, 
+        servicios: servicios
+    }, (err, html) => {
+        if (err) {
+            console.error('Error al renderizar la plantilla:', err);
+            res.status(500).send('Error al generar la plantilla');
+            return;
+        }
+        // Enviar el HTML generado como respuesta HTTP
+        res.send(html);
     });
-    
+});
+
+
+
+app.post('/marcar_realizado', (req, res) => {
+    const cotizacionId = req.body.cotizacionId;
+    console.log(req.body); 
+    // Aquí debes implementar la lógica para marcar la cotización como realizada en tu base de datos
+    // Por ejemplo, si estás utilizando MySQL puedes hacer algo como esto:
+    connection.query('UPDATE cotizaciones SET realizada = 1 WHERE id = ?', cotizacionId, (err, result) => {
+        if (err) {
+            console.error('Error al marcar como realizado:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        // Redirigir a la página de cotizaciones pendientes después de marcar como realizado
+        res.redirect('/cotizaciones_pendientes');
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Ruta para mostrar el formulario de búsqueda
+app.get('/VE', (req, res) => {
+    res.render('cotizaciones/ver_cotizaciones.hbs');
+});
+// Ruta para manejar la búsqueda
+app.get('/ver_cotizaciones', (req, res) => {
+    const idCotizacion = req.query.numero_fuec;
+    if (!idCotizacion) {
+        res.redirect('/VE'); // Redirige de vuelta al formulario si no se proporciona un número_fuec
+        return;
+    }
+
+    const sql = 'SELECT * FROM cotizaciones WHERE id = ?';
+    connection.query(sql, [idCotizacion], (error, results) => {
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error);
+            res.render('error');
+            return;
+        }
+        res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] }); // Renderiza la misma plantilla con los resultados de la búsqueda
+    });
+});
+
+
+
+
+
+
+
 
 
 

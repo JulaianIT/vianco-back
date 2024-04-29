@@ -130,6 +130,27 @@
             font-weight: bold;
             text-decoration: none;
         }
+        .TOTAL{
+            border: 5px solid black;
+            position: relative;
+            left: 10%;
+            width: 20%;
+padding: 15px;
+background-color:rgb(144, 201, 167,0.3);
+
+
+        }
+        .TOTAL label{
+            font-size: 20px;
+            margin-right: 20px;
+
+            
+        }
+         .TOTAL input{
+
+            width: 50%;
+            height: 100%;
+         }
     </style>
 </head>
 <body>
@@ -141,30 +162,28 @@
 </header>
 <br>
 <br>
-<form action="/generar_plantilla" method="POST">
-    <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
-    <input type="hidden" name="valorTotal" value="50">
-    <input type="hidden" name="cliente" value="{{cotizacion.cliente}}">
-    <input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
-    <input type="hidden" name="correo" value="{{cotizacion.correo}}">
-    <input type="hidden" name="contacto" value="{{cotizacion.contacto}}">
-    <input type="hidden" name="ciudad" value="{{cotizacion.ciudad}}">
-    <input type="hidden" name="num_servicios" value="{{cotizacion.num_servicios}}">
-    <input type="hidden" name="fecha_creacion" value="{{formatDate cotizacion.fecha_creacion}}">
-<input type="hidden" name="fecha" value="{{this.fecha}}">
-<input type="hidden" name="hora" value="{{this.hora}}">
-<input type="hidden" name="origen" value="{{this.origen}}">
-<input type="hidden" name="destino" value="{{this.destino}}">
-<input type="hidden" name="itinerario" value="{{this.itinerario}}">
-<input type="hidden" name="tipoCarro" value="{{this.tipoCarro}}">
+    <form action="/generar_plantilla" method="POST">
+        <!-- Campos ocultos para los datos de la cotización -->
+        <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
+<input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
+<input type="hidden" name="cliente" value="{{cotizacion.cliente}}">
+<input type="hidden" name="correo" value="{{cotizacion.correo}}">
+<input type="hidden" name="contacto" value="{{cotizacion.contacto}}">
+<input type="hidden" name="ciudad" value="{{cotizacion.ciudad}}">
+<input type="hidden" name="num_servicios" value="{{cotizacion.num_servicios}}">
 
-    
-    
-    
-    
-    
-    
-    
+        <!-- Campos ocultos para los datos de servicios -->
+        {{#each servicios}}
+        <input type="hidden" name="servicios[{{@index}}][fecha]" value="{{fecha}}">
+        <input type="hidden" name="servicios[{{@index}}][hora]" value="{{hora}}">
+        <input type="hidden" name="servicios[{{@index}}][origen]" value="{{origen}}">
+        <input type="hidden" name="servicios[{{@index}}][destino]" value="{{destino}}">
+        <input type="hidden" name="servicios[{{@index}}][itinerario]" value="{{itinerario}}">
+        <input type="hidden" name="servicios[{{@index}}][tipoCarro]" value="{{tipoCarro}}">
+        {{/each}}
+        <!-- Tu tabla de servicios -->
+        <!-- Botón para enviar el formulario -->
+   
     <div class="CLIENTE">
         <h2>DATOS DEL CLIENTE</h2>
         <p><strong>Realizada el:</strong> {{formatDate cotizacion.fecha_creacion}}</p>
@@ -208,8 +227,13 @@
         {{/each}}
         </tbody>
     </table>
-    <button class="volver-btn" type="submit">Generar Plantilla</button>
+    <div class="TOTAL">
+    <label   for="valorTotal">VALOR TOTAL:</label>
+            <input type="text" name="valorTotal" >
+</div>
+        <button class="volver-btn" type="submit">Generar Plantilla</button>
 </form>
+
 <footer>
     <section>
         <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
@@ -226,6 +250,7 @@
         const year = date.getFullYear().toString();
         return `${day}/${month}/${year}`;
     }
+    
 </script>
 </body>
 </html>
