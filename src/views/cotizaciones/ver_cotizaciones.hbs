@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+           <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+
 </head>
 <body>
     
@@ -95,6 +101,71 @@
             font-weight: bold;
             text-decoration: none;
         }
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+        h1 {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    color: #333; /* Color de texto oscuro */
+    margin-bottom: 20px; /* Espacio inferior */
+}
+
+/* Estilos para el formulario de búsqueda */
+form {
+  background-color: #90c9a7;
+  width: 100%;
+    display: flex; /* Mostrar los elementos en línea */
+    align-items: center; /* Centrar verticalmente los elementos */
+}
+
+label {
+  padding: 30px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: #666; /* Color de texto gris */
+    margin-right: 10px; /* Espacio a la derecha del texto */
+}
+
+input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc; /* Borde del input */
+    border-radius: 4px; /* Bordes redondeados */
+    width: 200px; /* Ancho del input */
+}
+
+button[type="submit"] {
+  margin-left: 1%;
+    padding: 8px 16px; /* Espaciado interno */
+    font-size: 26px;
+    background-color: #d9d9d9; /* Color de fondo azul */
+    color: #fff; /* Color de texto blanco */
+    border: none; /* Eliminar borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+    transition: background-color 0.3s; /* Transición suave */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Cambiar el color de fondo al pasar el cursor */
+}
+#id{
+    border-radius: 5px;
+    position: relative;
+    left: 20px;
+    padding: 20px;
+    width: 10%;
+background-color: #90c9a7;
+
+}
     </style>
     <header>
         <img id="membrete" src="/imagenes/menbrete.png"/>
@@ -107,17 +178,25 @@
     <br>
     <h1></h1>
     <div>
+        <div class="busca">
         <form action="/ver_cotizaciones" method="GET">
             <label for="numero_fuec"><h2> Buscar por número fuec:</h2></label>
             <input type="text" id="numero_fuec" name="numero_fuec">
             <button type="submit">Buscar</button>
             <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
+            </div>
         </form>
     </div>
- <h1>Detalles de la Cotización</h1>
-    <div>
-        {{#if cotizacion}}
+    <br>
+    <br>
+         {{#if cotizacion}}
         
+ <h2 id="id" >Cotizacion N°: {{cotizacion.id}}</h2>
+         <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
+
+    <div>
+ 
+        <br>
            
            
             <div class="TO">
@@ -271,5 +350,32 @@
             <p>No se encontró ninguna cotización con el ID proporcionado.</p>
         {{/if}}
     </div>
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('convertirBtn').addEventListener('click', function() {
+                // Captura el contenedor específico por su ID
+                const container = document.getElementById('contenedor');
+                
+                // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
+                html2canvas(container, {
+                    width: container.scrollWidth, // Captura el ancho completo del contenedor
+                    height: container.scrollHeight // Captura la altura completa del contenedor
+                }).then(canvas => {
+                    // Convierte el canvas en una URL de datos
+                    const dataUrl = canvas.toDataURL();
+
+                    // Crea un enlace para descargar la imagen
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = 'FUEC_VIANCO';
+                    a.textContent = 'Descargar Imagen';
+                    document.body.appendChild(a);
+
+                    // Simula un clic en el enlace para iniciar la descarga
+                    a.click();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
