@@ -800,10 +800,27 @@ hoteles.forEach(function(hotel) {
 
     map.locate({ setView: true, maxZoom: 16 });
 
-// Cuando el cliente se conecta o recarga la página, solicitar las últimas ubicaciones conocidas
+// Cuando el cliente se conecta, solicitar las ubicaciones de los usuarios al servidor
 socket.on('connect', () => {
+    // Solicitar al servidor las ubicaciones de los usuarios
     socket.emit('loadUserLocations');
+
+    // Escuchar las actualizaciones de ubicación de los usuarios desde el servidor
+    socket.on('updateUserLocation', function (location) {
+        // Eliminar el marcador anterior si existe
+        if (markers[location.username]) {
+            map.removeLayer(markers[location.username]);
+        }
+
+        // Crear un nuevo marcador con la ubicación actualizada
+        var marker = L.marker([location.lat, location.lng], {icon: antennaIcon}).addTo(map)
+            .bindPopup(location.username + '<br>' + 'Última ubicación conocida: ' + location.time).openPopup();
+
+        // Almacenar el marcador en el diccionario de marcadores
+        markers[location.username] = marker;
+    });
 });
+
 
 // Recibir las últimas ubicaciones conocidas del servidor
 socket.on('userLocations', function (locations) {
