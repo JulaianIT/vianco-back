@@ -1832,6 +1832,11 @@ app.get('/mapa', (req, res) => {
 
 
 
+
+
+
+
+
 const http = require("http");
 const socketIo = require("socket.io");
 
@@ -1841,8 +1846,27 @@ const io = socketIo(server);
 // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
 let lastKnownLocations = {};
 
+/// Cuando se conecta el socket, solicitar las últimas ubicaciones conocidas
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
+
+    // Consultar la base de datos para obtener todas las ubicaciones almacenadas
+    const query = 'SELECT * FROM ubicaciones';
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener las ubicaciones de MySQL:', error);
+            return;
+        }
+        // Crear un objeto para almacenar las ubicaciones
+        let locations = {};
+        // Iterar sobre los resultados y almacenar las ubicaciones en el objeto
+        results.forEach(row => {
+            locations[row.nombre_usuario] = { lat: row.latitud, lng: row.longitud, time: row.hora };
+        });
+        // Emitir las ubicaciones al cliente recién conectado
+        socket.emit('userLocations', locations);
+    });
+
 
    // Emitir las últimas ubicaciones conocidas al cliente recién conectado
    socket.emit('userLocations', lastKnownLocations);
@@ -1870,9 +1894,6 @@ io.on('connection', (socket) => {
         // No necesitamos eliminar la última ubicación conocida del usuario
     });
 });
-
-
-
 
 
 
