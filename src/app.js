@@ -1319,6 +1319,7 @@ app.get('/tarifas', (req, res) => {
 
 
 
+
 app.get('/novedades', (req, res) => {
     res.render('novedades_Callcenter/novedades_Callcenter.hbs');
 });
@@ -1405,6 +1406,7 @@ app.get('/api/obtener_fechas_disponibles', (req, res) => {
         }
     });
 });
+
 
 
 
@@ -1504,6 +1506,15 @@ app.get('/novedadess', (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+
 // Ruta para la página principal
 app.get('/inicio', (req, res) => {
     res.render('centro_operaciones/inicio_turno.hbs', { title: 'Iniciar Turno' });
@@ -1531,6 +1542,9 @@ app.post('/inicio-turno', (req, res) => {
 app.get('/centro_operaciones/tareas_diarias', (req, res) => {
     res.render('centro_operaciones/tareas_diarias', { title: 'Tareas Diarias' });
 });
+
+
+
 
 // Manejar la solicitud POST para marcar una tarea
 // Manejar la solicitud POST para marcar una tarea
