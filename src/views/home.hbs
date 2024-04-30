@@ -29,56 +29,20 @@
     box-sizing: border-box;
 }
 
-/* Otras reglas CSS aquí... */
-
-
-
-body{
-        background-color: rgb(144,201,167, 0.5);
-
-
-}
-header{
-    width: 100%;
-    background-color: white;
-
-
-
-}
-nav{
-    
-    max-width: 100%;
-    margin: auto;
-    background-color: #666567;
-    font-size: 30px;
-    margin-top: 0px;
-              border: solid 6px black;
-              
-
-
-}
 .menu-horizontal {
+
     text-transform: uppercase;
     list-style: none;
     display: flex;
-    /*justify-content: space-around;*/ /* Elimina esta línea */
     flex-direction: column; /* Agrega esta línea */
 }
-.menu-horizontal >li > a{
-
-    display: block;
-    padding: 30px 15px;
-    color: black;
-    text-decoration: none;
 
 
-}
 .menu-horizontal >li:hover{
-
-
     background-color: #d9d9d9;
 }
 .menu-vertical{
+
     text-transform: uppercase;
     position: absolute;
     display: none;
@@ -86,32 +50,15 @@ nav{
     width: 300px;
     background-color: rgb(0,0,0, 0.9) ;
 
-
 }
 .menu-horizontal li:hover .menu-vertical{
     display: block;
 
 }
 .menu-vertical li:hover{
-
     background-color: rgb(144,201,167, 0.5);
-
 }
 
-
-
-
-nav{
-    max-width: 100%;
-    margin: auto;
-    background-color: #666567;
-    font-size: 30px;
-    margin-top: 0px;
-              border: solid 6px black;
-              
-
-
-}
 .menu-horizontal {
     text-transform: uppercase;
     list-style: none;
@@ -125,24 +72,8 @@ nav{
     padding: 30px 15px;
     color: white;
     text-decoration: none;
-
-
 }
-.menu-horizontal >li:hover{
 
-
-    background-color: #d9d9d9;
-}
-.menu-vertical{
-    text-transform: uppercase;
-    position: absolute;
-    display: none;
-    list-style: none;
-    width: 300px;
-    background-color: rgb(0,0,0, 0.9) ;
-
-
-}
 .menu-horizontal li:hover .menu-vertical{
     display: block;
 
@@ -161,189 +92,48 @@ nav{
 
 }
 
-@media only screen and (max-width: 600px) {
-  /* Estilos para pantallas más pequeñas, como teléfonos móviles */
-  body {
-    font-size: 14px; /* Tamaño de fuente más pequeño */
-  }
-  .menu-horizontal {
-    font-size: 20px; /* Tamaño de fuente más pequeño para el menú horizontal */
-  }
-}
 img {
   max-width: 100%;
   height: auto;
 }
   
-    
-     
-        .bad{
-            font-size: 20px;
-            position: relative;
-            color:rgb(113, 112, 111);
-            right: -20px;
-            top: 6px;
-        }
-        .ok{
-            font-size: 20px;
-            position: relative;
-            top: 30px;
-        }
-        #sele{
-            font-size: 30px;
-
-
-        }
-        h1{
-            font-size: 50px;
-
-        }
-        /* Estilos para el label */
-        label {
-            font-weight: bold; /* Texto en negrita */
-            margin-bottom: 50px; /* Espacio inferior */
-            color: #333; /* Color del texto */
-        }
-        .fond{
-          width: 100%;
-    
-      
-        }
-
-
-#logo{
-    position: relative;
-    left: 90px;
-
-    width: 400px;
-
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 300px;
-}
 p{
-    
-    padding: 30px 15px;
-    color: black;
-    text-decoration: none;
-
+    padding:20%;
 
 }
-
-
 
 #map {
     position: absolute;
-    top: 0;
-    left: 200px; /* Ancho de la barra de navegación */
-    width: calc(100% - 200px); /* Ancho del mapa */
+    top: 8%;
+    width: calc(100% ); /* Ancho del mapa */
     height: 100%;
     z-index: 1;
 }
 
 
-
-@media only screen and (max-width: 600px) {
-  /* Estilos para pantallas más pequeñas, como teléfonos móviles */
-  body {
-    font-size: 14px; /* Tamaño de fuente más pequeño */
-  }
-  .menu-horizontal {
-    font-size: 20px; /* Tamaño de fuente más pequeño para el menú horizontal */
-  }
-}
-img {
-  max-width: 100%;
-  height: auto;
-}
-  
-    
-     
-        .bad{
-            font-size: 20px;
-            position: relative;
-            color:rgb(113, 112, 111);
-            right: -20px;
-            top: 6px;
-        }
-        .ok{
-            font-size: 20px;
-            position: relative;
-            top: 30px;
-        }
-        #sele{
-            font-size: 30px;
-
-
-        }
-        h1{
-            font-size: 50px;
-
-        }
-        /* Estilos para el label */
-        label {
-            font-weight: bold; /* Texto en negrita */
-            margin-bottom: 50px; /* Espacio inferior */
-            color: #333; /* Color del texto */
-        }
-        .fond{
-          width: 100%;
-    
-      
-        }
-
-
-
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 300px;
-}
-p{
-    
-    padding: 30px 15px;
-    color: white;
-    text-decoration: none;
-
-
-}
-
-
-
-#logo{
-    position: relative;
-    left: 90px;
- opacity: 0.6;
-    width: 400px;
-
-}
 nav {
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+
     position: fixed;
     top: 0;
     left: 0;
-    width: 200px; /* Ancho de la barra de navegación */
+    width: 4%; /* Ancho de la barra de navegación */
     height: 100%;
-    background-color: rgb(102, 101, 103,0.9);
+    background-color: rgb(102, 101, 103);
     font-size: 20px;
     border: solid 6px black;
     z-index: 1500; /* Asegura que esté por encima del encabezado */
     color: black !important; /* Cambia el color del texto a negro y da prioridad */
 }
 
-
-
 #map {
+ 
     position: absolute;
-    top: 0;
-    left: 200px; /* Ancho de la barra de navegación */
-    width: calc(100% - 200px); /* Ancho del mapa */
+ 
     height: 100%;
-    z-index: 1;
 }
 
-.menu-horizontal li {
-    position: relative;
-}
+
 
 .menu-horizontal li:hover .menu-vertical {
     display: block;
@@ -352,216 +142,55 @@ nav {
 
     left: 100%; /* Coloca el menú vertical a la derecha del elemento activador */
 }
-
-
-
-
-#calll {
-height: 70px;
+#calll ,#eje,#tec,#ope {
+height: 10%;
 align-items: center;
-left: 12%;
+left: 5%;
     position: relative;
  }
-
-
-
-.call {
+.call ,.ejee,.tecc,.opeee,.geree,.contro,.CI{
     
     position: relative;
     display: inline-block; /* Asegura que el elemento tenga un tamaño */
 }
 
-.call:hover::after {
-    content: "Callcenter"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-
-#eje{
-
-width: 70px;
-align-items: center;
-
-    position: relative;
-left: 12%;
-
-
-
-}
-
-.ejee{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.ejee:hover::after {
-    content: "EJECUTIVO"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-#tec{
-
-width: 70px;
-align-items: center;
-
-    position: relative;
-left: 12%;
-
-
-}
-.tecc{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.tecc:hover::after {
-    content: "SOPORTE"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-
-.opeee{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.opeee:hover::after {
-    content: "OPERACIONES"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-#ope{
-width: 70px;
-align-items: center;
-
-    position: relative;
-left: 12%;
-
-
-
-
-}
-
-.geree{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.geree:hover::after {
-    content: "GERENCIA"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-
-.contro{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.contro:hover::after {
-    content: "CONTROL OPERATIVO"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-
-.CI{
-
-   position: relative;
-    display: inline-block; /* Asegura que el elemento tenga un tamaño */
-
-}
-.CI:hover::after {
-    content: "clientes"; /* El texto que deseas mostrar */
-    position: absolute;
-    top: 50%; /* Alinea el texto verticalmente */
-    left: 50%; /* Alinea el texto horizontalmente */
-    transform: translate(-50%, -50%); /* Centra el texto */
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
 #vi{
-        background-: #666567;
-  width: 75%;
+  width: 100%;
 }
-   #button-container {
-        position: absolute;
-        top: 20px; /* Ajusta la distancia desde arriba */
-        right: 10%; /* Ajusta la distancia desde la derecha */
-        z-index: 1000; /* Asegura que esté por encima del mapa */
-    }
+
     #car{
-
-  width: 20%;
-
-
+ 
+      position: relative;
+            top: 7px;
+            left: 75%;
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
     }
      #campana {
             position: relative;
-            width: 70px;
-            height: 70px;
+            top: 5px;
+            left: 80%;
+            width: 40px;
+            height: 40px;
             background-image: url('/imagenes/campana.png');
             background-size: cover;
             background-repeat: no-repeat;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+          float: inline-start;
             cursor: pointer;
         }
 
         #numNotificacionesSinLeer {
-            position: absolute;
+      position: absolute;
             top: 5px;
             right: -7px;
             background-color: #d9d9d9;
@@ -576,10 +205,10 @@ left: 12%;
             font-weight: bold;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
-
         /* Estilos de la ventana emergente */
         #ventanaEmergente {
-            display: none;
+            padding: 20px;
+             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -601,19 +230,58 @@ left: 12%;
             right: 5px;
             cursor: pointer;
         }
-        
+    header{
+   left: 4%;
+padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+
+    }
+   #ingreso{
+    padding: 4px;
+   border-radius: 3px;
+    text-align: center;
+    font-size: 20px;
+    position: relative;
+    width: 10%;
+    background-color: #90c9a7;
+   left: 90%;
+    top: -20%;
+float: none;
+
+   }
 </style>
 
 <body>
-      <!-- Agrega esta sección dentro del <header> o en cualquier lugar adecuado -->
+     <div id="map"></div>
+ <!-- Agrega esta sección dentro del <header> o en cualquier lugar adecuado -->
+<div id="button-container">
+        <a id="rastreo" href="/ver_ubicaiones">
+            <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
+        </a>
+    </div>
+
+<div id="campana" onclick="mostrarVentanaEmergente()">
+    <div id="numNotificacionesSinLeer"></div>
+</div>
+
+<header>
+            <h1 id="ingreso" >{{name}}</h1>
 
 
+
+ 
+</header>
+<hr>
 <div id="ventanaEmergente">
     <span id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</span>
-    <h2>Contenido de la ventana emergente</h2>
+    <h2>COTIZACIONES RECIEN ENVIADAS </h2>
     <!-- Botón para marcar como leídas las notificaciones -->
     <button onclick="marcarComoLeidas()">Marcar como leídas</button>
 </div>
+
+
 
     <br>
     <br><br>
@@ -623,9 +291,7 @@ left: 12%;
         <img  id="logo"      src=""/>
  <ul class="menu-horizontal">
 
-<div id="campana" onclick="mostrarVentanaEmergente()">
-    <div id="numNotificacionesSinLeer"></div>
-</div>
+
 
 
     <p class="active">
@@ -648,7 +314,6 @@ left: 12%;
 
                                <li><a href=" /ver_novedades_C">NOVEDADES</a></li>
                                 <li><a href="https://docs.google.com/spreadsheets/d/1pTFbY3-Qp76hAiNQ7JLC84uYwuu-np7MdGupLfvni4s/edit?usp=sharing" target="_blank" >PROGRAMACION VEHICULOS</a></li>
-                                 <li><a href="/ver_notificaciones">NOVEDADES PENDIENTES</a></li>
 
                                  <li><a href=" /ver_novedades">NOVEDADES PENDIENTES</a></li>
                             </ul>
@@ -656,8 +321,11 @@ left: 12%;
                         {{/if}}
                         
                         {{#if isControl}}
-                        
-                        <li><p class="active"> COTIZACIONES</p>  
+                                  <li class="contro">
+
+                        <p class="active">
+                    <img id="calll" src="/imagenes/inversion.png" alt="">
+                </p> 
                             <ul class="menu-vertical" >
                                <li><a href="/formulario_cotizaciones">REALIZAR COTIZACION</a></li>
                                
@@ -758,20 +426,16 @@ left: 12%;
                             </ul>
                         </li>
                       
-                      <li><a href="/logout" id="selected">CERRAR SESION</a></li>  
+                      <li><a href="/logout" id="selected"><img src="/imagenes/apagar.png" alt=""></a></li>  
 
   </ul>
 </nav>
  {{#if isControl}}
                         {{#if isAdmin}}
-   <div id="button-container">
-        <a id="rastreo" href="/ver_ubicaiones">
-            <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
-        </a>
-    </div>
+  
 {{/if}}
 {{/if}}
-<div id="map"></div>
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
 <script>
