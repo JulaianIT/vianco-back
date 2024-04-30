@@ -1651,13 +1651,15 @@ Handlebars.registerHelper('formatDate', formatDate);
 app.get('/formulario_cotizaciones', (req, res) => {
     res.render('cotizaciones/formulario_cotizacion.hbs'); // Renderiza el formulario de búsqueda
 });
+// Paso 2: Envío de Cotización y Generación de Notificaciones
+// Paso 2: Envío de Cotización y Generación de Notificaciones
+// Paso 2: Envío de Cotización y Generación de Notificaciones
 app.post('/cotizacion', (req, res) => {
     const cotizacionData = req.body;
     const numServicios = parseInt(cotizacionData.numServicios);
-
     // Eliminar el campo numServicios del objeto principal de cotización
     delete cotizacionData.numServicios;
-
+    
     // Agregar numServicios a cotizacionData antes de la inserción
     cotizacionData.num_servicios = numServicios;
 
@@ -1669,26 +1671,31 @@ app.post('/cotizacion', (req, res) => {
             return;
         }
 
-        // Insertar los datos de la cotización en la tabla cotizaciones
+        // Guardar la cotización en la tabla de cotizaciones
         connection.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
             if (err) {
                 console.error('Error al insertar la cotización en la base de datos:', err);
-                connection.rollback(() => {
-                    res.status(500).send('Error interno del servidor');
-                });
+                res.status(500).send('Error interno del servidor');
                 return;
             }
 
-            // Commit si la inserción es exitosa
-            connection.commit(err => {
+            const cotizacionId = result.insertId;
+
+            // Crear una nueva entrada en la tabla de notificaciones
+            const notificacionData = {
+                cotizacion_id: cotizacionId,
+                estado_lectura: 'no leído',
+                fecha_creacion: new Date()
+            };
+
+            connection.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
                 if (err) {
-                    console.error('Error al realizar commit:', err);
-                    connection.rollback(() => {
-                        res.status(500).send('Error interno del servidor');
-                    });
+                    console.error('Error al crear la notificación:', err);
+                    res.status(500).send('Error interno del servidor');
                     return;
                 }
-                console.log('Cotización insertada correctamente');
+
+                // Enviar una respuesta al cliente
                 res.send('Cotización enviada exitosamente');
             });
         });
@@ -1696,6 +1703,35 @@ app.post('/cotizacion', (req, res) => {
 });
 
 
+// Ruta para obtener el número de notificaciones sin leer
+app.get('/notificacionesSinLeer', (req, res) => {
+    // Consulta SQL para contar el número de notificaciones sin leer del usuario actual
+    connection.query('SELECT COUNT(*) AS count FROM notificaciones WHERE estado_lectura = ?', ['no leído'], (err, resultados) => {
+        if (err) {
+            console.error('Error al obtener el número de notificaciones sin leer:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        // Enviar el número de notificaciones sin leer al cliente
+        res.json({ count: resultados[0].count });
+    });
+});
+
+// Ruta para marcar todas las notificaciones como leídas
+app.post('/marcarNotificacionesLeidas', (req, res) => {
+    // Actualiza el estado de las notificaciones a "leído"
+    connection.query('UPDATE notificaciones SET estado_lectura = ?', ['leído'], (err, result) => {
+        if (err) {
+            console.error('Error al marcar las notificaciones como leídas:', err);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        // Envía una respuesta de éxito al cliente
+        res.send('Notificaciones marcadas como leídas exitosamente');
+    });
+});
 
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/cotizaciones_pendientes', (req, res) => {
@@ -2549,6 +2585,11 @@ app.post('/guardar_datos', (req, res) => {
     });
 });
 
+
+// Ruta para mostrar ubicaciones
+app.get('/ver_notificaciones', (req, res) => {
+    res.render('ver_notificaciones');
+});
 
 
 

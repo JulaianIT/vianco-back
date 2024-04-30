@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Estilos del campana y número de notificaciones */
+        #campana {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            background-image: url('/imagenes/campana.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        #numNotificacionesSinLeer {
+            position: absolute;
+            top: 5px;
+            right: -7px;
+            background-color: #d9d9d9;
+            color: black;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos de la ventana emergente */
+        #ventanaEmergente {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+            z-index: 9999;
+        }
+
+        #ventanaEmergente h2 {
+            margin-top: 0;
+        }
+
+        #btnCerrar {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Campana y número de notificaciones -->
+<div id="campana" onclick="mostrarVentanaEmergente()">
+    <div id="numNotificacionesSinLeer"></div>
+</div>
+
+<!-- Ventana emergente -->
+<div id="ventanaEmergente">
+    <span id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</span>
+    <h2>Contenido de la ventana emergente</h2>
+    <!-- Botón para marcar como leídas las notificaciones -->
+    <button onclick="marcarComoLeidas()">Marcar como leídas</button>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    // Función para cargar y mostrar el número de notificaciones sin leer
+    function cargarNumNotificacionesSinLeer() {
+        $.get('/notificacionesSinLeer', function(data) {
+            $('#numNotificacionesSinLeer').text(data.count);
+        });
+    }
+
+    // Función para mostrar la ventana emergente
+    function mostrarVentanaEmergente() {
+        $('#ventanaEmergente').show();
+    }
+
+    // Función para cerrar la ventana emergente
+    function cerrarVentanaEmergente() {
+        $('#ventanaEmergente').hide();
+    }
+
+    // Función para marcar las notificaciones como leídas
+    function marcarComoLeidas() {
+        // Realiza una solicitud POST para marcar las notificaciones como leídas en el servidor
+        $.post('/marcarNotificacionesLeidas', function(data) {
+            // Después de que se hayan marcado como leídas, actualiza el contador de notificaciones sin leer
+            cargarNumNotificacionesSinLeer();
+            // Cierra la ventana emergente después de marcar las notificaciones como leídas
+            cerrarVentanaEmergente();
+        });
+    }
+
+    // Cargar el número de notificaciones sin leer al cargar la página
+    $(document).ready(function() {
+        cargarNumNotificacionesSinLeer();
+    });
+</script>
+
+</body>
+</html>
