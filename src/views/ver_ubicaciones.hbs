@@ -4,102 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Ubicaciones</title>
+    <!-- Leaflet y jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <!-- Estilos de Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Estilos personalizados -->
     <style>
-        /* Estilos CSS aquí */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
         #map {
             position: absolute;
             top: 0;
-            left: 400px; /* Ancho de la barra de navegación */
-            width: calc(100% - 200px); /* Ancho del mapa */
+            left: 0;
+            width: 100%; /* Ancho del mapa ocupa toda la pantalla */
             height: 100%;
             z-index: 1;
         }
-
-        #usuarios-list {
+        #search-bar {
+            position: absolute;
             top: 20px;
-            max-height: calc(100% - 40px); /* Altura máxima de la lista */
-            overflow-y: auto; /* Habilitar scroll vertical cuando la lista sea demasiado larga */
+            left: 50px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            width: calc(100% - 440px); /* Ancho ajustado para que quepa la barra de búsqueda y la lista de usuarios */
+            box-sizing: border-box;
             z-index: 1000;
+            background-color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #search-bar::placeholder {
+            color: #aaa;
+        }
+        #search-bar:focus {
+            border-color: #90c9a7;
+        }
+        #usuarios-list {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            max-height: calc(100% - 120px); /* Altura máxima de la lista */
+            overflow-y: auto; /* Habilitar scroll vertical cuando la lista sea demasiado larga */
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
         }
-
         .usuario-item {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #f0f0f0;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 25px;
+            background-color: #fff;
             transition: background-color 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
         .usuario-item:hover {
-            background-color: #e0e0e0;
+            background-color: #f0f0f0;
         }
-
         .usuario-item:last-child {
             margin-bottom: 0;
         }
-
-        .usuario-item p {
-            margin: 0;
+        .usuario-item img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #90c9a7;
+        }
+        .usuario-info {
+            flex: 1;
+        }
+        .usuario-nombre {
+            font-size: 20px;
             font-weight: bold;
+            margin: 0;
             color: #333;
-            margin-left: 10px;
         }
-
-        #search-bar {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        body{
-            background-color: #666567;
-        }
-        #vi{
-  width: 6%;
-}
-       .volver-btn:hover, .ver:hover {
-            background-color: #d9d9d9;
+        .usuario-detalle {
+            color: #666;
+            margin-top: 5px;
+            font-size: 14px;
         }
         .volver-btn, .ver {
-            position: relative;
-            left: 50px;
-
             text-transform: uppercase;
             background-color: #90c9a7;
             color: #000;
             border: none;
-            padding: 20px;
-            border-radius: 5px;
+            padding: 15px 25px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: inline-block;
-            margin-top: 20px;
             font-size: 15px;
             font-weight: bold;
             text-decoration: none;
+            margin-top: 20px;
+        }
+        .volver-btn:hover, .ver:hover {
+            background-color: #d9d9d9;
+        }
+        #vi {
+            width: 6%;
+        }
+        .leaflet-routing-container-hide {
+            display: none !important;
         }
     </style>
 </head>
-<body><br>
-        <img id="vi" src="/imagenes/logo pestaña.PNG" alt="">
-            <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
-
-<br>
-<br>
+<body>
+  
     <input type="text" id="search-bar" placeholder="Buscar usuario...">
     <div id="usuarios-list"></div>
     <div id="map"></div>
@@ -110,7 +137,7 @@
 
         L.tileLayer('https://{s}.google.com/vt/lyrs={type}&x={x}&y={y}&z={z}', {
             maxZoom: 20,
-            subdomains:['mt0','mt1','mt2','mt3'],
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
             type: 'y', // Cambia el estilo aquí ('s' para mapas de calle, 'y' para híbrido, 't' para terreno, 'm' para satélite)
             attribution: 'Map data &copy; <a href="https://www.google.com/">Google</a>'
         }).addTo(map);
@@ -120,8 +147,11 @@
                 var usuariosList = $('#usuarios-list');
                 data.forEach(function(usuario) {
                     var usuarioItem = $('<div class="usuario-item"></div>');
-                    usuarioItem.append('<img src="' + usuario.foto + '" alt="Foto de perfil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">');
-                    usuarioItem.append('<p>' + usuario.nombre_usuario + '</p>');
+usuarioItem.append('<img src="' + usuario.foto_url + '" alt="Foto de perfil">');
+                    var usuarioInfo = $('<div class="usuario-info"></div>');
+                    usuarioInfo.append('<p class="usuario-nombre">' + usuario.nombre_usuario + '</p>');
+                    usuarioInfo.append('<p class="usuario-detalle">' + usuario.detalles + '</p>');
+                    usuarioItem.append(usuarioInfo);
                     usuarioItem.click(function() {
                         cargarUbicaciones(usuario.nombre_usuario);
                     });
@@ -129,24 +159,30 @@
                 });
             });
         }
-
         function cargarUbicaciones(usuario) {
             $.get('/ubicaciones/' + usuario, function(data) {
                 var latlngs = data.map(function(ubicacion) {
-                    return [ubicacion.latitud, ubicacion.longitud, ubicacion.hora];
+                    return L.latLng(ubicacion.latitud, ubicacion.longitud);
                 });
 
                 // Limpiar trazo anterior antes de agregar uno nuevo
                 limpiarMapa();
 
-                polyline = L.polyline(latlngs, {color: 'blue'}).addTo(map);
+                var route = L.Routing.control({
+                    waypoints: latlngs,
+                    routeWhileDragging: true,
+                    lineOptions: {
+                        styles: [{color: 'blue', opacity: 0.6, weight: 4}]
+                    },
+                    show: false // Oculta las direcciones
+                }).addTo(map);
 
-                // Agregar etiquetas emergentes (popups) en cada punto del recorrido
-                for (var i = 0; i < latlngs.length; i++) {
-                    L.marker(latlngs[i]).bindPopup(latlngs[i][2]).addTo(map);
-                }
-
-                map.fitBounds(polyline.getBounds());
+                // Agregar marcadores en cada punto del recorrido
+                latlngs.forEach(function(latlng, index) {
+                    var hora = data[index].hora; // Obtener la hora de la ubicación
+                    var marker = L.marker(latlng).addTo(map);
+                    marker.bindPopup('<b>Hora:</b> ' + hora); // Mostrar la hora en un popup al hacer clic en el marcador
+                });
             });
         }
 
@@ -163,12 +199,9 @@
             $('#search-bar').on('input', function() {
                 var input = $(this).val().toLowerCase();
                 $('.usuario-item').each(function() {
-                    var nombreUsuario = $(this).find('p').text().toLowerCase();
-                    if (nombreUsuario.includes(input)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
+                    var nombreUsuario = $(this).find('.usuario-nombre').text().toLowerCase();
+                    var detalleUsuario = $(this).find('.usuario-detalle').text().toLowerCase();
+                    $(this).toggle(nombreUsuario.includes(input) || detalleUsuario.includes(input));
                 });
             });
         });
