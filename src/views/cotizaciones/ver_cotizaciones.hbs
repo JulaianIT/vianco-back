@@ -259,7 +259,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.origen1}}</td>
         <td>{{cotizacion.destino1}}</td>
         <td>{{cotizacion.hora1}}</td>
-        <td>$ {{cotizacion.valor1}}</td>
+        <td>${{cotizacion.valor_1}}</td>
     </tr>
     {{/if}}
     {{#if cotizacion.fecha2}}
@@ -271,7 +271,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.origen2}}</td>
         <td>{{cotizacion.destino2}}</td>
         <td>{{cotizacion.hora2}}</td>
-        <td>$ {{cotizacion.valor2}}</td>
+        <td>$ {{cotizacion.valor_2}}</td>
     </tr>
     {{/if}}
     {{#if cotizacion.fecha3}}
@@ -283,7 +283,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.origen3}}</td>
         <td>{{cotizacion.destino3}}</td>
         <td>{{cotizacion.hora3}}</td>
-        <td>$ {{cotizacion.valor3}}</td>
+        <td>$ {{cotizacion.valor_3}}</td>
     </tr>
     {{/if}}
     {{#if cotizacion.fecha4}}
@@ -295,7 +295,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.origen4}}</td>
         <td>{{cotizacion.destino4}}</td>
         <td>{{cotizacion.hora4}}</td>
-        <td>$ {{cotizacion.valor4}}</td>
+        <td>$ {{cotizacion.valor_4}}</td>
     </tr>
     {{/if}}
     {{#if cotizacion.fecha5}}
@@ -307,7 +307,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.origen5}}</td>
         <td>{{cotizacion.destino5}}</td>
         <td>{{cotizacion.hora5}}</td>
-        <td>$ {{cotizacion.valor5}}</td>
+        <td>$ {{cotizacion.valor_5}}</td>
     </tr>
     {{/if}}
 </tbody>
@@ -315,7 +315,7 @@ background-color: #90c9a7;
 
             </table>
                 <br>
-            <h2><strong>Total de la cotización: $</strong> {{valorTotal}}</h2>
+            <h2><strong>Total de la cotización: $</strong> {{cotizacion.valor_total}}</h2>
 
             <h2>Observaciones / Notas</h2>
             <ol>

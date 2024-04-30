@@ -2518,6 +2518,40 @@ app.get('/ver_ubicaiones', (req, res) => {
 
 
 
+app.post('/guardar_datos', (req, res) => {
+    const cotizacionId = req.body.cotizacionId;
+    const valorTotal = req.body.valorTotal;
+    const servicios = req.body.servicios;
+
+    // Actualizar el valor total en la tabla de cotizaciones
+    connection.query('UPDATE cotizaciones SET valor_total = ? WHERE id = ?', [valorTotal, cotizacionId], function(err, result) {
+        if (err) {
+            console.error('Error al actualizar valor total:', err);
+            return res.status(500).json({ error: 'Error al actualizar valor total' });
+        }
+
+        // Recorrer los servicios y guardar cada uno en las columnas correspondientes de la tabla cotizaciones
+        servicios.slice(0, 5).forEach((servicio, index) => { // Solo procesar los primeros 5 servicios
+            if (!servicio) return; // Omitir servicios nulos
+            const valorColumn = `valor_${index + 1}`;
+            const observacionesColumn = `observaciones_${index + 1}`;
+
+            connection.query(`UPDATE cotizaciones SET ${valorColumn} = ?, ${observacionesColumn} = ? WHERE id = ?`, [servicio.valor, servicio.observaciones, cotizacionId], function(err, result) {
+                if (err) {
+                    console.error(`Error al actualizar servicio ${index + 1}:`, err);
+                    return res.status(500).json({ error: `Error al actualizar servicio ${index + 1}` });
+                }
+            });
+        });
+
+        // Enviar una respuesta al cliente cuando todas las actualizaciones se completen con éxito
+        return res.status(200).json({ success: true });
+    });
+});
+
+
+
+
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
