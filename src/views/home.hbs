@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jersey+25&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <title>PRINCIPAÑ</title>
+    
 </head>
 <style>
 
@@ -117,13 +118,34 @@ nav {
     position: fixed;
     top: 0;
     left: 0;
-    width: 4%; /* Ancho de la barra de navegación */
+    width: 5%; /* Ancho de la barra de navegación */
     height: 100%;
     background-color: rgb(102, 101, 103);
     font-size: 20px;
     border: solid 6px black;
+
     z-index: 1500; /* Asegura que esté por encima del encabezado */
     color: black !important; /* Cambia el color del texto a negro y da prioridad */
+}
+/* Agrega un estilo específico para dispositivos pequeños */
+@media only screen and (max-width: 768px) {
+    nav {
+        width: 20%; /* Hacer que la barra de navegación ocupe todo el ancho en dispositivos pequeños */
+        font-size: 14px; /* Reducir aún más el tamaño de la fuente para dispositivos pequeños si es necesario */
+    }
+
+  .flecha{
+
+        width: 20%; /* Hacer que la barra de navegación ocupe todo el ancho en dispositivos pequeños */
+        font-size: 14px; /* Reducir aún más el tamaño de la fuente para dispositivos pequeños si es necesario */
+    }
+
+}
+/* Agrega un estilo específico para dispositivos grandes */
+@media only screen and (min-width: 1200px) {
+   .flecha img{
+        width: 20%; /* Ajusta el ancho de la barra de navegación para dispositivos más grandes si es necesario */
+    }
 }
 
 #map {
@@ -142,8 +164,14 @@ nav {
 
     left: 100%; /* Coloca el menú vertical a la derecha del elemento activador */
 }
+.menu-vertical {
+        overflow-y: auto; /* Agrega un desplazamiento vertical si el contenido es más largo que la altura */
+
+
+}
+
 #calll ,#eje,#tec,#ope {
-height: 10%;
+height: 20%;
 align-items: center;
 left: 5%;
     position: relative;
@@ -251,9 +279,24 @@ padding: 15px;
 float: none;
 
    }
+#toggleNavButton{
+    border: 0px;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    bottom:40px;
+    left: 25%;
+position: relative;
+float: left;
+cursor: pointer;
+width: 10%;
+   z-index: 1500; /* Asegura que esté por encima del encabezado */
+}
+
 </style>
 
-<body>
+
+
      <div id="map"></div>
  <!-- Agrega esta sección dentro del <header> o en cualquier lugar adecuado -->
 <div id="button-container">
@@ -269,10 +312,12 @@ float: none;
 <header>
             <h1 id="ingreso" >{{name}}</h1>
 
-
-
+ <button id="toggleNavButton" class="flecha">
+        <img src="/imagenes/flecha.png" alt="">
+    </button>
  
 </header>
+
 <hr>
 <div id="ventanaEmergente">
     <span id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</span>
@@ -286,7 +331,7 @@ float: none;
     <br>
     <br><br>
     
-    <nav>
+  <nav class="navbar">
     <label class="logo" for=""></label>
         <img  id="logo"      src=""/>
  <ul class="menu-horizontal">
@@ -435,6 +480,7 @@ float: none;
   
 {{/if}}
 {{/if}}
+
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
@@ -685,9 +731,23 @@ socket.on('userMovements', function (movements) {
         });
     }
 
-    // Cargar el número de notificaciones sin leer al cargar la página
-    $(document).ready(function() {
-        cargarNumNotificacionesSinLeer();
+  
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Obtener referencia al botón y al elemento nav
+        var toggleNavButton = document.getElementById("toggleNavButton");
+        var nav = document.querySelector("nav");
+
+        // Agregar un evento de clic al botón
+        toggleNavButton.addEventListener("click", function() {
+            // Cambiar la visibilidad del elemento nav
+            if (nav.style.display === "none") {
+                nav.style.display = "block";
+            } else {
+                nav.style.display = "none";
+            }
+        });
     });
 </script>
 
