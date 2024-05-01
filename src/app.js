@@ -2529,10 +2529,20 @@ app.get('/usuarios', function(req, res) {
     });
 });
 
-// Define una ruta para obtener las ubicaciones de un usuario específico
+// Define una ruta para obtener las ubicaciones de un usuario específico para una fecha específica
 app.get('/ubicaciones/:nombreUsuario', function(req, res) {
     const nombreUsuario = req.params.nombreUsuario;
-    connection.query('SELECT * FROM ubicaciones WHERE nombre_usuario = ?', [nombreUsuario], function(error, results, fields) {
+    const fechaSeleccionada = req.query.date; // Obtener la fecha seleccionada desde la consulta
+
+    // Construir la consulta SQL para filtrar por usuario y fecha si se proporciona
+    let query = 'SELECT * FROM ubicaciones WHERE nombre_usuario = ?';
+    let params = [nombreUsuario];
+    if (fechaSeleccionada) {
+        query += ' AND DATE(created_at) = ?'; // Filtrar por la fecha seleccionada
+        params.push(fechaSeleccionada);
+    }
+
+    connection.query(query, params, function(error, results, fields) {
         if (error) throw error;
         res.json(results);
     });

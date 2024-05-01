@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,60 +19,46 @@
             padding: 0;
             background-color: #f4f4f4;
         }
-        #map {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%; /* Ancho del mapa ocupa toda la pantalla */
-            height: 100%;
-            z-index: 1;
-        }
-        #search-bar {
-            position: absolute;
-            top: 20px;
-            left: 50px;
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px solid #ccc;
-            width: calc(100% - 440px); /* Ancho ajustado para que quepa la barra de búsqueda y la lista de usuarios */
-            box-sizing: border-box;
-            z-index: 1000;
+        .top-section {
             background-color: #fff;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
         }
-        #search-bar::placeholder {
-            color: #aaa;
+        #map-container {
+            display: flex;
+            height: calc(100vh - 40px); /* Ajustar el tamaño del mapa */
         }
-        #search-bar:focus {
-            border-color: #90c9a7;
+        #map {
+            flex: 1;
         }
         #usuarios-list {
-            position: absolute;
-            top: 100px;
-            right: 20px;
-            max-height: calc(100% - 120px); /* Altura máxima de la lista */
-            overflow-y: auto; /* Habilitar scroll vertical cuando la lista sea demasiado larga */
-            background-color: rgba(255, 255, 255, 0.8);
+            width: 300px; /* Ancho fijo para la lista de usuarios */
+            overflow-y: auto;
             padding: 20px;
-            border-radius: 25px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            background-color: #fff;
+            border-right: 1px solid #ccc;
+        }
+        #usuarios-list::-webkit-scrollbar {
+            width: 10px;
+        }
+        #usuarios-list::-webkit-scrollbar-thumb {
+            background-color: #90c9a7;
+            border-radius: 5px;
         }
         .usuario-item {
-            display: flex;
-            align-items: center;
             margin-bottom: 20px;
             padding: 15px;
             border-radius: 25px;
-            background-color: #fff;
+            background-color: #f0f0f0;
             transition: background-color 0.3s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .usuario-item:hover {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0;
         }
         .usuario-item:last-child {
             margin-bottom: 0;
@@ -82,7 +69,7 @@
             border-radius: 50%;
             object-fit: cover;
             margin-right: 20px;
-            border: 3px solid #90c9a7;
+          
         }
         .usuario-info {
             flex: 1;
@@ -98,27 +85,29 @@
             margin-top: 5px;
             font-size: 14px;
         }
-        .volver-btn, .ver {
-            text-transform: uppercase;
+        .date-selector {
+            display: flex;
+            align-items: center;
+        }
+        label {
+            margin-right: 10px;
+        }
+        .volver-btn {
             background-color: #90c9a7;
-            color: #000;
+            color: #fff;
             border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             text-decoration: none;
             margin-top: 20px;
         }
-        .volver-btn:hover, .ver:hover {
-            background-color: #d9d9d9;
-        }
-        #vi {
-            width: 6%;
+        .volver-btn:hover {
+            background-color: #78b39b;
         }
         .leaflet-routing-container-hide {
             display: none !important;
@@ -126,20 +115,29 @@
     </style>
 </head>
 <body>
-  
-    <input type="text" id="search-bar" placeholder="Buscar usuario...">
-    <div id="usuarios-list"></div>
-    <div id="map"></div>
+    <div class="top-section">
+        <div id="search-bar-container">
+            <input type="text" id="search-bar" placeholder="Buscar usuario...">
+            <div class="date-selector">
+                <label for="date">Selecciona una fecha:</label>
+                <input type="date" id="date" name="date">
+            </div>
+        </div>
+        <a href="/" class="volver-btn">Volver al Menú</a>
+    </div>
+    <div id="map-container">
+        <div id="usuarios-list"></div>
+        <div id="map"></div>
+    </div>
 
+  
     <script>
         var map = L.map('map').setView([4.60971, -74.08175], 13); // Vista inicial centrada en Bogotá
         var polyline = null; // Variable global para almacenar la capa de trazo
 
-        L.tileLayer('https://{s}.google.com/vt/lyrs={type}&x={x}&y={y}&z={z}', {
-            maxZoom: 20,
-            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-            type: 'y', // Cambia el estilo aquí ('s' para mapas de calle, 'y' para híbrido, 't' para terreno, 'm' para satélite)
-            attribution: 'Map data &copy; <a href="https://www.google.com/">Google</a>'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
         }).addTo(map);
 
         function cargarUsuarios() {
@@ -147,7 +145,7 @@
                 var usuariosList = $('#usuarios-list');
                 data.forEach(function(usuario) {
                     var usuarioItem = $('<div class="usuario-item"></div>');
-usuarioItem.append('<img src="' + usuario.foto_url + '" alt="Foto de perfil">');
+                    usuarioItem.append('<img src="' + usuario.foto_url + '" alt="Foto de perfil">');
                     var usuarioInfo = $('<div class="usuario-info"></div>');
                     usuarioInfo.append('<p class="usuario-nombre">' + usuario.nombre_usuario + '</p>');
                     usuarioInfo.append('<p class="usuario-detalle">' + usuario.detalles + '</p>');
@@ -159,8 +157,10 @@ usuarioItem.append('<img src="' + usuario.foto_url + '" alt="Foto de perfil">');
                 });
             });
         }
+
         function cargarUbicaciones(usuario) {
-            $.get('/ubicaciones/' + usuario, function(data) {
+            var selectedDate = $('#date').val(); // Obtener la fecha seleccionada
+            $.get('/ubicaciones/' + usuario + '?date=' + selectedDate, function(data) {
                 var latlngs = data.map(function(ubicacion) {
                     return L.latLng(ubicacion.latitud, ubicacion.longitud);
                 });
@@ -203,6 +203,14 @@ usuarioItem.append('<img src="' + usuario.foto_url + '" alt="Foto de perfil">');
                     var detalleUsuario = $(this).find('.usuario-detalle').text().toLowerCase();
                     $(this).toggle(nombreUsuario.includes(input) || detalleUsuario.includes(input));
                 });
+            });
+
+            // Agregar funcionalidad de selección de fecha
+            $('#date').on('change', function() {
+                var usuarioSeleccionado = $('.usuario-item.selected').find('.usuario-nombre').text();
+                if (usuarioSeleccionado) {
+                    cargarUbicaciones(usuarioSeleccionado);
+                }
             });
         });
     </script>
