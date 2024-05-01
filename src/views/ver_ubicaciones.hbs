@@ -112,6 +112,18 @@
         .leaflet-routing-container-hide {
             display: none !important;
         }
+.arrow {
+    border-radius: 50%;
+    padding: 10px;
+    background-color: #666;
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+
     </style>
 </head>
 <body>
@@ -122,9 +134,10 @@
                 <label for="date">Selecciona una fecha:</label>
                 <input type="date" id="date" name="date">
             </div>
-        </div>
-        <a href="/" class="volver-btn">Volver al Menú</a>
-    </div>
+   </div>
+    <span class="arrow">&#9660;</span> <!-- Flecha agregada -->
+    <a href="/" class="volver-btn">Volver al Menú</a>
+</div>
     <div id="map-container">
         <div id="usuarios-list"></div>
         <div id="map"></div>
@@ -191,28 +204,35 @@
                 map.removeLayer(polyline);
             }
         }
+$(document).ready(function() {
+    cargarUsuarios();
 
-        $(document).ready(function() {
-            cargarUsuarios();
-
-            // Agregar funcionalidad de búsqueda
-            $('#search-bar').on('input', function() {
-                var input = $(this).val().toLowerCase();
-                $('.usuario-item').each(function() {
-                    var nombreUsuario = $(this).find('.usuario-nombre').text().toLowerCase();
-                    var detalleUsuario = $(this).find('.usuario-detalle').text().toLowerCase();
-                    $(this).toggle(nombreUsuario.includes(input) || detalleUsuario.includes(input));
-                });
-            });
-
-            // Agregar funcionalidad de selección de fecha
-            $('#date').on('change', function() {
-                var usuarioSeleccionado = $('.usuario-item.selected').find('.usuario-nombre').text();
-                if (usuarioSeleccionado) {
-                    cargarUbicaciones(usuarioSeleccionado);
-                }
-            });
+    // Agregar funcionalidad de búsqueda
+    $('#search-bar').on('input', function() {
+        var input = $(this).val().toLowerCase();
+        $('.usuario-item').each(function() {
+            var nombreUsuario = $(this).find('.usuario-nombre').text().toLowerCase();
+            var detalleUsuario = $(this).find('.usuario-detalle').text().toLowerCase();
+            $(this).toggle(nombreUsuario.includes(input) || detalleUsuario.includes(input));
         });
+    });
+
+    // Agregar funcionalidad de selección de fecha
+    $('#date').on('change', function() {
+        var usuarioSeleccionado = $('.usuario-item.selected').find('.usuario-nombre').text();
+        if (usuarioSeleccionado) {
+            cargarUbicaciones(usuarioSeleccionado);
+        }
+    });
+
+    // Agregar funcionalidad de mostrar/ocultar el menú de usuarios al hacer clic en la flecha
+    $('.arrow').on('click', function(e) {
+        e.preventDefault();
+        $('#usuarios-list').toggle();
+    });
+});
+
+
     </script>
 </body>
 </html>
