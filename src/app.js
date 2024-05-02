@@ -2690,6 +2690,97 @@ app.post('/novedades_vianco', (req, res) => {
 
 
 
+// Ruta para ver las novedades (visualización de página)
+app.get('/ver_novedades_vianco', (req, res) => {
+    res.render('novedades_vianco/novedades_pendientes_vianco.hbs');
+});
+
+// Backend (Endpoint /api/obtener_fechas_disponibles)
+app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
+    connection.query('SELECT DISTINCT fecha FROM novedades_vianco', (error, results) => {
+        if (error) {
+            console.error('Error al obtener las fechas disponibles:', error);
+            res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
+        } else {
+            const fechasDisponibles = results.map(result => result.fecha);
+            res.json(fechasDisponibles); // Devuelve un JSON con las fechas disponibles
+        }
+    });
+});
+
+
+
+
+
+// Backend (Endpoint /api/obtener_novedades)
+app.get('/api/obtener_novedades_vianco', (req, res) => {
+    const fechaSeleccionada = req.query.fecha;
+    const query = 'SELECT fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro FROM novedades_vianco WHERE DATE(fecha) = ?'; // Añadir el campo de la firma en la consulta SQL
+    connection.query(query, [fechaSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener las novedades:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        } else {
+            // Aquí tienes los resultados de la consulta SQL
+            // Itera sobre los resultados para procesar cada fila
+            results.forEach(row => {
+                // Suponiendo que 'row' es el resultado de tu consulta SQL que contiene la firma codificada en base64
+                const firmaBase64 = row.firma;
+                const firmaBinaria = Buffer.from(firmaBase64, 'base64');
+                // Modifica la fila actual para incluir la firma binaria decodificada
+                row.firmaBinaria = firmaBinaria;
+            });
+            // Devuelve los resultados con las firmas binarias decodificadas
+            res.json(results);
+        }
+    });
+});
+
+
+
+
+
+
+
+// Ruta para guardar el seguimiento en la base de datos
+app.post('/api/guardar_seguimiento_vianco', (req, res) => {
+    
+    // Obtener los datos del cuerpo de la solicitud
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
+
+    // Query para insertar el seguimiento en la base de datos
+    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
+    
+    // Ejecutar la consulta SQL
+    connection.query(query, values, (error, results, fields) => {
+        if (error) {
+            console.error('Error al guardar el seguimiento en la base de datos:', error);
+            res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
+        } else {
+            console.log('Seguimiento guardado correctamente en la base de datos');
+            res.status(200).json({ message: 'Seguimiento guardado correctamente' });
+        }
+    });
+});
+
+
+
+// Backend (Endpoint /api/eliminar_fecha)
+app.delete('/api/eliminar_fecha_vianco/:fecha', (req, res) => {
+    const fecha = req.params.fecha;
+    connection.query('DELETE FROM novedades_vianco WHERE fecha = ?', fecha, (error, results) => {
+        if (error) {
+            console.error('Error al eliminar la fecha:', error);
+            res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
+        } else {
+            res.json({ message: 'Fecha eliminada correctamente' });
+        }
+    });
+});
+
+
+
 
 
 
