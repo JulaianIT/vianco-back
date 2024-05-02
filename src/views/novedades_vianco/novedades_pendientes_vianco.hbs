@@ -237,6 +237,8 @@ textarea {
     cursor: pointer; /* Cambia el cursor a pointer */
 }
  button.closeButton{
+    position: relative;
+    left: 15%;
     color: #000;
     text-transform: uppercase;
          background-color:#red;
@@ -399,81 +401,57 @@ textarea {
             obtenerTodasLasFechas(); // Llama a la función correcta para obtener las fechas disponibles
         });
 
-// Dentro de la función obtenerTodasLasFechas()
 function obtenerTodasLasFechas() {
     fetch('/api/obtener_fechas_disponibles_vianco')
         .then(response => response.json())
-        .then(fechas => {
+        .then(ids => {
             const fechasContainer = document.getElementById('fechasContainer');
             fechasContainer.innerHTML = ''; // Limpiar contenido anterior
 
-            if (fechas.length === 0) {
-                fechasContainer.innerHTML = '<p>No hay fechas disponibles.</p>';
+            if (ids.length === 0) {
+                fechasContainer.innerHTML = '<p>No hay IDs disponibles.</p>';
             } else {
                 const listaFechas = document.createElement('ul');
-                fechas.forEach(fecha => {
-                    // Convertir la fecha a un objeto Date
-                    const fechaObjeto = new Date(fecha);
 
-                    // Ajustar la hora para tener en cuenta la zona horaria del navegador
-                    const fechaLocal = new Date(fechaObjeto.getTime() + fechaObjeto.getTimezoneOffset() * 60000);
-
-                    // Formatear la fecha
-                    const fechaFormateada = fechaLocal.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
+                ids.forEach(id => {
                     const listItem = document.createElement('li');
-                    listItem.style.display = 'flex'; // Establecer el contenedor como flex
-                    listItem.style.justifyContent = 'space-between'; // Espacio entre los elementos
+                    listItem.textContent = `SERVICIO N°: ${id}`;
+                    listItem.style.cursor = 'pointer';
+                    listItem.addEventListener('click', function() {
+                        obtenerNovedadesPorId(id);
+                    });
 
-                    // Crear texto de fecha
-                    const fechaText = document.createElement('span');
-                    fechaText.textContent = fechaFormateada;
-
-                    // Crear botón de cerrar novedad
+                    // Crear botón de cerrar novedad para este elemento de la lista
                     const closeButton = document.createElement('button');
-                    closeButton.textContent = 'Cerrar servicio no conforme'; // Cambiar el texto del botón a "Cerrar novedad"
-                    closeButton.classList.add('closeButton'); // Agregar la clase closeButton al botón
+                    closeButton.textContent = 'Cerrar servicio no conforme';
+                    closeButton.classList.add('closeButton');
 
                     closeButton.addEventListener('click', function(event) {
-                        event.stopPropagation(); // Evita que el clic en el botón active el clic en el elemento de la lista
-                        
-                        // Preguntar al usuario si está seguro de cerrar la novedad
+                        event.stopPropagation();
                         const confirmacion = window.confirm('¿RECUERDA QUE ANTES DE CERRARLA DEBES REALIZAR EL SEGUIMIENTO SI YA LO HICISTE DALE ACEPTAR ?');
-                        
                         if (confirmacion) {
-                            eliminarFecha(fecha); // Llama a la función eliminarFecha si el usuario confirma
+                            eliminarFecha(id);
+                            // Eliminar el elemento de la lista una vez que se haya confirmado la eliminación
+                            listItem.remove();
                         } else {
-                            // Hacer algo si el usuario cancela la acción (opcional)
                             console.log('Acción cancelada por el usuario');
                         }
                     });
 
-                    // Agregar elementos al contenedor <li>
-                    listItem.appendChild(fechaText);
+                    // Agregar el botón de cerrar al elemento de la lista
                     listItem.appendChild(closeButton);
-
-                    listItem.style.cursor = 'pointer';
-                    listItem.addEventListener('click', function() {
-                        obtenerNovedadesPorFecha(fecha); // Pasa la fecha como argumento
-                    });
-                    listItem.addEventListener('contextmenu', function(event) {
-                        event.preventDefault(); // Evita que aparezca el menú contextual
-                        eliminarFecha(fecha); // Elimina la fecha al hacer clic derecho
-                    });
+                    
                     listaFechas.appendChild(listItem);
                 });
+
                 fechasContainer.appendChild(listaFechas);
             }
         })
-        .catch(error => console.error('Error al obtener las fechas disponibles:', error));
-}
+        .catch(error => console.error('Error al obtener los IDs disponibles:', error));
+};
 
-
-function obtenerNovedadesPorFecha(fechaSeleccionada) {
-    // Formatear la fecha como 'YYYY-MM-DD'
-    const fechaFormateada = new Date(fechaSeleccionada).toISOString().split('T')[0];
-
-    fetch(`/api/obtener_novedades_vianco?fecha=${fechaFormateada}`)
+function obtenerNovedadesPorId(idSeleccionado) {
+    fetch(`/api/obtener_novedades_vianco/${idSeleccionado}`)
         .then(response => response.json())
         .then(novedades => {
             console.log('Novedades:', novedades);
@@ -859,9 +837,8 @@ ACCIONES:ACCIONES,
 
 
 
-
-function eliminarFecha(fecha) {
-    fetch(`/api/eliminar_fecha_vianco/${fecha}`, {
+function eliminarFecha(id) {
+    fetch(`/api/eliminar_fecha_vianco/${id}`, {
         method: 'DELETE'
     })
     .then(response => {
@@ -873,6 +850,15 @@ function eliminarFecha(fecha) {
         }
     })
     .catch(error => console.error('Error al eliminar la fecha:', error));
+}
+function marcarNoAplica(idNovedad) {
+    // Obtener todos los campos del formulario de seguimiento
+    const campos = document.querySelectorAll(`#formularioSeguimientoContenido-${idNovedad} input[type="text"], #formularioSeguimientoContenido-${idNovedad} textarea`);
+
+    // Iterar sobre los campos y establecer su valor como "No Aplica"
+    campos.forEach(campo => {
+        campo.value = "No Aplica";
+    });
 }
 function marcarNoAplica(idNovedad) {
     // Obtener todos los campos del formulario de seguimiento
