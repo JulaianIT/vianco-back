@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Novedades</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <style>
+        * {
+            font-family: "Roboto", sans-serif;
+            font-weight: 100;
+            font-style: normal;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #ccc;
+        }
+        header {
+            background-color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .novedad {
+            border: 5px solid black;
+            margin-bottom: 20px;
+            position: relative;
+            left: 25%;
+            text-align: justify;
+            width: 50%;
+            font-size: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        .novedad h2 {
+            color: black;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .novedad p {
+            color: black;
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+        .novedad img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .novedad hr {
+            border-top: 1px solid #ccc;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+        form {
+            background-color: rgba(144, 201, 167);
+            padding: 30px;
+            text-align: center;
+        }
+        form label {
+            margin-right: 15px;
+            font-size: 30px;
+        }
+        input {
+            border: 3px solid black;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+        input[type="date"] {
+            text-align: center;
+            border: 3px solid black;
+            font-size: 20px;
+            border-radius: 5px;
+            padding: 10px;
+            width: 300px;
+        }
+        .volver-btn:hover,
+        .ver:hover {
+            background-color: #d9d9d9;
+        }
+        .volver-btn,
+        .ver {
+            position: relative;
+            left: 20px;
+            text-transform: uppercase;
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        p {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img id="membrete" src="/imagenes/menbrete.png"/>
+        <img id="logo" src="/imagenes/logo vianco.png"/>
+        <img id="vigilado" src="/imagenes/vigilado.png"/>
+    </header>
+<input type="date" id="fechaInicio" name="fechaInicio" class="form-control" placeholder="Fecha de inicio">
+<input type="date" id="fechaFin" name="fechaFin" class="form-control" placeholder="Fecha de fin">
+
+    <div class="BUSCAR">
+        <form id="formFecha">
+            <h2>BUSCAR SERVICIO NO CONFORME</h2>
+            <label for="id"><strong> DIGITE EL N° DEL SERVICIO:</strong></label>
+            <input type="text" id="id" name="id"> 
+<button type="submit" id="verNovedades" class="ver">Ver Novedades</button>
+            <button type="button" id="descargarExcel">Descargar Excel</button>
+            <a href="/" class="volver-btn"><strong> Volver al Menú </strong></a>
+        </form>
+    </div>
+
+    <hr>
+
+    <div class="novedad-container" id="novedadesContainer"></div>
+
+    <footer>
+        <section>
+            <p>Derechos Reservados &copy; 2024</p>
+            <p class="bad">Desarrollado por: NEXUS</p>
+        </section>
+    </footer>
+
+    <script>
+  document.getElementById("descargarExcel").addEventListener("click", function () {
+    const fechaInicio = document.getElementById("fechaInicio").value;
+    const fechaFin = document.getElementById("fechaFin").value;
+    descargarInformeExcel(fechaInicio, fechaFin);
+});
+
+        // Definición de la función generarInformeExcel
+   document.getElementById("formFecha").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const fechaInicio = document.getElementById("fechaInicio").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+        obtenerNovedades(fechaInicio, fechaFin);
+    });
+
+    function obtenerNovedades(fechaInicio, fechaFin) {
+        fetch('/descargar_excell', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fechaInicio, fechaFin })
+        }).then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'informe.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+        function obtenerNovedades(id) {
+            fetch(`/novedad_vianco?fecha=${id}`)
+                .then(response => response.json())
+                .then(data => mostrarNovedades(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function mostrarNovedades(novedades) {
+            const novedadesContainer = document.getElementById("novedadesContainer");
+            novedadesContainer.innerHTML = ""; // Limpiar el contenedor
+
+            if (novedades.length === 0) {
+                novedadesContainer.innerHTML = "<p>No hay novedades para esta fecha</p>";
+            } else {
+                novedades.forEach((novedad, index) => {
+                    const novedadDiv = document.createElement("div");
+                    novedadDiv.classList.add("novedad");
+
+                    let contenidoHTML = `<h1>Información de la novedad</h1>`;
+                    contenidoHTML += `<h2><strong>Fecha del servicio no conforme:</strong> ${novedad.fecha_novedad}</p>`;
+                    contenidoHTML += `<p><strong>Realizada por:</strong> ${novedad.realiza}</p>`;
+                    contenidoHTML += `<p><strong>Novedad de Tripulación:</strong> ${novedad.novedad_tripulacion}</p>`;
+                    contenidoHTML += `<p><strong>Novedad de Hotelería:</strong> ${novedad.novedad_hoteleria}</p>`;
+                    contenidoHTML += `<p><strong>Novedad de Ejecutivos:</strong> ${novedad.novedad_ejecutivos}</p>`;
+                    contenidoHTML += `<p><strong>Novedad de Empresas Privadas:</strong> ${novedad.novedad_empresas_privadas}</p>`;
+                    contenidoHTML += `<p><strong>NOVEDADES_TASKGO:</strong> ${novedad.NOVEDADES_TASKGO}</p>`;
+                    contenidoHTML += `<p><strong>Otras novedades:</strong> ${novedad.otras_novedades}</p>`;
+                    contenidoHTML += `<p><strong>Firma:</strong> <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></p>`;
+                    contenidoHTML += `<h2>Seguimiento</h2>`;
+                    contenidoHTML += `<p><strong>Fecha de seguimiento:</strong> ${novedad.fecha_seguimiento}</p>`;
+                    contenidoHTML += `<p><strong>Nombre de seguimiento:</strong> ${novedad.nombre_seguimiento}</p>`;
+                    contenidoHTML += `<p><strong>Detalle de seguimiento:</strong> ${novedad.detalle_seguimiento}</p>`;
+                    contenidoHTML += `<p><strong>Fecha de registro:</strong> ${novedad.fecha_registro}</p>`;
+                    contenidoHTML += `<p><strong>Acciones:</strong> ${novedad.ACCIONES}</p>`;
+
+                    novedadDiv.innerHTML = contenidoHTML;
+                    novedadesContainer.appendChild(novedadDiv);
+                });
+            }
+        }
+
+        // Función para descargar el informe en Excel
+    function descargarInformeExcel(fechaInicio, fechaFin) {
+    fetch('/descargar_excell', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fechaInicio, fechaFin })
+    }).then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'informe.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+    </script>
+</body>
+</html>

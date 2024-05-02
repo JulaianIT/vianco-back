@@ -2784,6 +2784,92 @@ app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
 
 
 
+
+
+
+
+
+
+app.get('/ver_vianco', (req, res) => {
+    res.render('novedades_vianco/ver_novedades_vianco.hbs');
+});
+
+app.get('/novedad_vianco', (req, res) => {
+    const id = req.query.fecha; // Cambiar a req.query para obtener el parámetro 'fecha'
+
+    // Preparar la consulta SQL para obtener las novedades del ID proporcionado
+    const sql = "SELECT * FROM novedades_completadas_vianco WHERE id = ?";
+
+    // Ejecutar la consulta
+    connection.query(sql, [id], (err, result) => { // Cambiar 'fecha' a 'id'
+        if (err) {
+            console.error("Error al obtener las novedades:", err);
+            res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
+        } else {
+            res.status(200).json(result); // Devuelve los datos como JSON
+        }
+    });
+});
+const XLSX = require('xlsx');
+
+const workbook = require('workbook');
+
+
+
+// Ruta para descargar el informe en Excel
+app.post('/descargar_excell', (req, res) => {
+    // Obtener las fechas de inicio y fin del cuerpo de la solicitud
+    const { fechaInicio, fechaFin } = req.body;
+
+    // Consulta las novedades dentro del rango de fechas especificado
+    const sql = `SELECT * FROM novedades_completadas_vianco WHERE fecha_novedad BETWEEN '${fechaInicio}' AND '${fechaFin}'`;
+
+    connection.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error al obtener las novedades:", err);
+            res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
+        } else {
+            // Genera el archivo Excel con las novedades
+            const workbook = generarInformeExcel(result);
+
+            // Convierte el workbook a buffer y envíalo como descarga
+            const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+            res.setHeader('Content-Disposition', `attachment; filename="informe.xlsx"`);
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.send(excelBuffer);
+        }
+    });
+});
+
+function generarInformeExcel(novedades) {
+    // Mapear los resultados de la consulta SQL y cambiar los títulos de las columnas
+    const novedadesFormateadas = novedades.map(novedad => ({
+        // Cambiar los nombres de las propiedades según sea necesario
+        'Fecha del servicio no conforme': novedad.fecha_novedad,
+        'Realizada por': novedad.realiza,
+        'Novedad de Tripulación': novedad.novedad_tripulacion,
+        'Novedad de Hotelería': novedad.novedad_hoteleria,
+        'Novedad de Ejecutivos': novedad.novedad_ejecutivos,
+        'Novedad de Empresas Privadas': novedad.novedad_empresas_privadas,
+        'NOVEDADES_TASKGO': novedad.NOVEDADES_TASKGO,
+        'Otras novedades': novedad.otras_novedades,
+        'Fecha de seguimiento': novedad.fecha_seguimiento,
+        'Nombre de seguimiento': novedad.nombre_seguimiento,
+        'Detalle de seguimiento': novedad.detalle_seguimiento,
+        'Fecha de registro': novedad.fecha_registro,
+        'Acciones correctivas': novedad.ACCIONES
+    }));
+
+    // Crear el workbook y la hoja de cálculo
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(novedadesFormateadas);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Novedades');
+
+    return workbook;
+}
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
