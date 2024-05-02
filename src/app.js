@@ -2604,6 +2604,98 @@ app.get('/ver_notificaciones', (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+//producto no conforme  novedades que cualquiera puede hacer 
+
+
+
+app.get('/novedades_viancoo', (req, res) => {
+    res.render('novedades_vianco/novedades_vianco.hbs');
+});
+
+app.post('/novedades_vianco', (req, res) => {
+    const fecha = req.body.fecha;
+    const realiza = req.body.realiza;
+    const novedad_tripulacion = req.body.novedad_tripulacion || '';
+    const novedad_hoteleria = req.body.novedad_hoteleria || '';
+    const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
+    const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
+    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
+    const otrasNovedades = req.body.novedad_OTRAS || '';
+    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
+    console.log("Firma en formato base64 recibida:", firmaBase64);
+
+    const sql = 'INSERT INTO novedades_vianco (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)'; // Corregido aquí
+
+    connection.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
+        if (error) {
+            console.error('Error al insertar la novedad en la base de datos:', error);
+            res.status(500).send('Error interno del servidor.');
+        } else {
+            console.log('Novedad guardada exitosamente en la base de datos.');
+
+            // Configurar transporte de correo electrónico
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'callcenter.vianco@gmail.com',
+                    pass: 'mdfaqssdhgoedbmw'
+                }
+            });
+
+            // Generar un ID de mensaje único
+            function generateMessageId() {
+                return `vianco_${Date.now()}@dominio.com`;
+            }
+
+            // Enviar correo electrónico
+            transporter.sendMail({
+                from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
+                to: 'cdazavianco@gmail.com,soporte.it.vianco@gmail.com,jrestrepovianco@gmail.com', // El destinatario del correo electrónico
+                subject: 'alerta no denovedad Vianco', // El asunto del correo electrónico
+                html: '<p><strong>Estimados,</strong></p><br>' +
+                      '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
+                      '<p>Recuerde realizar el seguimiento en la app en el módulo novedades pendientes.</p>', // El contenido del correo electrónico en HTML
+                messageId: generateMessageId() // Generar un ID de mensaje único
+            }, (error, info) => {
+                if (error) {
+                    console.error('Error al enviar el correo electrónico:', error);
+                } else {
+                    console.log('Correo electrónico enviado:', info.response);
+                }
+            });
+
+            const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades_viancoo";</script>';
+            res.send(alertScript);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
