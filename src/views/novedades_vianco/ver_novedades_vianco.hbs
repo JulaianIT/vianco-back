@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1.0/daterangepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1.0/daterangepicker.min.js"></script>
+
     <style>
         * {
             font-family: "Roboto", sans-serif;
@@ -27,7 +31,7 @@
             background-color: white;
         }
         .container {
-            max-width: 800px;
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -122,6 +126,44 @@
         p {
             font-size: 20px;
         }
+    .informe {
+        border-radius: 10px;
+        padding: 25px;
+    position: relative;
+    left: 2%;
+    background-color: rgba(144, 201, 167, 0.7); /* Utiliza rgba para especificar el color con opacidad */
+    border: 3px solid black;
+    width: 20%;
+}
+.form-control{
+align-items: center;
+position: relative;
+left:10%;
+}
+
+               .info {
+           position: relative;
+            left: 20px;
+            text-transform: uppercase;
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            
+            
+            }
+            .info:hover {
+            background-color: #d9d9d9;
+        }
     </style>
 </head>
 <body>
@@ -130,20 +172,30 @@
         <img id="logo" src="/imagenes/logo vianco.png"/>
         <img id="vigilado" src="/imagenes/vigilado.png"/>
     </header>
-<input type="date" id="fechaInicio" name="fechaInicio" class="form-control" placeholder="Fecha de inicio">
-<input type="date" id="fechaFin" name="fechaFin" class="form-control" placeholder="Fecha de fin">
 
     <div class="BUSCAR">
         <form id="formFecha">
             <h2>BUSCAR SERVICIO NO CONFORME</h2>
             <label for="id"><strong> DIGITE EL N° DEL SERVICIO:</strong></label>
             <input type="text" id="id" name="id"> 
-<button type="submit" id="verNovedades" class="ver">Ver Novedades</button>
-            <button type="button" id="descargarExcel">Descargar Excel</button>
+<button type="submit" id="verNovedadesPorID" class="ver">Ver Novedades</button>
             <a href="/" class="volver-btn"><strong> Volver al Menú </strong></a>
         </form>
     </div>
+    <br>
+    <div class="informe">
+        <label for="fechaInicio">FECHA INCIO</label>
+<input type="date" id="fechaInicio" name="fechaInicio" class="form-control" placeholder="Fecha de inicio">
+<br>
+        <label for="fechaFin">FECHA FINAL</label>
 
+<input type="date" id="fechaFin" name="fechaFin" class="form-control" placeholder="Fecha de fin">
+<br>
+            <button type="button" class="info" id="descargarExcel">Descargar Excel</button>
+
+</div>
+<br>
+<br>
     <hr>
 
     <div class="novedad-container" id="novedadesContainer"></div>
@@ -161,6 +213,18 @@
     const fechaFin = document.getElementById("fechaFin").value;
     descargarInformeExcel(fechaInicio, fechaFin);
 });
+document.getElementById("verNovedadesPorID").addEventListener("click", function (event) {
+    event.preventDefault();
+    const id = document.getElementById("id").value;
+    obtenerNovedadesPorID(id);
+});
+
+function obtenerNovedadesPorID(id) {
+    fetch(`/novedad_vianco?id=${id}`) // Cambiar 'fecha' a 'id'
+        .then(response => response.json())
+        .then(data => mostrarNovedades(data))
+        .catch(error => console.error('Error:', error));
+}
 
         // Definición de la función generarInformeExcel
    document.getElementById("formFecha").addEventListener("submit", function (event) {

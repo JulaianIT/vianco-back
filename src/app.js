@@ -2790,18 +2790,21 @@ app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
 
 
 
+
+
+
 app.get('/ver_vianco', (req, res) => {
     res.render('novedades_vianco/ver_novedades_vianco.hbs');
 });
 
 app.get('/novedad_vianco', (req, res) => {
-    const id = req.query.fecha; // Cambiar a req.query para obtener el parámetro 'fecha'
+    const id = req.query.id; // Cambiar a req.query para obtener el parámetro 'id'
 
     // Preparar la consulta SQL para obtener las novedades del ID proporcionado
     const sql = "SELECT * FROM novedades_completadas_vianco WHERE id = ?";
 
     // Ejecutar la consulta
-    connection.query(sql, [id], (err, result) => { // Cambiar 'fecha' a 'id'
+    connection.query(sql, [id], (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -2810,6 +2813,13 @@ app.get('/novedad_vianco', (req, res) => {
         }
     });
 });
+
+
+
+
+
+
+
 const XLSX = require('xlsx');
 
 const workbook = require('workbook');
@@ -2841,6 +2851,7 @@ app.post('/descargar_excell', (req, res) => {
     });
 });
 
+
 function generarInformeExcel(novedades) {
     // Mapear los resultados de la consulta SQL y cambiar los títulos de las columnas
     const novedadesFormateadas = novedades.map(novedad => ({
@@ -2867,6 +2878,13 @@ function generarInformeExcel(novedades) {
 
     return workbook;
 }
+
+
+
+
+
+
+
 
 
 
