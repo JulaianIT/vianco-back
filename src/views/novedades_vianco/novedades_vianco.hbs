@@ -55,7 +55,7 @@ position: relative;
 align-items: center;
 width: 40%;
 padding: 30px;
-left: 35%;
+left: 31%;
 border-radius: 5px;
 border: 3px solid black;
 font-size: 20px;
@@ -230,6 +230,164 @@ input[type="checkbox"] {
 label {
     text-align: right; /* Alineación del texto del label a la derecha */
 }
+
+
+
+
+
+
+@media only screen and (max-width: 768px) {
+    header{
+            display: none;
+
+    background-color: white;
+}
+body{
+
+    background-color: #d9d9d9;
+
+}
+
+.contenido{
+
+background-color: white;
+position: relative;
+align-items: center;
+width: 80%;
+padding: 30px;
+left: 8%;
+border-radius: 5px;
+border: 3px solid black;
+font-size: 20px;
+
+
+
+
+}
+
+     label {
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #2e2e2e;
+        text-transform: uppercase;
+    
+    }
+
+ 
+
+   .volver-btn:hover {
+            background-color: #d9d9d9;
+            }
+       
+                 .volver-btn {
+                    position:relative;
+                    left: 5%;
+                    top: 0px;
+
+                    text-transform:uppercase;
+           background-color:#90c9a7;
+             color: #000;
+            border: none;
+            padding: 22px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+           margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+       
+        }
+        .enviar:hover {
+            background-color: #d9d9d9;
+        }
+        .enviar{
+            position:relative;
+                    
+
+                    
+           background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 25px 38px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            left: 10px;
+            font-size: 30px;
+
+
+
+        }
+      
+
+h1{
+
+    position: relative;
+    align-items: center;
+text-align: center;
+background-color: rgb(144, 201, 167,0.5);
+width: 90%;
+left: 4%;
+font-size: 40px;
+padding: 20PX;
+}
+  
+    
+        #sele{
+            font-size: 30px;
+
+
+        }
+        h1{
+            font-size: 20PX;
+
+        }
+        /* Estilos para el label */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            margin-bottom: 50px; /* Espacio inferior */
+            color: #333; /* Color del texto */
+        }
+        .fond{
+          width: 100%;
+    }
+    #fecha {
+  font-size: 20px;
+  padding: 8px;
+}
+
+/* Estilos para los campos de radio */
+
+    /* Estilos para los campos de texto */
+input[type="text"],
+textarea {
+  font-size: 16px;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+input[type="checkbox"] {
+    position: relative;
+    transform: scale(1.8);
+    margin-left: 7px; /* Espacio entre el checkbox y el texto del label */
+    float: right; /* Alineación a la derecha */
+}
+
+label {
+    text-align: right; /* Alineación del texto del label a la derecha */
+}
+    }
+
       
     </style>
      <body>
@@ -252,7 +410,7 @@ label {
     <br>
     <br>
     <br>
-    <h1>NOVEDADES VIANCO</h1>
+    <h1>SERVICIO NO CONFORME</h1>
     <br>
     <br>
     <br>
@@ -331,7 +489,7 @@ label {
     <br>
     <br>
     <label for="firma"><strong>Firma de quien reporta novedad</strong></label><br>
-    <canvas id="firmaCanvas" width="400" height="200" style="border:1px solid #000;"></canvas><br>
+    <canvas id="firmaCanvas" width="230" height="200" style="border:1px solid #000;"></canvas><br>
     <button type="button" onclick="limpiarFirma()">Limpiar Firma</button><br>
 <input type="hidden" id="firmaBase64" name="firmaBase64"><!-- Aquí se almacenará la firma en formato base64 -->
 
