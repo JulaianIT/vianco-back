@@ -397,11 +397,18 @@ float: none;
 </header>
 
 <hr>
-<div id="ventanaEmergente">
-    <span id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</span>
-    <h2>COTIZACIONES RECIEN ENVIADAS </h2>
+<div id="ventanaEmergente" style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
+    <span id="btnCerrar" onclick="cerrarVentanaEmergente()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #666;">Cerrar</span>
+    <div class="VENTANA" style="text-align: center;">
+        <h2 style="color: #333;">NUEVA COTIZACIÓN</h2>
+        <br>
+        <h2 style="color: #333;">Se agregó una nueva cotización. Por favor, ingresa a:</h2>
+        <a href="/cotizaciones_pendientes" style="color: #007bff; text-decoration: none;">Ingresa aquí</a>
+    </div>
+    <br>
+    
     <!-- Botón para marcar como leídas las notificaciones -->
-    <button onclick="marcarComoLeidas()">Marcar como leídas</button>
+    <button onclick="marcarComoLeidas()" style="background-color: #007bff; color: #fff; border: none; border-radius: 3px; padding: 10px 20px; cursor: pointer; margin-top: 10px;">Marcar como leídas</button>
 </div>
 
 <audio id="notificacionSound">
@@ -788,6 +795,7 @@ socket.on('userMovements', function (movements) {
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
 <script>
@@ -802,18 +810,28 @@ socket.on('userMovements', function (movements) {
             audio.play();
         }
     }
+     function marcarComoLeidas() {
+    // Realiza una solicitud POST para marcar las notificaciones como leídas en el servidor
+    $.post('/marcarNotificacionesLeidas', function(data) {
+        // Después de que se hayan marcado como leídas, actualiza el contador de notificaciones sin leer
+        notificacionesSinLeer = 0;
+        cargarNumNotificacionesSinLeer();
+        // Cierra la ventana emergente después de marcar las notificaciones como leídas
+        cerrarVentanaEmergente();
+    });
+}
 
-    // Función para cargar y mostrar el número de notificaciones sin leer
-    function cargarNumNotificacionesSinLeer() {
-        $.get('/notificacionesSinLeer', function(data) {
-            if (data.count > notificacionesSinLeer) {
-                notificacionesSinLeer = data.count;
-                $('#numNotificacionesSinLeer').text(notificacionesSinLeer);
-                reproducirSonidoNotificacion(); // Reproduce el sonido de notificación
-            }
-        });
-    }
 
+// Función para cargar y mostrar el número de notificaciones sin leer
+function cargarNumNotificacionesSinLeer() {
+    $.get('/notificacionesSinLeer', function(data) {
+        if (data.count > notificacionesSinLeer) {
+            notificacionesSinLeer = data.count;
+            $('#numNotificacionesSinLeer').text(notificacionesSinLeer);
+            reproducirSonidoNotificacion(); // Reproduce el sonido de notificación
+        }
+    });
+}
     // Función para mostrar la ventana emergente
     function mostrarVentanaEmergente() {
         $('#ventanaEmergente').show();
@@ -824,18 +842,7 @@ socket.on('userMovements', function (movements) {
         $('#ventanaEmergente').hide();
     }
 
-    // Función para marcar las notificaciones como leídas
-    function marcarComoLeidas() {
-        // Realiza una solicitud POST para marcar las notificaciones como leídas en el servidor
-        $.post('/marcarNotificacionesLeidas', function(data) {
-            // Después de que se hayan marcado como leídas, actualiza el contador de notificaciones sin leer
-            notificacionesSinLeer = 0;
-            cargarNumNotificacionesSinLeer();
-            // Cierra la ventana emergente después de marcar las notificaciones como leídas
-            cerrarVentanaEmergente();
-        });
-    }
-
+ 
     // Habilitar la reproducción automática cuando el usuario interactúa con la página
     $(document).ready(function() {
         $(document).on('click', function() {
@@ -867,6 +874,19 @@ socket.on('userMovements', function (movements) {
                 nav.style.display = "none";
             }
         });
+    });
+</script>
+<script>
+    // Función para cargar y mostrar el número de notificaciones sin leer
+    function cargarNumNotificacionesSinLeer() {
+        $.get('/notificacionesSinLeer', function(data) {
+            $('#numNotificacionesSinLeer').text(data.count);
+        });
+    }
+
+    // Llamar a la función para cargar el número de notificaciones sin leer cuando la página se carga
+    $(document).ready(function() {
+        cargarNumNotificacionesSinLeer();
     });
 </script>
 
