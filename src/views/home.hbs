@@ -819,11 +819,32 @@ socket.on('userMovements', function (movements) {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
 
+
+
+    // Función para cargar y mostrar las notificaciones
+    function cargarNotificaciones() {
+        $.get('/notificaciones', function(notificaciones) {
+            // Limpiar el área de notificaciones
+            $('#notificaciones').empty();
+
+            // Agregar cada notificación al área
+            notificaciones.forEach(function(notificacion) {
+                $('#notificaciones').append(`<p>${notificacion.texto}</p>`);
+            });
+        });
+    }
+
+    // Llama a la función cargarNotificaciones cuando la página se carga
+    $(document).ready(function() {
+        cargarNotificaciones();
+    });
+</script>
 
 <script>
 
-     var reproduccionAutomaticaHabilitada = false;
+    var reproduccionAutomaticaHabilitada = false;
     var notificacionesSinLeer = 0;
 
     // Función para reproducir el sonido de notificación
@@ -833,6 +854,7 @@ socket.on('userMovements', function (movements) {
             audio.play();
         }
     }
+
      function marcarComoLeidas() {
     // Realiza una solicitud POST para marcar las notificaciones como leídas en el servidor
     $.post('/marcarNotificacionesLeidas', function(data) {
@@ -851,7 +873,7 @@ function cargarNumNotificacionesSinLeer() {
         if (data.count > notificacionesSinLeer) {
             notificacionesSinLeer = data.count;
             $('#numNotificacionesSinLeer').text(notificacionesSinLeer);
-            reproducirSonidoNotificacion(); // Reproduce el sonido de notificación
+                reproducirSonidoNotificacion(); // Reproduce el sonido de notificación
         }
     });
 }
