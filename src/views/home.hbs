@@ -707,12 +707,16 @@ function onLocationFound(e) {
     L.circle(e.latlng, radius).addTo(map);
 
     // Obtener la fecha y hora actual
-    var currentTime = new Date();
-    var formattedTime = currentTime.toLocaleTimeString();
-    var formattedDate = currentTime.toLocaleDateString();
+   // Obtener la fecha y hora actual
+var currentTime = new Date();
+var formattedTime = currentTime.toLocaleTimeString();
 
-    var username = "{{name}}"; // Obtener el nombre de usuario del servidor
-    socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: formattedTime, date: formattedDate, username: username });
+// Formatear la fecha en formato ISO 8601
+var formattedDate = currentTime.toISOString().split('T')[0];
+
+var username = "{{name}}"; // Obtener el nombre de usuario del servidor
+socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: formattedTime, date: formattedDate, username: username });
+
 }
 
 
