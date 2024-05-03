@@ -382,11 +382,11 @@ float: none;
             <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
         </a>
     </div>
-
+  {{#if isControl}}
 <div id="campana" onclick="mostrarVentanaEmergente()">
     <div id="numNotificacionesSinLeer"></div>
 </div>
-
+    {{/if}}
 <header>
             <h1 id="ingreso" >{{name}}</h1>
 
@@ -437,7 +437,48 @@ float: none;
                             </ul>
                         </li>
                        
+<ul class="menu-horizontal">
+
+
+
+
+                        {{#if aeropuerto}}
+          <li class="contro">
+    <p class="active">
+        <img id="calll" src="/imagenes/avion.png" alt="">
+    </p>
+                            <ul class="menu-vertical" >
+                                <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
+
+                            </ul>
+                        </li>
+                        {{/if}}
+                       
+                        {{#if isControl}}
+                                  <li class="contro">
+
+                        <p class="active">
+                    <img id="calll" src="/imagenes/inversion.png" alt="">
+                </p> 
+                            <ul class="menu-vertical" >
+                               <li><a href="/formulario_cotizaciones">REALIZAR COTIZACION</a></li>
+                               
+                                 <li><a href="/cotizaciones_pendientes">CONTIZACIONES PENDIENTES</a></li>
+                                 <li><a href="/VE">CONTIZACIONES REALIZADAS</a></li>
+
+
+                            </ul>
+                        </li>
+                        {{/if}}
+
+
+
+
+
       <ul class="menu-horizontal">
+
+
+
 
                         {{#if isControl}}
           <li class="contro">

@@ -219,12 +219,16 @@ const ejecutivo8 = roles.includes('ejecutivo8');
 
 
 
+
+
+const aeropuerto = roles.includes('aeropuerto');
+
         const isControl = roles.includes('seguimiento');
         const isAdmin = roles.includes('gerencia');
         const isExecutive = roles.includes('ejecutivo');
         const isOperative = roles.includes('operativo'); // Verificar si el usuario tiene el rol de 'operativo'
 
-        res.render("home",{ name: req.session.name, isAdmin, isExecutive, isOperative,isControl,ejecutivo1,ejecutivo2,ejecutivo3,ejecutivo4,ejecutivo5,ejecutivo6,ejecutivo7,ejecutivo8 }); // Pasar los roles a la plantilla
+        res.render("home",{ name: req.session.name, isAdmin, isExecutive, isOperative,isControl,ejecutivo1,ejecutivo2,ejecutivo3,ejecutivo4,ejecutivo5,ejecutivo6,ejecutivo7,ejecutivo8,aeropuerto }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
