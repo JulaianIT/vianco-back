@@ -10,62 +10,57 @@
 </head>
 <style>
     * {
-  font-family: "Outfit", sans-serif;
+        font-family: "Outfit", sans-serif;
         font-optical-sizing: auto;
         font-weight: <weight>;
         font-style: normal;
         padding: 0;
         margin: 0;
         box-sizing: border-box;
-        
     }
- body  {
-    /* Define la imagen de fondo sin opacidad */
-    background-image: url("/imagenes/Imagen Aeropuerto.png");
-        background-repeat: no-repeat; /* Evita que la imagen de fondo se repita */
 
-    /* Establece la apariencia de la imagen de fondo */
-    background-size: cover;
-    background-position: center top 100px; /* Desplaza la imagen 100px hacia abajo */
-    width: auto;
-    margin: 0; /* Asegura que no haya margen alrededor del cuerpo */
-}
-
+    body  {
+        background-image: url("/imagenes/Imagen Aeropuerto.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center top 100px;
+        width: auto;
+        margin: 0;
+    }
 
     table {
-    
         border-collapse: collapse;
         width: 100%;
-        margin: 20px 0; /* Agrega margen arriba y abajo */
+        margin: 20px 0;
     }
 
-th, td {
-    font-size: 20px;
-    border: 6px solid black;
-    text-align: center;
-    padding: 8px;
-    width: auto; /* Ajusta el ancho de las celdas automáticamente */
-}
+    th, td {
+        font-size: 20px;
+        border: 6px solid black;
+        text-align: center;
+        padding: 8px;
+        width: auto;
+    }
 
     th {
         text-transform: uppercase;
-    border: 6px solid black;
+        border: 6px solid black;
         font-size: 25px;
-    color: white;
-        background-color: #666567
+        color: white;
+        background-color: #666567;
     }
 
     tr:nth-child(even) {
-                border: 3px solid black;
-
+        border: 3px solid black;
         background-color: #d9d9d9;
     }
+
     tr:nth-child(odd) {
-    background-color: #ffffff; /* Color de fondo para las filas impares */
-}
+        background-color: #ffffff;
+    }
 
     .tabla-container {
-        margin: 30px; /* Agrega espacio alrededor del contenedor */
+        margin: 30px;
     }
 
     .BUSCAR {
@@ -110,20 +105,33 @@ th, td {
         font-weight: bold;
         text-decoration: none;
     }
-      .titulo-tabla {
+
+    .titulo-tabla {
         margin: 10px;
         background-color: #d9d9d9;
         padding: 10px;
         text-align: center;
         font-size: 25px;
         font-weight: bold;
-        color: black; /* Cambia el color del texto según tu preferencia */
+        color: black;
         margin-bottom: 10px;
+        position: relative;
+    }
+
+    .flecha {
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .rotate {
+        transform: rotate(180deg);
     }
 
     footer {
-            opacity: 0.6;
-
+        opacity: 0.6;
         background-color: #222;
         padding: 4.9rem;
         color: #ffff;
@@ -170,141 +178,119 @@ th, td {
         position: relative;
         top: 30px;
     }
-#logo{
-    position: relative;
-    left: 90px;
 
-    width: 400px;
-
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 300px;
-}
-
-
-header {
-    padding:2%;
-    background-color: white; /* Fondo blanco para el encabezado */
-}
-#formFecha{
-
-        opacity: 0.6;
-
-}
-@media only screen and (max-width: 768px) {
-    
-
-
-
- body  {
-    /* Define la imagen de fondo sin opacidad */
-    background-image: url("/imagenes/Imagen Aeropuerto (1).png");
-        background-repeat: no-repeat; /* Evita que la imagen de fondo se repita */
-
-    /* Establece la apariencia de la imagen de fondo */
-    background-size: 100% 100vh; /* La imagen de fondo cubrirá completamente el cuerpo */
-    background-position: center top 32vh; /* Desplaza la imagen 100px hacia abajo */
-    width: auto;
-    margin: 0; /* Asegura que no haya margen alrededor del cuerpo */
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 10px 0;
-}
-
-th, td {
-    font-size: 14px;
-    border: 1px solid black;
-    text-align: center;
-    padding: 4px;
-}
-
-th {
-    text-transform: uppercase;
-    color: white;
-    background-color: #666567;
-}
-
-tr:nth-child(even) {
-    background-color: #d9d9d9;
-}
-
-tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-
-.tabla-container {
-    margin: 10px; /* Reducido el espacio alrededor del contenedor */
-}
-
-
-    .BUSCAR {
-        background-color: rgba(144, 201, 167);
-        padding: 20px;
-        text-align: center;
-    }
-
-    #fecha {
-        width: 300px;
-        height: 40px;
-        font-size: 18px;
-        margin-right: 20px;
-    }
-
-    .fehcaa {
-        text-transform: uppercase;
-        margin-right: 23px;
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    .volver-btn:hover, .ver:hover {
-        background-color: #d9d9d9;
-    }
-
-    .volver-btn, .ver {
+    #logo{
         position: relative;
-        left: 10px;
-        text-transform: uppercase;
-        background-color: #90c9a7;
-        color: #000;
-        border: none;
-        padding: 3px;
-        margin-right: 5PX;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: inline-block;
-        margin-top: 20px;
-        font-size: 15px;
-        font-weight: bold;
-        text-decoration: none;
+        left: 90px;
+        width: 400px;
     }
 
-  
+    #vigilado {
+        float: right;
+        width: 300px;
+    }
 
+    header {
+        padding: 2%;
+        background-color: white;
+    }
 
+    #formFecha {
+        opacity: 0.6;
+    }
 
-header {
-                display: none;
+    @media only screen and (max-width: 768px) {
+        body  {
+            background-image: url("/imagenes/Imagen Aeropuerto (1).png");
+            background-repeat: no-repeat;
+            background-size: 100% 100vh;
+            background-position: center top 32vh;
+            width: auto;
+            margin: 0;
+        }
 
-    background-color: white; /* Fondo blanco para el encabezado */
-}
-#formFecha{
-        opacity: 0.9;
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+        }
 
-}
+        th, td {
+            font-size: 14px;
+            border: 1px solid black;
+            text-align: center;
+            padding: 4px;
+        }
 
+        th {
+            text-transform: uppercase;
+            color: white;
+            background-color: #666567;
+        }
 
+        tr:nth-child(even) {
+            background-color: #d9d9d9;
+        }
 
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
 
+        .tabla-container {
+            margin: 10px;
+        }
 
+        .BUSCAR {
+            background-color: rgba(144, 201, 167);
+            padding: 20px;
+            text-align: center;
+        }
 
+        #fecha {
+            width: 300px;
+            height: 40px;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+
+        .fehcaa {
+            text-transform: uppercase;
+            margin-right: 23px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .volver-btn:hover, .ver:hover {
+            background-color: #d9d9d9;
+        }
+
+        .volver-btn, .ver {
+            position: relative;
+            left: 10px;
+            text-transform: uppercase;
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 3px;
+            margin-right: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        header {
+            display: none;
+        }
+
+        #formFecha {
+            opacity: 0.9;
+        }
     }
 </style>
 <body>
@@ -326,79 +312,9 @@ header {
 <div class="fondo">
 
 <div class="tabla-container">
-    <div id="recepcionesContainer"></div>
-</div>
-    </div>
-
-<br>
-<br>
-</div>
-
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#formFecha').submit(function(event) {
-            event.preventDefault();
-            const fecha = $('#fecha').val();
-            $.ajax({
-                type: 'POST',
-                url: '/buscar_por_fecha',
-                data: { fecha: fecha },
-                success: function(response) {
-                    mostrarRecepciones(response);
-                },
-                error: function(error) {
-                    console.error('Error en la solicitud AJAX:', error);
-                }
-            });
-        });
-
-        function mostrarRecepciones(recepciones) {
-            const recepcionesContainer = $('#recepcionesContainer');
-            recepcionesContainer.empty(); // Limpiar el contenedor
-
-            const clientesNH = [];
-            const otrosClientes = {};
-
-            recepciones.forEach(recepcion => {
-                if (recepcion.cliente.includes('NH')) {
-                    clientesNH.push(recepcion);
-                } else {
-                    if (!otrosClientes[recepcion.cliente]) {
-                        otrosClientes[recepcion.cliente] = [];
-                    }
-                    otrosClientes[recepcion.cliente].push(recepcion);
-                }
-            });
-
-            // Mostrar la tabla para los clientes NH
-            if (clientesNH.length > 0) {
-                const tablaClientesNH = crearTablaClientes(clientesNH, 'Clientes NH');
-                recepcionesContainer.append(tablaClientesNH);
-            }
-
-            // Mostrar las tablas para los otros clientes
-            Object.keys(otrosClientes).forEach(cliente => {
-                const tablaCliente = crearTablaClientes(otrosClientes[cliente], cliente);
-                recepcionesContainer.append(tablaCliente);
-            });
-        }
-// Modifica la función crearTablaClientes para agregar la clase "titulo-tabla" al título de la tabla
-function crearTablaClientes(recepciones, cliente) {
-    // Convertir la hora en formato militar a minutos desde la medianoche
-    recepciones.forEach(recepcion => {
-        const [hora, minutos, segundos] = recepcion.hora.split(':').map(Number);
-        recepcion.horaNumerica = hora * 60 + minutos + segundos / 60;
-    });
-
-    // Ordenar las recepciones por hora numérica de forma ascendente
-    recepciones.sort((a, b) => a.horaNumerica - b.horaNumerica);
-
-    // Crear la tabla HTML para el cliente
-    const tablaHTML = `
-        <div class="titulo-tabla">${cliente}</div>
-        <table>
+    <div id="recepcionesContainer">
+        <div class="titulo-tabla" id="titulo-nh">Clientes NH <span class="flecha" id="flecha-nh">&#9660;</span></div>
+        <table id="tabla-nh">
             <thead>
                 <tr>
                     <th>Cliente</th>
@@ -412,28 +328,146 @@ function crearTablaClientes(recepciones, cliente) {
                 </tr>
             </thead>
             <tbody>
-                ${recepciones.map(recepcion => `
-                    <tr>
-                        <td>${recepcion.cliente}</td>
-                        <td>${new Date(recepcion.fecha).toLocaleDateString()}</td>
-                        <td>${recepcion.hora}</td>
-                        <td>${recepcion.nombre_pasajero}</td>
-                        <td>${recepcion.vuelo}</td>
-                        <td>${recepcion.placa}</td>
-                        <td>${recepcion.conductor}</td>
-                        <td>${recepcion.celular_conductor}</td>
-                    </tr>
-                `).join('')}
+                <!-- Contenido de la tabla para clientes NH -->
             </tbody>
         </table>
-    `;
 
-    return tablaHTML;
-}
+        <div class="titulo-tabla" id="titulo-otros">Otros Clientes <span class="flecha" id="flecha-otros">&#9660;</span></div>
+        <table id="tabla-otros">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Nombre del Pasajero</th>
+                    <th>N° de Vuelo</th>
+                    <th>Placa</th>
+                    <th>Conductor</th>
+                    <th>Celular del Conductor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Contenido de la tabla para otros clientes -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
+<br>
+<br>
+</div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Función para manejar el envío del formulario
+    $('#formFecha').submit(function(event) {
+        event.preventDefault();
+        const fecha = $('#fecha').val();
+        $.ajax({
+            type: 'POST',
+            url: '/buscar_por_fecha',
+            data: { fecha: fecha },
+            success: function(response) {
+                mostrarRecepciones(response);
+            },
+            error: function(error) {
+                console.error('Error en la solicitud AJAX:', error);
+            }
+        });
     });
+
+    // Función para mostrar las recepciones en las tablas
+    function mostrarRecepciones(recepciones) {
+        const recepcionesContainer = $('#recepcionesContainer');
+        recepcionesContainer.empty(); // Limpiar el contenedor
+
+        const clientesNH = [];
+        const otrosClientes = {};
+
+        // Organizar las recepciones por cliente
+        recepciones.forEach(recepcion => {
+            if (recepcion.cliente.includes('NH')) {
+                clientesNH.push(recepcion);
+            } else {
+                if (!otrosClientes[recepcion.cliente]) {
+                    otrosClientes[recepcion.cliente] = [];
+                }
+                otrosClientes[recepcion.cliente].push(recepcion);
+            }
+        });
+
+        // Mostrar la tabla para los clientes NH
+        if (clientesNH.length > 0) {
+            const tablaClientesNH = crearTablaClientes(clientesNH, 'Clientes NH');
+            recepcionesContainer.append(tablaClientesNH);
+        }
+
+        // Mostrar las tablas para los otros clientes
+        Object.keys(otrosClientes).forEach(cliente => {
+            const tablaCliente = crearTablaClientes(otrosClientes[cliente], cliente);
+            recepcionesContainer.append(tablaCliente);
+        });
+
+        // Asignar eventos de clic a las flechas para mostrar/ocultar tablas
+        $('.flecha').click(function() {
+            $(this).toggleClass('rotate'); // Rotar la flecha
+            $(this).parent().next('table').toggle(); // Mostrar u ocultar la tabla siguiente
+        });
+    }
+
+    // Función para crear las tablas de recepciones para cada cliente
+    function crearTablaClientes(recepciones, cliente) {
+        // Convertir la hora en formato militar a minutos desde la medianoche
+        recepciones.forEach(recepcion => {
+            const [hora, minutos, segundos] = recepcion.hora.split(':').map(Number);
+            recepcion.horaNumerica = hora * 60 + minutos + segundos / 60;
+        });
+
+        // Ordenar las recepciones por hora numérica de forma ascendente
+        recepciones.sort((a, b) => a.horaNumerica - b.horaNumerica);
+
+        // Reemplazar espacios en blanco en el nombre del cliente por guiones y convertir a minúsculas
+        const clienteId = cliente.replace(/\s+/g, '-').toLowerCase();
+
+        // Crear la tabla HTML para el cliente
+        const tablaHTML = `
+            <div class="titulo-tabla">${cliente} <span class="flecha">&#9660;</span></div>
+            <table id="tabla-${clienteId}" style="display: none;"> <!-- Ocultar la tabla inicialmente -->
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Nombre del Pasajero</th>
+                        <th>N° de Vuelo</th>
+                        <th>Placa</th>
+                        <th>Conductor</th>
+                        <th>Celular del Conductor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${recepciones.map(recepcion => `
+                        <tr>
+                            <td>${recepcion.cliente}</td>
+                            <td>${new Date(recepcion.fecha).toLocaleDateString()}</td>
+                            <td>${recepcion.hora}</td>
+                            <td>${recepcion.nombre_pasajero}</td>
+                            <td>${recepcion.vuelo}</td>
+                            <td>${recepcion.placa}</td>
+                            <td>${recepcion.conductor}</td>
+                            <td>${recepcion.celular_conductor}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        return tablaHTML;
+    }
+});
+
 </script>
-
-
 </body>
 </html>
