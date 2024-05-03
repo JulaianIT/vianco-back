@@ -1990,22 +1990,21 @@ socket.on('selectUser', ({ username }) => {
    // Emitir las últimas ubicaciones conocidas al cliente recién conectado
    socket.emit('userLocations', lastKnownLocations);
 
-    // Manejar la recepción de ubicaciones de los usuarios
-    socket.on('location', (data) => {
-        // Actualizar la última ubicación conocida del usuario
-        lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time };
+   socket.on('location', (data) => {
+    // Actualizar la última ubicación conocida del usuario
+    lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time, date: data.date };
 
-        // Insertar la ubicación y el nombre de usuario en la tabla de ubicaciones
-        const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora) VALUES (?, ?, ?, ?)';
-        connection.query(query, [data.lat, data.lng, data.username, data.time], (error, results) => {
-            if (error) {
-                console.error('Error al insertar la ubicación en MySQL:', error);
-                return;
-            }
-            // Emitir la ubicación a todos los clientes conectados
-            io.emit('userLocation', data);
-        });
+    // Insertar la ubicación, la fecha y el nombre de usuario en la tabla de ubicaciones
+    const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora, fecha) VALUES (?, ?, ?, ?, ?)';
+    connection.query(query, [data.lat, data.lng, data.username, data.time, data.date], (error, results) => {
+        if (error) {
+            console.error('Error al insertar la ubicación en MySQL:', error);
+            return;
+        }
+        // Emitir la ubicación a todos los clientes conectados
+        io.emit('userLocation', data);
     });
+});
 
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {

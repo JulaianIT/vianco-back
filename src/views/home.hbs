@@ -745,13 +745,10 @@ socket.on('userLocations', function(locations) {
         const location = locations[username];
         // Agregar marcador para cada ubicación
         var marker = L.marker([location.lat, location.lng]).addTo(map)
-            .bindPopup(username + '<br>' + 'HORA:'  +  location.time).openPopup();
+            .bindPopup(username + '<br>' + 'FECHA: ' + location.date + '<br>' + 'HORA: ' + location.time).openPopup();
         markers.push(marker); // Agregar el marcador al arreglo
     }
 });
-
-
-
 
 
 // Agregar marcadores al mapa
