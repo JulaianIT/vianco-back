@@ -199,8 +199,8 @@ left: 5%;
             cursor: pointer;
         }
 
-        #numNotificacionesSinLeer {
-      position: absolute;
+      #numNotificacionesSinLeer {
+            position: absolute;
             top: 5px;
             right: -7px;
             background-color: #d9d9d9;
@@ -215,10 +215,10 @@ left: 5%;
             font-weight: bold;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
+
         /* Estilos de la ventana emergente */
         #ventanaEmergente {
-            padding: 20px;
-             display: none;
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -403,6 +403,11 @@ float: none;
     <!-- Botón para marcar como leídas las notificaciones -->
     <button onclick="marcarComoLeidas()">Marcar como leídas</button>
 </div>
+
+<audio id="notificacionSound">
+    <source src="/sonidos/level-up-2-199574.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+</audio>
 
 
 
@@ -784,11 +789,28 @@ socket.on('userMovements', function (movements) {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+
 <script>
+
+     var reproduccionAutomaticaHabilitada = false;
+    var notificacionesSinLeer = 0;
+
+    // Función para reproducir el sonido de notificación
+    function reproducirSonidoNotificacion() {
+        var audio = document.getElementById('notificacionSound');
+        if (reproduccionAutomaticaHabilitada && notificacionesSinLeer > 0) {
+            audio.play();
+        }
+    }
+
     // Función para cargar y mostrar el número de notificaciones sin leer
     function cargarNumNotificacionesSinLeer() {
         $.get('/notificacionesSinLeer', function(data) {
-            $('#numNotificacionesSinLeer').text(data.count);
+            if (data.count > notificacionesSinLeer) {
+                notificacionesSinLeer = data.count;
+                $('#numNotificacionesSinLeer').text(notificacionesSinLeer);
+                reproducirSonidoNotificacion(); // Reproduce el sonido de notificación
+            }
         });
     }
 
@@ -807,12 +829,27 @@ socket.on('userMovements', function (movements) {
         // Realiza una solicitud POST para marcar las notificaciones como leídas en el servidor
         $.post('/marcarNotificacionesLeidas', function(data) {
             // Después de que se hayan marcado como leídas, actualiza el contador de notificaciones sin leer
+            notificacionesSinLeer = 0;
             cargarNumNotificacionesSinLeer();
             // Cierra la ventana emergente después de marcar las notificaciones como leídas
             cerrarVentanaEmergente();
         });
     }
 
+    // Habilitar la reproducción automática cuando el usuario interactúa con la página
+    $(document).ready(function() {
+        $(document).on('click', function() {
+            reproduccionAutomaticaHabilitada = true;
+        });
+
+        // Llamar a la función para cargar notificaciones sin leer cada 5 segundos
+        setInterval(cargarNumNotificacionesSinLeer, 5000);
+    });
+
+    // Cargar el número de notificaciones sin leer al cargar la página
+    $(document).ready(function() {
+        cargarNumNotificacionesSinLeer();
+    });
   
 </script>
 <script>
