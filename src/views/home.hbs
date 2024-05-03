@@ -693,26 +693,28 @@ hoteles.forEach(function(hotel) {
     });
 });
 
+function onLocationFound(e) {
+    var radius = e.accuracy / 2;
 
-    function onLocationFound(e) {
-        var radius = e.accuracy / 2;
-
-        // Verificar la precisión antes de mostrar la ubicación
-        if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
-           
-            return;
-        }
-
-        L.marker(e.latlng).addTo(map)
-            .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
-
-        L.circle(e.latlng, radius).addTo(map);
-
-        // Enviar la ubicación al servidor con la hora actual y el nombre de usuario
-        var currentTime = new Date().toLocaleTimeString();
-        var username = "{{name}}"; // Obtener el nombre de usuario del servidor
-        socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: currentTime, username: username });
+    // Verificar la precisión antes de mostrar la ubicación
+    if (e.accuracy > 100) { // Por ejemplo, solo aceptar si la precisión es mayor que 100 metros
+        return;
     }
+
+    L.marker(e.latlng).addTo(map)
+        .bindPopup('Estás dentro de ' + radius + ' metros de este punto').openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+
+    // Obtener la fecha y hora actual
+    var currentTime = new Date();
+    var formattedTime = currentTime.toLocaleTimeString();
+    var formattedDate = currentTime.toLocaleDateString();
+
+    var username = "{{name}}"; // Obtener el nombre de usuario del servidor
+    socket.emit('location', { lat: e.latlng.lat, lng: e.latlng.lng, time: formattedTime, date: formattedDate, username: username });
+}
+
 
     function onLocationError(e) {
         alert('Error de geolocalización: ' + e.message + '. Asegúrate de tener activado el GPS y de estar en un lugar con buena señal.');

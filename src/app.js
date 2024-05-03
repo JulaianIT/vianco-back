@@ -1989,7 +1989,7 @@ socket.on('selectUser', ({ username }) => {
 
    // Emitir las últimas ubicaciones conocidas al cliente recién conectado
    socket.emit('userLocations', lastKnownLocations);
-
+   
    socket.on('location', (data) => {
     // Actualizar la última ubicación conocida del usuario
     lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time, date: data.date };
