@@ -2925,8 +2925,21 @@ app.get('/inspeccion_vianco', (req, res) => {
 });
 
 
-
-
+// Manejador de ruta para el envío del formulario
+app.post('/guardar-inspeccion', (req, res) => {
+    const formData = req.body;
+    // Insertar los datos en la base de datos
+    connection.query('INSERT INTO inspeccion_2_0 SET ?', formData, (err, result) => {
+        if (err) {
+            console.error('Error al guardar los datos:', err);
+            res.status(500).send('Error interno del servidor.');
+            return;
+        }
+        console.log('Datos guardados correctamente.');
+        // Enviar mensaje de éxito y redireccionar al mismo formulario
+        res.render('Inspección/Inspección_form.hbs', { message: 'Enviado exitosamente.' });
+    });
+});
 
 
 

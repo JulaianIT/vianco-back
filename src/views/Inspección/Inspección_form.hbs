@@ -63,7 +63,7 @@
 
 
         button {
-            background-color: #007bff;
+            background-color: #90c9a7;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -124,7 +124,7 @@ select {
 <br>
 <br>
 <body>
-    <form>
+<form action="/guardar-inspeccion" method="POST">
          <h1>Inspección Vianco 2.0</h1>
         <div class="form-group">  
              <label for="base">Base *</label>
@@ -367,5 +367,39 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error al obtener la lista de bases:', error));
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('tuFormulario');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar el envío del formulario por defecto
+
+            // Obtener la acción y los datos del formulario
+            const action = form.getAttribute('action');
+            const formData = new FormData(form);
+
+            // Enviar los datos del formulario al servidor
+            fetch(action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar alerta de éxito
+                    alert(data.message);
+                    // Redireccionar o hacer cualquier otra acción necesaria
+                } else {
+                    // Manejar errores si es necesario
+                    alert('Error al guardar los datos.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error interno del servidor.');
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
