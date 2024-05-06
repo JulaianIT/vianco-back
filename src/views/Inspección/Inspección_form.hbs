@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario HBS</title>
+    <style>
+      body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #90c9a7;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: calc(100% - 26px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+      
+.checkbox-option input[type="radio"],
+.checkbox-option input[type="checkbox"] {
+    width: 24px; /* Ancho del checkbox o radio button */
+    height: 24px; /* Altura del checkbox o radio button */
+    font-size: 20px; /* Tamaño de la fuente del label */
+    margin-right: 10px; /* Espacio entre el checkbox/radio button y el label */
+}
+
+.checkbox-option label {
+    font-size: 20px; /* Tamaño de la fuente del label */
+}
+
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .checkbox-option label {
+            margin-right: 10px;
+        }
+
+        header {
+            background-color: #fff;
+        }
+
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+select {
+    font-size: 23px; /* Tamaño de la fuente */
+    padding: 10px; /* Espaciado interno */
+}
+
+    </style>
+</head>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="/imagenes/vigilado.png"/>
+    <hr>
+</header>
+<br>
+<br>
+<br>
+<br>
+<body>
+    <form>
+         <h1>Inspección Vianco 2.0</h1>
+        <div class="form-group">  
+             <label for="base">Base *</label>
+            <select id="base" name="base">
+
+        </div>
+        <div class="form-group">
+            <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+            <label for="placa">Selecciona una placa:</label>
+            <select id="placa" name="placa">
+                {{#each placas}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select>
+        </div>
+      
+        <div class="form-group">
+   <div class="form-group">
+<h3>PRESENTACION CONDUCTOR</h3>
+<div class="form-group">
+ <label>Corbata</label>
+   <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="corbata_vianco_si" name="corbata_vianco" value="si">
+            <label for="corbata_vianco_si">SI</label>
+        </div>
+        
+ <div class="checkbox-option">          
+            <input type="radio" id="corbata_vianco_no" name="corbata_vianco" value="no">
+            <label for="corbata_vianco_no">NO</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="form-group">
+ <label>traje</label>
+   <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="traje_si" name="traje" value="si">
+            <label for="traje_si">SI</label>
+        </div>
+ <div class="checkbox-option">          
+            <input type="radio" id="traje_no" name="traje" value="no">
+            <label for="traje_no">NO</label>
+        </div>
+    </div>
+</div>
+
+        <div class="form-group">
+            <label>Presentación Externa Vehículo *</label>
+            <select id="presentacion_externa" name="presentacion_externa">
+                <option value="Buena">Buena</option>
+                <option value="Regular">Regular</option>
+                <option value="Malo">Malo</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Interior del vehículo *</label>
+            <select id="interior_vehiculo" name="interior_vehiculo">
+                <option value="Bueno">Bueno</option>
+                <option value="Regular">Regular</option>
+                <option value="Malo">Malo</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Protocolo de servicio *</label>
+            <select id="protocolo_servicio" name="protocolo_servicio">
+                <option value="Visible">Visible</option>
+                <option value="No Visible">No Visible</option>
+                <option value="No lo tiene">No lo tiene</option>
+            </select>
+        </div>
+      <div class="form-group">
+    <h3>AMENITIES</h3>
+    <div class="form-group">
+    <label>AGUA</label>
+    <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="AGUA_si" name="AGUA" value="SI">
+            <label for="AGUA_si">SI</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="radio" id="AGUA_no" name="AGUA" value="NO">
+            <label for="AGUA_no">NO</label>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>PAÑOS HUMEDOS</label>
+    <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="PAÑOS_si" name="PAÑOS" value="SI">
+            <label for="PAÑOS_si">SI</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="radio" id="PAÑOS_no" name="PAÑOS" value="NO">
+            <label for="PAÑOS_no">NO</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="form-group">
+    <label>CARGADOR DE CELULAR</label>
+    <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="CARGADOR_si" name="CARGADOR" value="SI">
+            <label for="CARGADOR_si">SI</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="radio" id="CARGADOR_no" name="CARGADOR" value="NO">
+            <label for="CARGADOR_no">NO</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="form-group">
+    <label>MANOS LIBRES</label>
+    <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="MANOS_si" name="MANOS" value="SI">
+            <label for="MANOS_si">SI</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="radio" id="MANOS_no" name="MANOS" value="NO">
+            <label for="MANOS_no">NO</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="form-group">
+    <label>Aire Acondicionado *</label>
+    <select id="aire_acondicionado" name="aire_acondicionado">
+        <option value="Funciona">Funciona</option>
+        <option value="No funciona">No funciona</option>
+    </select>
+</div>
+<br>
+<div class="form-group">
+    <label>Logo RNT</label>
+    <div class="checkbox-group">
+        <div class="checkbox-option">
+            <input type="radio" id="logo_rnt_si" name="logo_rnt" value="SI">
+            <label for="logo_rnt_si">SI</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="radio" id="logo_rnt_no" name="logo_rnt" value="NO">
+            <label for="logo_rnt_no">NO</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="form-group">
+    <label>Logos de Reservado *</label>
+    <select id="logos_reservado" name="logos_reservado">
+        <option value="Si tiene">Si tiene</option>
+        <option value="No tiene">No tiene</option>
+    </select>
+</div>
+<div class="form-group">
+    <label>Logos de Vianco *</label>
+    <select id="logos_vianco" name="logos_vianco">
+        <option value="Buen estado">Buen estado</option>
+        <option value="Regular estado">Regular estado</option>
+        <option value="Mal estado">Mal estado</option>
+    </select>
+</div>
+<div class="form-group">
+    <label>Estado del Baúl del vehículo *</label>
+    <select id="estado_baul" name="estado_baul">
+        <option value="Buen Estado">Buen Estado</option>
+        <option value="Mal estado">Mal estado</option>
+    </select>
+</div>
+<div class="form-group">
+    <label for="observaciones_vehiculo">Observaciones al Vehículo</label>
+    <textarea id="observaciones_vehiculo" name="observaciones_vehiculo"></textarea>
+</div>
+<div class="form-group">
+    <label for="observaciones_conductor">Observaciones al Conductor</label>
+    <textarea id="observaciones_conductor" name="observaciones_conductor"></textarea>
+</div>
+
+<button type="submit">Enviar</button>
+</form>
+
+
+    <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const baseSelect = document.getElementById('base');
+    const placasSelect = document.getElementById('placa');
+    const nombreConductorInput = document.getElementById('nombre_conductor');
+
+    // Función para cargar las placas según la base seleccionada
+    function cargarPlacas() {
+        const baseSeleccionada = baseSelect.value;
+        fetch(`/inspeccion_vianco?base=${baseSeleccionada}`)
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar opciones existentes
+                placasSelect.innerHTML = '';
+                // Agregar las nuevas opciones
+                data.forEach(placa => {
+                    const option = document.createElement('option');
+                    option.value = placa;
+                    option.textContent = placa;
+                    placasSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al obtener la lista de placas:', error));
+    }
+    
+    // Evento de cambio en el select de bases
+    baseSelect.addEventListener('change', cargarPlacas);
+    
+    // Cargar las placas al cargar la página
+    cargarPlacas();
+});
+
+
+
+
+    </script>
+       <script>
+        // Hacer una solicitud HTTP para obtener la lista de bases
+        fetch('/obtenerBases')
+            .then(response => response.json())
+            .then(data => {
+                const baseSelect = document.getElementById('base');
+                // Limpiar opciones existentes
+                baseSelect.innerHTML = '';
+                // Agregar las nuevas opciones
+                data.forEach(base => {
+                    const option = document.createElement('option');
+                    option.value = base;
+                    option.textContent = base;
+                    baseSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al obtener la lista de bases:', error));
+    </script>
+</body>
+</html>

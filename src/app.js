@@ -2891,6 +2891,45 @@ function generarInformeExcel(novedades) {
 
 
 
+
+
+app.get('/inspeccion', (req, res) => {
+    res.render('Inspección/Inspección_form.hbs');
+});
+
+// Ruta para obtener la lista de bases
+app.get('/obtenerBases', (req, res) => {
+    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+        if (error) {
+            console.error('Error al obtener las bases:', error);
+            res.status(500).json({ error: 'Error al obtener las bases' });
+            return;
+        }
+        const bases = results.map(result => result.base);
+        res.json(bases);
+    });
+});
+
+// Ruta para obtener la lista de placas según la base seleccionada
+app.get('/inspeccion_vianco', (req, res) => {
+    const baseSeleccionada = req.query.base;
+    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener las placas:', error);
+            res.status(500).json({ error: 'Error al obtener las placas' });
+            return;
+        }
+        const placas = results.map(result => result.placa);
+        res.json(placas);
+    });
+});
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

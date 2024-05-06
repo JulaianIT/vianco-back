@@ -3,24 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizaciones Pendientes</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <link rel="icon" href="/imagenes/logo_pestaña.PNG" type="image/x-icon">
-    <link rel="shortcut icon" href="/imagenes/logo_pestaña.PNG" type="image/x-icon">
+    <title>Formulario HBS</title>
     <style>
-        * {
-            font-family: "Rubik", sans-serif;
-            padding: 0;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
-            box-sizing: border-box;
+            padding: 0;
+      
         }
 
-        header {
-            background-color: white;
-        }
+header{
 
-        #logo {
+    background-color: white;
+}
+
+        
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+            
+        }
+          #logo {
             position: relative;
             left: 90px;
             width: 400px;
@@ -30,179 +70,92 @@
             float: right;
             width: 300px;
         }
-
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 32px;
-            color: #333;
-        }
-
-        .cotizaciones {
-            border-radius: 6px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 50%;
-            background-color: #f8f9fa;
-            border: 2px solid black;
-        }
-
-        .cotizaciones ol {
-            padding: 10px;
-        }
-
-        .cotizaciones li {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .cotizaciones li a {
-            color: #413d4b;
-            text-decoration: none;
-            transition: color 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cotizaciones li a:hover {
-            color: #90c9a7;
-        }
-
-        .cliente {
-            flex: 1;
-        }
-
-        .id {
-            text-align: right;
-            margin-left: 10px;
-        }
-            footer {
-
-        background-color: #222;
-        padding: 4.9rem;
-        color: #ffff;
-        position: relative;
-        top: 400px;
-        margin: 0;
-    }
-
-    footer section {
-        float: right;
-        margin: 0;
-        position: relative;
-        top: -60px;
-    }
-
-    footer a {
-        transition: color 0.3s ease;
-        color: #ffff;
-        text-decoration: none;
-    }
-
-    footer a:hover {
-        color: rgb(162, 204, 170);
-    }
-
-    footer p {
-        position: relative;
-        float: left;
-        left: -1199px;
-        color: #ffff;
-        font-size: 20px;
-    }
-
-    .bad {
-        font-size: 20px;
-        position: relative;
-        color: rgb(113, 112, 111);
-        right: -20px;
-        top: 6px;
-    }
-
-    .ok {
-        font-size: 20px;
-        position: relative;
-        top: 30px;
-    }
-            .cotizaciones li form {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .cotizaciones li form button {
-            margin-left: 10px; /* Ajusta este valor según sea necesario */
-        }
-           .marcar-btn {
-            background-color: #90c9a7;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-left: 20px; /* Ajusta este valor según sea necesario */
-        }
-
-        .marcar-btn:hover {
-            background-color: #6c9c82;
-        }
-           .volver-btn:hover, .ver:hover {
-        background-color: #d9d9d9;
-    }
-
-    .volver-btn, .ver {
-    position: relative;
-        left: 25px;
-        text-transform: uppercase;
-        background-color: #90c9a7;
-        color: #000;
-        border: none;
-        padding: 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: inline-block;
-        margin-top: 20px;
-        font-size: 25px;
-        font-weight: bold;
-        text-decoration: none;
-    }
     </style>
 </head>
-<body>
 <header>
     <img id="membrete" src="/imagenes/menbrete.png"/>
     <img id="logo" src="/imagenes/logo vianco.png"/>
     <img id="vigilado" src="/imagenes/vigilado.png"/>
     <hr>
 </header>
-<h1>Cotizaciones Pendientes</h1>
-<br>
-<br>
-<br>
-<div class="cotizaciones">
-     <ol>
-            {{#each cotizaciones}}
-            <li>
-                <form action="/marcar_realizado" method="POST">
-                    <input type="hidden" name="cotizacionId" value="{{id}}">
-                    <a href="/cotizaciones_pendientes/{{id}}">
-                        <span class="cliente">{{cliente}}</span>
-                        <span class="id">N° {{id}}</span>
-                    </a>
-                    <button type="submit" class="marcar-btn" >COTIZACION REALIZADA</button>
-                </form>
-            </li>
-            {{/each}}
-        </ol>
-</div>
+<body>
+    <form>
+         <h1>Inspección Vianco 2.0</h1>
+        <div class="form-group">
+            <label for="base">Base *</label>
+            <select id="base" name="base">
+                <option value="Teleport">Teleport</option>
+                <option value="Hacienda">Hacienda</option>
+                <option value="WTC">WTC</option>
+                <option value="Terra 100">Terra 100</option>
+                <option value="Pavillon">Pavillon</option>
+                <option value="Urban 93">Urban 93</option>
+                <option value="Estelar Calle 100">Estelar Calle 100</option>
+                <option value="Parque 93">Parque 93</option>
+                <option value="El Nogal">El Nogal</option>
+                <option value="Hilton 72">Hilton 72</option>
+                <option value="Andino">Andino</option>
+                <option value="Boheme">Boheme</option>
+                <option value="Corferias">Corferias</option>
+                <option value="Urban 26">Urban 26</option>
+                <option value="Grand Hyatt">Grand Hyatt</option>
+            </select>
 
-                                    <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
+        </div>
+        <div class="form-group">
+            <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+            <label for="placa">Selecciona una placa:</label>
+            <select id="placa" name="placa">
+                {{#each placas}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="nombre_conductor">Nombre del Conductor *</label>
+            <input type="text" id="nombre_conductor" name="nombre_conductor" required>
+        </div>
+        <div class="form-group">
+            <label>Presentación del Conductor</label>
+            <div>
+                <!-- Opciones de presentación aquí -->
+            </div>
+        </div>
+        <!-- Otros campos del formulario aquí -->
+        <button type="submit">Enviar</button>
+    </form>
 
-   
+    <script>
+const busquedaPlacaInput = document.getElementById('busqueda-placa');
+const placasSelect = document.getElementById('placa');
+const nombreConductorInput = document.getElementById('nombre_conductor');
+
+busquedaPlacaInput.addEventListener('input', () => {
+    const searchTerm = busquedaPlacaInput.value.toLowerCase();
+    const options = placasSelect.getElementsByTagName('option');
+
+    for (let i = 0; i < options.length; i++) {
+        const optionValue = options[i].value.toLowerCase();
+        if (optionValue.includes(searchTerm)) {
+            options[i].style.display = '';
+            if (optionValue === searchTerm) {
+                options[i].selected = true; // Selecciona la opción si hay una coincidencia exacta con el valor
+            }
+        } else {
+            options[i].style.display = 'none';
+        }
+    }
+});
+
+placasSelect.addEventListener('change', () => {
+    const selectedPlaca = placasSelect.value;
+    fetch(`/obtenerNombreConductor?placa=${selectedPlaca}`)
+        .then(response => response.json())
+        .then(data => {
+            nombreConductorInput.value = data.nombreConductor;
+        })
+        .catch(error => console.error('Error al obtener el nombre del conductor:', error));
+});
+    </script>
 </body>
 </html>
-
