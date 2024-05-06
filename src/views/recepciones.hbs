@@ -296,10 +296,10 @@
 
 
         </div>
-          <div class="input-field">
-              <label for="fecha">Fecha:</label>
-        <input  type="date" id="fecha" name="fecha" required><br><br>
- </div>
+      <div class="input-field">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required><br><br>
+    </div>
  <div class="input-field">
              <label for="hora">Hora:</label>
         <input type="time" id="hora" name="hora" required><br><br>
@@ -397,6 +397,21 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.getElementById('fecha');
+    const fechaHoy = new Date().toISOString().split("T")[0];
+    fechaInput.setAttribute('min', fechaHoy);
+    fechaInput.setAttribute('value', fechaHoy); // Agregar esto para establecer la fecha actual como valor predeterminado
+
+    // Agregar un evento change al campo de fecha para verificar si se selecciona una fecha anterior a la actual
+    fechaInput.addEventListener('change', function() {
+        const fechaSeleccionada = fechaInput.value;
+        if (fechaSeleccionada < fechaHoy) {
+            fechaInput.value = fechaHoy; // Si la fecha seleccionada es anterior a la fecha actual, establece la fecha actual como mínimo
+        }
+    });
+});
+
 $(document).ready(function() {
     // Script para manejar el cambio en el select de placa
     $('#placa').change(function() {
@@ -487,6 +502,7 @@ clienteCostoSelect.addEventListener('change', function() {
     const selectedCliente = clienteCostoSelect.value;
     clienteSeleccionadoInput.value = selectedCliente;
 });
+
 
 
     </script>
