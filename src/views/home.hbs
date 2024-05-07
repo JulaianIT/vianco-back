@@ -397,138 +397,93 @@ float: none;
 </header>
 
 <hr>
-<div id="ventanaEmergente" style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
-    <span id="btnCerrar" onclick="cerrarVentanaEmergente()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #666;">Cerrar</span>
-    <div class="VENTANA" style="text-align: center;">
-        <h2 style="color: #333;">NUEVA COTIZACIÓN</h2>
-        <br>
-        <h2 style="color: #333;">Se agregó una nueva cotización. Por favor, ingresa a:</h2>
-        <a href="/cotizaciones_pendientes" style="color: #007bff; text-decoration: none;">Ingresa aquí</a>
-    </div>
-    <br>
-    
+            <div id="ventanaEmergente" style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
+            <span id="btnCerrar" onclick="cerrarVentanaEmergente()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #666;">Cerrar</span>
+            <div class="VENTANA" style="text-align: center;">
+            <h2 style="color: #333;">NUEVA COTIZACIÓN</h2>
+            <br>
+            <h2 style="color: #333;">Se agregó una nueva cotización. Por favor, ingresa a:</h2>
+            <a href="/cotizaciones_pendientes" style="color: #007bff; text-decoration: none;">Ingresa aquí</a>
+            </div>
+            <br>
     <!-- Botón para marcar como leídas las notificaciones -->
-    <button onclick="marcarComoLeidas()" style="background-color: #007bff; color: #fff; border: none; border-radius: 3px; padding: 10px 20px; cursor: pointer; margin-top: 10px;">Marcar como leídas</button>
-</div>
+             <button onclick="marcarComoLeidas()" style="background-color: #007bff; color: #fff; border: none; border-radius: 3px; padding: 10px 20px; cursor: pointer; margin-top: 10px;">Marcar como leídas</button>
+                </div>
 
-<audio id="notificacionSound">
-    <source src="/sonidos/level-up-2-199574.mp3" type="audio/mpeg">
-    Tu navegador no soporta el elemento de audio.
-</audio>
-
-
-
-    <br>
-    <br><br>
+        <audio id="notificacionSound">
+        <source src="/sonidos/level-up-2-199574.mp3" type="audio/mpeg">
+         </audio>
+        <br>
+        <br><br>
     
-  <nav class="navbar">
-    <label class="logo" for=""></label>
-        <img  id="logo"      src=""/>
- <ul class="menu-horizontal">
+            <nav class="navbar">
+            <label class="logo" for=""></label>
+             <img  id="logo"   src=""/>
+            <ul class="menu-horizontal">
 
 
 
+        <p class="active">
+        <a href="/novedades_viancoo"> <img id="vi" src="/imagenes/logo pestaña.PNG" alt=""></a>
+        </p>
 
-    <p class="active">
-       <a href="/novedades_viancoo"> <img id="vi" src="/imagenes/logo pestaña.PNG" alt=""></a>
-    </p>
-                            <ul class="menu-vertical" >
-                            
-                            </ul>
-                        </li>
-                       
-<ul class="menu-horizontal">
+            <ul class="menu-vertical" ></ul> </li>
+            <ul class="menu-horizontal">
 
-
-
-
-                        {{#if aeropuerto}}
-          <li class="contro">
-    <p class="active">
-        <img id="calll" src="/imagenes/avion.png" alt="">
-    </p>
-                            <ul class="menu-vertical" >
-                                <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
-
-                            </ul>
+               {{#if aeropuerto}}
+               <li class="contro">
+            <p class="active"><img id="calll" src="/imagenes/avion.png" alt=""></p>
+                 <ul class="menu-vertical" >
+                     <li><a href="/buscar_por_fecha">RECEPCIONES</a></li> 
+                     
+                     
+                     
+                     </ul>
                         </li>
                         {{/if}}
                 
 
-
-
-      <ul class="menu-horizontal">
-
-
-
-
-                        {{#if isControl}}
-          <li class="contro">
-    <p class="active">
-     <img id="calll" src="/imagenes/sistema-de-monitoreo.png" alt="">
-    </p>
-
-
-
-
-
-
-                            <ul class="menu-vertical" >
-                                                                <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
-                               <li><a href="/ver_vianco">SERVICIOS NO CONFORMES</a></li>
-
-                               <li><a href=" /ver_novedades_C">CONTROL NOVEDADES</a></li>
-                                                           <li><a href="/ver_novedades_vianco">SERVICIOS NO CONFORME PENDIENTES </a></li>
-
-                                <li><a href="/ver-programacion" target="_blank" >PROGRAMACION VEHICULOS</a></li>
-
-                                 <li><a href=" /ver_novedades">NOVEDADES CALLCENTER PENDIENTES</a></li>
-                                 <li><a href="/inspeccion">Inspección Vianco 2.0</a></li>
+                        <ul class="menu-horizontal">  {{#if director}}
+                        <li class="contro">
+                        <p class="active"><img id="calll" src="/imagenes/sistema-de-monitoreo.png" alt=""></p>
+                            <ul class="menu-vertical" >       
+                            <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
+                            <li><a href="/ver_vianco">SERVICIOS NO CONFORMES</a></li>
+                            <li><a href=" /ver_novedades_C">CONTROL NOVEDADES</a></li>
+                            <li><a href="/ver_novedades_vianco">SERVICIOS NO CONFORME PENDIENTES </a></li>
+                            <li><a href="/ver-programacion" target="_blank" >PROGRAMACION VEHICULOS</a></li>
+                            <li><a href=" /ver_novedades">NOVEDADES CALLCENTER PENDIENTES</a></li>
+                            <li><a href="/inspeccion">Inspección Vianco 2.0</a></li>
 
                             </ul>
                         </li>
                         {{/if}}
                         
-                        {{#if isControl}}
-                                  <li class="contro">
 
-                        <p class="active">
-                    <img id="calll" src="/imagenes/inversion.png" alt="">
-                </p> 
+                        {{#if director}}
+                            <li class="contro"> <p class="active"><img id="calll" src="/imagenes/inversion.png" alt=""> </p> 
                             <ul class="menu-vertical" >
+
                                <li><a href="/formulario_cotizaciones">REALIZAR COTIZACION</a></li>
-                               
-                                 <li><a href="/cotizaciones_pendientes">CONTIZACIONES PENDIENTES</a></li>
-                                 <li><a href="/VE">CONTIZACIONES REALIZADAS</a></li>
+                                <li><a href="/cotizaciones_pendientes">CONTIZACIONES PENDIENTES</a></li>
+                                <li><a href="/VE">CONTIZACIONES REALIZADAS</a></li>
 
 
                             </ul>
-                        </li>
+                           </li>
+                        {{/if}}
+                        {{#if callcenter}}
+                    <li class="call"><p class="active"> <img id="calll" src="/imagenes/call.png" alt=""></p>
+                        <ul class="menu-vertical">
+                        <li><a href="/inicio">INICIAR TURNO</a></li>
+                        <li><a href="/novedades">REALIZAR NOVEDAD</a></li>
+                      </ul>
+                       </li>
                         {{/if}}
 
 
-              {{#if isControl}}
-<li class="call">
-    <p class="active">
-        <img id="calll" src="/imagenes/call.png" alt="">
-    </p>
-    <ul class="menu-vertical">
-        <li><a href="/inicio">INICIAR TURNO</a></li>
-        <li><a href="/novedades">REALIZAR NOVEDAD</a></li>
-    </ul>
-</li>
-
-
-                        {{/if}}
-
-
-
-
-
-                        {{#if isOperative}}
-                        <li class="CI">
-                 <p class="menu-horizontal">
-                            <img id="ope" src="/imagenes/acuerdo-de-contribuyente.png" alt="">
+                        {{#if auxiliar}}
+                        <li class="CI"><p class="menu-horizontal"><img id="ope" src="/imagenes/acuerdo-de-contribuyente.png" alt="">
                             </p> 
                             <ul class="menu-vertical" >
                                 <li><a href="/clientess">CLIENTES</a></li>
@@ -544,11 +499,8 @@ float: none;
 
 
 
-                        {{#if isOperative}}
-                        <li class="opeee">
-                 <p class="menu-horizontal">
-                            <img id="ope" src="/imagenes/consultante.png" alt="">
-                            </p> 
+                        {{#if auxiliar}}
+                          <li class="opeee"> <p class="menu-horizontal"><img id="ope" src="/imagenes/consultante.png" alt=""> </p> 
                             <ul class="menu-vertical" >
                                 <li><a href="/consulta-vehiculos">Vehículo</a></li>
                                 <li><a href="/consulta-conductores">Conductores</a></li>
@@ -557,38 +509,29 @@ float: none;
                         </li>
                         {{/if}}
 
-                        {{#if isAdmin}}
-                      <li class="geree">
-    <p class="active">
-        <img id="calll" src="/imagenes/mujer-de-negocios.png" alt="">
-    </p>
+
+                        {{#if gerencia}}
+                      <li class="geree"><p class="active"> <img id="calll" src="/imagenes/mujer-de-negocios.png" alt=""></p>
                             <ul class="menu-vertical">
                             <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
-       
-
-
 
                             </ul>
                         </li>
                         {{/if}}
-{{#if isExecutive}}
-<li class="ejee">
-    <p class="menu-horizontal">
-        <img id="eje" src="/imagenes/perfil.png" alt="">
-    </p>
-    <ul class="menu-vertical">
-        <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
-        <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
-        <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
-        <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
-    </ul>
-</li>
-{{/if}}
 
-<li class="tecc">
-<p class="active">
-        <img id="tec" src="/imagenes/apoyo-tecnico.png" alt="">
-    </p>
+
+                    {{#if ejecutivo}}
+            <li class="ejee"> <p class="menu-horizontal"><img id="eje" src="/imagenes/perfil.png" alt=""> </p>
+                    <ul class="menu-vertical">
+                        <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
+                        <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
+                        <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
+                        <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
+                    </ul>
+                </li>
+                          {{/if}}
+
+                <li class="tecc"><p class="active"> <img id="tec" src="/imagenes/apoyo-tecnico.png" alt=""></p>
                             <ul class="menu-vertical">
                                 <li><a href="#">Citas</a></li>
                                 <li><a href="#">Ayuda</a></li>
@@ -599,12 +542,6 @@ float: none;
 
   </ul>
 </nav>
- {{#if isControl}}
-                        {{#if isAdmin}}
-  
-{{/if}}
-{{/if}}
-
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
