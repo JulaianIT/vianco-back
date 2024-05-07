@@ -2240,19 +2240,89 @@ app.post('/actualizar_cliente', (req, res) => {
 
 
 
+// Ruta para mostrar el formulario de búsqueda
+app.get('/nuevo_cliente', (req, res) => {
+    res.render('clientes/agregar_clientes.hbs');
+});
+
+
+// Manejador de ruta para procesar el formulario y agregar un nuevo cliente a la base de datos
+app.post('/agregar-cliente',(req, res) => {
+    const formData = req.body; // Capturar los datos del formulario
+
+    connection.query(
+      `INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        formData.nombre,
+        formData.rut,
+        formData.camara_comercio,
+        formData.cumpleaños,
+        formData.N_contrato,
+        formData.contratante,
+        formData.nit,
+        formData.direccion,
+        formData.responsable,
+        formData.celular,
+        formData.cedula,
+        formData.objeto,
+        formData.fecha_inicio,
+        formData.fecha_final,
+        formData.destino,
+
+      ],
+      (error, results) => {
+        if (error) {
+          console.error('Error al agregar el cliente:', error);
+          res.status(500).send('Error al agregar el cliente');
+          return;
+        }
+        console.log('Cliente agregado correctamente a la base de datos');
+        // Redirigir al usuario de vuelta a la página de consulta de clientes
+        res.redirect(`/clientess`);
+      }
+    );
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 const hbs = require('handlebars'); // Importa Handlebars
 
-
-
-
 const { JSDOM } = require('jsdom');
 const qrcode = require('qrcode');
-
-
 
 
 // Ruta para renderizar la página de selección de cliente y placa
