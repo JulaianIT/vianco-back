@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inspección y Supervisión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        select,
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+                  #search {
+            margin-bottom: 20px;
+        }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>AUDITORIA  </h1>
+    <form action="/guardar_datos" method="POST">
+        <div class="form-group">
+            <br>
+                        <label for="placa">Selecciona una placa:</label>
+<br>
+                <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
+<br>
+<br>
+            <select id="placa" name="placa">
+                {{#each placas}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select>
+        </div>
+      
+        <div class="form-group">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required readonly>
+        </div>
+
+        <h2>Inspecciones:</h2>
+        <input type="radio" id="inspeccion_cumple" name="inspeccion" value="cumple">
+        <label for="inspeccion_cumple">Cumple</label><br>
+        <input type="radio" id="inspeccion_no_cumple" name="inspeccion" value="no_cumple">
+        <label for="inspeccion_no_cumple">No Cumple</label><br>
+        <input type="radio" id="inspeccion_cumple_parcialmente" name="inspeccion" value="cumple_parcialmente">
+        <label for="inspeccion_cumple_parcialmente">Cumple Parcialmente</label><br><br>
+
+        <h2>Supervisiones:</h2>
+        <input type="radio" id="supervision_cumple" name="supervision" value="cumple">
+        <label for="supervision_cumple">Cumple</label><br>
+        <input type="radio" id="supervision_no_cumple" name="supervision" value="no_cumple">
+        <label for="supervision_no_cumple">No Cumple</label><br><br>
+                <input type="radio" id="N/A" name="N/A" value="N/A">
+        <label for="N/A">N/A</label><br><br>
+
+        <h2>Programación:</h2>
+        <input type="radio" id="programacion_cumple" name="programacion" value="cumple">
+        <label for="programacion_cumple">Cumple</label><br>
+        <input type="radio" id="programacion_no_cumple" name="programacion" value="no_cumple">
+        <label for="programacion_no_cumple">No Cumple</label><br>
+        <input type="radio" id="programacion_cumple_parcialmente" name="programacion" value="cumple_parcialmente">
+        <label for="programacion_cumple_parcialmente">Cumple Parcialmente</label><br><br>
+        <input type="radio" id="ADICIONAL" name="ADICIONAL" value="ADICIONAL">
+        <label for="ADICIONAL">TURNO ADICIONAL</label><br><br>
+
+        <input type="submit" value="Guardar">
+    </form>
+</div>
+
+<script>
+    // Obtener la fecha actual
+    var today = new Date();
+
+    // Formatear la fecha como YYYY-MM-DD
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+
+    // Establecer la fecha actual como el valor predeterminado del campo de fecha
+    var fechaInput = document.getElementById('fecha');
+    fechaInput.value = today;
+
+    // Hacer que el campo de fecha sea de solo lectura
+    fechaInput.setAttribute('readonly', 'true');
+     // JavaScript para filtrar las placas
+    function filterPlacas() {
+        var input, filter, select, options, option, i, txtValue;
+        input = document.getElementById('search');
+        filter = input.value.toUpperCase();
+        select = document.getElementById('placa');
+        options = select.getElementsByTagName('option');
+        for (i = 0; i < options.length; i++) {
+            option = options[i];
+            txtValue = option.textContent || option.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

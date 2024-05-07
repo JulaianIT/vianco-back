@@ -3143,6 +3143,34 @@ app.post('/guardar-inspeccion', (req, res) => {
 
 
 
+
+app.get('/auditoria', (req, res) => {
+    connection.query('SELECT placa FROM vehiculos', (error, results, fields) => {
+      if (error) {
+        console.error('Error al obtener placas:', error);
+        res.status(500).send('Error interno del servidor');
+        return;
+      }
+      const placas = results.map(result => result.placa);
+      res.render('auditoria/auditoria_cordinador.hbs', { placas });
+    });
+  });
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
