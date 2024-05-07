@@ -347,13 +347,32 @@ app.get("/", (req, res) => {
 //roles que hay en mi app
 
 
-const auxiliar = roles.includes('auxiliar');
-const ejecutivo = roles.includes('ejecutivo');
-const cordinacion = roles.includes('cordinacion');
-const callcenter = roles.includes('callcenter');
-const director = roles.includes('director');
-const gerencia = roles.includes('gerencia');
-        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia}); // Pasar los roles a la plantilla
+const ejecutivo1 = roles.includes('ejecutivo1');
+const ejecutivo2 = roles.includes('ejecutivo2');
+const ejecutivo3 = roles.includes('ejecutivo3');
+const ejecutivo4 = roles.includes('ejecutivo4');
+const ejecutivo5 = roles.includes('ejecutivo5');
+const ejecutivo6 = roles.includes('ejecutivo6');
+const ejecutivo7 = roles.includes('ejecutivo7');
+const ejecutivo8 = roles.includes('ejecutivo8');
+
+
+
+
+
+
+
+
+
+
+const aeropuerto = roles.includes('aeropuerto');
+
+        const isControl = roles.includes('seguimiento');
+        const isAdmin = roles.includes('gerencia');
+        const isExecutive = roles.includes('ejecutivo');
+        const isOperative = roles.includes('operativo'); // Verificar si el usuario tiene el rol de 'operativo'
+
+        res.render("home",{ name: req.session.name, isAdmin, isExecutive, isOperative,isControl,ejecutivo1,ejecutivo2,ejecutivo3,ejecutivo4,ejecutivo5,ejecutivo6,ejecutivo7,ejecutivo8,aeropuerto }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
