@@ -350,7 +350,7 @@ background-color: #90c9a7;
                 <tr>
                     <td>{{this.base}}</td>
                     <td>{{this.placa}}</td>
-                    <td>{{formatDate this.fecha}}</td> <!-- Llama a la función formatDate para formatear la fecha -->
+        <td>{{formatDatee this.fecha}}</td> <!-- Usa la función formatDatee para formatear la fecha -->
                     <td>{{this.horario}}</td>
                     <td>{{this.observaciones}}</td>
                 </tr>
@@ -363,12 +363,12 @@ background-color: #90c9a7;
 
 <script>
     // Función para formatear la fecha en el formato DD/MM/AAAA
-    function formatDate(dateString) {
+    function formatDatee(dateString) {
         const date = new Date(dateString);
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return `${month}/${day}/${year}`; // Intercambia el orden para mostrar primero el mes, luego el día y finalmente el año
     }
 </script>
 

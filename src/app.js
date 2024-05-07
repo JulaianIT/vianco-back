@@ -216,7 +216,18 @@ app.get('/ver-programacion', (req, res) => {
         });
     });
 });
+const handlebars = require('handlebars');
+const expressHandlebars = require('express-handlebars');
 
+// Registra el helper formatDatee en Handlebars
+handlebars.registerHelper('formatDatee', function(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+});
+// Registra el helper formatDatee en Handlebars
 // Ruta para buscar la programación de vehículos
 app.get('/buscar-programacion', (req, res) => {
     const { base, fecha, horario } = req.query;
