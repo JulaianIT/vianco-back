@@ -1333,24 +1333,32 @@ app.post('/novedades', (req, res) => {
     const turno = req.body.turno;
     const realiza = req.body.realiza;
     const entrega = req.body.entrega;
+    const sinNovedad = req.body.sinNovedad ? 'Sin novedad' : '';
+
     const novedad_tripulacion = req.body.novedad_tripulacion || '';
     const novedad_hoteleria = req.body.novedad_hoteleria || '';
     const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
     const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
     const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
     const novedad_ACTAS = req.body.novedad_ACTAS || '';
-    const otrasNovedades = req.body.novedad_OTRAS || '';
+    const novedad_OTRAS = req.body.novedad_OTRAS || '';
     const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
     console.log("Firma en formato base64 recibida:", firmaBase64);
 
-    const sql = 'INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    connection.query(sql, [fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otrasNovedades, firmaBase64], (error, results, fields) => {
-        if (error) {
-            console.error('Error al insertar la novedad en la base de datos:', error);
-            res.status(500).send('Error interno del servidor.');
-        } else {
-            console.log('Novedad guardada exitosamente en la base de datos.');
+    const fecha_registro = new Date(); // Obtener la fecha actual
+
+
+
+
+    const sql = "INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, sinNovedad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firmaBase64, sinNovedad]; // Corregido aquí
+    
+connection.query(sql, values, (error, results) => {
+  if (error) {
+    console.error("Error al insertar la novedad en la base de datos:", error);
+  } else {
+    console.log("Novedad insertada correctamente:", results);
 
             // Configurar transporte de correo electrónico
             const transporter = nodemailer.createTransport({
@@ -1419,7 +1427,7 @@ app.get('/api/obtener_fechas_disponibles', (req, res) => {
 // Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
-    const query = 'SELECT fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma, fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Añadir el campo de la firma en la consulta SQL
+    const query = 'SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Añadir el campo de la firma en la consulta SQL
     connection.query(query, [fechaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
@@ -1448,11 +1456,11 @@ app.get('/api/obtener_novedades', (req, res) => {
 app.post('/api/guardar_seguimiento', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,sinNovedad,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES];
+    const query = 'INSERT INTO novedades_completadas ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,sinNovedad,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,sinNovedad,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {

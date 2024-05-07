@@ -512,9 +512,15 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <span>${novedad.entrega || ''}</span>
                         </div>
 
+                   <div class="campo">
+                            <label><strong>NO PRESENTA NOVEDAD :</strong></label>
+                            <span>${novedad.sinNovedad || ''}</span>
+                        </div>
                   
-                  
-                        ${novedad.novedad_tripulacion ? `
+                    
+
+                        
+                           ${novedad.novedad_tripulacion ? `
                         <div class="campo1">
                             <label><strong>NOVEDADES DE TRIPULACION:</strong></label>
                             <span>${novedad.novedad_tripulacion}</span>
@@ -571,13 +577,14 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                             <br>
 
 
-                        ${novedad.otras_novedades ? `
+                        ${novedad.novedad_OTRAS ? `
                         <div class="campo7">
                             <label><strong>OTRAS NOVEDADES:</strong></label>
-                            <span>${novedad.otras_novedades}</span>
+                            <span>${novedad.novedad_OTRAS}</span>
                             <br>
                             <br>
                         </div>` : ''}
+
 
                               <!-- Mostrar la firma si está presente -->
                         ${novedad.firma ? `
@@ -662,6 +669,11 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
 
         <label for="entrega-${novedad.id}" style="display: none;">entrega:</label>
         <input type="text" id="entrega-${novedad.id}" name="entrega" placeholder="realiza" value="${novedad.entrega}" style="display: none;"><BR>
+
+
+        <label for="sinNovedad-${novedad.id}" style="display: none;">sinNovedad:</label>
+        <input type="text" id="sinNovedad-${novedad.id}" name="sinNovedad" placeholder="sinNovedad" value="${novedad.sinNovedad}" style="display: none;><BR>
+
 
 
 
@@ -819,6 +831,7 @@ function guardarSeguimiento(event, idNovedad) {
     const turno = document.getElementById(`turno-${idNovedad}`).value;
     const realiza = document.getElementById(`realiza-${idNovedad}`).value;
     const entrega = document.getElementById(`entrega-${idNovedad}`).value;
+    const sinNovedad = document.getElementById(`sinNovedad-${idNovedad}`).value;
     const fecha = document.getElementById(`fecha-${idNovedad}`).value;
     const novedad_hoteleria = document.getElementById(`novedad_hoteleria-${idNovedad}`).value;
     const fecha_registro = document.getElementById(`fecha_registro-${idNovedad}`).value;
@@ -847,6 +860,7 @@ function guardarSeguimiento(event, idNovedad) {
     turno:turno,
     realiza:realiza,
     entrega:entrega,
+    sinNovedad:sinNovedad,
     fecha:fecha,
     novedad_hoteleria:novedad_hoteleria,
     fecha_registro:fecha_registro,

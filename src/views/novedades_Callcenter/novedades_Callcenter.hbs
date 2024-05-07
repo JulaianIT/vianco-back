@@ -280,6 +280,11 @@ label {
 <label for="entrega"><strong>A quién se entrega la novedad:</strong></label><br>
 <input type="text" id="entrega" name="entrega" required><br>
 
+<br>
+<label for="sinNovedad"><strong>Sin novedad:</strong></label>
+<input type="checkbox" id="sinNovedad" name="sinNovedad" onchange="handleSinNovedad()">
+<br>
+
         <br>
         <div class="contenedor-checkboxes">
     <label for="tripulacion"><strong> TRIPULACION:</strong></label>
@@ -443,6 +448,27 @@ canvas.addEventListener('touchend', function() {
     firmaActiva = false;
 });
 
+function handleSinNovedad() {
+    var sinNovedadCheckbox = document.getElementById('sinNovedad');
+    var camposNovedades = document.querySelectorAll('.contenedor-checkboxes input[type="checkbox"]');
+    var camposNovedadesTextarea = document.querySelectorAll('.contenedor-checkboxes textarea');
+
+    if (sinNovedadCheckbox.checked) {
+        // Si se marca "Sin novedad", deshabilitar todos los campos de novedades
+        camposNovedades.forEach(function(campo) {
+            campo.disabled = true;
+        });
+        // También borrar cualquier texto en los campos de texto
+        camposNovedadesTextarea.forEach(function(textarea) {
+            textarea.value = '';
+        });
+    } else {
+        // Si se desmarca "Sin novedad", habilitar los campos de novedades
+        camposNovedades.forEach(function(campo) {
+            campo.disabled = false;
+        });
+    }
+}
 
 
 </script>
