@@ -43,3 +43,608 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+
+* {
+  font-family: "Outfit", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.menu-horizontal {
+
+    text-transform: uppercase;
+    list-style: none;
+    display: flex;
+    flex-direction: column; /* Agrega esta línea */
+}
+
+
+.menu-horizontal >li:hover{
+    background-color: #d9d9d9;
+}
+.menu-vertical{
+
+    text-transform: uppercase;
+    position: absolute;
+    display: none;
+    list-style: none;
+    width: 300px;
+    background-color: rgb(0,0,0, 0.9) ;
+
+}
+.menu-horizontal li:hover .menu-vertical{
+    display: block;
+
+}
+.menu-vertical li:hover{
+    background-color: rgb(144,201,167, 0.5);
+}
+
+.menu-horizontal {
+    text-transform: uppercase;
+    list-style: none;
+    display: flex;
+    /*justify-content: space-around;*/ /* Elimina esta línea */
+    flex-direction: column; /* Agrega esta línea */
+}
+.menu-horizontal >li > a{
+
+    display: block;
+    padding: 30px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.menu-horizontal li:hover .menu-vertical{
+    display: block;
+
+}
+.menu-vertical li:hover{
+
+    background-color: rgb(144,201,167, 0.5);
+
+}
+.menu-vertical li a{
+    text-decoration: none;
+    display: block;
+    color: white;
+  padding: 30px;
+
+
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+  
+p{
+    padding:20%;
+
+}
+
+#map {
+    position: absolute;
+    top: 8%;
+    width: calc(100% ); /* Ancho del mapa */
+    height: 100%;
+    z-index: 1;
+}
+
+
+nav {
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 5%; /* Ancho de la barra de navegación */
+    height: 100%;
+    background-color: rgb(102, 101, 103);
+    font-size: 20px;
+    border: solid 6px black;
+
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+    color: black !important; /* Cambia el color del texto a negro y da prioridad */
+}
+/* Agrega un estilo específico para dispositivos pequeños */
+
+
+#map {
+ 
+    position: absolute;
+ 
+    height: 100%;
+}
+
+
+
+.menu-horizontal li:hover .menu-vertical {
+    display: block;
+    position: absolute;
+    top: 0; /* Alinea el menú vertical con la parte superior del elemento activador */
+
+    left: 100%; /* Coloca el menú vertical a la derecha del elemento activador */
+}
+.menu-vertical {
+        overflow-y: auto; /* Agrega un desplazamiento vertical si el contenido es más largo que la altura */
+
+
+}
+
+#calll ,#eje,#tec,#ope {
+
+align-items: center;
+left: 5%;
+    position: relative;
+ }
+.call ,.ejee,.tecc,.opeee,.geree,.contro,.CI{
+    
+    position: relative;
+    display: inline-block; /* Asegura que el elemento tenga un tamaño */
+}
+
+#vi{
+  width: 100%;
+}
+
+    #car{
+ 
+      position: relative;
+            top: 20px;
+            left: 75%;
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+    }
+     #campana {
+            position: relative;
+            top: 20px;
+            left: 80%;
+            width: 40px;
+            height: 40px;
+            background-image: url('/imagenes/campana.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+        }
+
+      #numNotificacionesSinLeer {
+            position: absolute;
+            top: 5px;
+            right: -7px;
+            background-color: #d9d9d9;
+            color: black;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos de la ventana emergente */
+        #ventanaEmergente {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+            z-index: 9999;
+        }
+
+        #ventanaEmergente h2 {
+            margin-top: 0;
+        }
+
+        #btnCerrar {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+    header{
+   left: 4%;
+padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+
+    }
+   #ingreso{
+    padding: 4px;
+   border-radius: 3px;
+    text-align: center;
+    font-size: 30px;
+    position: relative;
+    width: 10%;
+   color: #90c9a7;
+   left: 90%;
+    top: -20%;
+float: none;
+
+   }
+#toggleNavButton{
+    border: 0px;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    bottom:40px;
+    left: 3%;
+position: relative;
+float: left;
+cursor: pointer;
+width: 10%;
+   z-index: 1500; /* Asegura que esté por encima del encabezado */
+}
+@media only screen and (max-width: 768px) {
+    nav {
+        width: 20%; /* Hacer que la barra de navegación ocupe todo el ancho en dispositivos pequeños */
+        font-size: 14px; /* Reducir aún más el tamaño de la fuente para dispositivos pequeños si es necesario */
+    }
+
+  .flecha{
+            left: 50%;
+        width: 20%; /* Hacer que la barra de navegación ocupe todo el ancho en dispositivos pequeños */
+        font-size: 14px; /* Reducir aún más el tamaño de la fuente para dispositivos pequeños si es necesario */
+    }
+
+
+#toggleNavButton{
+
+
+    border: 0px;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    bottom:40px;
+    left: 20%;
+position: relative;
+float: left;
+cursor: pointer;
+width: 10%;
+   z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+
+
+}
+
+  #car{
+ 
+      position: relative;
+            top: 20px;
+            left: 45%;
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+    }
+
+
+
+
+     #campana {
+            position: relative;
+            top: 20px;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background-image: url('/imagenes/campana.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+        }
+
+
+   #ingreso{
+    align-items: center;
+  
+   border-radius: 3px;
+    text-align: center;
+    font-size: 20px;
+    position: relative;
+    width: 0%;
+   color: #90c9a7;
+   left: 60%;
+    top: -20%;
+float: none;
+
+   }
+
+
+
+
+
+}
+
+
+/* Agrega un estilo específico para dispositivos grandes */
+@media only screen and (min-width: 1200px) {
+   .flecha img{
+        width: 20%; /* Ajusta el ancho de la barra de navegación para dispositivos más grandes si es necesario */
+    }
+}
+
+</style>
+
+
+
+     <div id="map"></div>
+ <!-- Agrega esta sección dentro del <header> o en cualquier lugar adecuado -->
+<div id="button-container">
+        <a id="rastreo" href="/ver_ubicaiones">
+            <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
+        </a>
+    </div>
+  {{#if isControl}}
+<div id="campana" onclick="mostrarVentanaEmergente()">
+    <div id="numNotificacionesSinLeer"></div>
+</div>
+    {{/if}}
+<header>
+            <h1 id="ingreso" >{{name}}</h1>
+
+ <button id="toggleNavButton" class="flecha">
+        <img src="/imagenes/flecha.png" alt="">
+    </button>
+ 
+</header>
+
+<hr>
+<div id="ventanaEmergente" style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
+    <span id="btnCerrar" onclick="cerrarVentanaEmergente()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #666;">Cerrar</span>
+    <div class="VENTANA" style="text-align: center;">
+        <h2 style="color: #333;">NUEVA COTIZACIÓN</h2>
+        <br>
+        <h2 style="color: #333;">Se agregó una nueva cotización. Por favor, ingresa a:</h2>
+        <a href="/cotizaciones_pendientes" style="color: #007bff; text-decoration: none;">Ingresa aquí</a>
+    </div>
+    <br>
+    
+    <!-- Botón para marcar como leídas las notificaciones -->
+    <button onclick="marcarComoLeidas()" style="background-color: #007bff; color: #fff; border: none; border-radius: 3px; padding: 10px 20px; cursor: pointer; margin-top: 10px;">Marcar como leídas</button>
+</div>
+
+<audio id="notificacionSound">
+    <source src="/sonidos/level-up-2-199574.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+</audio>
+
+
+
+    <br>
+    <br><br>
+    
+  <nav class="navbar">
+    <label class="logo" for=""></label>
+        <img  id="logo"      src=""/>
+ <ul class="menu-horizontal">
+
+
+
+
+    <p class="active">
+       <a href="/novedades_viancoo"> <img id="vi" src="/imagenes/logo pestaña.PNG" alt=""></a>
+    </p>
+                            <ul class="menu-vertical" >
+                            
+                            </ul>
+                        </li>
+                       
+<ul class="menu-horizontal">
+
+
+
+
+                        {{#if aeropuerto}}
+          <li class="contro">
+    <p class="active">
+        <img id="calll" src="/imagenes/avion.png" alt="">
+    </p>
+                            <ul class="menu-vertical" >
+                                <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
+
+                            </ul>
+                        </li>
+                        {{/if}}
+                
+
+
+
+      <ul class="menu-horizontal">
+
+
+
+
+                        {{#if isControl}}
+          <li class="contro">
+    <p class="active">
+     <img id="calll" src="/imagenes/sistema-de-monitoreo.png" alt="">
+    </p>
+
+
+
+
+
+
+                            <ul class="menu-vertical" >
+                                                                <li><a href="/buscar_por_fecha">RECEPCIONES</a></li>
+                               <li><a href="/ver_vianco">SERVICIOS NO CONFORMES</a></li>
+
+                               <li><a href=" /ver_novedades_C">CONTROL NOVEDADES</a></li>
+                                                           <li><a href="/ver_novedades_vianco">SERVICIOS NO CONFORME PENDIENTES </a></li>
+
+                                <li><a href="/ver-programacion" target="_blank" >PROGRAMACION VEHICULOS</a></li>
+
+                                 <li><a href=" /ver_novedades">NOVEDADES CALLCENTER PENDIENTES</a></li>
+                                 <li><a href="/inspeccion">Inspección Vianco 2.0</a></li>
+
+                            </ul>
+                        </li>
+                        {{/if}}
+                        
+                        {{#if isControl}}
+                                  <li class="contro">
+
+                        <p class="active">
+                    <img id="calll" src="/imagenes/inversion.png" alt="">
+                </p> 
+                            <ul class="menu-vertical" >
+                               <li><a href="/formulario_cotizaciones">REALIZAR COTIZACION</a></li>
+                               
+                                 <li><a href="/cotizaciones_pendientes">CONTIZACIONES PENDIENTES</a></li>
+                                 <li><a href="/VE">CONTIZACIONES REALIZADAS</a></li>
+
+
+                            </ul>
+                        </li>
+                        {{/if}}
+
+
+              {{#if isControl}}
+<li class="call">
+    <p class="active">
+        <img id="calll" src="/imagenes/call.png" alt="">
+    </p>
+    <ul class="menu-vertical">
+        <li><a href="/inicio">INICIAR TURNO</a></li>
+        <li><a href="/novedades">REALIZAR NOVEDAD</a></li>
+    </ul>
+</li>
+
+
+                        {{/if}}
+
+
+
+
+
+                        {{#if isOperative}}
+                        <li class="CI">
+                 <p class="menu-horizontal">
+                            <img id="ope" src="/imagenes/acuerdo-de-contribuyente.png" alt="">
+                            </p> 
+                            <ul class="menu-vertical" >
+                                <li><a href="/clientess">CLIENTES</a></li>
+                                <li><a href="/seleccionar">GENERAR FUEC</a></li>
+                                 <li><a href="/dat">RESULTADOS FUEC</a></li>
+
+                                
+                            </ul>
+                        </li>
+                        {{/if}}
+
+
+
+
+
+                        {{#if isOperative}}
+                        <li class="opeee">
+                 <p class="menu-horizontal">
+                            <img id="ope" src="/imagenes/consultante.png" alt="">
+                            </p> 
+                            <ul class="menu-vertical" >
+                                <li><a href="/consulta-vehiculos">Vehículo</a></li>
+                                <li><a href="/consulta-conductores">Conductores</a></li>
+                                <li><a href="/consulta-contabilidad">administracion</a></li>
+                            </ul>
+                        </li>
+                        {{/if}}
+
+                        {{#if isAdmin}}
+                      <li class="geree">
+    <p class="active">
+        <img id="calll" src="/imagenes/mujer-de-negocios.png" alt="">
+    </p>
+                            <ul class="menu-vertical">
+                            <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
+       
+
+
+
+                            </ul>
+                        </li>
+                        {{/if}}
+{{#if isExecutive}}
+<li class="ejee">
+    <p class="menu-horizontal">
+        <img id="eje" src="/imagenes/perfil.png" alt="">
+    </p>
+    <ul class="menu-vertical">
+        <li><a href="/programacion-vehiculos">Programación Vehículos</a></li>
+        <li><a href="/formulario_cotizaciones">COTIZACIONES</a></li>
+        <li><a href="/formulario">RECEPCIONES AEROPUERTO</a></li>
+        <li><a href="/seleccionar_hotel">TARIFAS HOTELES</a></li>
+    </ul>
+</li>
+{{/if}}
+
+<li class="tecc">
+<p class="active">
+        <img id="tec" src="/imagenes/apoyo-tecnico.png" alt="">
+    </p>
+                            <ul class="menu-vertical">
+                                <li><a href="#">Citas</a></li>
+                                <li><a href="#">Ayuda</a></li>
+                            </ul>
+                        </li>
+                      
+                      <li><a href="/logout" id="selected"><img src="/imagenes/apagar.png" alt=""></a></li>  
+
+  </ul>
+</nav>
+ {{#if isControl}}
+                        {{#if isAdmin}}
+  
+{{/if}}
+{{/if}}
+
+
+
+
+
