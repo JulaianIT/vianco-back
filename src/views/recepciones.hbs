@@ -397,20 +397,23 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     const fechaInput = document.getElementById('fecha');
-    const fechaHoy = new Date().toISOString().split("T")[0];
-    fechaInput.setAttribute('min', fechaHoy);
-    fechaInput.setAttribute('value', fechaHoy); // Agregar esto para establecer la fecha actual como valor predeterminado
+    const fechaHoy = new Date();
+    fechaHoy.setDate(fechaHoy.getDate() - 1); // Establecer la fecha mínima como ayer
+    const fechaHoyISO = fechaHoy.toISOString().split("T")[0];
+    fechaInput.setAttribute('min', fechaHoyISO); // Establecer la fecha mínima como ayer
+    fechaInput.setAttribute('value', fechaHoyISO); // Establecer la fecha de hoy como valor predeterminado
 
     // Agregar un evento change al campo de fecha para verificar si se selecciona una fecha anterior a la actual
     fechaInput.addEventListener('change', function() {
         const fechaSeleccionada = fechaInput.value;
-        if (fechaSeleccionada < fechaHoy) {
-            fechaInput.value = fechaHoy; // Si la fecha seleccionada es anterior a la fecha actual, establece la fecha actual como mínimo
+        if (fechaSeleccionada < fechaHoyISO) {
+            fechaInput.value = fechaHoyISO; // Si la fecha seleccionada es anterior a la fecha actual, establece la fecha actual como valor
         }
     });
 });
+
 
 $(document).ready(function() {
     // Script para manejar el cambio en el select de placa
