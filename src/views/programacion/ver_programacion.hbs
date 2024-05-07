@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Programación de Vehículos</title>
+    <!-- Agrega cualquier estilo adicional que necesites -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        select, input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button[type="submit"], #descargarExcel {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover, #descargarExcel:hover {
+            background-color: #45a049;
+        }
+        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+header{
+background-color: white;
+
+
+}
+  .volver-btn {
+            background-color:#90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: inline-block; /* Mostrar en línea */
+            margin-top: 20px; /* Margen superior de 20px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+            text-decoration: none; /* Sin decoración de texto */
+        }
+        
+        /* Estilo para el botón de volver al pasar el cursor */
+        .volver-btn:hover {
+            background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
+        }
+    </style>
+</head>
+<body>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="../imagenes/logo vianco.png"/>
+    <img id="vigilado" src="../imagenes/vigilado.png"/>
+    <br>
+<br>
+<hr>
+
+</header>
+<br>
+<br>
+<br>
+<div class="container">
+    <h1>Ver Programación de Vehículos</h1>
+
+    <!-- Formulario de búsqueda -->
+    <form action="/buscar-programacion" method="GET">
+        <label for="base">Buscar por Base:</label>
+        <select id="base" name="base">
+            {{#each bases}}
+                <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+        <br>
+        <label for="fecha">Buscar por Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+        <br>
+        <label for="horario">Seleccionar Horario:</label>
+        <select id="horario" name="horario">
+            <option value="">Todos</option>
+            {{#each horarios}}
+                <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+        <br>
+        <button type="submit">Buscar</button>
+    </form>
+                <a href="/" class="volver-btn">Volver al Menú</a>
+
+<br>
+<br>
+
+    <h1>DESCARGAR INFORME</h1>
+
+    <!-- Formulario para filtrar por rango de fechas -->
+    <form id="filtroForm" action="/buscar-programacion" method="get">
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" required>
+        <label for="fechaFin">Fecha de Fin:</label>
+        <input type="date" id="fechaFin" name="fechaFin" required>
+        <button type="submit">Buscar</button>
+    </form>
+<br>
+    <!-- Botón para descargar Excel -->
+    <button id="descargarExcel">Descargar Excel</button>
+</div>
+
+<script>
+    document.getElementById('descargarExcel').addEventListener('click', () => {
+        // Obtener las fechas de inicio y fin del formulario
+        const fechaInicio = document.getElementById('fechaInicio').value;
+        const fechaFin = document.getElementById('fechaFin').value;
+
+        // Redireccionar a la ruta para descargar Excel con las fechas seleccionadas
+        window.location.href = `/descargar-programacion?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+    });
+</script>
+
+</body>
+</html>

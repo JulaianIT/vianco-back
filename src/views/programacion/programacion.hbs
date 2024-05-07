@@ -228,15 +228,15 @@ font-size: 25PX;
             <label for="horario">Horario:</label>
             <select id="horario" name="horario" required>
                 <option value="" disabled selected>Seleccione un horario</option>
-                <option value="1">04:00 A 12:00</option>
-                <option value="2">06:00 A 14:00</option>
-                <option value="3">08:00 A 16:00</option>
-                <option value="4">12:00 A 20:00</option>
-                <option value="5">14:00 A 22:00</option>
-                <option value="6">20:00 A 04:00</option>
-                <option value="7">PICO Y PLACA</option>
-                <option value="8">PERMISO</option>
-                <option value="9">NO ACEPTA PROGRAMACION </option>
+                <option value="04:00 A 12:00">04:00 A 12:00</option>
+                <option value="06:00 A 14:00">06:00 A 14:00</option>
+                <option value="08:00 A 16:00">08:00 A 16:00</option>
+                <option value="12:00 A 20:00">12:00 A 20:00</option>
+                <option value="14:00 A 22:00">14:00 A 22:00</option>
+                <option value="20:00 A 04:00">20:00 A 04:00</option>
+                <option value="PICO Y PLACA">PICO Y PLACA</option>
+                <option value="PERMISO">PERMISO</option>
+                <option value="NO ACEPTA PROGRAMACION">NO ACEPTA PROGRAMACION </option>
                 <!-- Agrega el resto de las opciones de horario según tu necesidad -->
             </select>
         </div>
@@ -300,7 +300,54 @@ font-size: 25PX;
 
 
 </div>
+<script>
 
+document.addEventListener('DOMContentLoaded', function() {
+    const programacionForm = document.getElementById('programacionForm');
+
+    programacionForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Evitar el envío del formulario por defecto
+
+        const formData = new FormData(programacionForm); // Obtener los datos del formulario
+
+        // Convertir los datos del formulario a un objeto JSON
+        const jsonData = {};
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+
+        // Enviar los datos al servidor utilizando Fetch API
+        fetch('/guardar-programacion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json(); // Convertir la respuesta a JSON si la petición es exitosa
+            }
+            throw new Error('Error en la respuesta del servidor.');
+        })
+        .then(data => {
+            // Manejar la respuesta del servidor, por ejemplo, mostrar un mensaje de éxito
+            alert('La programación del vehículo ha sido guardada exitosamente.');
+            // También puedes redirigir al usuario a otra página si lo deseas
+            // window.location.href = '/ruta-de-exito';
+        })
+        .catch(error => {
+            console.error('Error al procesar la solicitud:', error);
+            // Manejar errores, por ejemplo, mostrar un mensaje de error al usuario
+        });
+    });
+});
+
+
+
+
+
+</script>
 <script src="programacion.js"></script> <!-- Asegúrate de que la ruta del archivo JavaScript sea correcta -->
 </body>
 </html>

@@ -175,9 +175,140 @@ app.get("/programacion-vehiculos", (req, res) => {
     }
 });
 
-        
+
+// Ruta para guardar la programación de vehículos
+app.post('/guardar-programacion', (req, res) => {
+    // Obtener los datos del formulario del cuerpo de la solicitud
+    const { base, placa, fecha, horario, observaciones } = req.body;
+
+    // Insertar los datos en la tabla programacion_vehiculos
+    const sql = `INSERT INTO programacion_vehiculos (base, placa, fecha, horario, observaciones) VALUES (?, ?, ?, ?, ?)`;
+    connection.query(sql, [base, placa, fecha, horario, observaciones], (err, result) => {
+        if (err) {
+            console.error('Error al guardar la programación del vehículo:', err);
+            res.status(500).send('Error al guardar la programación del vehículo');
+            return;
+        }
+        console.log('Programación del vehículo guardada exitosamente');
+        res.status(200).send('Programación del vehículo guardada exitosamente');
+    });
+});
+ // Ruta para mostrar la página de ver_programacion.hbs
+app.get('/ver-programacion', (req, res) => {
+    // Consulta a la base de datos para obtener todas las bases y horarios disponibles
+    connection.query('SELECT DISTINCT base FROM programacion_vehiculos', (err, basesResults) => {
+        if (err) {
+            console.error('Error al obtener las bases:', err);
+            // Manejar el error adecuadamente
+            return;
+        }
+
+        connection.query('SELECT DISTINCT horario FROM programacion_vehiculos', (err, horariosResults) => {
+            if (err) {
+                console.error('Error al obtener los horarios:', err);
+                // Manejar el error adecuadamente
+                return;
+            }
+
+            const bases = basesResults.map(result => result.base); // Extraer las bases de los resultados
+            const horarios = horariosResults.map(result => result.horario); // Extraer los horarios de los resultados
+            res.render('programacion/ver_programacion.hbs', { bases, horarios }); // Renderizar la página ver_programacion.hbs con las bases y horarios disponibles
+        });
+    });
+});
+
+// Ruta para buscar la programación de vehículos
+app.get('/buscar-programacion', (req, res) => {
+    const { base, fecha, horario } = req.query;
+
+    // Construir la consulta SQL con base, fecha y horario según lo proporcionado en la solicitud
+    let sql = 'SELECT * FROM programacion_vehiculos WHERE 1';
+    const params = [];
+
+    if (base && base !== 'todos') {
+        sql += ' AND base = ?';
+        params.push(base);
+    }
+
+    if (fecha) {
+        sql += ' AND fecha = ?';
+        params.push(fecha);
+    }
+
+    if (horario && horario !== 'todos') {
+        sql += ' AND horario = ?';
+        params.push(horario);
+    }
+
+    // Ejecutar la consulta
+    connection.query(sql, params, (err, results) => {
+        if (err) {
+            console.error('Error al buscar programación de vehículos:', err);
+            // Maneja el error apropiadamente
+            return;
+        }
+
+        res.render('programacion/resultados_programacion.hbs', { programacion: results }); // Renderiza la página de resultados con los datos obtenidos
+    });
+});
+
+// Función para formatear la fecha en el formato DD/MM/AAAA
+function formatDate(date) {
+    const fecha = new Date(date);
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+}
 
 
+const ExcelJS = require('exceljs');
+
+
+// Ruta para descargar la programación de vehículos en formato Excel
+app.get('/descargar-programacion', (req, res) => {
+    const { fechaInicio, fechaFin } = req.query;
+
+    // Construir la consulta SQL con el rango de fechas proporcionado
+    const sql = 'SELECT * FROM programacion_vehiculos WHERE fecha BETWEEN ? AND ?';
+    const params = [fechaInicio, fechaFin];
+
+    // Ejecutar la consulta
+    connection.query(sql, params, (err, results) => {
+        if (err) {
+            console.error('Error al buscar programación de vehículos:', err);
+            // Manejar el error apropiadamente
+            return;
+        }
+
+        // Crear un nuevo libro de Excel
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Programación de Vehículos');
+
+        // Definir las cabeceras de las columnas
+        worksheet.addRow(['Base', 'Placa', 'Fecha', 'Horario', 'Observaciones']);
+
+        // Agregar los datos de la consulta a las filas del archivo Excel
+        results.forEach(result => {
+            worksheet.addRow([result.base, result.placa, result.fecha, result.horario, result.observaciones]);
+        });
+
+        // Escribir el archivo Excel en un buffer
+        workbook.xlsx.writeBuffer()
+            .then(buffer => {
+                // Configurar los encabezados de la respuesta para descargar el archivo
+                res.setHeader('Content-Disposition', 'attachment; filename=programacion_vehiculos.xlsx');
+                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                // Enviar el archivo Excel como respuesta
+                res.send(buffer);
+            })
+            .catch(err => {
+                console.error('Error al generar el archivo Excel:', err);
+                // Manejar el error apropiadamente
+                res.status(500).send('Error al generar el archivo Excel');
+            });
+    });
+});
 
 function otraFuncion(req, res, next) {
     if (req.session.loggedin === true) {
