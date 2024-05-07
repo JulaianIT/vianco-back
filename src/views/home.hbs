@@ -237,6 +237,195 @@ width: 10%;
 
 
 
+@media only screen and (max-width: 768px) {
+
+   .menu {
+                
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+                 z-index: 1500; /* Asegura que esté por encima del encabezado */
+             background-color: white;
+            position: relative;
+          z-index: 1500; /* Asegura que esté por encima del encabezado */
+            list-style-type: none;
+            margin: 0;
+        }
+
+        .menu > li {
+            
+                z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+            position: relative;
+            display: inline-block;
+      
+        }
+
+        .menu a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #333;
+           
+        }
+
+        .menu li:hover {
+            background-color: #f4f4f4;
+        }
+
+        .menu ul {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            left: 0;
+        }
+
+        .menu li:hover > ul {
+            display: block;
+        }
+
+        .menu ul ul {
+            left: 100%;
+            top: 0;
+        }
+
+        .menu li ul li {
+            position: relative;
+        }
+
+        .menu li ul li ul {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+        }
+
+        .menu li ul li:hover > ul {
+            display: block;
+        }
+
+#ope,#tec,#calll  {
+    margin-left: 10px;
+        margin-right: 10px;
+width:20px;
+    position: relative;
+ }
+
+#selected  {
+     margin-left: 10px;
+        margin-right: 10px;
+width:20px;
+    position: relative;
+ }
+
+ 
+#vi{
+  width: 100%;
+}
+
+    #car{
+ 
+      position: relative;
+            top: 10px;
+            left: 60%;
+            width: 20px;
+            height: 20px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+           z-index: 9999;
+
+    }
+     #campana {
+            top: 10px;
+            position: relative;
+            z-index: 9999;
+           left: 68%;
+            width: 20px;
+            height: 10px;
+            background-image: url('/imagenes/campana.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+        }
+
+      #numNotificacionesSinLeer {
+            position: absolute;
+            top: 5px;
+            right: -7px;
+            background-color: #d9d9d9;
+            color: black;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos de la ventana emergente */
+        #ventanaEmergente {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+            z-index: 9999;
+        }
+
+        #ventanaEmergente h2 {
+            margin-top: 0;
+        }
+
+        #btnCerrar {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+   
+   #ingreso{
+    position: relative;
+    top: -10px;
+   border-radius: 3px;
+    text-align: center;
+    font-size: 10px;
+    width: 20%;
+   color: #90c9a7;
+   left: 75%;
+float: none;
+  z-index: 9999;
+
+
+   }
+#toggleNavButton{
+    border: 0px;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    bottom:40px;
+    left: 3%;
+position: relative;
+float: left;
+cursor: pointer;
+width: 10%;
+}
+
+}
 
 
 </style>
