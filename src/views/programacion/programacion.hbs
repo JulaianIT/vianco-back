@@ -146,8 +146,8 @@ label {
     }
 
      select option {
-        font-size: 25px;
-        font-weight: 400px;
+        font-size: 15px;
+        font-weight: 1px;
         color: #333;
     }
 
@@ -189,6 +189,186 @@ font-size: 25PX;
     font-weight: bold; /* Aplicar negrita */
 
  }
+
+
+@media only screen and (max-width: 768px) {
+
+
+ 
+        header {
+          display: none;
+        }
+
+
+
+        .container {
+            background-color: rgb(144,201,167,0.5);
+           border: solid 5px  #666567;
+            top: 60px;
+            width: 85%; /* Limita el ancho del contenido para que no sea demasiado ancho en pantallas grandes */
+            margin: 0 auto; /* Centra el contenido horizontalmente */
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 90%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            font-size: 18px;
+               padding: 20px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        
+        button[type="submit"]:hover {
+             background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+     
+    #btn-volver {
+            padding: 7px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        #btn-volver:hover {
+            background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+           #btn-ver{
+           position: relative;
+           left: 0px;
+                       padding: 7px 20px;
+            background-color:#666567; /* Color de fondo del botón */
+            color: #fff; /* Color del texto del botón */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 5px; /* Borde redondeado */
+            display: inline-block; /* Muestra el enlace como un bloque en línea */
+            margin-bottom: 20px; /* Margen inferior para separarlo de otros elementos */
+            transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+            border: 1px solid #d9d9d9; /* Borde del botón */
+        }
+        #btn-ver:hover {
+            background-color:#90c9a7; /* Color de fondo del botón al pasar el ratón */
+            border: 1px solid #000; /* Cambia el color del borde al pasar el ratón */
+        }
+         .input-field {
+        width: calc(100% / 2 - 15px);
+        margin-bottom: 20px;
+    }
+
+label {
+        font-size: 10px;
+        font-weight: 500;
+        color: #2e2e2e;
+        margin-bottom: 5px;
+    }
+
+    input,
+     select {
+        width: 100%;
+        padding: 10px;
+        font-size: 25px;
+        border-radius: 5px;
+        border: 1px solid #aaa;
+        box-sizing: border-box;
+    }
+
+    select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23333" d="M6 5.196L.75.5h10.5L6 5.196z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) center;
+        background-size: 15px;
+    }
+
+    select:focus {
+        border-color: #888;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+     select option {
+        font-size: 25px;
+        font-weight: 400px;
+        color: #333;
+    }
+
+    a {
+        display: inline-block;
+        background-color: #90c9a7;
+        color: #000;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+
+    a:hover {
+        background-color: #d9d9d9;
+    }
+input:is(focus,:valid){
+    box-shadow: 0 3 px 6px rgb(0, 0, 0,0.13) ;
+
+
+
+
+ }
+ h2{
+    color:#413d4b;
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: bold; /* Aplicar negrita */
+
+
+
+ }
+ form label{
+font-size: 15PX;
+    text-transform: uppercase;
+
+    font-weight: bold; /* Aplicar negrita */
+
+ }
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body>
