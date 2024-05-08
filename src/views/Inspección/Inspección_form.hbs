@@ -145,6 +145,10 @@ select {
             <label for="Realizada"> <h2>Responsable:    {{ nombreUsuario }}</h2></label>
 
       <br>
+            <label for="fecha"> <h2>Fecha:</h2></label>
+            <input type="date" id="fecha" name="fecha" required readonly>
+        </div>
+
         <div class="form-group">
    <div class="form-group">
 <h3>PRESENTACION CONDUCTOR</h3>
@@ -152,12 +156,12 @@ select {
  <label>Corbata</label>
    <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="corbata_vianco_si" name="corbata_vianco" value="si">
+            <input type="radio" id="corbata_vianco_si" name="corbata_vianco" value="1">
             <label for="corbata_vianco_si">SI</label>
         </div>
         
  <div class="checkbox-option">          
-            <input type="radio" id="corbata_vianco_no" name="corbata_vianco" value="no">
+            <input type="radio" id="corbata_vianco_no" name="corbata_vianco" value="0">
             <label for="corbata_vianco_no">NO</label>
         </div>
     </div>
@@ -167,11 +171,11 @@ select {
  <label>traje</label>
    <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="traje_si" name="traje" value="si">
+            <input type="radio" id="traje_si" name="traje" value="1">
             <label for="traje_si">SI</label>
         </div>
  <div class="checkbox-option">          
-            <input type="radio" id="traje_no" name="traje" value="no">
+            <input type="radio" id="traje_no" name="traje" value="0">
             <label for="traje_no">NO</label>
         </div>
     </div>
@@ -180,25 +184,25 @@ select {
         <div class="form-group">
             <label>Presentación Externa Vehículo *</label>
             <select id="presentacion_externa" name="presentacion_externa">
-                <option value="Buena">Buena</option>
-                <option value="Regular">Regular</option>
-                <option value="Malo">Malo</option>
+                <option value="1">Buena</option>
+                <option value="0.5">Regular</option>
+                <option value="0">Malo</option>
             </select>
         </div>
         <div class="form-group">
             <label>Interior del vehículo *</label>
             <select id="interior_vehiculo" name="interior_vehiculo">
-                <option value="Bueno">Bueno</option>
-                <option value="Regular">Regular</option>
-                <option value="Malo">Malo</option>
+                <option value="1">Bueno</option>
+                <option value="0.5">Regular</option>
+                <option value="0">Malo</option>
             </select>
         </div>
         <div class="form-group">
             <label>Protocolo de servicio *</label>
             <select id="protocolo_servicio" name="protocolo_servicio">
-                <option value="Visible">Visible</option>
-                <option value="No Visible">No Visible</option>
-                <option value="No lo tiene">No lo tiene</option>
+                <option value="1">Visible</option>
+                <option value="0.5">No Visible</option>
+                <option value="1">No lo tiene</option>
             </select>
         </div>
       <div class="form-group">
@@ -207,11 +211,11 @@ select {
     <label>AGUA</label>
     <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="AGUA_si" name="AGUA" value="SI">
+            <input type="radio" id="AGUA_si" name="AGUA" value="1">
             <label for="AGUA_si">SI</label>
         </div>
         <div class="checkbox-option">
-            <input type="radio" id="AGUA_no" name="AGUA" value="NO">
+            <input type="radio" id="AGUA_no" name="AGUA" value="0">
             <label for="AGUA_no">NO</label>
         </div>
     </div>
@@ -221,11 +225,11 @@ select {
     <label>PAÑOS HUMEDOS</label>
     <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="PAÑOS_si" name="PAÑOS" value="SI">
+            <input type="radio" id="PAÑOS_si" name="PAÑOS" value="1">
             <label for="PAÑOS_si">SI</label>
         </div>
         <div class="checkbox-option">
-            <input type="radio" id="PAÑOS_no" name="PAÑOS" value="NO">
+            <input type="radio" id="PAÑOS_no" name="PAÑOS" value="0">
             <label for="PAÑOS_no">NO</label>
         </div>
     </div>
@@ -235,11 +239,11 @@ select {
     <label>CARGADOR DE CELULAR</label>
     <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="CARGADOR_si" name="CARGADOR" value="SI">
+            <input type="radio" id="CARGADOR_si" name="CARGADOR" value="1">
             <label for="CARGADOR_si">SI</label>
         </div>
         <div class="checkbox-option">
-            <input type="radio" id="CARGADOR_no" name="CARGADOR" value="NO">
+            <input type="radio" id="CARGADOR_no" name="CARGADOR" value="0">
             <label for="CARGADOR_no">NO</label>
         </div>
     </div>
@@ -249,11 +253,11 @@ select {
     <label>MANOS LIBRES</label>
     <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="MANOS_si" name="MANOS" value="SI">
+            <input type="radio" id="MANOS_si" name="MANOS" value="1">
             <label for="MANOS_si">SI</label>
         </div>
         <div class="checkbox-option">
-            <input type="radio" id="MANOS_no" name="MANOS" value="NO">
+            <input type="radio" id="MANOS_no" name="MANOS" value="0">
             <label for="MANOS_no">NO</label>
         </div>
     </div>
@@ -262,8 +266,8 @@ select {
 <div class="form-group">
     <label>Aire Acondicionado *</label>
     <select id="aire_acondicionado" name="aire_acondicionado">
-        <option value="Funciona">Funciona</option>
-        <option value="No funciona">No funciona</option>
+        <option value="1">Funciona</option>
+        <option value="0">No funciona</option>
     </select>
 </div>
 <br>
@@ -271,11 +275,11 @@ select {
     <label>Logo RNT</label>
     <div class="checkbox-group">
         <div class="checkbox-option">
-            <input type="radio" id="logo_rnt_si" name="logo_rnt" value="SI">
+            <input type="radio" id="logo_rnt_si" name="logo_rnt" value="1">
             <label for="logo_rnt_si">SI</label>
         </div>
         <div class="checkbox-option">
-            <input type="radio" id="logo_rnt_no" name="logo_rnt" value="NO">
+            <input type="radio" id="logo_rnt_no" name="logo_rnt" value="0">
             <label for="logo_rnt_no">NO</label>
         </div>
     </div>
@@ -284,23 +288,23 @@ select {
 <div class="form-group">
     <label>Logos de Reservado *</label>
     <select id="logos_reservado" name="logos_reservado">
-        <option value="Si tiene">Si tiene</option>
-        <option value="No tiene">No tiene</option>
+        <option value="1">Si tiene</option>
+        <option value="0">No tiene</option>
     </select>
 </div>
 <div class="form-group">
     <label>Logos de Vianco *</label>
     <select id="logos_vianco" name="logos_vianco">
-        <option value="Buen estado">Buen estado</option>
-        <option value="Regular estado">Regular estado</option>
-        <option value="Mal estado">Mal estado</option>
+        <option value="1">Buen estado</option>
+        <option value="0.5">Regular estado</option>
+        <option value="0">Mal estado</option>
     </select>
 </div>
 <div class="form-group">
     <label>Estado del Baúl del vehículo *</label>
     <select id="estado_baul" name="estado_baul">
-        <option value="Buen Estado">Buen Estado</option>
-        <option value="Mal estado">Mal estado</option>
+        <option value="1">Buen Estado</option>
+        <option value="0">Mal estado</option>
     </select>
 </div>
 <div class="form-group">
@@ -404,6 +408,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 </script>
+<script>
+    // Obtener la fecha actual
+    var today = new Date();
 
+    // Formatear la fecha como YYYY-MM-DD
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+
+    // Establecer la fecha actual como el valor predeterminado del campo de fecha
+    var fechaInput = document.getElementById('fecha');
+    fechaInput.value = today;
+
+    // Hacer que el campo de fecha sea de solo lectura
+    fechaInput.setAttribute('readonly', 'true');
+     // JavaScript para filtrar las placas
+    function filterPlacas() {
+        var input, filter, select, options, option, i, txtValue;
+        input = document.getElementById('search');
+        filter = input.value.toUpperCase();
+        select = document.getElementById('placa');
+        options = select.getElementsByTagName('option');
+        for (i = 0; i < options.length; i++) {
+            option = options[i];
+            txtValue = option.textContent || option.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 </html>

@@ -3166,6 +3166,59 @@ app.post('/guardar-inspeccion', (req, res) => {
 
 
 
+
+app.get('/consulta_inspeccion', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('Inspección/consulta_inspeccion.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+// Renderizar la página de resultados con los datos obtenidos de la consulta
+app.post('/consulta_inspeccion_fecha', async (req, res) => {
+    const { fecha } = req.body;
+    try {
+        // Consultar la base de datos por la fecha especificada
+        const query = 'SELECT * FROM inspeccion_2_0 WHERE fecha = ?';
+        const [rows, fields] = await connection.promise().query(query, [fecha]);
+        console.log('Datos encontrados:', rows);
+
+        // Calcular la suma y el porcentaje de cumplimiento para cada fila
+        for (let row of rows) {
+            let total = 0;
+            let totalCumplimiento = 0;
+            const campos = ['corbata_vianco', 'traje', 'presentacion_externa', 'interior_vehiculo', 'protocolo_servicio', 'AGUA', 'PAÑOS', 'CARGADOR', 'MANOS', 'aire_acondicionado', 'logo_rnt', 'logos_reservado', 'logos_vianco', 'estado_baul'];
+
+            for (let campo of campos) {
+                let valor = parseFloat(row[campo]) || 0;
+                total += valor;
+                totalCumplimiento += valor;
+            }
+
+            // Calcular el porcentaje de cumplimiento y redondearlo
+            const porcentajeCumplimiento = Math.round((totalCumplimiento / (campos.length * 1)) * 100); // Total de campos * 1
+
+            // Guardar la suma total y el porcentaje de cumplimiento en la fila
+            row.total = total;
+            row.porcentajeCumplimiento = porcentajeCumplimiento;
+        }
+
+        // Renderizar la plantilla con los resultados, la suma total y el porcentaje de cumplimiento
+        res.render('Inspección/resultados_inspeccion.hbs', { resultados: rows });
+    } catch (error) {
+        console.error('Error en la búsqueda por fecha:', error);
+        res.status(500).send('Error en la búsqueda por fecha');
+    }
+});
+
+
+
+
+
+
 app.get('/auditoria', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
