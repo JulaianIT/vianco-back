@@ -13,12 +13,13 @@
         }
 
         .container {
-            max-width: 600px;
+            width: 50%;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 21PX;
         }
 
         h1 {
@@ -28,30 +29,46 @@
 
         form {
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            flex: 1;
+            margin-right: 10px;
             font-weight: bold;
         }
 
-        select,
-        input[type="date"] {
-            width: 100%;
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select {
+            flex: 3;
             padding: 10px;
-            margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
         }
 
-        input[type="radio"] {
-            margin-right: 10px;
+        .options-group {
+            flex: 2;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .options-group label {
+            margin-right: 20px; /* Ajuste el margen entre las etiquetas */
+            width: 180px; /* Establezca un ancho fijo para cada opción */
+            display: inline-block; /* Asegúrese de que las etiquetas ocupen el mismo espacio */
         }
 
         input[type="submit"] {
-            background-color: #4caf50;
+            background-color: #90c9a7;
             color: white;
             padding: 15px 20px;
             border: none;
@@ -62,24 +79,39 @@
 
         input[type="submit"]:hover {
             background-color: #45a049;
-                  #search {
-            margin-bottom: 20px;
         }
+
+        header {
+            background-color: white;
+        }
+        .options-group input[type="radio"] {
+    transform: scale(1.9); /* Ajusta el valor según lo grande que quieras que sean los botones de radio */
+}
+  #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+
+        #vigilado {
+            float: right;
+            width: 300px;
         }
     </style>
 </head>
 <body>
-
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="/imagenes/vigilado.png"/>
+    <hr>
+</header>
 <div class="container">
     <h1>AUDITORIA  </h1>
-    <form action="/guardar_datos" method="POST">
+    <form action="/guardar_auditoria" method="POST">
         <div class="form-group">
-            <br>
-                        <label for="placa">Selecciona una placa:</label>
-<br>
-                <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
-<br>
-<br>
+            <label for="placa"><h3>Selecciona una placa:</h3></label>
+            <input type="text" style="display: none;" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
             <select id="placa" name="placa">
                 {{#each placas}}
                 <option value="{{this}}">{{this}}</option>
@@ -88,36 +120,61 @@
         </div>
       
         <div class="form-group">
-            <label for="fecha">Fecha:</label>
+            <label for="fecha"> <h2>Fecha:</h2></label>
             <input type="date" id="fecha" name="fecha" required readonly>
         </div>
+<br>
 
-        <h2>Inspecciones:</h2>
-        <input type="radio" id="inspeccion_cumple" name="inspeccion" value="cumple">
-        <label for="inspeccion_cumple">Cumple</label><br>
-        <input type="radio" id="inspeccion_no_cumple" name="inspeccion" value="no_cumple">
-        <label for="inspeccion_no_cumple">No Cumple</label><br>
-        <input type="radio" id="inspeccion_cumple_parcialmente" name="inspeccion" value="cumple_parcialmente">
-        <label for="inspeccion_cumple_parcialmente">Cumple Parcialmente</label><br><br>
-<h2>Supervisiones:</h2>
-<input type="radio" id="supervision_cumple" name="supervision" value="cumple">
-<label for="supervision_cumple">Cumple</label><br>
-<input type="radio" id="supervision_no_cumple" name="supervision" value="no_cumple">
-<label for="supervision_no_cumple">No Cumple</label><br>
-<input type="radio" id="supervision_n/a" name="supervision" value="n/a">
-<label for="supervision_n/a">N/A</label><br><br>
+   <div class="form-group">
+            <label for="Realizada"> <h2>Responsable:    {{ nombreUsuario }}</h2></label>
+                <input type="hidden" name="nombreUsuario" value="{{ nombreUsuario }}">
 
+        </div>
 
-  <h2>Programación:</h2>
-<input type="radio" id="programacion_cumple" name="programacion" value="cumple">
-<label for="programacion_cumple">Cumple</label><br>
-<input type="radio" id="programacion_no_cumple" name="programacion" value="no_cumple">
-<label for="programacion_no_cumple">No Cumple</label><br>
-<input type="radio" id="programacion_cumple_parcialmente" name="programacion" value="cumple_parcialmente">
-<label for="programacion_cumple_parcialmente">Cumple Parcialmente</label><br><br>
-<input type="radio" id="programacion_adicional" name="programacion" value="adicional">
-<label for="programacion_adicional">Turno Adicional</label><br><br>
-
+<br>
+<hr>
+        <div class="form-group">
+            <label for="inspeccion"><h2> Inspecciones:</h2></label>
+            <div class="options-group">
+                <input type="radio" id="inspeccion_cumple" name="inspeccion" value="cumple">
+                <label for="inspeccion_cumple">Cumple</label>
+                <input type="radio" id="inspeccion_no_cumple" name="inspeccion" value="no_cumple">
+                <label for="inspeccion_no_cumple">No Cumple</label>
+                <input type="radio" id="inspeccion_cumple_parcialmente" name="inspeccion" value="cumple_parcialmente">
+                <label for="inspeccion_cumple_parcialmente">Cumple Parcialmente</label>
+            </div>
+        </div>
+        <br>
+        <br>
+        <hr>
+        <div class="form-group">
+            <label for="supervision"><h2>Supervisiones:</h2></label>
+            <div class="options-group">
+                <input type="radio" id="supervision_cumple" name="supervision" value="cumple">
+                <label for="supervision_cumple">Cumple</label>
+                <input type="radio" id="supervision_no_cumple" name="supervision" value="no_cumple">
+                <label for="supervision_no_cumple">No Cumple</label>
+                <input type="radio" id="supervision_n/a" name="supervision" value="n/a">
+                <label for="supervision_n/a">N/A</label>
+            </div>
+        </div>
+<br>
+<br>
+<hr>
+        <div class="form-group">
+            <label for="programacion"><h2> Programación:</h2></label>
+            <div class="options-group">
+                <input type="radio" id="programacion_cumple" name="programacion" value="cumple">
+                <label for="programacion_cumple">Cumple</label>
+                <input type="radio" id="programacion_no_cumple" name="programacion" value="no_cumple">
+                <label for="programacion_no_cumple">No Cumple</label>
+              
+                <input type="radio" id="programacion_adicional" name="programacion" value="adicional">
+                <label for="programacion_adicional">Turno Adicional</label>
+            </div>
+        </div>
+<br>
+<br>
         <input type="submit" value="Guardar">
     </form>
 </div>

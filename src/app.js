@@ -2821,9 +2821,23 @@ app.get('/ver_notificaciones', (req, res) => {
 
 
 
+
 app.get('/novedades_viancoo', (req, res) => {
-    res.render('novedades_vianco/novedades_vianco.hbs');
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('novedades_vianco/novedades_vianco.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
 });
+
+
+
+
+
+
+
 
 app.post('/novedades_vianco', (req, res) => {
     const fecha = req.body.fecha;
@@ -3092,9 +3106,14 @@ function generarInformeExcel(novedades) {
 
 
 
-
 app.get('/inspeccion', (req, res) => {
-    res.render('Inspección/Inspección_form.hbs');
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('Inspección/Inspección_form.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
 });
 
 // Ruta para obtener la lista de bases
@@ -3125,9 +3144,13 @@ app.get('/inspeccion_vianco', (req, res) => {
 });
 
 
-// Manejador de ruta para el envío del formulario
 app.post('/guardar-inspeccion', (req, res) => {
     const formData = req.body;
+    const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
+
+    // Agregar el nombre de usuario al objeto formData
+    formData.responsable = nombreUsuario;
+
     // Insertar los datos en la base de datos
     connection.query('INSERT INTO inspeccion_2_0 SET ?', formData, (err, result) => {
         if (err) {
@@ -3143,24 +3166,45 @@ app.post('/guardar-inspeccion', (req, res) => {
 
 
 
-
 app.get('/auditoria', (req, res) => {
-    connection.query('SELECT placa FROM vehiculos', (error, results, fields) => {
-      if (error) {
-        console.error('Error al obtener placas:', error);
-        res.status(500).send('Error interno del servidor');
-        return;
-      }
-      const placas = results.map(result => result.placa);
-      res.render('auditoria/auditoria_cordinador.hbs', { placas });
-    });
-  });
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        connection.query('SELECT placa FROM vehiculos', (error, results, fields) => {
+            if (error) {
+                console.error('Error al obtener placas:', error);
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            const placas = results.map(result => result.placa);
+            res.render('auditoria/auditoria_cordinador.hbs', { placas, nombreUsuario });
+        });
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+app.post('/guardar_auditoria', (req, res) => {
+    // Extraer los datos del cuerpo de la solicitud
+    const { placa, fecha, inspeccion, supervision, programacion, nombreUsuario } = req.body;
   
-
-
-
-
-
+    // Consulta SQL para insertar datos en la tabla
+    const query = `INSERT INTO auditoria (placa, fecha, inspeccion, supervision, programacion, responsable) VALUES (?, ?, ?, ?, ?, ?)`;
+    const values = [placa, fecha, inspeccion, supervision, programacion, nombreUsuario];
+  
+    // Ejecutar la consulta SQL
+    connection.query(query, values, (error, results) => {
+      if (error) {
+        console.error('Error al guardar los datos:', error);
+        res.status(500).send('Error interno del servidor');
+      } else {
+        console.log('Datos guardados correctamente');
+        res.redirect('/auditoria');
+      }
+    });
+});
 
 
 

@@ -132,7 +132,7 @@ select {
 
         </div>
         <div class="form-group">
-            <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+            <input style="display: none;" >
             <label for="placa">Selecciona una placa:</label>
             <select id="placa" name="placa">
                 {{#each placas}}
@@ -140,7 +140,11 @@ select {
                 {{/each}}
             </select>
         </div>
-      
+      <br>
+
+            <label for="Realizada"> <h2>Responsable:    {{ nombreUsuario }}</h2></label>
+
+      <br>
         <div class="form-group">
    <div class="form-group">
 <h3>PRESENTACION CONDUCTOR</h3>

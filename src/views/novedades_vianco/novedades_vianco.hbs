@@ -426,11 +426,18 @@ label {
     <input type="date" id="fecha" name="fecha" style="font-size: 20px; padding: 8px;" required><br><br>
      <br>
 
-   
-    <label for="realiza"><strong>Quién realiza la novedad:</strong></label><br>
-    <input type="text" id="realiza" name="realiza" required><br>
+
+
+ <label for="realiza"> <strong>Quién realiza la novedad:</strong> {{ nombreUsuario }}</h2></label>
+                <input type="hidden" id="realiza"  name="realiza" value="{{ nombreUsuario }}" required >
+
+
+
+<br>
+<br>
+
         <br>
-        <h3>por favor selecione y describa la novedad:</h3>
+        <h3>POR FAVOR SELECIONE Y DESCRIBA LA NOVEDAD</h3>
         <br>
         <div class="contenedor-checkboxes">
     <label for="tripulacion"><strong> TRIPULACION:</strong></label>
