@@ -3166,24 +3166,45 @@ app.post('/guardar-inspeccion', (req, res) => {
 
 
 
+// Ruta para renderizar el formulario de consulta
+app.get('/consulta_inspeccion', async (req, res) => {
+    try {
+        // Consultar la base de datos para obtener las placas disponibles desde la tabla de vehículos
+        const query = 'SELECT DISTINCT placa FROM vehiculos';
+        const [rows, fields] = await connection.promise().query(query);
+        console.log('Placas encontradas:', rows);
 
-app.get('/consulta_inspeccion', (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        res.render('Inspección/consulta_inspeccion.hbs', { nombreUsuario });
-    } else {
-        // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        // Insertar "Todas" como opción adicional en la lista de placas
+        const placas = ['Todas', ...rows.map(row => row.placa)];
+
+        // Renderizar el formulario con las placas disponibles
+        res.render('Inspección/consulta_inspeccion.hbs', { placas });
+    } catch (error) {
+        console.error('Error al obtener las placas:', error);
+        res.status(500).send('Error al obtener las placas');
     }
 });
 
+
+
+
 // Renderizar la página de resultados con los datos obtenidos de la consulta
-app.post('/consulta_inspeccion_fecha', async (req, res) => {
-    const { fecha } = req.body;
+app.post('/consulta_inspeccion', async (req, res) => {
+    const { placa, fecha_inicio, fecha_fin } = req.body;
     try {
-        // Consultar la base de datos por la fecha especificada
-        const query = 'SELECT * FROM inspeccion_2_0 WHERE fecha = ?';
-        const [rows, fields] = await connection.promise().query(query, [fecha]);
+        let query, params;
+        if (placa === 'Todas') {
+            // Consultar todos los resultados sin filtrar por placa
+            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
+            params = [fecha_inicio, fecha_fin];
+        } else {
+            // Consultar por placa y rango de fechas
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND fecha BETWEEN ? AND ?';
+            params = [placa, fecha_inicio, fecha_fin];
+        }
+
+        // Ejecutar la consulta
+        const [rows, fields] = await connection.promise().query(query, params);
         console.log('Datos encontrados:', rows);
 
         // Calcular la suma y el porcentaje de cumplimiento para cada fila
@@ -3213,7 +3234,6 @@ app.post('/consulta_inspeccion_fecha', async (req, res) => {
         res.status(500).send('Error en la búsqueda por fecha');
     }
 });
-
 
 
 

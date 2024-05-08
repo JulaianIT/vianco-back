@@ -13,8 +13,8 @@
         }
 
         .container {
-            width: 90%;
-            margin: 20px auto;
+            width: 100%;
+            margin: 10px auto;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -29,31 +29,135 @@
         }
 
         table {
-            width: 100%;
+                      text-align: center;
+
+                position: relative;
+                right: 5px;
+            width: 90%;
             border-collapse: collapse;
             margin-top: 10px;
             font-size: 14px;
         }
 
+
         th, td {
-            padding: 8px;
+
+            padding: 2px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
 
         th {
-            background-color: #f2f2f2;
+          text-align: center;
+
+          border: 1px solid black;
+  text-transform: uppercase;
+            background-color:#90c9a7;
             font-weight: bold;
+            
+
         }
 
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+        td{
+          text-align: center;
+        border: 1px solid black;
+
+        }
+        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+header{
+
+background-color: white;
+
+
+}
+
+  @media only screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        margin: 10px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        overflow-x: auto; /* Permitir el desplazamiento horizontal */
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%; /* Hacer que la tabla ocupe todo el ancho disponible */
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px; /* Aumentar el espacio entre el contenido y el borde de las celdas */
+        text-align: center; /* Centrar el texto en todas las celdas */
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        border: 1px solid black;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    td {
+        border: 1px solid black;
+    }
+
+    header {
+        display: none;
+    }
+}
+
+
+  
+ 
     </style>
 </head>
 <body>
+    
+    <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+   
 <div class="container">
-    <h1>Resultados de la Consulta</h1>
+    <h1>CONTROL INSPECCION</h1>
     <table>
         <thead>
             <tr>
@@ -78,7 +182,7 @@
                 <th>Observaciones del Vehículo</th>
               <th>Observaciones del Conductor</th>
                 <th>total</th>
-                                <th>% de cumplimineto</th>
+                  <th>% de cumplimineto</th>
 
             </tr>
         </thead>
@@ -95,7 +199,7 @@
                 <td>{{this.interior_vehiculo}}</td>
                 <td>{{this.protocolo_servicio}}</td>
                 <td>{{this.AGUA}}</td>
-                <td>{{this.PANOS}}</td>
+                <td>{{this.PAÑOS}}</td>
                 <td>{{this.CARGADOR}}</td>
                 <td>{{this.MANOS}}</td>
                 <td>{{this.aire_acondicionado}}</td>

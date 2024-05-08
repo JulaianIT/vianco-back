@@ -56,14 +56,40 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+
+
+
+
+
+
+        @media only screen and (max-width: 768px) {
+
+
+
+
+
+
+
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Consulta de Inspección por Fecha</h1>
-    <form action="/consulta_inspeccion_fecha" method="POST">
-        <label for="fecha">Selecciona una fecha:</label>
-        <input type="date" id="fecha" name="fecha" required>
+   <form action="/consulta_inspeccion" method="POST">
+         <label for="placa">Placa:</label>
+        <select id="placa" name="placa">
+            {{#each placas}}
+                <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+        <br>
+        <label for="fecha_inicio">Fecha de inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+        <br>
+        <label for="fecha_fin">Fecha de fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" required>
+        <br>
         <input type="submit" value="Consultar">
     </form>
 </div>
