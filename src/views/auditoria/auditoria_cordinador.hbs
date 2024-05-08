@@ -111,7 +111,8 @@
     <form action="/guardar_auditoria" method="POST">
         <div class="form-group">
             <label for="placa"><h3>Selecciona una placa:</h3></label>
-            <input type="text" style="display: none;" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
+
+                <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
             <select id="placa" name="placa">
                 {{#each placas}}
                 <option value="{{this}}">{{this}}</option>
@@ -136,11 +137,11 @@
         <div class="form-group">
             <label for="inspeccion"><h2> Inspecciones:</h2></label>
             <div class="options-group">
-                <input type="radio" id="inspeccion_cumple" name="inspeccion" value="cumple">
+                <input type="radio" id="inspeccion_cumple" name="inspeccion" value="1">
                 <label for="inspeccion_cumple">Cumple</label>
-                <input type="radio" id="inspeccion_no_cumple" name="inspeccion" value="no_cumple">
+                <input type="radio" id="inspeccion_no_cumple" name="inspeccion" value="0">
                 <label for="inspeccion_no_cumple">No Cumple</label>
-                <input type="radio" id="inspeccion_cumple_parcialmente" name="inspeccion" value="cumple_parcialmente">
+                <input type="radio" id="inspeccion_cumple_parcialmente" name="inspeccion" value="0.5">
                 <label for="inspeccion_cumple_parcialmente">Cumple Parcialmente</label>
             </div>
         </div>
@@ -150,11 +151,11 @@
         <div class="form-group">
             <label for="supervision"><h2>Supervisiones:</h2></label>
             <div class="options-group">
-                <input type="radio" id="supervision_cumple" name="supervision" value="cumple">
+                <input type="radio" id="supervision_cumple" name="supervision" value="1">
                 <label for="supervision_cumple">Cumple</label>
-                <input type="radio" id="supervision_no_cumple" name="supervision" value="no_cumple">
+                <input type="radio" id="supervision_no_cumple" name="supervision" value="0">
                 <label for="supervision_no_cumple">No Cumple</label>
-                <input type="radio" id="supervision_n/a" name="supervision" value="n/a">
+                <input type="radio" id="supervision_n/a" name="supervision" value="0.5">
                 <label for="supervision_n/a">N/A</label>
             </div>
         </div>
@@ -164,17 +165,26 @@
         <div class="form-group">
             <label for="programacion"><h2> Programación:</h2></label>
             <div class="options-group">
-                <input type="radio" id="programacion_cumple" name="programacion" value="cumple">
+                <input type="radio" id="programacion_cumple" name="programacion" value="1">
                 <label for="programacion_cumple">Cumple</label>
-                <input type="radio" id="programacion_no_cumple" name="programacion" value="no_cumple">
+                <input type="radio" id="programacion_no_cumple" name="programacion" value="0">
                 <label for="programacion_no_cumple">No Cumple</label>
               
-                <input type="radio" id="programacion_adicional" name="programacion" value="adicional">
-                <label for="programacion_adicional">Turno Adicional</label>
+                <input type="radio" id="cumple_parcial" name="programacion" value="0.5">
+                <label for="cumple_parcial">Cumple parcialmente</label>
             </div>
         </div>
 <br>
 <br>
+  <div class="form-group">
+            <label for="programacion"><h2> Turno extra:</h2></label>
+            <div class="options-group">
+                <input type="radio" id="turno_extra" name="turno_extra" value="0.5">
+                <label for="turno_extra">Cumple</label>
+         
+              
+            </div>
+        </div>
         <input type="submit" value="Guardar">
     </form>
 </div>

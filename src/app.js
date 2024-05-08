@@ -3188,11 +3188,11 @@ app.get('/auditoria', (req, res) => {
 
 app.post('/guardar_auditoria', (req, res) => {
     // Extraer los datos del cuerpo de la solicitud
-    const { placa, fecha, inspeccion, supervision, programacion, nombreUsuario } = req.body;
+    const { placa, fecha, inspeccion, supervision, programacion,turno_extra,nombreUsuario } = req.body;
   
     // Consulta SQL para insertar datos en la tabla
-    const query = `INSERT INTO auditoria (placa, fecha, inspeccion, supervision, programacion, responsable) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [placa, fecha, inspeccion, supervision, programacion, nombreUsuario];
+    const query = `INSERT INTO auditoria (placa, fecha, inspeccion, supervision, programacion,turno_extra, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const values = [placa, fecha, inspeccion, supervision, programacion,turno_extra, nombreUsuario];
   
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results) => {
