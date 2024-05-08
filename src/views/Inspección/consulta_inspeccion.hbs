@@ -101,11 +101,21 @@
          <br>
          <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
          <br>
-        <select id="placa" name="placa">
-            {{#each placas}}
-                <option value="{{this}}">{{this}}</option>
-            {{/each}}
-        </select>
+       <select id="placa" name="placa">
+        <option value="Todas">Todas</option> <!-- Opción para todas las placas -->
+        {{#each placas}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
+        <br>
+         <label for="base">Selecciona Base:</label>
+        <br>
+     <select id="base" name="base">
+        <option value="Todas"> <!-- Opción para todas las bases -->
+        {{#each bases}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
         <br>
         <label for="fecha_inicio">Fecha de inicio:</label>
         <input type="date" id="fecha_inicio" name="fecha_inicio" required>
@@ -125,24 +135,33 @@
 </div>
 <br>
 
- <form action="/descargar_excel_inspecion" method="POST">
-            <input type="hidden" id="placa_excel" name="placa">
-            <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
-            <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
-        </form>
-</body>
+<form action="/descargar_excel_INSPECION" method="POST">
+    <input type="hidden" id="placa_excel" name="placa">
+<input type="hidden" id="base_excel" name="base">
+    <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
+    <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
+</form>
+
     <script>
         function setDatesAndSubmit() {
             const placa = document.getElementById('placa').value;
+                const base = document.getElementById('base').value; // Agrega esta línea
+
             const fechaInicio = document.getElementById('fecha_inicio').value;
             const fechaFin = document.getElementById('fecha_fin').value;
 
             document.getElementById('placa_excel').value = placa;
+                document.getElementById('base_excel').value = base; // Agrega esta línea
+
             document.getElementById('fecha_inicio_excel').value = fechaInicio;
             document.getElementById('fecha_fin_excel').value = fechaFin;
 
             // Submit the form to download the Excel file
             document.forms[1].submit();
+       
+       
+       
+       
         }
          function filterPlacas() {
         var input, filter, select, options, option, i, txtValue;

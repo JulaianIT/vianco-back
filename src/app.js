@@ -3165,42 +3165,53 @@ app.post('/guardar-inspeccion', (req, res) => {
 });
 
 
-
 // Ruta para renderizar el formulario de consulta
 app.get('/consulta_inspeccion', async (req, res) => {
     try {
-        // Consultar la base de datos para obtener las placas disponibles desde la tabla de vehículos
-        const query = 'SELECT DISTINCT placa FROM vehiculos';
-        const [rows, fields] = await connection.promise().query(query);
-        console.log('Placas encontradas:', rows);
+        // Consultar la base de datos para obtener las placas y bases disponibles desde la tabla de vehículos
+        const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
+        const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
+        
+        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
+        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
+        
+        console.log('Placas encontradas:', placasRows);
+        console.log('Bases encontradas:', basesRows);
 
-        // Insertar "Todas" como opción adicional en la lista de placas
-        const placas = ['Todas', ...rows.map(row => row.placa)];
+        // Insertar "Todas" como opción adicional en las listas de placas y bases
+        const placas = ['Todas', ...placasRows.map(row => row.placa)];
+        const bases = ['Todas', ...basesRows.map(row => row.base)];
 
-        // Renderizar el formulario con las placas disponibles
-        res.render('Inspección/consulta_inspeccion.hbs', { placas });
+        // Renderizar el formulario con las placas y bases disponibles
+        res.render('Inspección/consulta_inspeccion.hbs', { placas, bases });
     } catch (error) {
-        console.error('Error al obtener las placas:', error);
-        res.status(500).send('Error al obtener las placas');
+        console.error('Error al obtener las placas y bases:', error);
+        res.status(500).send('Error al obtener las placas y bases');
     }
 });
 
 
 
-
-// Renderizar la página de resultados con los datos obtenidos de la consulta
 app.post('/consulta_inspeccion', async (req, res) => {
-    const { placa, fecha_inicio, fecha_fin } = req.body;
+    const { placa, base, fecha_inicio, fecha_fin } = req.body;
     try {
         let query, params;
-        if (placa === 'Todas') {
-            // Consultar todos los resultados sin filtrar por placa
+        if (placa === 'Todas' && base === 'Todas') {
+            // Consultar todos los resultados sin filtrar por placa ni base
             query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
             params = [fecha_inicio, fecha_fin];
-        } else {
-            // Consultar por placa y rango de fechas
+        } else if (placa === 'Todas') {
+            // Consultar por base y rango de fechas sin filtrar por placa
+            query = 'SELECT * FROM inspeccion_2_0 WHERE base = ? AND fecha BETWEEN ? AND ?';
+            params = [base, fecha_inicio, fecha_fin];
+        } else if (base === 'Todas') {
+            // Consultar por placa y rango de fechas sin filtrar por base
             query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND fecha BETWEEN ? AND ?';
             params = [placa, fecha_inicio, fecha_fin];
+        } else {
+            // Consultar por placa, base y rango de fechas
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND base = ? AND fecha BETWEEN ? AND ?';
+            params = [placa, base, fecha_inicio, fecha_fin];
         }
 
         // Ejecutar la consulta
@@ -3243,6 +3254,7 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
     const { placa, fecha_inicio, fecha_fin } = req.body;
     try {
         let query, params;
+
         if (placa === 'Todas') {
             // Consultar todos los resultados sin filtrar por placa
             query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
@@ -3255,6 +3267,14 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
 
         // Ejecutar la consulta
         const [rows, fields] = await connection.promise().query(query, params);
+
+        // Verificar si rows tiene elementos antes de continuar
+        if (rows.length === 0) {
+            console.log('No se encontraron datos para exportar a Excel');
+            res.status(404).send('No se encontraron datos para exportar a Excel');
+            return;
+        }
+
         console.log('Datos encontrados:', rows);
 
         // Crear un nuevo libro de Excel
@@ -3283,8 +3303,6 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
         res.status(500).send('Error en la búsqueda por fecha');
     }
 });
-
-
 
 
 
