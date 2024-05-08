@@ -3236,6 +3236,81 @@ app.post('/consulta_inspeccion', async (req, res) => {
 });
 
 
+const excel = require('exceljs');
+
+// Ruta para descargar los resultados en formato Excel
+app.post('/descargar_excel_INSPECION', async (req, res) => {
+    const { placa, fecha_inicio, fecha_fin } = req.body;
+    try {
+        let query, params;
+        if (placa === 'Todas') {
+            // Consultar todos los resultados sin filtrar por placa
+            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
+            params = [fecha_inicio, fecha_fin];
+        } else {
+            // Consultar por placa y rango de fechas
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND fecha BETWEEN ? AND ?';
+            params = [placa, fecha_inicio, fecha_fin];
+        }
+
+        // Ejecutar la consulta
+        const [rows, fields] = await connection.promise().query(query, params);
+        console.log('Datos encontrados:', rows);
+
+        // Crear un nuevo libro de Excel
+        const workbook = new excel.Workbook();
+        const worksheet = workbook.addWorksheet('Resultados');
+
+        // Agregar encabezados a la hoja de cálculo
+        const headers = Object.keys(rows[0]);
+        worksheet.addRow(headers);
+
+        // Agregar filas con los datos
+        rows.forEach(row => {
+            const values = Object.values(row);
+            worksheet.addRow(values);
+        });
+
+        // Configurar la respuesta para descargar el archivo Excel
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=resultados.xlsx');
+
+        // Enviar el libro de Excel como una respuesta
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error('Error en la búsqueda por fecha:', error);
+        res.status(500).send('Error en la búsqueda por fecha');
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

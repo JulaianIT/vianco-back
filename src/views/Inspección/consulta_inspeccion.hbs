@@ -71,11 +71,31 @@
 
 
         }
+            .btn {
+            background-color: #90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: block; /* Mostrar en bloque */
+            width: 100%; /* Ancho completo */
+            margin-top: 10px; /* Margen superior de 10px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+        }
+        
+        /* Estilo para los botones al pasar el cursor */
+        .btn:hover {
+            background-color: #90abc9; /* Color de fondo al pasar el cursor */
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Consulta de Inspección por Fecha</h1>
+    <h1>CONTROL DE INSPECCION</h1>
    <form action="/consulta_inspeccion" method="POST">
          <label for="placa">Placa:</label>
         <select id="placa" name="placa">
@@ -92,6 +112,35 @@
         <br>
         <input type="submit" value="Consultar">
     </form>
+    
+ <form action="/descargar_excel_inspecion" method="POST">
+            <input type="hidden" id="placa_excel" name="placa">
+            <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
+            <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
+            <button class="btn" type="button" onclick="setDatesAndSubmit()">Descargar Excel</button>
+        </form>
 </div>
+<br>
+
+ <form action="/descargar_excel_inspecion" method="POST">
+            <input type="hidden" id="placa_excel" name="placa">
+            <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
+            <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
+        </form>
+</body>
+    <script>
+        function setDatesAndSubmit() {
+            const placa = document.getElementById('placa').value;
+            const fechaInicio = document.getElementById('fecha_inicio').value;
+            const fechaFin = document.getElementById('fecha_fin').value;
+
+            document.getElementById('placa_excel').value = placa;
+            document.getElementById('fecha_inicio_excel').value = fechaInicio;
+            document.getElementById('fecha_fin_excel').value = fechaFin;
+
+            // Submit the form to download the Excel file
+            document.forms[1].submit();
+        }
+    </script>
 </body>
 </html>
