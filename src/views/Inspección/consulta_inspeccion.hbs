@@ -97,7 +97,10 @@
 <div class="container">
     <h1>CONTROL DE INSPECCION</h1>
    <form action="/consulta_inspeccion" method="POST">
-         <label for="placa">Placa:</label>
+         <label for="placa">Selecione Placa:</label>
+         <br>
+         <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
+         <br>
         <select id="placa" name="placa">
             {{#each placas}}
                 <option value="{{this}}">{{this}}</option>
@@ -141,6 +144,22 @@
             // Submit the form to download the Excel file
             document.forms[1].submit();
         }
+         function filterPlacas() {
+        var input, filter, select, options, option, i, txtValue;
+        input = document.getElementById('search');
+        filter = input.value.toUpperCase();
+        select = document.getElementById('placa');
+        options = select.getElementsByTagName('option');
+        for (i = 0; i < options.length; i++) {
+            option = options[i];
+            txtValue = option.textContent || option.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
     </script>
 </body>
 </html>
