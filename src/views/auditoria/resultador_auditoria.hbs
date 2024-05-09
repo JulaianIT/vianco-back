@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la Consulta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: 10px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        table {
+                      text-align: center;
+
+                position: relative;
+                right: 5px;
+            width: 90%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+
+        th, td {
+
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          text-align: center;
+
+          border: 1px solid black;
+  text-transform: uppercase;
+            background-color:#90c9a7;
+            font-weight: bold;
+            
+
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        td{
+          text-align: center;
+        border: 1px solid black;
+
+        }
+        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+header{
+
+background-color: white;
+
+
+}
+
+  @media only screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        margin: 10px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        overflow-x: auto; /* Permitir el desplazamiento horizontal */
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%; /* Hacer que la tabla ocupe todo el ancho disponible */
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px; /* Aumentar el espacio entre el contenido y el borde de las celdas */
+        text-align: center; /* Centrar el texto en todas las celdas */
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        border: 1px solid black;
+        text-transform: uppercase;
+        background-color: #90c9a7;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    td {
+        border: 1px solid black;
+    }
+
+    header {
+        display: none;
+    }
+}
+
+
+  
+ 
+    </style>
+</head>
+<body>
+    
+    <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="../imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+   
+<div class="container">
+    <h1>CONTROL AUDITORIA</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                 <th>Base</th>
+                <th>Placa</th>
+                <th>inspeccion</th>
+                <th>supervision</th>
+              <th>programacion</th>
+             <th>turno Extra</th>
+                <th>total</th>
+                  <th>% de cumplimineto</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {{#each resultados}}
+            <tr>
+<td>{{formatDate this.fecha}}</td>
+                <td>{{this.responsable}}</td>
+                <td>{{this.base}}</td>
+                <td>{{this.placa}}</td>
+
+                <td>{{this.inspeccion}}</td>
+                <td>{{this.supervision}}</td>
+               <td>{{this.programacion}}</td>
+                <td>{{this.turno_extra}}</td>
+                 <td>{{this.total}}</td>
+                <td>{{this.porcentajeCumplimiento}}%</td> <!-- Nuevo campo para el porcentaje de cumplimiento -->
+
+
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+</div>
+<script>
+    // Función para formatear la fecha
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+

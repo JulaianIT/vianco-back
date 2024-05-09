@@ -96,13 +96,12 @@
 <body>
 <div class="container">
     <h1>CONTROL DE AUDITORIA</h1>
-   <form action="/consulta_inspeccion" method="POST">
+   <form action="/consulta_auditoria_resultado" method="POST">
          <label for="placa">Selecione Placa:</label>
          <br>
          <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
          <br>
        <select id="placa" name="placa">
-        <option value="Todas">Todas</option> <!-- Opción para todas las placas -->
         {{#each placas}}
             <option value="{{this}}">{{this}}</option>
         {{/each}}
@@ -111,7 +110,6 @@
          <label for="base">Selecciona Base:</label>
         <br>
      <select id="base" name="base">
-        <option value="Todas"> <!-- Opción para todas las bases -->
         {{#each bases}}
             <option value="{{this}}">{{this}}</option>
         {{/each}}
@@ -125,7 +123,6 @@
         <br>
         <input type="submit" value="Consultar">
     </form>
-    
  <form action="/descargar_excel_inspecion" method="POST">
             <input type="hidden" id="placa_excel" name="placa">
             <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
@@ -143,7 +140,7 @@
 </form>
 
     <script>
-        function setDatesAndSubmit() {
+     function setDatesAndSubmit() {
             const placa = document.getElementById('placa').value;
                 const base = document.getElementById('base').value; // Agrega esta línea
 
@@ -179,6 +176,8 @@
             }
         }
     }
+       
+   
     </script>
 </body>
 </html>

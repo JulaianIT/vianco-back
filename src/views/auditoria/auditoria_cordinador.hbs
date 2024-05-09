@@ -110,14 +110,22 @@
     <h1>AUDITORIA  </h1>
     <form action="/guardar_auditoria" method="POST">
         <div class="form-group">
-            <label for="placa"><h3>Selecciona una placa:</h3></label>
+                  <div class="form-group">  
+             <label for="base">Base *</label>
+            <select id="base" name="base">
 
-                <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
+        </div>
+        <div class="form-group">
+            <input style="display: none;" >
+            <label for="placa">Selecciona una placa:</label>
             <select id="placa" name="placa">
                 {{#each placas}}
                 <option value="{{this}}">{{this}}</option>
                 {{/each}}
             </select>
+        </div>
+      <br>
+
         </div>
       
         <div class="form-group">
@@ -188,7 +196,61 @@
         <input type="submit" value="Guardar">
     </form>
 </div>
+<script>
 
+document.addEventListener('DOMContentLoaded', function() {
+    const baseSelect = document.getElementById('base');
+    const placasSelect = document.getElementById('placa');
+    const nombreConductorInput = document.getElementById('nombre_conductor');
+
+    // Función para cargar las placas según la base seleccionada
+    function cargarPlacas() {
+        const baseSeleccionada = baseSelect.value;
+        fetch(`/inspeccion_vianco?base=${baseSeleccionada}`)
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar opciones existentes
+                placasSelect.innerHTML = '';
+                // Agregar las nuevas opciones
+                data.forEach(placa => {
+                    const option = document.createElement('option');
+                    option.value = placa;
+                    option.textContent = placa;
+                    placasSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al obtener la lista de placas:', error));
+    }
+    
+    // Evento de cambio en el select de bases
+    baseSelect.addEventListener('change', cargarPlacas);
+    
+    // Cargar las placas al cargar la página
+    cargarPlacas();
+});
+
+
+
+
+    </script>
+       <script>
+        // Hacer una solicitud HTTP para obtener la lista de bases
+        fetch('/obtenerBases')
+            .then(response => response.json())
+            .then(data => {
+                const baseSelect = document.getElementById('base');
+                // Limpiar opciones existentes
+                baseSelect.innerHTML = '';
+                // Agregar las nuevas opciones
+                data.forEach(base => {
+                    const option = document.createElement('option');
+                    option.value = base;
+                    option.textContent = base;
+                    baseSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al obtener la lista de bases:', error));
+    </script>
 <script>
     // Obtener la fecha actual
     var today = new Date();
@@ -227,3 +289,29 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

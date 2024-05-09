@@ -102,7 +102,6 @@
          <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
          <br>
        <select id="placa" name="placa">
-        <option value="Todas">Todas</option> <!-- Opción para todas las placas -->
         {{#each placas}}
             <option value="{{this}}">{{this}}</option>
         {{/each}}
@@ -111,7 +110,6 @@
          <label for="base">Selecciona Base:</label>
         <br>
      <select id="base" name="base">
-        <option value="Todas"> <!-- Opción para todas las bases -->
         {{#each bases}}
             <option value="{{this}}">{{this}}</option>
         {{/each}}

@@ -3365,28 +3365,12 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 app.get('/auditoria', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        connection.query('SELECT placa FROM vehiculos', (error, results, fields) => {
-            if (error) {
-                console.error('Error al obtener placas:', error);
-                res.status(500).send('Error interno del servidor');
-                return;
-            }
-            const placas = results.map(result => result.placa);
-            res.render('auditoria/auditoria_cordinador.hbs', { placas, nombreUsuario });
-        });
+        res.render('auditoria/auditoria_cordinador.hbs', { nombreUsuario });
     } else {
+        // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login/index");
     }
 });
@@ -3394,13 +3378,48 @@ app.get('/auditoria', (req, res) => {
 
 
 
+// Ruta para obtener la lista de bases
+app.get('/obtenerBases', (req, res) => {
+    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+        if (error) {
+            console.error('Error al obtener las bases:', error);
+            res.status(500).json({ error: 'Error al obtener las bases' });
+            return;
+        }
+        const bases = results.map(result => result.base);
+        res.json(bases);
+    });
+});
+
+
+
+// Ruta para obtener la lista de placas según la base seleccionada
+app.get('/inspeccion_vianco', (req, res) => {
+    const baseSeleccionada = req.query.base;
+    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+        if (error) {
+            console.error('Error al obtener las placas:', error);
+            res.status(500).json({ error: 'Error al obtener las placas' });
+            return;
+        }
+        const placas = results.map(result => result.placa);
+        res.json(placas);
+    });
+});
+
+
+
+
+
+
+
 app.post('/guardar_auditoria', (req, res) => {
     // Extraer los datos del cuerpo de la solicitud
-    const { placa, fecha, inspeccion, supervision, programacion,turno_extra,nombreUsuario } = req.body;
+    const { placa, base,fecha, inspeccion, supervision, programacion,turno_extra,nombreUsuario } = req.body;
   
     // Consulta SQL para insertar datos en la tabla
-    const query = `INSERT INTO auditoria (placa, fecha, inspeccion, supervision, programacion,turno_extra, responsable) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    const values = [placa, fecha, inspeccion, supervision, programacion,turno_extra, nombreUsuario];
+    const query = `INSERT INTO auditoria (placa,base, fecha, inspeccion, supervision, programacion,turno_extra, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [placa,base, fecha, inspeccion, supervision, programacion,turno_extra, nombreUsuario];
   
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results) => {
@@ -3414,21 +3433,40 @@ app.post('/guardar_auditoria', (req, res) => {
     });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Ruta para renderizar el formulario de consulta
 app.get('/consulta_auditoria', async (req, res) => {
     try {
-        // Llamado de datos placa 
-        const placasQuery = 'SELECT placa FROM vehiculos';
+        // Consultar la base de datos para obtener las placas y bases disponibles desde la tabla de vehículos
+        const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
+        const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
         
-        // Asegúrate de que la función sea asíncrona y luego espera el resultado de la consulta
         const [placasRows, placasFields] = await connection.promise().query(placasQuery);
-        console.log('placas:', placasRows);
+        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
         
-        const placas = ['todas', ...placasRows.map(row => row.placa)];
-        
-        res.render('auditoria/consultar_auditoria.hbs', { placas });
+        console.log('Placas encontradas:', placasRows);
+        console.log('Bases encontradas:', basesRows);
+
+        // Insertar "Todas" como opción adicional en las listas de placas y bases
+        const placas = ['Todas', ...placasRows.map(row => row.placa)];
+        const bases = ['Todas', ...basesRows.map(row => row.base)];
+
+        // Renderizar el formulario con las placas y bases disponibles
+        res.render('auditoria/consultar_auditoria.hbs', { placas, bases });
     } catch (error) {
-        console.error('Error al obtener placas:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('Error al obtener las placas y bases:', error);
+        res.status(500).send('Error al obtener las placas y bases');
     }
 });
 
@@ -3436,6 +3474,59 @@ app.get('/consulta_auditoria', async (req, res) => {
 
 
 
+app.post('/consulta_auditoria_resultado', async (req, res) => {
+    const { placa, base, fecha_inicio, fecha_fin } = req.body;
+    try {
+        let query, params;
+        if (placa === 'Todas' && base === 'Todas') {
+            // Consultar todos los resultados sin filtrar por placa ni base
+            query = 'SELECT * FROM auditoria WHERE fecha BETWEEN ? AND ?';
+            params = [fecha_inicio, fecha_fin];
+        } else if (placa === 'Todas') {
+            // Consultar por base y rango de fechas sin filtrar por placa
+            query = 'SELECT * FROM auditoria WHERE base = ? AND fecha BETWEEN ? AND ?';
+            params = [base, fecha_inicio, fecha_fin];
+        } else if (base === 'Todas') {
+            // Consultar por placa y rango de fechas sin filtrar por base
+            query = 'SELECT * FROM auditoria WHERE placa = ? AND fecha BETWEEN ? AND ?';
+            params = [placa, fecha_inicio, fecha_fin];
+        } else {
+            // Consultar por placa, base y rango de fechas
+            query = 'SELECT * FROM auditoria WHERE placa = ? AND base = ? AND fecha BETWEEN ? AND ?';
+            params = [placa, base, fecha_inicio, fecha_fin];
+        }
+
+        // Ejecutar la consulta
+        const [rows, fields] = await connection.promise().query(query, params);
+        console.log('Datos encontrados:', rows);
+
+        // Calcular la suma y el porcentaje de cumplimiento para cada fila
+        for (let row of rows) {
+            let total = 0;
+            let totalCumplimiento = 0;
+            const campos = ['inspeccion', 'supervision', 'programacion', 'turno_extra'];
+
+            for (let campo of campos) {
+                let valor = parseFloat(row[campo]) || 0;
+                total += valor;
+                totalCumplimiento += valor;
+            }
+
+            // Calcular el porcentaje de cumplimiento y redondearlo
+            const porcentajeCumplimiento = Math.round((totalCumplimiento / (campos.length * 1)) * 100); // Total de campos * 1
+
+            // Guardar la suma total y el porcentaje de cumplimiento en la fila
+            row.total = total;
+            row.porcentajeCumplimiento = porcentajeCumplimiento;
+        }
+
+        // Renderizar la plantilla con los resultados, la suma total y el porcentaje de cumplimiento
+        res.render('auditoria/resultador_auditoria.hbs', { resultados: rows });
+    } catch (error) {
+        console.error('Error en la búsqueda por fecha:', error);
+        res.status(500).send('Error en la búsqueda por fecha');
+    }
+});
 
 
 
