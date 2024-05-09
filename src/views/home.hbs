@@ -118,7 +118,7 @@ nav {
     position: fixed;
     top: 0;
     left: 0;
-    width: 5%; /* Ancho de la barra de navegación */
+    width: 6%; /* Ancho de la barra de navegación */
     height: 100%;
     background-color: rgb(102, 101, 103);
     font-size: 20px;
@@ -370,7 +370,26 @@ float: none;
         width: 20%; /* Ajusta el ancho de la barra de navegación para dispositivos más grandes si es necesario */
     }
 }
+.image-link {
+    position: relative;
+    display: inline-block;
+}
 
+.image-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    opacity: 0; /* Inicialmente, el texto estará oculto */
+    transition: opacity 0.3s ease; /* Agrega una transición suave */
+}
+
+.image-link:hover .image-text {
+    opacity: 1; /* Cuando se hace hover sobre el enlace, el texto se mostrará */
+}
 </style>
 
 
@@ -423,15 +442,20 @@ float: none;
 
 
 
-        <p class="active">
-        <a href="/"> <img id="vi" src="imagenes/consultante.png" alt=""></a>
-        </p>
 
+
+    <li class="geree"> <a href="/" class="active"> <img id="vi" src="imagenes/consultante.png" alt="">
+</p>
+                            <ul class="menu-vertical">
+                            <li><p >OPERACIONES</p></li>
+
+                            </ul>
+                        </li>
 
                         {{#if gerencia}}
                       <li class="geree"><p class="active"> <img id="calll" src="/imagenes/mujer-de-negocios.png" alt=""></p>
                             <ul class="menu-vertical">
-                            <li><a href="/admin/roles">Ajustes de PERMISOS</a></li>
+                            <li><a href="/amin/roles">Ajustes de PERMISOS</a></li>
 
                             </ul>
                         </li>
