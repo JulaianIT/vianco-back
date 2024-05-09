@@ -129,6 +129,76 @@ app.use(router);
 
 
 
+
+
+
+// Ruta para la página principal vianco
+app.get("/menu", (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
+
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
+
+
+
+        const auxiliar = roles.includes('auxiliar');
+        const ejecutivo = roles.includes('ejecutivo');
+        const cordinacion = roles.includes('cordinacion');
+        const callcenter = roles.includes('callcenter');
+        const director = roles.includes('director');
+        const gerencia = roles.includes('gerencia');
+        const aeropuerto = roles.includes('aeropuerto');
+       
+        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto }); // Pasar los roles a la plantilla
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
+
+// Ruta para la página principal vianco
+app.get("/", (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
+
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
+
+
+
+        const auxiliar = roles.includes('auxiliar');
+        const ejecutivo = roles.includes('ejecutivo');
+        const cordinacion = roles.includes('cordinacion');
+        const callcenter = roles.includes('callcenter');
+        const director = roles.includes('director');
+        const gerencia = roles.includes('gerencia');
+        const aeropuerto = roles.includes('aeropuerto');
+       
+        res.render("operaciones/menu.operaciones.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto }); // Pasar los roles a la plantilla
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Ruta para la programación de vehículos
 // Ruta para la programación de vehículos
 app.get("/programacion-vehiculos", (req, res) => {
@@ -329,32 +399,6 @@ function otraFuncion(req, res, next) {
     }
 }
 
-// Ruta para la página principal
-app.get("/", (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        console.log(`El usuario ${nombreUsuario} está autenticado.`);
-        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
-
-        const rolesString = req.session.roles;
-        const roles = Array.isArray(rolesString) ? rolesString : [];
-        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
-
-
-
-        const auxiliar = roles.includes('auxiliar');
-        const ejecutivo = roles.includes('ejecutivo');
-        const cordinacion = roles.includes('cordinacion');
-        const callcenter = roles.includes('callcenter');
-        const director = roles.includes('director');
-        const gerencia = roles.includes('gerencia');
-        const aeropuerto = roles.includes('aeropuerto');
-       
-        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto }); // Pasar los roles a la plantilla
-    } else {
-        res.redirect("/login/index");
-    }
-});
 
 
 // Ruta para logout
@@ -3165,6 +3209,18 @@ app.post('/guardar-inspeccion', (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // Ruta para renderizar el formulario de consulta
 app.get('/consulta_inspeccion', async (req, res) => {
     try {
@@ -3326,12 +3382,6 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
 
 
 
-
-
-
-
-
-
 app.get('/auditoria', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
@@ -3371,6 +3421,40 @@ app.post('/guardar_auditoria', (req, res) => {
       }
     });
 });
+
+app.get('/consulta_auditoria', async (req, res) => {
+    try {
+        // Llamado de datos placa 
+        const placasQuery = 'SELECT placa FROM vehiculos';
+        
+        // Asegúrate de que la función sea asíncrona y luego espera el resultado de la consulta
+        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
+        console.log('placas:', placasRows);
+        
+        const placas = ['todas', ...placasRows.map(row => row.placa)];
+        
+        res.render('auditoria/consultar_auditoria.hbs', { placas });
+    } catch (error) {
+        console.error('Error al obtener placas:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

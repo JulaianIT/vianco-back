@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Inspección por Fecha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #90c9a7;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+
+
+
+
+
+        @media only screen and (max-width: 768px) {
+
+
+
+
+
+
+
+        }
+            .btn {
+            background-color: #90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: block; /* Mostrar en bloque */
+            width: 100%; /* Ancho completo */
+            margin-top: 10px; /* Margen superior de 10px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+        }
+        
+        /* Estilo para los botones al pasar el cursor */
+        .btn:hover {
+            background-color: #90abc9; /* Color de fondo al pasar el cursor */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>CONTROL DE AUDITORIA</h1>
+   <form action="/consulta_inspeccion" method="POST">
+         <label for="placa">Selecione Placa:</label>
+         <br>
+         <input type="text" id="search" placeholder="Buscar placa..." oninput="filterPlacas()">
+         <br>
+       <select id="placa" name="placa">
+        <option value="Todas">Todas</option> <!-- Opción para todas las placas -->
+        {{#each placas}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
+        <br>
+         <label for="base">Selecciona Base:</label>
+        <br>
+     <select id="base" name="base">
+        <option value="Todas"> <!-- Opción para todas las bases -->
+        {{#each bases}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
+        <br>
+        <label for="fecha_inicio">Fecha de inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+        <br>
+        <label for="fecha_fin">Fecha de fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" required>
+        <br>
+        <input type="submit" value="Consultar">
+    </form>
+    
+ <form action="/descargar_excel_inspecion" method="POST">
+            <input type="hidden" id="placa_excel" name="placa">
+            <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
+            <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
+            <button class="btn" type="button" onclick="setDatesAndSubmit()">Descargar Excel</button>
+        </form>
+</div>
+<br>
+
+<form action="/descargar_excel_INSPECION" method="POST">
+    <input type="hidden" id="placa_excel" name="placa">
+<input type="hidden" id="base_excel" name="base">
+    <input type="hidden" id="fecha_inicio_excel" name="fecha_inicio">
+    <input type="hidden" id="fecha_fin_excel" name="fecha_fin">
+</form>
+
+    <script>
+        function setDatesAndSubmit() {
+            const placa = document.getElementById('placa').value;
+                const base = document.getElementById('base').value; // Agrega esta línea
+
+            const fechaInicio = document.getElementById('fecha_inicio').value;
+            const fechaFin = document.getElementById('fecha_fin').value;
+
+            document.getElementById('placa_excel').value = placa;
+                document.getElementById('base_excel').value = base; // Agrega esta línea
+
+            document.getElementById('fecha_inicio_excel').value = fechaInicio;
+            document.getElementById('fecha_fin_excel').value = fechaFin;
+
+            // Submit the form to download the Excel file
+            document.forms[1].submit();
+       
+       
+       
+       
+        }
+         function filterPlacas() {
+        var input, filter, select, options, option, i, txtValue;
+        input = document.getElementById('search');
+        filter = input.value.toUpperCase();
+        select = document.getElementById('placa');
+        options = select.getElementsByTagName('option');
+        for (i = 0; i < options.length; i++) {
+            option = options[i];
+            txtValue = option.textContent || option.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
+    </script>
+</body>
+</html>

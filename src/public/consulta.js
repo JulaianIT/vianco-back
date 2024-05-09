@@ -178,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
            </div>
 
            <button id="editar-btn" class="btn editar-btn">Editar Información</button>
-           <a href="/agregar-vehiculo" class="volver-btn">Agregar Nuevo Vehículo</a>
 
            <a href="/" class="volver-btn">Volver al Menú</a>
 

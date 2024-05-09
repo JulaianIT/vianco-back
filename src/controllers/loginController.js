@@ -45,7 +45,7 @@ function auth(req, res) {
                     // Registro de depuración para verificar el valor de req.session.roles
                     console.log("Valor de req.session.roles:", req.session.roles);
 
-                    res.redirect("/");
+                    res.redirect("/menu");
                 }
             });
         } else {
