@@ -192,14 +192,6 @@ app.get("/", (req, res) => {
 
 
 
-
-
-
-
-
-
-
-// Ruta para la programación de vehículos
 // Ruta para la programación de vehículos
 app.get("/programacion-vehiculos", (req, res) => {
     if (req.session.loggedin === true) {
