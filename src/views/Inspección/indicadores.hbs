@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indicadores de inspecciones</title>
+  <!-- Incluye la biblioteca Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Enlace a la fuente Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif; /* Utiliza la fuente Roboto */
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+    #grafico {
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #666;
+      border-left: 5px solid #FF5733;
+      padding-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Indicadores de inspecciones</h1>
+
+  <!-- Formulario para seleccionar fechas -->
+  <form id="formulario-fechas">
+    <label for="fechaInicio">Fecha de inicio:</label>
+    <input type="date" id="fechaInicio" name="fechaInicio">
+    <label for="fechaFin">Fecha de fin:</label>
+    <input type="date" id="fechaFin" name="fechaFin">
+    <button type="submit">Generar indicadores</button>
+  </form>
+
+  <canvas id="grafico" width="400" height="400"></canvas>
+
+  <h2>Placas con nivel de cumplimiento menor a 60%</h2>
+  <ul id="placas-lista">
+    <!-- Aquí se insertarán las placas después de enviar el formulario -->
+  </ul>
+
+  <script>
+    // Función para enviar el formulario con las fechas seleccionadas
+    document.getElementById('formulario-fechas').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita que se recargue la página al enviar el formulario
+      
+      const fechaInicio = document.getElementById('fechaInicio').value; // Obtener fecha de inicio
+      const fechaFin = document.getElementById('fechaFin').value; // Obtener fecha de fin
+      
+      // Realizar una solicitud AJAX para obtener los datos actualizados
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          // Actualizar el contenido de las placas bajo el 60%
+          document.getElementById('placas-lista').innerHTML = xhr.responseText;
+        }
+      };
+      xhr.open('GET', '/placas-bajo-60?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin, true);
+      xhr.send();
+    });
+  </script>
+</body>
+</html>

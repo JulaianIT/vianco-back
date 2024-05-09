@@ -3356,12 +3356,77 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
 
 
 
+app.get('/pagina-indicadores', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('Inspección/indicadores.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
 
 
 
 
 
 
+app.get('/placas-bajo-60', (req, res) => {
+    const fechaInicio = req.query.fechaInicio; // Obtener fecha de inicio desde la solicitud
+    const fechaFin = req.query.fechaFin; // Obtener fecha de fin desde la solicitud
+
+    if (!fechaInicio || !fechaFin) {
+        // Si no se proporcionaron fechas, enviar una respuesta vacía
+        res.send('');
+        return;
+    }
+
+    // Llama a la función para obtener las placas bajo el 60% con las fechas proporcionadas
+    obtenerPlacasBajo60(fechaInicio, fechaFin, (error, placas) => {
+        if (error) {
+            // Maneja el error
+            console.error(error);
+            res.status(500).send('Error al obtener las placas');
+            return;
+        }
+
+        // Renderiza la lista de placas bajo el 60%
+        let listaPlacas = '';
+        placas.forEach(placa => {
+            listaPlacas += '<li>' + placa + '</li>';
+        });
+
+        // Envía la lista de placas bajo el 60% como respuesta
+        res.send(listaPlacas);
+    });
+});
+
+// Función para obtener las placas bajo el 60%
+function obtenerPlacasBajo60(fechaInicio, fechaFin, callback) {
+    // Consulta SQL para obtener las placas bajo el 60%
+    let query = `
+      SELECT placa
+      FROM inspeccion_2_0
+      WHERE fecha BETWEEN ? AND ?
+        AND (corbata_vianco + traje + presentacion_externa + interior_vehiculo + protocolo_servicio + AGUA + PAÑOS + CARGADOR + MANOS + aire_acondicionado + logo_rnt + logos_reservado + logos_vianco + estado_baul) / (14 * 3) * 100 < 60`;
+
+    // Parámetros para la consulta SQL
+    let queryParams = [fechaInicio, fechaFin];
+
+    // Realiza la consulta a la base de datos
+    connection.query(query, queryParams, (error, rows) => {
+        if (error) {
+            callback(error, null);
+            return;
+        }
+
+        // Obtén las placas bajo el 60%
+        const placas = rows.map(row => row.placa);
+
+        // Llama al callback con las placas obtenidas
+        callback(null, placas);
+    });
+}
 
 
 
@@ -3527,7 +3592,7 @@ app.post('/consulta_auditoria_resultado', async (req, res) => {
         res.status(500).send('Error en la búsqueda por fecha');
     }
 });
-
+                                             
 
 
 
