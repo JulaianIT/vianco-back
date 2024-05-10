@@ -3616,6 +3616,35 @@ app.post('/consulta_auditoria_resultado', async (req, res) => {
 
 
 
+app.get('/llegadas_salidas', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
