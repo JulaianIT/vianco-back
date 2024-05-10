@@ -3563,6 +3563,13 @@ app.get('/consulta_auditoria', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
 app.post('/consulta_auditoria_resultado', async (req, res) => {
     const { placa, base, fecha_inicio, fecha_fin } = req.body;
     try {
@@ -3634,6 +3641,17 @@ function obtenerFechaActual() {
     return year + '-' + month + '-' + day;
 }
 
+
+
+
+
+
+
+
+
+
+
+
 app.get('/llegadas_salidas', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
@@ -3656,6 +3674,56 @@ app.get('/llegadas_salidas', async (req, res) => {
         res.status(500).send("Error interno del servidor");
     }
 });
+
+
+
+
+
+
+
+app.post('/guardar_llegadas_salidas', (req, res) => {
+    // Extraer los datos del cuerpo de la solicitud
+    const { clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion } = req.body;
+
+    // Consulta SQL para insertar datos en la tabla
+    const query = `INSERT INTO llegadas_salidas (clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion) VALUES (?, ?, ?, ?, ?, ?)`;
+    const values = [clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion];
+
+    // Ejecutar la consulta SQL
+    connection.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al guardar los datos:', error);
+            return res.status(500).send('Error interno del servidor');
+        } else {
+            console.log('Datos guardados correctamente');
+            // Enviar una respuesta con un script que active el alert
+            const script = `
+                <script>
+                    alert('Los datos se han guardado correctamente');
+                    window.location.href = '/llegadas_salidas'; // Redirigir después de cerrar el alert
+                </script>
+            `;
+            return res.send(script);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

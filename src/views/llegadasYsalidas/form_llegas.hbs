@@ -3,32 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLEGADAS</title>
+    <title>Registro de Llegadas y Salidas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            padding: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="date"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+ 
+
+
+
+
+   header {
+            background-color: #fff;
+        }
+
+        #logo {
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
+
+
+.form{
+    position: relative;
+    align-items: center;
+    left: 20%;
+    border-radius: 10%;
+    width: 20%;
+    padding: 15px;
+background-color: #d9d9d9;
+
+border:  2px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+}
+ .btn {
+    position: relative;
+    left: 25%;
+    top: -10px;
+            background-color:#90c9a7;
+            color: #000;
+            border: none;
+            padding: 25px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #d9d9d9;
+        }
+
+    </style>
 </head>
 <body>
+<header>
+    <img id="membrete" src="/imagenes/menbrete.png"/>
+    <img id="logo" src="/imagenes/logo vianco.png"/>
+    <img id="vigilado" src="/imagenes/vigilado.png"/>
+    <hr>
+</header>
+<br>
+<br>
+<br>
+<br>
 
-<form action="" method="POST">
 
-<label for="cliente">Cliente Costo:</label>
-<select id="clienteCosto" name="cliente" required>
-    {{#each clientes}}
-        <option value="{{this}}">{{this}}</option>
-    {{/each}}
-</select><br><br>
+<div class="form">
 
-<label for="fecha">Fecha:</label>
-<input type="date" id="fecha" name="fecha" required min="{{fechaActual}}"><br>
+<form action="/guardar_llegadas_salidas" method="POST">
 
-<label for="fecha">LLEGADAS:</label>
-<input type="text" id="fecha" name="fecha" required><br>
+    <label for="clienteCosto">Cliente Costo:</label>
+    <select id="clienteCosto" name="clienteCosto" required>
+        {{#each clientes}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
 
-<label for="fecha">SALIDAS:</label>
-<input type="text" id="fecha" name="fecha" required><br>
+    <label for="Responsable">Responsable:</label>
+    <input type="text" id="Responsable" name="Responsable"   value="{{ nombreUsuario }}" readonly required>
 
-<label for="fecha">OCUPACION:</label>
-<input type="text" id="fecha" name="fecha" required><br>
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" required min="{{fechaActual}}">
+
+    <label for="llegadas">Llegadas:</label>
+    <input type="text" id="llegadas" name="llegadas" required>
+
+    <label for="salidas">Salidas:</label>
+    <input type="text" id="salidas" name="salidas" required>
+
+    <label for="ocupacion">Ocupación:</label>
+    <input type="text" id="ocupacion" name="ocupacion" required>
+
+<br>
+<br>
+<br>
+    <input  class="btn" type="submit" value="ENVIAR">
+    <br>
 
 </form>
+</div>
 
 </body>
 </html>
