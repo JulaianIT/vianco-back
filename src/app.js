@@ -1558,34 +1558,53 @@ transporter.sendMail({
 
 
 
-
+    
 // Ruta para ver las novedades (visualización de página)
+
+
+
 app.get('/ver_novedades', (req, res) => {
-    res.render('novedades_Callcenter/ver_Novedades.hbs');
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('novedades_Callcenter/ver_Novedades.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles', (req, res) => {
-    connection.query('SELECT DISTINCT fecha FROM novedades', (error, results) => {
+    connection.query('SELECT DISTINCT DATE_FORMAT(fecha_registro, "%Y-%m-%d") AS fecha_formateada FROM novedades', (error, results) => {
         if (error) {
             console.error('Error al obtener las fechas disponibles:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
         } else {
-            const fechasDisponibles = results.map(result => result.fecha);
+            const fechasDisponibles = results.map(result => result.fecha_formateada);
             res.json(fechasDisponibles); // Devuelve un JSON con las fechas disponibles
         }
     });
 });
 
 
-
-
-
-
 // Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
-    const query = 'SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro FROM novedades WHERE DATE(fecha) = ?'; // Añadir el campo de la firma en la consulta SQL
+    const query = 'SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro FROM novedades WHERE DATE(fecha_registro) = ?'; // Añadir el campo de la firma en la consulta SQL
     connection.query(query, [fechaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
@@ -2999,11 +3018,11 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
+    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
