@@ -84,14 +84,7 @@ border:  2px solid black;
         .btn:hover {
             background-color: #d9d9d9;
         }
-@media only screen and (max-width: 768px) {
-
-
-
-
-     body {
-            font-family: Arial, sans-serif;
-        }
+ 
         form {
             padding: 10px;
             max-width: 400px;
@@ -205,7 +198,8 @@ border:  2px solid black;
     <input type="text" id="Responsable" name="Responsable"   value="{{ nombreUsuario }}" readonly required>
 
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" required min="{{fechaActual}}">
+        <!-- Utiliza el atributo min para evitar fechas anteriores a la actual -->
+        <input type="date" id="fecha" name="fecha" required min="{{fechaActual}}">
 
     <label for="llegadas">Llegadas:</label>
     <input type="text" id="llegadas" name="llegadas" required>
@@ -213,8 +207,23 @@ border:  2px solid black;
     <label for="salidas">Salidas:</label>
     <input type="text" id="salidas" name="salidas" required>
 
-    <label for="ocupacion">Ocupación:</label>
-    <input type="text" id="ocupacion" name="ocupacion" required>
+
+
+ <label for="ocupacion">Ocupación</label>
+    <select id="ocupacion" name="ocupacion" required>
+            <option value="10">10%</option>
+            <option value="20">20%</option>
+            <option value="30">30%</option>
+            <option value="40">40%</option>
+            <option value="50">50%</option>
+            <option value="60">60%</option>
+              <option value="70">70%</option>
+            <option value="80">80%</option>
+            <option value="90">90%</option>
+            <option value="100">100%</option>
+
+
+    </select>
 
 <br>
 <br>

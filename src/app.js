@@ -289,12 +289,15 @@ handlebars.registerHelper('formatDatee', function(dateString) {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
 });
-// Registra el helper formatDatee en Handlebars
-// Ruta para buscar la programación de vehículos
+
+
+
+
+
 app.get('/buscar-programacion', (req, res) => {
     const { base, fecha, horario } = req.query;
 
-    // Construir la consulta SQL con base, fecha y horario según lo proporcionado en la solicitud
+    // Construir la consulta SQL para la programación de vehículos
     let sql = 'SELECT * FROM programacion_vehiculos WHERE 1';
     const params = [];
 
@@ -313,17 +316,38 @@ app.get('/buscar-programacion', (req, res) => {
         params.push(horario);
     }
 
-    // Ejecutar la consulta
-    connection.query(sql, params, (err, results) => {
+    // Ejecutar la consulta para la programación de vehículos
+    connection.query(sql, params, (err, programacionResults) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
             // Maneja el error apropiadamente
             return;
         }
 
-        res.render('programacion/resultados_programacion.hbs', { programacion: results }); // Renderiza la página de resultados con los datos obtenidos
+        // Construir la consulta SQL para las llegadas y salidas
+        let llegadasSalidasSql = 'SELECT * FROM llegadas_salidas WHERE 1';
+
+        if (fecha) {
+            llegadasSalidasSql += ' AND fecha = ?';
+        }
+
+        // Ejecutar la consulta para las llegadas y salidas
+        connection.query(llegadasSalidasSql, [fecha], (err, llegadasSalidasResults) => {
+            if (err) {
+                console.error('Error al buscar llegadas y salidas:', err);
+                // Maneja el error apropiadamente
+                return;
+            }
+
+            // Renderizar la página de resultados con los datos obtenidos
+            res.render('programacion/resultados_programacion.hbs', { 
+                programacion: programacionResults,
+                llegadasSalidas: llegadasSalidasResults
+            });
+        });
     });
 });
+
 
 // Función para formatear la fecha en el formato DD/MM/AAAA
 function formatDate(date) {
@@ -333,6 +357,14 @@ function formatDate(date) {
     const año = fecha.getFullYear();
     return `${dia}/${mes}/${año}`;
 }
+
+
+
+
+
+
+
+
 
 
 const ExcelJS = require('exceljs');
