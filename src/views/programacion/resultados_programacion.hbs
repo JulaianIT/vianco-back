@@ -316,6 +316,11 @@ background-color: #90c9a7;
             background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
         }
 }
+h2{
+
+
+
+}
 </style>
 <body>
 <header>
@@ -329,10 +334,44 @@ background-color: #90c9a7;
 </header>
 <br>
 <br>
-<h1>PROGRAMACION DE VEHICULOS</h1>
                 <a href="/" class="volver-btn">Volver al Menú</a>
 
+
+        <br>
+        <br>
+{{#if llegadasSalidas}}
+
+<h1>LLEGAS Y SALIDAS </h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>RESPONSABLE</th>
+                <th>LLEGADAS</th>
+                <th>SALIDAS</th>
+                <th>OCUPACION</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each llegadasSalidas}}
+                <tr>
+                    <td>{{this.clienteCosto}}</td>
+                    <td>{{this.Responsable}}</td>
+                    <td>{{this.Responsable}}</td>
+                     <td>{{this.salidas}}</td>
+                    <td>{{this.ocupacion}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+{{else}}
+    <p>No se encontraron resultados de llegadas y salidas.</p>
+{{/if}}
+
+
 <br>
+<h1>PROGRAMACION DE VEHICULOS</h1>
+
 <br>
 {{#if programacion}}
     <table>
@@ -363,36 +402,8 @@ background-color: #90c9a7;
 
 
 
-{{#if llegadasSalidas}}
-    <h2>Llegadas y Salidas</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Costo</th>
-                <th>Responsable</th>
-                <th>Fecha Llegada</th>
-                <th>Fecha Salida</th>
-                <th>Ocupación</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each llegadasSalidas}}
-                <tr>
-                    <td>{{this.clienteCosto}}</td>
-                    <td>{{this.Responsable}}</td>
-                    <td>{{this.Responsable}}</td>
-                     <td>{{this.salidas}}</td>
-                    <td>{{this.ocupacion}}</td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-{{else}}
-    <p>No se encontraron resultados de llegadas y salidas.</p>
-{{/if}}
 
-
+<
 
 
 
