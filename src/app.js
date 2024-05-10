@@ -3611,33 +3611,32 @@ app.post('/consulta_auditoria_resultado', async (req, res) => {
         res.status(500).send('Error en la búsqueda por fecha');
     }
 });
+
+
+
                                              
-
-
-
-
-app.get('/llegadas_salidas', (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario });
-    } else {
-        // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+app.get('/llegadas_salidas', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            const nombreUsuario = req.session.name;
+            const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
+            const [clienteRows] = await connection.promise().query(clientesQuery);
+            if (!clienteRows || clienteRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+            console.log('Clientes encontrados:', clienteRows);
+            // Extraemos solo los nombres de los clientes
+            const nombresClientes = clienteRows.map(row => row.nombre);
+            res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario, clientes: nombresClientes });
+        } else {
+            // Manejo para el caso en que el usuario no está autenticado
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

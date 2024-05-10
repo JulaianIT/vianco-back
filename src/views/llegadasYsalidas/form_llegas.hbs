@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLEGADAS</title>
+</head>
+<body>
+
+<label for="cliente">Cliente Costo:</label>
+<select id="clienteCosto" name="cliente" required>
+    {{#each clientes}}
+        <option value="{{this}}">{{this}}</option>
+    {{/each}}
+</select><br><br>
+
+<form action="" method="POST">
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" required>
+</form>
+
+</body>
+</html>
