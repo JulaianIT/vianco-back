@@ -7,6 +7,8 @@
 </head>
 <body>
 
+<form action="" method="POST">
+
 <label for="cliente">Cliente Costo:</label>
 <select id="clienteCosto" name="cliente" required>
     {{#each clientes}}
@@ -14,9 +16,18 @@
     {{/each}}
 </select><br><br>
 
-<form action="" method="POST">
-    <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" required>
+<label for="fecha">Fecha:</label>
+<input type="date" id="fecha" name="fecha" required min="{{fechaActual}}"><br>
+
+<label for="fecha">LLEGADAS:</label>
+<input type="text" id="fecha" name="fecha" required><br>
+
+<label for="fecha">SALIDAS:</label>
+<input type="text" id="fecha" name="fecha" required><br>
+
+<label for="fecha">OCUPACION:</label>
+<input type="text" id="fecha" name="fecha" required><br>
+
 </form>
 
 </body>

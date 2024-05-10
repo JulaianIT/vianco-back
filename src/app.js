@@ -1653,6 +1653,12 @@ app.post('/api/guardar_seguimiento', (req, res) => {
 
 
 
+
+
+
+
+
+
 // Backend (Endpoint /api/eliminar_fecha)
 app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
     const fecha = req.params.fecha;
@@ -1678,11 +1684,14 @@ app.get('/ver_novedades_C', (req, res) => {
 app.get('/novedadess', (req, res) => {
     const fecha = req.query.fecha;
 
+    // Convertir la fecha al formato de tu base de datos (DD/MM/YYYY)
+    const fechaDB = fecha.split('-').reverse().join('/');
+
     // Preparar la consulta SQL para obtener las novedades de la fecha seleccionada
-    const sql = "SELECT * FROM novedades_completadas WHERE fecha_novedad = ?";
+    const sql = "SELECT * FROM novedades_completadas WHERE fecha_registro LIKE ?";
 
     // Ejecutar la consulta
-    connection.query(sql, [fecha], (err, result) => {
+    connection.query(sql, [`%${fechaDB}%`], (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -3612,9 +3621,23 @@ app.post('/consulta_auditoria_resultado', async (req, res) => {
     }
 });
 
+// Definimos la función obtenerFechaActual para obtener la fecha actual en el formato requerido
+function obtenerFechaActual() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
 
+    if (month < 10) {
+        month = '0' + month;
+    }
+    if (day < 10) {
+        day = '0' + day;
+    }
 
-                                             
+    return year + '-' + month + '-' + day;
+}
+
 app.get('/llegadas_salidas', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
@@ -3624,12 +3647,12 @@ app.get('/llegadas_salidas', async (req, res) => {
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
-            console.log('Clientes encontrados:', clienteRows);
-            // Extraemos solo los nombres de los clientes
+            console.log('Clientes encontrados:');
             const nombresClientes = clienteRows.map(row => row.nombre);
-            res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario, clientes: nombresClientes });
+            // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+            res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
-            // Manejo para el caso en que el usuario no está autenticado
             res.redirect("/login/index");
         }
     } catch (error) {
@@ -3637,24 +3660,6 @@ app.get('/llegadas_salidas', async (req, res) => {
         res.status(500).send("Error interno del servidor");
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
