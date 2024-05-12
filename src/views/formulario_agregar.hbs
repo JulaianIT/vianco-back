@@ -169,8 +169,17 @@
     <label for="Placa">PLACA:</label>
     <input type="text" id="Placa" name="Placa" value="" ><br><br>
 
-    <label for="Base">BASE:</label>
-    <input type="text" id="Base" name="Base" value=""><br><br>
+  
+
+     <label for="Base">BASE:</label>
+    <select id="Base" name="Base" required>
+        {{#each clientes}}
+            <option value="{{this}}">{{this}}</option><br><br>
+        {{/each}}
+    </select>
+<br>
+
+
 
     <label for="Conductor">CONDUCTOR:</label>
     <input type="text" id="Conductor" name="Conductor" value=""><br><br>

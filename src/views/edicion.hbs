@@ -178,8 +178,17 @@
         <label for="placa">Placa:</label>
         <input type="text" id="placa" name="placa" value="{{ vehiculo.Placa }}" readonly><br><br>
 
-        <label for="Base">Base:</label>
-        <input type="text" id="Base" name="Base" value="{{ vehiculo.Base }}"><br><br>
+  
+<label for="Base">Base:</label>
+<select id="Base" name="Base" required>
+    {{#each clientes}}
+        <option value="{{this}}" {{#if (eq this ../vehiculo.Base)}}selected{{/if}}>{{this}}</option>
+    {{/each}}
+</select>
+
+<br>
+
+
 
         <label for="Conductor">Conductor:</label>
         <input type="text" id="Conductor" name="Conductor" value="{{ vehiculo.Conductor }}"><br><br>

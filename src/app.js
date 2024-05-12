@@ -578,28 +578,65 @@ app.post("/consulta-vehiculos", (req, res) => {
         });
 });
 
-// Ruta para la página de edición en el servidor
-app.get('/edicion/:placa', (req, res) => {
-    const placa = req.params.placa;
-    
-    // Realizar una consulta a la base de datos para obtener los datos del vehículo
-    connection.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
-        if (error) {
-            console.error("Error al obtener los datos del vehículo:", error);
-            res.status(500).send("Error al obtener los datos del vehículo");
-            return;
-        }
 
-        if (results.length === 0) {
-            console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
-            res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
-            return;
-        }
-
-        // Renderizar la vista de edición con los datos del vehículo
-        res.render('edicion', { vehiculo: results[0] }); // Pasar los datos del vehículo a la vista
-    });
+handlebars.registerHelper('eq', function(arg1, arg2) {
+    return arg1 === arg2;
 });
+
+app.get('/edicion/:placa', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            const nombreUsuario = req.session.name;
+            const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
+            const [clienteRows] = await connection.promise().query(clientesQuery);
+            if (!clienteRows || clienteRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+
+            // Obtener la placa del vehículo de los parámetros de la solicitud
+            const placa = req.params.placa;
+
+            // Realizar una consulta a la base de datos para obtener los datos del vehículo
+            connection.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
+                if (error) {
+                    console.error("Error al obtener los datos del vehículo:", error);
+                    res.status(500).send("Error al obtener los datos del vehículo");
+                    return;
+                }
+
+                if (results.length === 0) {
+                    console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
+                    res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
+                    return;
+                }
+
+                const vehiculo = results[0]; // Obtener el primer vehículo encontrado
+
+                console.log('Clientes encontrados:');
+                const nombresClientes = clienteRows.map(row => row.nombre);
+                // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
+                const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+                res.render('edicion', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
+            });
+        } else {
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
 
 app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
     let fotoData = null; // Inicializar la variable para los datos de la foto
@@ -647,9 +684,47 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
 
 
 // Ruta para mostrar el formulario de agregar vehículo
-app.get("/agregar-vehiculo", (req, res) => {
+app.get("", (req, res) => {
     res.render('formulario_agregar'); // Renderizar la vista del formulario de agregar
 });
+
+
+
+
+app.get('/agregar-vehiculo', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            const nombreUsuario = req.session.name;
+            const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
+            const [clienteRows] = await connection.promise().query(clientesQuery);
+            if (!clienteRows || clienteRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+            console.log('Clientes encontrados:');
+            const nombresClientes = clienteRows.map(row => row.nombre);
+            // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+            res.render('formulario_agregar', { nombreUsuario, clientes: nombresClientes, fechaActual });
+        } else {
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Ruta para manejar los datos enviados desde el formulario y agregar un nuevo vehículo a la base de datos
 app.post("/agregar-vehiculo", (req, res) => {
