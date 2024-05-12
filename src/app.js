@@ -292,8 +292,6 @@ handlebars.registerHelper('formatDatee', function(dateString) {
 
 
 
-
-
 app.get('/buscar-programacion', (req, res) => {
     const { base, fecha, horario } = req.query;
 
@@ -327,13 +325,17 @@ app.get('/buscar-programacion', (req, res) => {
         // Construir la consulta SQL para las llegadas y salidas
         let llegadasSalidasSql = 'SELECT * FROM llegadas_salidas WHERE 1';
 
+        if (base && base !== 'todos') {
+            llegadasSalidasSql += ' AND clienteCosto = ?';
+        }
+
         if (fecha) {
             llegadasSalidasSql += ' AND fecha = ?';
         }
 
-        // Ejecutar la consulta para las llegadas y salidas
-        connection.query(llegadasSalidasSql, [fecha], (err, llegadasSalidasResults) => {
-            if (err) {
+// Ejecutar la consulta para las llegadas y salidas
+connection.query(llegadasSalidasSql, params, (err, llegadasSalidasResults) => {
+    if (err) {
                 console.error('Error al buscar llegadas y salidas:', err);
                 // Maneja el error apropiadamente
                 return;
@@ -577,6 +579,7 @@ app.post("/consulta-vehiculos", (req, res) => {
            res.json({ ...vehiculo, fotoURL });
         });
 });
+
 
 
 handlebars.registerHelper('eq', function(arg1, arg2) {
