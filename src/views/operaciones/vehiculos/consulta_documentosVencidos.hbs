@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0px;
             background-color: #f4f4f4;
             text-align: center;
         }
@@ -22,17 +22,19 @@
             margin-bottom: 20px;
         }
         .button-container button {
-            background-color: #007bff;
-            color: white;
+            font-size: 20px;
+            text-transform: uppercase;
+            background-color: #d9d9d9;
+            color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 20px 30px;
             border-radius: 5px;
             cursor: pointer;
             margin: 10px;
             transition: background-color 0.3s ease;
         }
         .button-container button:hover {
-            background-color: #0056b3;
+            background-color: #90c9a7;
         }
         .table-container {
             width: 90%;
@@ -76,7 +78,7 @@
         }
         .base-info {
             background-color: #f0f0f0;
-            border: 2px solid #ccc;
+            border: 10px solid #666567;
             border-radius: 10px;
             padding: 10px;
             margin-bottom: 0; /* Eliminar el margen inferior */
@@ -91,15 +93,95 @@
             border-radius: 5px;
             border: 2px solid #ccc;
             border-radius: 10px;
+            
+        }
+        #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+header{
+    padding: 0;
+    margin: 0;
+background-color: white;
+
+}
+#membrete{
+
+ float: left;
+ width: 100PX; /* Alinea la imagen a la izquierda dentro del header */
+
+}
+.BUSQUEDA{
+    border-radius: 10px;
+                border: 1px solid #ddd;
+
+    padding: 20PX;
+background-color: #90c9a7;
+
+
+
+
+}
+        .volver-btn {
+            position: relative;
+            left: 25%;
+            top: -200px;
+            background-color:#90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: inline-block; /* Mostrar en línea */
+            margin-top: 20px; /* Margen superior de 20px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+            text-decoration: none; /* Sin decoración de texto */
+        }
+        
+        /* Estilo para el botón de volver al pasar el cursor */
+        .volver-btn:hover {
+            background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
         }
     </style>
 </head>
 <body>
+      <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+        <br>
+        <br>
     <div class="container" id="app">
         <div class="button-container">
+            <div class="BUSQUEDA">
+            <h1>SELLECIONE UNA OPCION</h1>
             <button id="btn-vencidos">Mostrar Vencidos</button>
             <button id="btn-proximos">Mostrar Próximos a Vencer</button>
+      </div>
         </div>
+                    <a href="/" class="volver-btn">Volver al Menú</a>
+
+        <br>
+        <br>
         <div class="table-container"></div>
     </div>
 
