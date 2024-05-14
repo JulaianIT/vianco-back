@@ -3831,33 +3831,37 @@ app.get('/consulta_vencidos', (req, res) => {
     }
 });
 
+
+
+
 app.get('/documentos-vencidos', (req, res) => {
     const hoy = new Date();
     const fechaOchoDiasDespues = new Date(hoy);
     fechaOchoDiasDespues.setDate(fechaOchoDiasDespues.getDate() + 8); // Suma 8 días a la fecha actual
 
     const query = `
-    SELECT Placa, Conductor, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-       Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
-    FROM vehiculos
-    WHERE 
-        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') <= ?) OR
-        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') <= ?) OR
-        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') <= ?) OR
-        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') <= ?) OR
-        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') <= ?) OR
-        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') <= ?)
-    UNION
-    SELECT Placa, Conductor, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-       Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
-    FROM vehiculos
-    WHERE 
-        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= ?) OR
-        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= ?) OR
-        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= ?) OR
-        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= ?) OR
-        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= ?) OR
-        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
+    SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+    Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+FROM vehiculos
+WHERE 
+ (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') <= ?) OR
+ (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') <= ?) OR
+ (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') <= ?) OR
+ (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') <= ?) OR
+ (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') <= ?) OR
+ (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') <= ?)
+UNION
+SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+    Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+FROM vehiculos
+WHERE 
+ (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= ?) OR
+ (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= ?) OR
+ (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= ?) OR
+ (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= ?) OR
+ (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= ?) OR
+ (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
+
 `;
 
     connection.query(query, [
@@ -3894,9 +3898,47 @@ app.get('/documentos-vencidos', (req, res) => {
 
 
 
+// Ruta para obtener documentos vencidos o próximos a vencer
+app.get('/documentos-vencidos', (req, res) => {
+    // Verificar si se solicitan documentos vencidos o próximos a vencer
+    const vencidos = req.query.vencidos === 'true';
+    const proximos = req.query.proximos === 'true';
+
+    // Filtrar los documentos según la solicitud
+    let documentosFiltrados = [];
+    if (vencidos) {
+        documentosFiltrados = documentos.filter(doc => calcularDiasRestantes(doc.Fecha) <= 0);
+    } else if (proximos) {
+        documentosFiltrados = documentos.filter(doc => calcularDiasRestantes(doc.Fecha) > 0 && calcularDiasRestantes(doc.Fecha) <= 8);
+    }
+
+    // Responder con los documentos filtrados en formato JSON
+    res.json(documentosFiltrados);
+});
+
+// Función para calcular los días restantes
+function calcularDiasRestantes(fecha) {
+    const fechaDocumento = new Date(fecha);
+    const hoy = new Date();
+    const diferencia = fechaDocumento.getTime() - hoy.getTime();
+    return Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+}
 
 
+app.get('/descargar-excel', (req, res) => {
+    // Aquí iría tu lógica para generar el archivo Excel
 
+    // Suponiendo que tienes el archivo generado llamado "informe_documentos.xlsx"
+    const archivoExcel = './informe_documentos.xlsx';
+
+    // Configurar la respuesta para que sea un archivo Excel
+    res.setHeader('Content-Type', 'application/vnd.ms-excel');
+    res.setHeader('Content-Disposition', 'attachment; filename=informe_documentos.xlsx');
+
+    // Leer el archivo Excel y enviarlo como respuesta
+    const excelStream = fs.createReadStream(archivoExcel);
+    excelStream.pipe(res);
+});
 
 
 

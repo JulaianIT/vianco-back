@@ -5,150 +5,247 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informe de Documentos Vencidos</title>
     <style>
-        /* Estilos CSS */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
+            text-align: center;
         }
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
-        .card {
-            width: calc(33.33% - 20px);
+        .button-container {
             margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        h2, h3 {
-            margin-top: 0;
-        }
-        button {
+        .button-container button {
             background-color: #007bff;
-            color: #fff;
+            color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+        .button-container button:hover {
             background-color: #0056b3;
+        }
+        .table-container {
+            width: 90%;
+            overflow-x: auto;
+            margin-bottom: 40px; /* Aumentar el espacio entre tablas */
+        }
+        table {
+            font-size: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Reducir el espacio entre filas dentro de la tabla */
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #666567;
+            color: white;
+        }
+        td {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(even) td {
+            background-color: #e9ecef;
+        }
+        tr:hover td {
+            background-color: #dee2e6;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+        .base-info {
+            background-color: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 0; /* Eliminar el margen inferior */
+        }
+        .table-container {
+            width: 90%;
+            overflow-x: auto;
+        }
+        .base-info {
+            background-color: #90c9a7; /* Color de fondo de la base */
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container" id="app">
-        <button id="btn-generar">Generar Informe</button>
-        <h1 style="text-align: center; width: 100%;">Informe de Documentos Vencidos</h1>
+        <div class="button-container">
+            <button id="btn-vencidos">Mostrar Vencidos</button>
+            <button id="btn-proximos">Mostrar Próximos a Vencer</button>
+            <button id="btn-descargar">Descargar Excel</button> <!-- Botón de descarga -->
+        </div>
+        <div class="table-container"></div>
     </div>
 
     <script>
-document.getElementById('btn-generar').addEventListener('click', function() {
-    fetch('/documentos-vencidos')
-    .then(response => response.json())
-    .then(data => {
-        mostrarInforme(data);
-    })
-    .catch(error => {
-        console.error('Error al obtener los datos:', error);
-    });
-});
-function mostrarInforme(data) {
-    const container = document.getElementById('app');
-
-    // Verificar si hay documentos que cumplen las condiciones
-    const documentosCumplenCondiciones = data.some(vehiculo => {
-        return Object.entries(vehiculo).some(([campo, fecha]) => {
-            return fecha && calcularDiasRestantes(fecha) <= 8;
-        });
-    });
-
-    // Si no hay documentos que cumplan las condiciones, mostrar un mensaje
-    if (!documentosCumplenCondiciones) {
-        container.innerHTML += '<p style="text-align: center; width: 100%;">No hay documentos próximos a vencer o vencidos dentro del rango de 8 días.</p>';
-        return;
-    }
-
-    // Construye el HTML para mostrar la lista de vehículos con documentos
-    let html = '';
-    let vencidosHtml = '';
-    let proximosHtml = '';
-    data.forEach(vehiculo => {
-        // Verificar si el vehículo tiene algún documento próximo a vencer o vencido
-        const tieneDocumentoVencido = Object.entries(vehiculo).some(([campo, fecha]) => {
-            return fecha && calcularDiasRestantes(fecha) <= 8;
+        document.getElementById('btn-vencidos').addEventListener('click', function() {
+            fetch('/documentos-vencidos?vencidos=true')
+                .then(response => response.json())
+                .then(data => {
+                    mostrarVencidos(data);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
         });
 
-        // Si el vehículo no tiene ningún documento próximo a vencer o vencido, omitirlo
-        if (!tieneDocumentoVencido) {
-            return;
+        document.getElementById('btn-proximos').addEventListener('click', function() {
+            fetch('/documentos-vencidos?proximos=true')
+                .then(response => response.json())
+                .then(data => {
+                    mostrarProximos(data);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
+        });
+
+        document.getElementById('btn-descargar').addEventListener('click', function() {
+            fetch('/documentos-vencidos')
+                .then(response => response.json())
+                .then(data => {
+                    generarExcel(data);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                });
+        });
+
+        function mostrarVencidos(data) {
+            const container = document.querySelector('.table-container');
+            container.innerHTML = '';
+            mostrarInforme(data, true);
         }
 
-        // Agregar detalles de los documentos que están dentro del rango de 8 días hacia adelante o vencidos
-        const placa = vehiculo['Placa'];
-        const conductor = vehiculo['Conductor'];
-        let documentosHtml = '';
-        Object.entries(vehiculo).forEach(([campo, fecha]) => {
-            if (fecha && calcularDiasRestantes(fecha) <= 8) {
-                if (campo !== 'Placa' && campo !== 'Conductor') {
-                    const diasRestantes = calcularDiasRestantes(fecha);
-                    const colorFondo = diasRestantes <= 0 ? '#FFD1D1' : '#FFF7CC'; // Rojo claro o amarillo claro
-                    const tituloDocumento = campo.replace(/_/g, ' '); // Reemplazar guiones bajos con espacios
-                    documentosHtml += `<li style="background-color: ${colorFondo}; margin-bottom: 5px; padding: 5px; border-radius: 5px;">${tituloDocumento}: <span style="color: black;">${fecha}</span></li>`;
+        function mostrarProximos(data) {
+            const container = document.querySelector('.table-container');
+            container.innerHTML = '';
+            mostrarInforme(data, false);
+        }
+
+        function mostrarInforme(data, vencidos) {
+            const container = document.querySelector('.table-container');
+
+            const bases = {};
+            data.forEach(vehiculo => {
+                const base = vehiculo['Base'];
+                if (base !== 'RETIRADO') { // Excluir la base "RETIRADO"
+                    if (!bases[base]) {
+                        bases[base] = [];
+                    }
+                    bases[base].push(vehiculo);
                 }
-            }
-        });
+            });
 
-        // Construir secciones para documentos vencidos y próximos a vencer
-        if (documentosHtml !== '') {
-            if (documentosHtml.includes('#FFD1D1')) { // Si hay documentos vencidos
-                vencidosHtml += `<div class="card">
-                                    <h2>Vehículo: ${placa}</h2>
-                                    <h3>Conductor: ${conductor}</h3>
-                                    <h4>Documentos Vencidos</h4>
-                                    <ul>${documentosHtml}</ul>
-                                </div>`;
-            }
-            if (documentosHtml.includes('#FFF7CC')) { // Si hay documentos próximos a vencer
-                proximosHtml += `<div class="card">
-                                    <h2>Vehículo: ${placa}</h2>
-                                    <h3>Conductor: ${conductor}</h3>
-                                    <h4>Documentos Próximos a Vencer</h4>
-                                    <ul>${documentosHtml}</ul>
-                                </div>`;
-            }
+            Object.entries(bases).forEach(([base, vehiculos]) => {
+                let tieneDocumentos = false;
+                vehiculos.forEach(vehiculo => {
+                    Object.entries(vehiculo).forEach(([campo, fecha]) => {
+                        if (vencidos && fecha && calcularDiasRestantes(fecha) <= 0 && campo !== 'Placa' && campo !== 'Conductor' && campo !== 'Base') {
+                            tieneDocumentos = true;
+                        }
+                        if (!vencidos && fecha && calcularDiasRestantes(fecha) > 0 && calcularDiasRestantes(fecha) <= 8 && campo !== 'Placa' && campo !== 'Conductor' && campo !== 'Base') {
+                            tieneDocumentos = true;
+                        }
+                    });
+                });
+                if (tieneDocumentos) {
+                    let tableHtml = `<div class="base-info"><h2> ${base}</h2></div>`;
+                    tableHtml += '<table>';
+                    tableHtml += `<tr><th>Vehículo</th><th>Conductor</th><th>Documento</th><th>Fecha</th></tr>`;
+                    vehiculos.forEach(vehiculo => {
+                        const placa = vehiculo['Placa'];
+                        const conductor = vehiculo['Conductor'];
+                        Object.entries(vehiculo).forEach(([campo, fecha]) => {
+                            if ((vencidos && fecha && calcularDiasRestantes(fecha) <= 0 && campo !== 'Placa' && campo !== 'Conductor' && campo !== 'Base') ||
+                                (!vencidos && fecha && calcularDiasRestantes(fecha) > 0 && calcularDiasRestantes(fecha) <= 8 && campo !== 'Placa' && campo !== 'Conductor' && campo !== 'Base')) {
+                                const diasRestantes = calcularDiasRestantes(fecha);
+                                const colorFondo = diasRestantes <= 0 ? '#FFD1D1' : '#FFF7CC';
+                                const tituloDocumento = campo.replace(/_/g, ' ');
+                                tableHtml += `<tr><td>${placa}</td><td>${conductor}</td><td>${tituloDocumento}</td><td style="background-color: ${colorFondo}">${fecha}</td></tr>`;
+                            }
+                        });
+                    });
+                    tableHtml += '</table>';
+                    container.innerHTML += tableHtml;
+                }
+            });
         }
-    });
 
-    // Insertar el HTML en el contenedor
-    container.innerHTML += vencidosHtml + proximosHtml;
-}
+        function calcularDiasRestantes(fecha) {
+            const partesFecha = fecha.split('/');
+            const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
+            const unDia = 1000 * 60 * 60 * 24;
+            const fechaDocumento = new Date(fechaFormateada);
+            const hoy = new Date();
+            const diferencia = fechaDocumento.getTime() - hoy.getTime();
+            return Math.ceil(diferencia / unDia);
+        }
 
-function calcularDiasRestantes(fecha) {
-    // Formatea la fecha en el formato "YYYY-MM-DD"
-    const partesFecha = fecha.split('/');
-    const fechaFormateada = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
-    
-    const unDia = 1000 * 60 * 60 * 24; // Milisegundos en un día
-    const fechaDocumento = new Date(fechaFormateada);
-    const hoy = new Date();
-    const diferencia = fechaDocumento.getTime() - hoy.getTime();
-    return Math.ceil(diferencia / unDia);
-}
+        function generarExcel(data) {
+            // Crear un nuevo libro de Excel
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Documentos');
 
+            // Agregar datos a la hoja de cálculo
+            worksheet.columns = [
+                { header: 'Vehículo', key: 'vehiculo', width: 20 },
+                { header: 'Conductor', key: 'conductor', width: 30 },
+                { header: 'Documento', key: 'documento', width: 30 },
+                { header: 'Fecha', key: 'fecha', width: 20 }
+            ];
+
+            data.forEach(item => {
+                worksheet.addRow({
+                    vehiculo: item['Vehículo'],
+                    conductor: item['Conductor'],
+                    documento: item['Documento'],
+                    fecha: item['Fecha']
+                });
+            });
+
+            // Guardar el libro de Excel en un archivo temporal
+            workbook.xlsx.writeBuffer()
+                .then(buffer => {
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'informe_documentos.xlsx';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error al generar el archivo Excel:', error);
+                });
+        }
     </script>
 </body>
 </html>
