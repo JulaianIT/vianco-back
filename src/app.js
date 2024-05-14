@@ -2548,6 +2548,29 @@ app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /cliente
     });
   });
 
+
+
+// Ruta para obtener el primer conductor asociado a una placa
+app.get('/primer-conductor/:placa', (req, res) => {
+    const placa = req.params.placa;
+    const consultaPrimerConductor = 'SELECT id, conductor FROM conductores WHERE placa = ? LIMIT 1';
+    connection.query(consultaPrimerConductor, [placa], (error, resultado) => {
+        if (error) {
+            console.error('Error al obtener el primer conductor:', error);
+            res.status(500).json({ error: 'Error al obtener el primer conductor' });
+            return;
+        }
+        if (resultado.length > 0) {
+            res.json(resultado[0]);
+        } else {
+            res.status(404).json({ error: 'No se encontró conductor para la placa proporcionada' });
+        }
+    });
+});
+
+
+
+
 app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato/:contratante/:fecha_inicio/:fecha_final', (req, res) => {
     const nombreCliente = req.params.nombreCliente;
     const placa = req.params.placa;

@@ -308,6 +308,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+    const placaSelect = document.getElementById('placa');
+    const conductorSelect1 = document.getElementById('conductor1');
+
+    // Cuando se seleccione una placa
+    placaSelect.addEventListener('change', function() {
+        const placa = placaSelect.value;
+
+        // Realizar una solicitud al servidor para obtener el primer conductor asociado a la placa seleccionada
+        fetch(`/primer-conductor/${placa}`)
+            .then(response => response.json())
+            .then(primerConductor => {
+                // Limpiar el select del primer conductor
+                conductorSelect1.innerHTML = '';
+
+                // Crear una opción para el primer conductor obtenido del servidor
+                const option = document.createElement('option');
+                option.value = primerConductor.id;
+                option.textContent = primerConductor.conductor;
+                conductorSelect1.appendChild(option);
+            })
+            .catch(error => {
+                console.error('Error al obtener el primer conductor:', error);
+                alert('Error al obtener el primer conductor. Por favor, inténtalo de nuevo.');
+            });
+    });
+});
+
 </script>
 
 </body>
