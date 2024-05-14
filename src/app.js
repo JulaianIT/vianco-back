@@ -3821,8 +3821,74 @@ app.post('/guardar_llegadas_salidas', (req, res) => {
 
 
 
+app.get('/consulta_vencidos', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('operaciones/vehiculos/consulta_documentosVencidos.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
 
+app.get('/documentos-vencidos', (req, res) => {
+    const hoy = new Date();
+    const fechaOchoDiasDespues = new Date(hoy);
+    fechaOchoDiasDespues.setDate(fechaOchoDiasDespues.getDate() + 8); // Suma 8 días a la fecha actual
 
+    const query = `
+    SELECT Placa, Conductor, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+       Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+    FROM vehiculos
+    WHERE 
+        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') <= ?) OR
+        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') <= ?) OR
+        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') <= ?) OR
+        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') <= ?) OR
+        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') <= ?) OR
+        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') <= ?)
+    UNION
+    SELECT Placa, Conductor, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+       Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+    FROM vehiculos
+    WHERE 
+        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= ?) OR
+        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= ?) OR
+        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= ?) OR
+        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= ?) OR
+        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= ?) OR
+        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
+`;
+
+    connection.query(query, [
+        hoy,
+        hoy,
+        hoy,
+        hoy,
+        hoy,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+        fechaOchoDiasDespues,
+        hoy,
+    ], (error, results, fields) => {
+        if (error) {
+            console.error('Error al obtener vehículos con documentos vencidos:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+            return;
+        }
+        console.log('Fechas recuperadas de la base de datos:');
+        res.json(results);
+    });
+});
 
 
 

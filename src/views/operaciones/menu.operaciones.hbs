@@ -297,6 +297,8 @@ text-align: center;
   </div>
   <div class="titulo">VEHICULOS</div>
   <div class="cuerpo">
+
+ 
     {{#if auxiliar}}
         <a href="/agregar-vehiculo">AGREGAR</a>
       {{/if}}
@@ -304,7 +306,9 @@ text-align: center;
       {{#if auxiliar}}
     <a href="/consulta-vehiculos">EDITAR</a>
       {{/if}}
-
+{{#if auxiliar}}
+        <a href="/consulta_vencidos">DOCUMENTOS VENCIDOS</a>
+      {{/if}}
   </div>
   <div class="pie">
     <a href="#">Más información</a>
