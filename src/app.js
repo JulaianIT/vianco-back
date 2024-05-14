@@ -217,7 +217,7 @@ app.get("/programacion-vehiculos", (req, res) => {
                 return;
             }
             // Renderizar la vista de programación de vehículos con los datos de las bases y placas
-            res.render("programacion/programacion", { 
+            res.render("operaciones/programacion/programacion.hbs", { 
                 basesPlacas: results,
                 name: req.session.name, 
                 isExecutive, 
@@ -274,7 +274,7 @@ app.get('/ver-programacion', (req, res) => {
 
             const bases = basesResults.map(result => result.base); // Extraer las bases de los resultados
             const horarios = horariosResults.map(result => result.horario); // Extraer los horarios de los resultados
-            res.render('programacion/ver_programacion.hbs', { bases, horarios }); // Renderizar la página ver_programacion.hbs con las bases y horarios disponibles
+            res.render('operaciones/programacion/ver_programacion.hbs', { bases, horarios }); // Renderizar la página ver_programacion.hbs con las bases y horarios disponibles
         });
     });
 });
@@ -342,7 +342,7 @@ connection.query(llegadasSalidasSql, params, (err, llegadasSalidasResults) => {
             }
 
             // Renderizar la página de resultados con los datos obtenidos
-            res.render('programacion/resultados_programacion.hbs', { 
+            res.render('operaciones/programacion/resultados_programacion.hbs', { 
                 programacion: programacionResults,
                 llegadasSalidas: llegadasSalidasResults
             });
@@ -551,7 +551,7 @@ app.get("/consulta-vehiculos", (req, res) => {
             return;
         }
         // Renderizar la vista de consulta de vehículos con los datos de las placas
-        res.render("consulta", { placas: results.map(result => result.placa) });
+        res.render("operaciones/vehiculos/consulta.hbs", { placas: results.map(result => result.placa) });
     });
 });
 
@@ -619,7 +619,7 @@ app.get('/edicion/:placa', async (req, res) => {
                 const nombresClientes = clienteRows.map(row => row.nombre);
                 // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
                 const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
-                res.render('edicion', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
+                res.render('operaciones/vehiculos/edicion.hbs', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
             });
         } else {
             res.redirect("/login/index");
@@ -707,7 +707,7 @@ app.get('/agregar-vehiculo', async (req, res) => {
             const nombresClientes = clienteRows.map(row => row.nombre);
             // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
-            res.render('formulario_agregar', { nombreUsuario, clientes: nombresClientes, fechaActual });
+            res.render('operaciones/vehiculos/formulario_agregar.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
             res.redirect("/login/index");
         }
@@ -790,7 +790,7 @@ app.get('/consulta-conductores', (req, res) => {
         return;
       }
       // Renderizar la vista de consulta de conductores con los datos de las placas
-      res.render('conductores', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
+      res.render('operaciones/conductores/conductores.hbs', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
     });
 });
 
@@ -891,7 +891,7 @@ app.get('/edicionC/:placa', (req, res) => {
       return;
     }
     // Renderizar la vista de edición con los datos del conductor
-    res.render('edicionC', { conductor: results[0] }); // Pasar los datos del conductor a la vista
+    res.render('operaciones/conductores/edicionC.hbs', { conductor: results[0] }); // Pasar los datos del conductor a la vista
   });
 });
 
@@ -945,7 +945,7 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
 // Ruta para renderizar la página del formulario de agregar conductor
 app.get('/agregar-conductor', (req, res) => {
   // Renderiza el formulario para agregar un nuevo conductor
-  res.render('formulario_agregar_conductor');
+  res.render('operaciones/conductores/formulario_agregar_conductor.hbs');
 });
 
 //consulta contabilidad 
@@ -958,7 +958,7 @@ app.get("/consulta-contabilidad", (req, res) => {
             return;
         }
         const placas = results.map(result => result.placa); // Extraer solo las placas de los resultados
-        res.render("consulta_contabilidad", { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
+        res.render("operaciones/administracion/consulta_contabilidad.hbs", { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
     });
 });
 
@@ -1014,7 +1014,7 @@ app.get("/edicion-contabilidad/:placa", (req, res) => {
         }
         const contabilidad = results[0]; // Obtener la primera entrada de contabilidad encontrada
         // Renderizar la plantilla de edición de contabilidad y pasar la información de contabilidad como datos
-        res.render("edicion_contabilidad", { contabilidad: contabilidad });
+        res.render("operaciones/administracion/edicion_contabilidad.hbs", { contabilidad: contabilidad });
     });
 });
 
@@ -1075,7 +1075,7 @@ app.post('/guardar-edicion-contabilidad', (req, res) => {
 // Ruta para renderizar la página del formulario de agregar contabilidad
 app.get("/agregar-contabilidad", (req, res) => {
     // Renderiza el formulario para agregar una nueva entrada de contabilidad
-    res.render("formulario_agregar_contabilidad");
+    res.render("operaciones/aeropuerto/formulario.hbs");
 });
 
 // Ruta para manejar los datos enviados desde el formulario y agregar una nueva entrada de contabilidad a la base de datos
@@ -1179,7 +1179,7 @@ app.get('/formulario', async (req, res) => {
                     }
 
                     // Los resultados de ambas consultas se pasan al renderizar la página
-                    res.render('recepciones', { 
+                    res.render('operaciones/aeropuerto/recepciones.hbs', { 
                         clientes: resultadosClientes, 
                         placas: resultadosPlacas,
                         isExecutive, 
@@ -1292,13 +1292,13 @@ app.get('/mostrar_formulario', (req, res) => {
     doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
     doc.end();
     // Renderizar el formulario.hbs y pasar los datos del formulario
-    res.render('formulario', { datosFormulario });
+    res.render('operaciones/aeropuerto/formulario.hbs', { datosFormulario });
 });
 // Ruta para descargar el PDF
 app.get('/descargar_pdf', (req, res) => {
     // Renderizar la plantilla HTML con los datos del formulario
     const datosFormulario = req.query;
-    res.render('formulario', { datosFormulario }, (err, html) => {
+    res.render('operaciones/aeropuerto/formulario.hbs', { datosFormulario }, (err, html) => {
         if (err) {
             console.error('Error al renderizar el HTML:', err);
             res.status(500).send('Error al renderizar el HTML');
@@ -1563,7 +1563,7 @@ const mailOptions = {
 // Ruta pa
 
 app.get('/seleccionar_hotel', (req, res) => {
-    res.render('seleccionar_hotel'); // Renderiza la vista seleccionar_hotel.hbs
+    res.render('operaciones/tarifas/seleccionar_hotel.hbs'); // Renderiza la vista seleccionar_hotel.hbs
 });
 
 
@@ -1912,7 +1912,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
 
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/buscar_por_fecha', (req, res) => {
-    res.render('aeropuerto/recepciones_aeropuerto.hbs'); // Renderiza el formulario de búsqueda
+    res.render('operaciones/aeropuerto/recepciones_aeropuerto.hbs'); // Renderiza el formulario de búsqueda
 });
 
 // Ruta para procesar la búsqueda por fecha
@@ -2843,7 +2843,7 @@ app.get('/descargar/png', (req, res) => {
 
 // Ruta para mostrar el formulario de búsqueda
 app.get('/dat', (req, res) => {
-    res.render('ver_fuec');
+    res.render('operaciones/fuec/ver_fuec.hbs');
 });
 
 // Ruta para manejar la búsqueda
@@ -2861,7 +2861,7 @@ app.get('/buscar', (req, res) => {
             res.render('error');
             return;
         }
-        res.render('ver_fuec', { resultados }); // Renderiza la misma plantilla con los resultados de la búsqueda
+        res.render('operaciones/fuec/ver_fuec.hbs', { resultados }); // Renderiza la misma plantilla con los resultados de la búsqueda
     });
 });
 
@@ -2932,7 +2932,7 @@ app.get('/ubicaciones/:nombreUsuario', function(req, res) {
 
 // Ruta para mostrar ubicaciones
 app.get('/ver_ubicaiones', (req, res) => {
-    res.render('ver_ubicaciones.hbs');
+    res.render('operaciones/geolocalizacion/ver_ubicaciones.hbs');
 });
 
 
@@ -2971,7 +2971,7 @@ app.post('/guardar_datos', (req, res) => {
 
 // Ruta para mostrar ubicaciones
 app.get('/ver_notificaciones', (req, res) => {
-    res.render('ver_notificaciones');
+    res.render('operaciones/notificaciones/ver_ubicaciones.hbs');
 });
 
 
