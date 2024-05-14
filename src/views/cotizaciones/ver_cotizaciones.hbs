@@ -181,7 +181,7 @@ background-color: #90c9a7;
         <div class="busca">
         <form action="/ver_cotizaciones" method="GET">
             <label for="numero_fuec"><h2> Buscar por N° cotizacion:</h2></label>
-            <input type="text" id="numero_fuec" name="numero_fuec">
+<input type="text" id="id_cotizacion" name="id_cotizacion">
             <button type="submit">Buscar</button>
             <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
                    
@@ -218,7 +218,7 @@ background-color: #90c9a7;
                 <tr>
                     <td><strong>CLIENTE:</strong> {{cotizacion.cliente}}</td>
                     <td><strong>COTIZACION N°:</strong> {{cotizacion.id}}</td>
-                    <td><strong>Valor Total: $</strong> {{valorTotal}}</td>
+                    <td><strong>Valor Total: $</strong>{{cotizacion.valor_total}}</td>
                 </tr>
                 <tr>
                     <td><strong>Correo:</strong> {{cotizacion.correo}}</td>
@@ -246,6 +246,8 @@ background-color: #90c9a7;
                         <th>DESTINO</th>
                         <th>HORA</th>
                         <th>VALOR POR TRASLADO</th>
+                          <th>OBSERVACIONES</th>
+
                     </tr>
                 </thead>
                <tbody>
@@ -260,6 +262,8 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino1}}</td>
         <td>{{cotizacion.hora1}}</td>
         <td>${{cotizacion.valor_1}}</td>
+                <td>${{cotizacion.observaciones_1}}</td>
+
     </tr>
     {{/if}}
     {{#if cotizacion.fecha2}}
@@ -272,6 +276,8 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino2}}</td>
         <td>{{cotizacion.hora2}}</td>
         <td>$ {{cotizacion.valor_2}}</td>
+                <td>$ {{cotizacion.observaciones_2}}</td>
+
     </tr>
     {{/if}}
     {{#if cotizacion.fecha3}}
@@ -284,6 +290,8 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino3}}</td>
         <td>{{cotizacion.hora3}}</td>
         <td>$ {{cotizacion.valor_3}}</td>
+                <td>$ {{cotizacion.observaciones_3}}</td>
+
     </tr>
     {{/if}}
     {{#if cotizacion.fecha4}}
@@ -296,6 +304,8 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino4}}</td>
         <td>{{cotizacion.hora4}}</td>
         <td>$ {{cotizacion.valor_4}}</td>
+                <td>$ {{cotizacion.observaciones_4}}</td>
+
     </tr>
     {{/if}}
     {{#if cotizacion.fecha5}}
@@ -308,6 +318,8 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino5}}</td>
         <td>{{cotizacion.hora5}}</td>
         <td>$ {{cotizacion.valor_5}}</td>
+                <td>$ {{cotizacion.observaciones_5}}</td>
+
     </tr>
     {{/if}}
 </tbody>

@@ -2161,9 +2161,9 @@ app.get('/VE', (req, res) => {
 });
 // Ruta para manejar la búsqueda
 app.get('/ver_cotizaciones', (req, res) => {
-    const idCotizacion = req.query.numero_fuec;
+    const idCotizacion = req.query.id_cotizacion;
     if (!idCotizacion) {
-        res.redirect('/VE'); // Redirige de vuelta al formulario si no se proporciona un número_fuec
+        res.redirect('/VE'); // Redirige de vuelta al formulario si no se proporciona un id_cotizacion
         return;
     }
 
@@ -2177,11 +2177,6 @@ app.get('/ver_cotizaciones', (req, res) => {
         res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] }); // Renderiza la misma plantilla con los resultados de la búsqueda
     });
 });
-
-
-
-
-
 
 
 
