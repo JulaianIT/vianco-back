@@ -99,7 +99,6 @@
         <div class="button-container">
             <button id="btn-vencidos">Mostrar Vencidos</button>
             <button id="btn-proximos">Mostrar Próximos a Vencer</button>
-            <button id="btn-descargar">Descargar Excel</button> <!-- Botón de descarga -->
         </div>
         <div class="table-container"></div>
     </div>
@@ -127,16 +126,7 @@
                 });
         });
 
-        document.getElementById('btn-descargar').addEventListener('click', function() {
-            fetch('/documentos-vencidos')
-                .then(response => response.json())
-                .then(data => {
-                    generarExcel(data);
-                })
-                .catch(error => {
-                    console.error('Error al obtener los datos:', error);
-                });
-        });
+        document.getElementById('btn-descargar').addEventListener('click', descargarExcel);
 
         function mostrarVencidos(data) {
             const container = document.querySelector('.table-container');
@@ -209,43 +199,47 @@
             return Math.ceil(diferencia / unDia);
         }
 
-        function generarExcel(data) {
-            // Crear un nuevo libro de Excel
-            const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet('Documentos');
+        function descargarExcel() {
+            const container = document.querySelector('.table-container');
+            const table = container.querySelector('table');
+            const rows = Array.from(table.querySelectorAll('tr'));
 
-            // Agregar datos a la hoja de cálculo
-            worksheet.columns = [
-                { header: 'Vehículo', key: 'vehiculo', width: 20 },
-                { header: 'Conductor', key: 'conductor', width: 30 },
-                { header: 'Documento', key: 'documento', width: 30 },
-                { header: 'Fecha', key: 'fecha', width: 20 }
-            ];
+            // Crear un array de datos que incluya la placa, conductor, nombre del documento y fecha
+            const datosExcel = rows.map(row => ({
+                vehiculo: row.cells[0].innerText,
+                conductor: row.cells[1].innerText,
+                documento: row.cells[2].innerText,
+                fecha: row.cells[3].innerText
+            }));
 
-            data.forEach(item => {
-                worksheet.addRow({
-                    vehiculo: item['Vehículo'],
-                    conductor: item['Conductor'],
-                    documento: item['Documento'],
-                    fecha: item['Fecha']
-                });
+            fetch('/descargar-excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datosExcel) // Enviar los datos modificados al servidor
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Error al generar el archivo Excel');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'informe_documentos.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Error al generar el archivo Excel:', error);
             });
-
-            // Guardar el libro de Excel en un archivo temporal
-            workbook.xlsx.writeBuffer()
-                .then(buffer => {
-                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'informe_documentos.xlsx';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('Error al generar el archivo Excel:', error);
-                });
         }
+
     </script>
 </body>
 </html>
