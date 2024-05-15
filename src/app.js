@@ -3151,11 +3151,11 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
+    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
