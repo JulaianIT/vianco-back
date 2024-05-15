@@ -581,14 +581,13 @@ function obtenerNovedadesPorId(idSeleccionado) {
                 <!-- Campos del formulario -->
 
             <label for="fechaseguimiento"><strong>FECHA DEL SEGUIMIENTO:</strong></label>
-            <input type="date" id="fechaseguimiento-${novedad.id}" name="fechaseguimiento" ><BR>
+            <input type="date" id="fechaseguimiento-${novedad.id}" name="fechaseguimiento" value="" ><BR>
             <BR>
-            <label for="fecha_registro-${novedad.id}" ><strong>FECHA DE ENTREGA DE LA NOVEDAD:</strong></label>
-            <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value=""><BR>
+            <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value="${novedad.fecha ? new Date(novedad.fecha).toLocaleDateString() : ''}"  style="display: none;" ><BR>
             <BR>
 
             <label for="nombreSeguimiento-${novedad.id}"><strong>NOMBRE:</strong></label>
-            <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento"><BR>
+            <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento" value="  {{nombreUsuario}}"readonly ><BR>
             <BR>
 
               <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>

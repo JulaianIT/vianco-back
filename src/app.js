@@ -3092,10 +3092,24 @@ app.post('/novedades_vianco', (req, res) => {
 
 
 
-// Ruta para ver las novedades (visualización de página)
+
+
+
 app.get('/ver_novedades_vianco', (req, res) => {
-    res.render('novedades_vianco/novedades_pendientes_vianco.hbs');
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('novedades_vianco/novedades_pendientes_vianco.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
 });
+
+
+
+
+
+
 
 // Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
