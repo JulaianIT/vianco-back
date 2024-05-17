@@ -1139,10 +1139,6 @@ app.post("/agregar-contabilidad", (req, res) => {
 
 
 
-
-
-
-
 // Ruta para el formulario
 // Ruta para el formulario
 app.get('/formulario', async (req, res) => {
@@ -1179,7 +1175,7 @@ app.get('/formulario', async (req, res) => {
                     }
 
                     // Los resultados de ambas consultas se pasan al renderizar la página
-                    res.render('operaciones/aeropuerto/recepciones.hbs', { 
+                    res.render('recepciones', { 
                         clientes: resultadosClientes, 
                         placas: resultadosPlacas,
                         isExecutive, 
@@ -1292,13 +1288,13 @@ app.get('/mostrar_formulario', (req, res) => {
     doc.moveDown().strokeColor('black').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
     doc.end();
     // Renderizar el formulario.hbs y pasar los datos del formulario
-    res.render('operaciones/aeropuerto/formulario.hbs', { datosFormulario });
+    res.render('formulario', { datosFormulario });
 });
 // Ruta para descargar el PDF
 app.get('/descargar_pdf', (req, res) => {
     // Renderizar la plantilla HTML con los datos del formulario
     const datosFormulario = req.query;
-    res.render('operaciones/aeropuerto/formulario.hbs', { datosFormulario }, (err, html) => {
+    res.render('formulario', { datosFormulario }, (err, html) => {
         if (err) {
             console.error('Error al renderizar el HTML:', err);
             res.status(500).send('Error al renderizar el HTML');
@@ -1322,6 +1318,7 @@ app.get('/descargar_pdf', (req, res) => {
         }
     });
 });
+
 
 
 
