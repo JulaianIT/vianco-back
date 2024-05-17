@@ -291,31 +291,30 @@ handlebars.registerHelper('formatDatee', function(dateString) {
 });
 
 
-
 app.get('/buscar-programacion', (req, res) => {
     const { base, fecha, horario } = req.query;
 
     // Construir la consulta SQL para la programación de vehículos
-    let sql = 'SELECT * FROM programacion_vehiculos WHERE 1';
-    const params = [];
+    let programacionSql = 'SELECT * FROM programacion_vehiculos WHERE 1';
+    const programacionParams = [];
 
     if (base && base !== 'todos') {
-        sql += ' AND base = ?';
-        params.push(base);
+        programacionSql += ' AND base = ?';
+        programacionParams.push(base);
     }
 
     if (fecha) {
-        sql += ' AND fecha = ?';
-        params.push(fecha);
+        programacionSql += ' AND fecha = ?';
+        programacionParams.push(fecha);
     }
 
     if (horario && horario !== 'todos') {
-        sql += ' AND horario = ?';
-        params.push(horario);
+        programacionSql += ' AND horario = ?';
+        programacionParams.push(horario);
     }
 
     // Ejecutar la consulta para la programación de vehículos
-    connection.query(sql, params, (err, programacionResults) => {
+    connection.query(programacionSql, programacionParams, (err, programacionResults) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
             // Maneja el error apropiadamente
@@ -324,18 +323,16 @@ app.get('/buscar-programacion', (req, res) => {
 
         // Construir la consulta SQL para las llegadas y salidas
         let llegadasSalidasSql = 'SELECT * FROM llegadas_salidas WHERE 1';
-
-        if (base && base !== 'todos') {
-            llegadasSalidasSql += ' AND clienteCosto = ?';
-        }
+        const llegadasSalidasParams = [];
 
         if (fecha) {
             llegadasSalidasSql += ' AND fecha = ?';
+            llegadasSalidasParams.push(fecha);
         }
 
-// Ejecutar la consulta para las llegadas y salidas
-connection.query(llegadasSalidasSql, params, (err, llegadasSalidasResults) => {
-    if (err) {
+        // Ejecutar la consulta para las llegadas y salidas
+        connection.query(llegadasSalidasSql, llegadasSalidasParams, (err, llegadasSalidasResults) => {
+            if (err) {
                 console.error('Error al buscar llegadas y salidas:', err);
                 // Maneja el error apropiadamente
                 return;
