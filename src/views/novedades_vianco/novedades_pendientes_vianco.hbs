@@ -576,6 +576,7 @@ function obtenerNovedadesPorId(idSeleccionado) {
 
              <br>
 
+
                 <div id="formularioSeguimientoContenido-${novedad.id}">
                 <form onsubmit="guardarSeguimiento(event, ${novedad.id})">
                 <!-- Campos del formulario -->
@@ -588,6 +589,12 @@ function obtenerNovedadesPorId(idSeleccionado) {
 
             <label for="nombreSeguimiento-${novedad.id}"><strong>NOMBRE:</strong></label>
             <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento" value="  {{nombreUsuario}}"readonly ><BR>
+            <BR>
+
+           
+
+               <label for="numeroU-${novedad.id}"><strong>N° DE SERVICIO:</strong></label>
+            <input type="text" id="numeroU-${novedad.id}" name="numeroU" placeholder="numeroU" value="  ${novedad.id }"readonly ><BR>
             <BR>
 
               <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>
@@ -774,6 +781,7 @@ function guardarSeguimiento(event, idNovedad) {
     const otras_novedades = document.getElementById(`otras_novedades-${idNovedad}`).value;
     const firma = document.getElementById(`firma-${idNovedad}`).value;
     const ACCIONES = document.getElementById(`ACCIONES-${idNovedad}`).value;
+    const numeroU = document.getElementById(`numeroU-${idNovedad}`).value;
 
 
 
@@ -781,34 +789,25 @@ function guardarSeguimiento(event, idNovedad) {
 
 
 
-    // Crear un objeto con los datos del seguimiento
+
+      // Crear un objeto con los datos del seguimiento
     const seguimientoData = {
-    id: idNovedad,
-    nombreSeguimiento: nombreSeguimiento,
-    detalleSeguimiento: detalleSeguimiento,
-    novedadestripulacion: novedadestripulacion,
-    fechaseguimiento: fechaseguimiento, // Asegúrate de que este valor sea una fecha válida
-    nombre: 'NombreEjemplo', // Aquí debes proporcionar el valor deseado para el campo nombre
-    realiza:realiza,
-    fecha:fecha,
-    novedad_hoteleria:novedad_hoteleria,
-    fecha_registro:fecha_registro,
-    novedad_ejecutivos:novedad_ejecutivos,
-    novedad_empresas_privadas:novedad_empresas_privadas,
-    NOVEDADES_TASKGO:NOVEDADES_TASKGO,
-    otras_novedades:otras_novedades,
-firma:firma,
-ACCIONES:ACCIONES,
-
-
-
-
-
-
-
-};
-
-
+        nombreSeguimiento,
+        detalleSeguimiento,
+        novedadestripulacion,
+        fechaseguimiento,
+        realiza,
+        fecha,
+        novedad_hoteleria,
+        fecha_registro,
+        novedad_ejecutivos,
+        novedad_empresas_privadas,
+        NOVEDADES_TASKGO,
+        otras_novedades,
+        firma,
+        ACCIONES,
+        numeroU
+    };
     // Enviar los datos del seguimiento al servidor usando una solicitud fetch
     fetch('/api/guardar_seguimiento_vianco', {
         method: 'POST',

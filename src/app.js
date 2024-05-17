@@ -1612,6 +1612,9 @@ app.get('/novedades', (req, res) => {
 
 
 
+
+
+
 app.post('/novedades', (req, res) => {
     const fecha = req.body.fecha;
     const turno = req.body.turno;
@@ -3152,7 +3155,7 @@ app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
 // Backend (Endpoint /api/obtener_novedades)// Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades_vianco/:id', (req, res) => {
     const id = req.params.id;
-    const query = 'SELECT fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro FROM novedades_vianco WHERE id = ?';
+    const query = 'SELECT id,fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro FROM novedades_vianco WHERE id = ?';
     connection.query(query, [id], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
@@ -3190,11 +3193,11 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES];
+    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
@@ -3240,15 +3243,14 @@ app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
 app.get('/ver_vianco', (req, res) => {
     res.render('novedades_vianco/ver_novedades_vianco.hbs');
 });
-
 app.get('/novedad_vianco', (req, res) => {
-    const id = req.query.id; // Cambiar a req.query para obtener el parámetro 'id'
+    const numeroU = req.query.numeroU;
 
-    // Preparar la consulta SQL para obtener las novedades del ID proporcionado
-    const sql = "SELECT * FROM novedades_completadas_vianco WHERE id = ?";
+    // Preparar la consulta SQL para obtener las novedades que coincidan con el númeroU proporcionado
+    const sql = "SELECT * FROM novedades_completadas_vianco WHERE numeroU LIKE ?";
 
     // Ejecutar la consulta
-    connection.query(sql, [id], (err, result) => {
+    connection.query(sql, [`%${numeroU}%`], (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
