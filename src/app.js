@@ -1589,9 +1589,28 @@ app.get('/tarifas', (req, res) => {
 
 
 
+
+
+
 app.get('/novedades', (req, res) => {
-    res.render('novedades_Callcenter/novedades_Callcenter.hbs');
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('novedades_Callcenter/novedades_Callcenter.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
 });
+
+
+
+
+
+
+
+
+
+
 
 app.post('/novedades', (req, res) => {
     const fecha = req.body.fecha;
@@ -1783,6 +1802,15 @@ app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
 app.get('/ver_novedades_C', (req, res) => {
     res.render('novedades_Callcenter/ver_novedades_C.hbs');
 });
+
+
+
+
+
+
+
+
+
 
 app.get('/novedadess', (req, res) => {
     const fecha = req.query.fecha;
