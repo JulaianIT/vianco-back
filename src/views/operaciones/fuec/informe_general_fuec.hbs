@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe General FUEC</title>
+    <script src="/js/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>Informe General FUEC</h1>
+    <p>Usuario: {{nombreUsuario}}</p>
+
+    <form action="/informe_general_f" method="get">
+        <label for="fecha_inicio">Fecha Inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+        <label for="fecha_final">Fecha Final:</label>
+        <input type="date" id="fecha_final" name="fecha_final" required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    {{#if datos}}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Cliente</th>
+                                <th>Número FUEC</th>
+
+                <th>Placa</th>
+
+
+                <th>ID Conductor 1</th>
+                <th>ID Conductor 2</th>
+                <th>ID Conductor 3</th>
+                <th>N Contrato</th>
+                <th>OBJETO CONTRATO</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Final</th>
+                <th>Fecha Creación</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each datos}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.contratante}}</td>
+                    <td>{{this.numero_fuec}}</td>
+                    <td>{{this.placa}}</td>
+                    <td>{{this.id_conductor1}}</td>
+                    <td>{{this.id_conductor2}}</td>
+                    <td>{{this.id_conductor3}}</td>
+                    <td>{{this.N_contrato}}</td>
+                    <td>{{this.objeto}}</td>
+                    <td>{{this.fecha_inicio}}</td>
+                    <td>{{this.fecha_final}}</td>
+                    <td>{{formatDate this.fecha_creacion}}</td>
+                    <td>{{this.responsable}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
+
+
+  
+</body>
+</html>

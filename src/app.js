@@ -2720,6 +2720,9 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                 ultimoConsecutivo = rows[0].valor + 1; // Incrementa el último consecutivo obtenido
             }
 
+
+
+            
             // Actualizar el último consecutivo en la base de datos
             connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
                 if (err) {
@@ -2731,14 +2734,27 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                 // Generar el número FUEC con el formato específico
                 const numeroFUEC = `4250427192024${N_contrato}${ultimoConsecutivo}`;
 
-                // Guardar los datos en la base de datos
-                connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, idConductor1, idConductor2, idConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC], (err, result) => {
+                connection.query('SELECT responsable, objeto FROM clientes WHERE nombre = ?', [nombreCliente], (err, result) => {
                     if (err) {
-                        console.error('Error al guardar los datos en la base de datos:', err);
-                        res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
+                        console.error('Error al obtener el responsable y objeto del cliente:', err);
+                        res.status(500).json({ error: 'Error al obtener el responsable y objeto del cliente' });
                         return;
                     }
-
+                
+                    if (result.length === 0) {
+                        res.status(404).json({ error: 'Cliente no encontrado' });
+                        return;
+                    }
+                
+                    const { responsable, objeto } = result[0];
+                    connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, idConductor1, idConductor2, idConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
+                        if (err) {
+                            console.error('Error al guardar los datos en la base de datos:', err);
+                            res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
+                            return;
+                        }
+                    
+                    });
 
 
                 // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
@@ -4194,6 +4210,60 @@ app.post("/consulta-vehiculos2", (req, res) => {
            res.json({ ...vehiculo, fotoURL });
         });
 });
+
+
+
+
+// Registrar ayudante para formatear la fecha
+hbs.registerHelper('formatDate', function (dateString) {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', options);
+});
+
+
+
+
+// Ruta para obtener el informe general
+app.get('/informe_general_f', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        const { fecha_inicio, fecha_final } = req.query;
+
+        if (fecha_inicio && fecha_final) {
+            // Validar formato de fecha
+            const isValidDate = (date) => /^\d{4}-\d{2}-\d{2}$/.test(date);
+
+            if (isValidDate(fecha_inicio) && isValidDate(fecha_final)) {
+                // Consulta para obtener los datos filtrados por fecha_creacion
+                const query = 'SELECT * FROM fuec_data WHERE fecha_creacion BETWEEN ? AND ?';
+                connection.query(query, [fecha_inicio, fecha_final], (error, results) => {
+                    if (error) {
+                        console.error('Error al ejecutar la consulta:', error.stack);
+                        res.status(500).send('Error en el servidor');
+                        return;
+                    }
+                    
+                    // Renderiza la plantilla con los datos obtenidos
+                    res.render('operaciones/fuec/informe_general_fuec.hbs', { nombreUsuario, datos: results });
+                });
+            } else {
+                res.status(400).send('Formato de fecha inválido');
+            }
+        } else {
+            // Renderiza la plantilla sin datos si no se han proporcionado fechas
+            res.render('operaciones/fuec/informe_general_fuec.hbs', { nombreUsuario });
+        }
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
 
 
 
