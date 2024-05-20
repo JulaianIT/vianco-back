@@ -288,7 +288,7 @@ text-align: center;
 <br>
 
 
-  {{#if auxiliar}}
+ 
 
 
 <div class="tarjeta">
@@ -302,7 +302,15 @@ text-align: center;
     {{#if auxiliar}}
         <a href="/agregar-vehiculo">AGREGAR</a>
       {{/if}}
-    <a href="/consulta-vehiculos">CONSULTAR</a>
+   
+    {{#if ejecutivo}}
+
+          <a href="/consulta-vehiculos2">CONSULTAR</a>
+           {{/if}}
+           {{#if auxiliar}}
+      <a href="/consulta-vehiculos">CONSULTAR</a>
+          {{/if}}
+
       {{#if auxiliar}}
     <a href="/consulta-vehiculos">EDITAR</a>
       {{/if}}
@@ -317,7 +325,7 @@ text-align: center;
 
 <br>
 <br>
-      {{/if}}
+     
 
 
  {{#if auxiliar}}
