@@ -2747,14 +2747,40 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                     }
                 
                     const { responsable, objeto } = result[0];
-                    connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, idConductor1, idConductor2, idConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
-                        if (err) {
-                            console.error('Error al guardar los datos en la base de datos:', err);
-                            res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
-                            return;
-                        }
-                    
-                    });
+
+
+
+
+
+
+
+                  connection.query('SELECT id, conductor FROM conductores WHERE id IN (?)', [conductoresIds], (err, rows) => {
+    if (err) {
+        console.error('Error al obtener los nombres de los conductores:', err);
+        res.status(500).json({ error: 'Error al obtener los nombres de los conductores' });
+        return;
+    }
+
+    // Mapea los resultados para obtener un objeto de ID->Nombre de conductor
+    const conductorNamesMap = {};
+    rows.forEach(row => {
+        conductorNamesMap[row.id] = row.conductor;
+    });
+
+    // Utiliza el mapa de nombres de conductores para reemplazar los IDs con los nombres en fuec_data
+    const nombreConductor1 = conductorNamesMap[idConductor1];
+    const nombreConductor2 = idConductor2 ? conductorNamesMap[idConductor2] : null;
+    const nombreConductor3 = idConductor3 ? conductorNamesMap[idConductor3] : null;
+
+    // Ahora, puedes usar los nombres de los conductores para guardar en fuec_data en lugar de los IDs
+    connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, nombreConductor1, nombreConductor2, nombreConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
+        if (err) {
+            console.error('Error al guardar los datos en la base de datos:', err);
+            res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
+            return;
+        }
+    });
+});
 
 
                 // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
