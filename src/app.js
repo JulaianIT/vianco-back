@@ -2584,6 +2584,38 @@ app.get('/seleccionar', (req, res) => {
 });
 
 
+
+
+
+
+app.get('/vehiculos_Novencidos', (req, res) => {
+    const fechaActual = new Date().toLocaleDateString('en-GB'); // Obtener la fecha actual en formato DD/MM/YYYY
+    const consultaVehiculos = `
+        SELECT placa 
+        FROM vehiculos 
+        WHERE STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y')
+            AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y')
+            AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y')
+            AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y')
+            AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y')
+            AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= STR_TO_DATE(?, '%d/%m/%Y');
+    `;
+    const params = [fechaActual, fechaActual, fechaActual, fechaActual, fechaActual, fechaActual];
+    
+    connection.query(consultaVehiculos, params, (error, resultados) => {
+        if (error) {
+            console.error('Error al obtener vehículos:', error);
+            res.status(500).json({ error: 'Error al obtener vehículos' });
+            return;
+        }
+        res.json(resultados);
+    });
+});
+
+
+
+
+
 // Ruta para obtener todas las placas de vehículos disponibles
 app.get('/vehiculos', (req, res) => {
     const consultaVehiculos = 'SELECT placa FROM vehiculos';
@@ -2609,6 +2641,9 @@ app.get('/vehiculos', (req, res) => {
       console.log('Último consecutivo obtenido de la base de datos:', ultimoConsecutivo);
     }
   });
+
+
+
 
 
 // Ruta para obtener conductores
