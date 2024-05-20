@@ -4248,8 +4248,6 @@ hbs.registerHelper('formatDate', function (dateString) {
 });
 
 
-
-
 // Ruta para obtener el informe general
 app.get('/informe_general_f', (req, res) => {
     if (req.session.loggedin === true) {
@@ -4262,7 +4260,7 @@ app.get('/informe_general_f', (req, res) => {
 
             if (isValidDate(fecha_inicio) && isValidDate(fecha_final)) {
                 // Consulta para obtener los datos filtrados por fecha_creacion
-                const query = 'SELECT * FROM fuec_data WHERE fecha_creacion BETWEEN ? AND ?';
+                const query = 'SELECT * FROM fuec_data WHERE fecha_creacion >= ? AND fecha_creacion <= DATE_ADD(?, INTERVAL 1 DAY)';
                 connection.query(query, [fecha_inicio, fecha_final], (error, results) => {
                     if (error) {
                         console.error('Error al ejecutar la consulta:', error.stack);
@@ -4285,9 +4283,6 @@ app.get('/informe_general_f', (req, res) => {
         res.redirect("/login/index");
     }
 });
-
-
-
 
 
 

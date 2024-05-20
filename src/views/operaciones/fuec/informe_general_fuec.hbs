@@ -3,65 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <title>Informe General FUEC</title>
-    <script src="/js/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .container-fluid {
+            padding: 0;
+        }
+        .container {
+            max-width: none;
+            margin: 0;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: black;
+            margin-bottom: 30px;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        .btn-primary {
+            background-color:#90c9a7;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+                        border:  2px solid black;
+
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+                        border:  2px solid black;
+
+            border-bottom: 1px solid black;
+        }
+        th {
+            text-align: center;
+            text-transform: uppercase;
+            border:  2px solid black;
+            background-color: #90c9a7;
+            color: black;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Informe General FUEC</h1>
-    <p>Usuario: {{nombreUsuario}}</p>
+    <div class="container-fluid">
+        <div class="container">
+            <h1>Informe General FUEC</h1>
+            <form action="/informe_general_f" method="get" autocomplete="off">
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fecha_inicio">Fecha Inicio:</label>
+                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="fecha_final">Fecha Final:</label>
+                        <input type="date" class="form-control" id="fecha_final" name="fecha_final" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Buscar</button>
+            </form>
 
-    <form action="/informe_general_f" method="get">
-        <label for="fecha_inicio">Fecha Inicio:</label>
-        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
-        <label for="fecha_final">Fecha Final:</label>
-        <input type="date" id="fecha_final" name="fecha_final" required>
-        <button type="submit">Buscar</button>
-    </form>
-
-    {{#if datos}}
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre Cliente</th>
-                                <th>Número FUEC</th>
-
-                <th>Placa</th>
-
-
-                <th>ID Conductor 1</th>
-                <th>ID Conductor 2</th>
-                <th>ID Conductor 3</th>
-                <th>N Contrato</th>
-                <th>OBJETO CONTRATO</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Final</th>
-                <th>Fecha Creación</th>
-                <th>Responsable</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each datos}}
-                <tr>
-                    <td>{{this.id}}</td>
-                    <td>{{this.contratante}}</td>
-                    <td>{{this.numero_fuec}}</td>
-                    <td>{{this.placa}}</td>
-                    <td>{{this.id_conductor1}}</td>
-                    <td>{{this.id_conductor2}}</td>
-                    <td>{{this.id_conductor3}}</td>
-                    <td>{{this.N_contrato}}</td>
-                    <td>{{this.objeto}}</td>
-                    <td>{{this.fecha_inicio}}</td>
-                    <td>{{this.fecha_final}}</td>
-                    <td>{{formatDate this.fecha_creacion}}</td>
-                    <td>{{this.responsable}}</td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-    {{/if}}
-
-
-  
+            {{#if datos}}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Cliente</th>
+                            <th>Número FUEC</th>
+                            <th>Placa</th>
+                            <th>Conductor 1</th>
+                            <th>Conductor 2</th>
+                            <th>Conductor 3</th>
+                            <th>N Contrato</th>
+                            <th>OBJETO CONTRATO</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Final</th>
+                            <th>Fecha Creación</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each datos}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.contratante}}</td>
+                            <td>{{this.numero_fuec}}</td>
+                            <td>{{this.placa}}</td>
+                            <td>{{this.id_conductor1}}</td>
+                            <td>{{this.id_conductor2}}</td>
+                            <td>{{this.id_conductor3}}</td>
+                            <td>{{this.N_contrato}}</td>
+                            <td>{{this.objeto}}</td>
+                            <td>{{this.fecha_inicio}}</td>
+                            <td>{{this.fecha_final}}</td>
+                            <td>{{formatDate this.fecha_creacion}}</td>
+                            <td>{{this.responsable}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="alert alert-info text-center" role="alert">
+                No se encontraron datos para mostrar.
+            </div>
+            {{/if}}
+        </div>
+    </div>
 </body>
 </html>
