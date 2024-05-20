@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Cotización</title>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <style>
+   
+
+        /* Estilos CSS para mejorar la apariencia del formulario (opcional) */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border:  3px solid black;
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            ;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="tel"],
+        select {
+            
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #90c9a7;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #d9d9d9;
+        }
+                #logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+header{
+background-color: white;
+
+}
+.servicio{
+        padding: 10px;
+    width: 30%;
+    height: 70%;
+
+
+
+}
+    footer {
+
+        background-color: #222;
+        padding: 4.9rem;
+        color: #ffff;
+        position: relative;
+        top: 438px;
+        margin: 0;
+    }
+
+    footer section {
+        float: right;
+        margin: 0;
+        position: relative;
+        top: -60px;
+    }
+
+    footer a {
+        transition: color 0.3s ease;
+        color: #ffff;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: rgb(162, 204, 170);
+    }
+
+    footer p {
+        position: relative;
+        float: left;
+        left: -1199px;
+        color: #ffff;
+        font-size: 20px;
+    }
+
+    .bad {
+        font-size: 20px;
+        position: relative;
+        color: rgb(113, 112, 111);
+        right: -20px;
+        top: 6px;
+    }
+
+    .ok {
+        font-size: 20px;
+        position: relative;
+        top: 30px;
+    }
+
+
+
+
+    @media only screen and (max-width: 768px) {
+
+
+
+header{
+    display: none;
+background-color: white;
+
+}
+
+
+    }
+ .suggestions {
+    margin-top: 5px;
+    position: relative;
+}
+
+.suggestion {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.suggestion:hover {
+    background-color: #f2f2f2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+    </style>
+</head>
+<body>
+    
+        <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+    <br>
+    <br>
+   <form id="cotizacionForm" action="/cotizacion" method="POST">
+        <h2>FORMULARIO DE COTIZACIÓN</h2>
+        <select id="clientes-select" name="cliente" required>
+            <option value="">Selecciona un cliente</option>
+            {{#each clientes}}
+                <option value="{{nombre}}">{{nombre}}</option>
+            {{/each}}
+            <option value="otro">Otro cliente</option>
+        </select>
+        <input type="text" id="otro-cliente" name="otro_cliente" placeholder="Escriba el nombre del cliente" style="display: none;">
+        <label for="nombre">Nombre de quien cotiza:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="correo">Correo:</label>
+        <input type="text" id="correo" name="correo" required>
+        <label for="contacto">Contacto (Teléfono):</label>
+        <input type="tel" id="contacto" name="contacto" required>
+        <label for="ciudad">Ciudad:</label>
+        <input type="text" id="ciudad" name="ciudad" required>
+        <label for="numServicios">Número de servicios a cotizar (1-5):</label>
+        <input type="number" id="numServicios" name="numServicios" min="1" max="5" required>
+        <div id="servicios"></div>
+        <input type="submit" value="Enviar Cotización">
+    </form>
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+            <nav class="">
+                <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+            </nav>
+        </section>
+    </footer>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Crea un mapa con Leaflet
+        var map = L.map('mapa').setView([0, 0], 13);
+        // Añade una capa de OpenStreetMap al mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        // Función para buscar coincidencias y mostrarlas en el mapa
+function buscarCoincidencias(servicioNum, campo) {
+    var input = document.getElementById(campo + servicioNum).value;
+
+    // Utiliza la API de OpenCage Geocoding para buscar sugerencias de ubicaciones en Colombia
+    var apiKey = '43c511e165cb4d5c8dd2d1088ceccb91'; // Tu API Key de OpenCage
+    var url = `https://api.opencagedata.com/geocode/v1/json?q=${input}&countrycode=CO&key=${apiKey}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                // Borra las sugerencias anteriores
+                var suggestionDiv = document.getElementById(`suggestions${servicioNum}`);
+                suggestionDiv.innerHTML = '';
+
+                // Muestra todas las sugerencias al usuario
+                data.results.forEach(result => {
+                    var suggestion = document.createElement('div');
+                    suggestion.textContent = result.formatted;
+                    suggestion.classList.add('suggestion');
+                    suggestion.addEventListener('click', function() {
+                        document.getElementById(campo + servicioNum).value = result.formatted;
+                        suggestionDiv.innerHTML = ''; // Borra las sugerencias después de seleccionar una
+                    });
+                    suggestionDiv.appendChild(suggestion);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener sugerencias de ubicación:', error);
+        });
+}
+
+
+
+
+        document.getElementById('clientes-select').addEventListener('change', function() {
+            var otroClienteInput = document.getElementById('otro-cliente');
+            if (this.value === 'otro') {
+                otroClienteInput.required = true;
+            } else {
+                otroClienteInput.style.display = 'none';
+                otroClienteInput.required = false;
+            }
+        });
+
+        document.getElementById('cotizacionForm').addEventListener('submit', function(event) {
+            var clientesSelect = document.getElementById('clientes-select');
+            var otroClienteInput = document.getElementById('otro-cliente');
+
+            if (clientesSelect.value === 'otro') {
+                if (otroClienteInput.value.trim() === '') {
+                    alert('Por favor, escriba el nombre del cliente.');
+                    event.preventDefault();
+                } else {
+                    clientesSelect.value = otroClienteInput.value.trim();
+                }
+            }
+        });
+    </script>
+    <script>
+        // JavaScript para agregar dinámicamente los campos de servicios según el número seleccionado
+        document.getElementById('numServicios').addEventListener('input', function() {
+            var numServicios = parseInt(this.value);
+            var serviciosDiv = document.getElementById('servicios');
+            serviciosDiv.innerHTML = ''; // Limpiar los campos anteriores
+
+            for (var i = 1; i <= numServicios; i++) {
+                serviciosDiv.innerHTML += `
+                    <h3>SERVICIO ${i}</h3>
+                    <label for="fecha${i}">Fecha del servicio ${i}:</label>
+                    <input type="date" id="fecha${i}" name="fecha${i}" required>
+                    <br>
+                    <br>
+                    <label for="hora${i}">Hora del servicio ${i}:</label>
+                    <input type="time" id="hora${i}" name="hora${i}" required>
+                    <br>
+                    <br>
+                        <br>
+                <label for="origen${i}">Origen del servicio ${i}:</label>
+        <input type="text" id="origen${i}" name="origen${i}" oninput="buscarCoincidencias(${i}, 'origen')" required>
+            <div id="suggestions${i}" class="suggestions"></div>
+                                        <br>
+                    <label for="destino${i}">Destino del servicio ${i}:</label>
+                    <input type="text" id="destino${i}" name="destino${i}" oninput="buscarCoincidencias(${i}, 'destino')" required>
+                    <div id="suggestions${i}" class="suggestions"></div>
+                    <br>
+
+                    <br>
+                    <label for="itinerario${i}">Itinerario del servicio ${i}:</label>
+                    <textarea id="itinerario${i}" name="itinerario${i}" rows="3" required></textarea>
+                    <br>
+                    <br>
+                    <label for="tipoCarro${i}">Tipo de Carro del servicio ${i}:</label>
+                    <select id="tipoCarro${i}" name="tipoCarro${i}" required>
+                        <option value="Carro de Lujo">Carro de Lujo</option>
+                        <option value="Blindada">Blindada</option>
+                        <option value="SUV (Tipo Duster)">SUV (Tipo Duster)</option>
+                        <option value="Van 7 Pax">Van 7 Pax</option>
+                        <option value="Aerovan 16 Pax">Aerovan 16 Pax</option>
+                        <option value="Buseta 25 Pax">Buseta 25 Pax</option>
+                        <option value="Bus 40 Pax">Bus 40 Pax</option>
+                    </select>
+                    <br><br>
+                `;
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+  $(document).ready(function() {
+    $('#cotizacionForm').submit(function(event) {
+        event.preventDefault(); // Evita que el formulario se envíe normalmente
+
+        // Construir un objeto de datos para los servicios
+        var servicios = [];
+        for (var i = 1; i <= $('#numServicios').val(); i++) {
+            var servicio = {
+                fecha: $('#fecha' + i).val(),
+                hora: $('#hora' + i).val(),
+                origen: $('#origen' + i).val(),
+                destino: $('#destino' + i).val(),
+                itinerario: $('#itinerario' + i).val(),
+                tipoCarro: $('#tipoCarro' + i).val()
+            };
+            servicios.push(servicio);
+        }
+
+        // Construir el objeto de datos completo a enviar al servidor
+        var formData = {
+            cliente: $('#clientes-select').val(),
+            nombre: $('#nombre').val(),
+            correo: $('#correo').val(),
+            contacto: $('#contacto').val(),
+            ciudad: $('#ciudad').val(),
+            numServicios: $('#numServicios').val(),
+            servicios: servicios
+        };
+
+        // Enviar los datos al servidor Node.js
+        $.post('/cotizacion', formData, function(response) {
+            alert(response); // Muestra la respuesta del servidor en una alerta
+            location.reload(); // Recarga la página después de mostrar la alerta
+        });
+    });
+});
+
+
+    </script>
+    <script>
+ 
+    document.getElementById('formulario-cotizacion').addEventListener('submit', function(event) {
+        var clientesSelect = document.getElementById('clientes-select');
+        var otroClienteInput = document.getElementById('otro-cliente');
+
+        if (clientesSelect.value === 'otro') {
+            if (otroClienteInput.value.trim() === '') {
+                alert('Por favor, escriba el nombre del cliente.');
+                event.preventDefault();
+            } else {
+                clientesSelect.value = otroClienteInput.value.trim();
+            }
+        }
+    });
+</script>
+  
+</body>
+</html>
+               

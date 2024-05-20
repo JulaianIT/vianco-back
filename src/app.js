@@ -2080,98 +2080,63 @@ app.get('/formulario_cotizaciones', (req, res) => {
 
 
 
-
-
-
-
+// Paso 2: Envío de Cotización y Generación de Notificaciones
+// Paso 2: Envío de Cotización y Generación de Notificaciones
+// Paso 2: Envío de Cotización y Generación de Notificaciones
 app.post('/cotizacion', (req, res) => {
-    if (req.session.loggedin === true) {
-        const cotizacionData = req.body;
-        const numServicios = parseInt(cotizacionData.numServicios, 10);
+    const cotizacionData = req.body;
+    const numServicios = parseInt(cotizacionData.numServicios);
 
-        // Verificar si el cliente seleccionado es "otro" y usar el valor de otro_cliente
-        const cliente = cotizacionData.cliente === 'otro' ? cotizacionData.otro_cliente : cotizacionData.cliente;
+    // Si 'otro_cliente' tiene valor, asignarlo a 'cliente'
+    if (cotizacionData.otro_cliente) {
+        cotizacionData.cliente = cotizacionData.otro_cliente;
+    }
 
-        if (!cliente) {
-            console.error('Error: El campo cliente es nulo');
-            res.status(400).send('El campo cliente es obligatorio.');
+    // Eliminar el campo numServicios y otro_cliente del objeto principal de cotización
+    delete cotizacionData.numServicios;
+    delete cotizacionData.otro_cliente;
+
+    // Agregar num_servicios a cotizacionData antes de la inserción
+    cotizacionData.num_servicios = numServicios;
+
+    // Insertar los datos de la cotización en la base de datos
+    connection.beginTransaction(err => {
+        if (err) {
+            console.error('Error al iniciar la transacción:', err);
+            res.status(500).send('Error interno del servidor');
             return;
         }
 
-        // Construir el objeto cotizacionData con los datos del formulario
-        const data = {
-            cliente: cliente,
-            nombre: cotizacionData.nombre,
-            correo: cotizacionData.correo,
-            contacto: cotizacionData.contacto,
-            ciudad: cotizacionData.ciudad,
-            fecha1: cotizacionData.fecha1,
-            hora1: cotizacionData.hora1,
-            origen1: cotizacionData.origen1,
-            destino1: cotizacionData.destino1,
-            itinerario1: cotizacionData.itinerario1,
-            tipoCarro1: cotizacionData.tipoCarro1,
-            num_servicios: numServicios
-        };
-
-        // Iniciar la transacción
-        connection.beginTransaction(err => {
+        // Guardar la cotización en la tabla de cotizaciones
+        connection.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
             if (err) {
-                console.error('Error al iniciar la transacción:', err);
+                console.error('Error al insertar la cotización en la base de datos:', err);
                 res.status(500).send('Error interno del servidor');
                 return;
             }
 
-            // Insertar la cotización en la base de datos
-            connection.query('INSERT INTO cotizaciones SET ?', data, (err, result) => {
+            const cotizacionId = result.insertId;
+
+            // Crear una nueva entrada en la tabla de notificaciones
+            const notificacionData = {
+                cotizacion_id: cotizacionId,
+                estado_lectura: 'no leído',
+                fecha_creacion: new Date()
+            };
+
+            connection.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
                 if (err) {
-                    console.error('Error al insertar la cotización en la base de datos:', err);
-                    return connection.rollback(() => {
-                        res.status(500).send('Error interno del servidor');
-                    });
+                    console.error('Error al crear la notificación:', err);
+                    res.status(500).send('Error interno del servidor');
+                    return;
                 }
 
-                const cotizacionId = result.insertId;
-
-                // Crear la notificación
-                const notificacionData = {
-                    cotizacion_id: cotizacionId,
-                    estado_lectura: 'no leído',
-                    fecha_creacion: new Date()
-                };
-
-                connection.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
-                    if (err) {
-                        console.error('Error al crear la notificación:', err);
-                        return connection.rollback(() => {
-                            res.status(500).send('Error interno del servidor');
-                        });
-                    }
-
-                    // Finalizar la transacción
-                    connection.commit(err => {
-                        if (err) {
-                            console.error('Error al finalizar la transacción:', err);
-                            return connection.rollback(() => {
-                                res.status(500).send('Error interno del servidor');
-                            });
-                        }
-
-                        res.send('Cotización enviada exitosamente');
-                    });
-                });
+                // Enviar una respuesta al cliente
+                res.send('Cotización enviada exitosamente');
             });
         });
-    } else {
-        res.redirect('/login/index');
-    }
+    });
 });
-
-
-
-
-
-
 
 
 
@@ -2312,6 +2277,14 @@ app.post('/marcar_realizado', (req, res) => {
 
 
 
+// Ruta para manejar la solicitud POST del formulario
+app.post('/cotizacion', (req, res) => {
+    const formData = req.body;
+    // Aquí puedes procesar los datos como desees
+    console.log(formData);
+    // Por ejemplo, puedes guardarlos en una base de datos, enviar un correo electrónico, etc.
+    res.send('¡Datos recibidos con éxito!');
+});
 
 
 

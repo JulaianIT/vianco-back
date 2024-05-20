@@ -243,10 +243,11 @@
         {{/each}}
         </tbody>
     </table>
-    <div class="TOTAL">
-        <label for="valorTotal">VALOR TOTAL:</label>
-        <input type="text" name="valorTotal">
-    </div>
+ <div class="TOTAL">
+            <label for="valorTotal">VALOR TOTAL:</label>
+            <input type="text" id="valorTotal" name="valorTotal" readonly>
+            <button type="button" id="calcularTotal">Calcular Total</button>
+        </div>
     <button class="guardar-btn" type="button">Guardar</button>
     <button class="volver-btn" type="submit" style="display: none;">Generar Plantilla</button>
 </form>
@@ -259,6 +260,26 @@
             <ul class="w-full ml-auto flex justify-end pt-1"></ul>
         </nav>
 </footer>
+  <script>
+        // Función para formatear el número y eliminar ".00" si no son necesarios
+        function formatNumber(number) {
+            var formatted = parseFloat(number).toFixed(2);
+            return formatted.replace(/\.00$/, '');
+        }
+
+        document.getElementById('calcularTotal').addEventListener('click', function() {
+            // Obtener todos los campos de valor por traslado
+            var valorInputs = document.querySelectorAll('input[name^="servicios"][name$="[valor]"]');
+            var total = 0;
+            // Sumar los valores de todos los campos
+            valorInputs.forEach(function(input) {
+                total += parseFloat(input.value) || 0; // Convertir a número y manejar valores nulos
+            });
+            // Formatear el número y actualizar el campo "Valor Total"
+            document.getElementById('valorTotal').value = formatNumber(total);
+        });
+    </script>
+
 <script>
     function formatDate(dateString) {
         const date = new Date(dateString);
