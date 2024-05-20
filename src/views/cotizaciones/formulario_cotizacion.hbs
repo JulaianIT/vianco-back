@@ -343,6 +343,32 @@ function buscarCoincidencias(servicioNum, campo) {
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+    document.getElementById('clientes-select').addEventListener('change', function() {
+        var otroClienteInput = document.getElementById('otro-cliente');
+        if (this.value === 'otro') {
+            otroClienteInput.style.display = 'block';
+            otroClienteInput.required = true;
+        } else {
+            otroClienteInput.style.display = 'none';
+            otroClienteInput.required = false;
+        }
+    });
+
+    document.getElementById('formulario-cotizacion').addEventListener('submit', function(event) {
+        var clientesSelect = document.getElementById('clientes-select');
+        var otroClienteInput = document.getElementById('otro-cliente');
+
+        if (clientesSelect.value === 'otro') {
+            if (otroClienteInput.value.trim() === '') {
+                alert('Por favor, escriba el nombre del cliente.');
+                event.preventDefault();
+            } else {
+                clientesSelect.value = otroClienteInput.value.trim();
+            }
+        }
+    });
+</script>
+    <script>
         $(document).ready(function() {
             $('#cotizacionForm').submit(function(event) {
                 event.preventDefault(); // Evita que el formulario se envíe normalmente
