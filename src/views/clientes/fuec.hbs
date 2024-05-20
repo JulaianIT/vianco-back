@@ -163,7 +163,7 @@ width: 50%;
 <script>
     // Función para obtener las placas de vehículos y llenar el select
     function obtenerPlacas() {
-        fetch('/vehiculos')
+        fetch('/vehiculos_Novencidos')
             .then(response => response.json())
             .then(vehiculos => {
                 const placaSelect = document.getElementById('placa');

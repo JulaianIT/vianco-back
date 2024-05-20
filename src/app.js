@@ -2617,7 +2617,7 @@ app.get('/vehiculos_Novencidos', (req, res) => {
 
 
 // Ruta para obtener todas las placas de vehículos disponibles
-app.get('/vehiculos', (req, res) => {
+app.get('/vehiculoos', (req, res) => {
     const consultaVehiculos = 'SELECT placa FROM vehiculos';
     connection.query(consultaVehiculos, (error, resultados) => {
         if (error) {
