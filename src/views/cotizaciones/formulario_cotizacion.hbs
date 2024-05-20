@@ -7,6 +7,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
       <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
     <style>
    
 
@@ -145,7 +147,29 @@ background-color: white;
 
 
     }
-    
+ .suggestions {
+    margin-top: 5px;
+    position: relative;
+}
+
+.suggestion {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.suggestion:hover {
+    background-color: #f2f2f2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion:not(:last-child) {
+    margin-bottom: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -165,80 +189,110 @@ background-color: white;
     </header>
     <br>
     <br>
-
-<form id="cotizacionForm" action="/cotizacion" method="POST">
-        <h2>FORMULARIO DE COTIZACION</h2>
-
- <select id="clientes-select" name="cliente" required>
-        <option value="">Selecciona un cliente</option>
-        {{#each clientes}}
-            <option value="{{nombre}}">{{nombre}}</option>
-        {{/each}}
-        <option value="otro">Otro cliente</option>
-    </select>
-
-    <input type="text" id="otro-cliente" name="otro_cliente" placeholder="Escriba el nombre del cliente" style="display: none;">
-
-
+   <form id="cotizacionForm" action="/cotizacion" method="POST">
+        <h2>FORMULARIO DE COTIZACIÓN</h2>
+        <select id="clientes-select" name="cliente" required>
+            <option value="">Selecciona un cliente</option>
+            {{#each clientes}}
+                <option value="{{nombre}}">{{nombre}}</option>
+            {{/each}}
+            <option value="otro">Otro cliente</option>
+        </select>
+        <input type="text" id="otro-cliente" name="otro_cliente" placeholder="Escriba el nombre del cliente" style="display: none;">
         <label for="nombre">Nombre de quien cotiza:</label>
-        <input type="text" id="nombre" name="nombre" value=" {{nombreUsuario}}" readonly  required>
-
+        <input type="text" id="nombre" name="nombre" value="{{nombreUsuario}}" readonly required>
         <label for="correo">Correo:</label>
         <input type="text" id="correo" name="correo" required>
-
         <label for="contacto">Contacto (Teléfono):</label>
         <input type="tel" id="contacto" name="contacto" required>
-
         <label for="ciudad">Ciudad:</label>
         <input type="text" id="ciudad" name="ciudad" required>
-
-        <label  for="numServicios">Número de servicios a cotizar (1-5):</label>
+        <label for="numServicios">Número de servicios a cotizar (1-5):</label>
         <input class="servicio" type="number" id="numServicios" name="numServicios" min="1" max="5" required>
-
-        <!-- Agrega los campos para hasta 5 servicios -->
         <div id="servicios"></div>
-        <br>
-        <br>
-
-
         <input type="submit" value="Enviar Cotización">
     </form>
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyrigt soporteVianco</p>
+            <nav class="">
+                <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+            </nav>
+        </section>
+    </footer>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
 
-<footer>
-    <section>
-        <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
-        <p>Copyrigt soporteVianco</p>
-        <nav class="">
-            <ul class="w-full ml-auto flex justify-end pt-1"></ul>
-        </nav>
-</footer>
-<script>
-    document.getElementById('clientes-select').addEventListener('change', function() {
-        var otroClienteInput = document.getElementById('otro-cliente');
-        if (this.value === 'otro') {
-            otroClienteInput.style.display = 'block';
-            otroClienteInput.required = true;
-        } else {
-            otroClienteInput.style.display = 'none';
-            otroClienteInput.required = false;
-        }
-    });
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Crea un mapa con Leaflet
+        var map = L.map('mapa').setView([0, 0], 13);
+        // Añade una capa de OpenStreetMap al mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        // Función para buscar coincidencias y mostrarlas en el mapa
+function buscarCoincidencias(servicioNum, campo) {
+    var input = document.getElementById(campo + servicioNum).value;
 
-    document.getElementById('formulario-cotizacion').addEventListener('submit', function(event) {
-        var clientesSelect = document.getElementById('clientes-select');
-        var otroClienteInput = document.getElementById('otro-cliente');
+    // Utiliza la API de OpenCage Geocoding para buscar sugerencias de ubicaciones en Colombia
+    var apiKey = '43c511e165cb4d5c8dd2d1088ceccb91'; // Tu API Key de OpenCage
+    var url = `https://api.opencagedata.com/geocode/v1/json?q=${input}&countrycode=CO&key=${apiKey}`;
 
-        if (clientesSelect.value === 'otro') {
-            if (otroClienteInput.value.trim() === '') {
-                alert('Por favor, escriba el nombre del cliente.');
-                event.preventDefault();
-            } else {
-                clientesSelect.value = otroClienteInput.value.trim();
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                // Borra las sugerencias anteriores
+                var suggestionDiv = document.getElementById(`suggestions${servicioNum}`);
+                suggestionDiv.innerHTML = '';
+
+                // Muestra todas las sugerencias al usuario
+                data.results.forEach(result => {
+                    var suggestion = document.createElement('div');
+                    suggestion.textContent = result.formatted;
+                    suggestion.classList.add('suggestion');
+                    suggestion.addEventListener('click', function() {
+                        document.getElementById(campo + servicioNum).value = result.formatted;
+                        suggestionDiv.innerHTML = ''; // Borra las sugerencias después de seleccionar una
+                    });
+                    suggestionDiv.appendChild(suggestion);
+                });
             }
-        }
-    });
-</script>
+        })
+        .catch(error => {
+            console.error('Error al obtener sugerencias de ubicación:', error);
+        });
+}
 
+
+
+
+        document.getElementById('clientes-select').addEventListener('change', function() {
+            var otroClienteInput = document.getElementById('otro-cliente');
+            if (this.value === 'otro') {
+                otroClienteInput.required = true;
+            } else {
+                otroClienteInput.style.display = 'none';
+                otroClienteInput.required = false;
+            }
+        });
+
+        document.getElementById('cotizacionForm').addEventListener('submit', function(event) {
+            var clientesSelect = document.getElementById('clientes-select');
+            var otroClienteInput = document.getElementById('otro-cliente');
+
+            if (clientesSelect.value === 'otro') {
+                if (otroClienteInput.value.trim() === '') {
+                    alert('Por favor, escriba el nombre del cliente.');
+                    event.preventDefault();
+                } else {
+                    clientesSelect.value = otroClienteInput.value.trim();
+                }
+            }
+        });
+    </script>
     <script>
         // JavaScript para agregar dinámicamente los campos de servicios según el número seleccionado
         document.getElementById('numServicios').addEventListener('input', function() {
@@ -251,26 +305,27 @@ background-color: white;
                     <h3>SERVICIO ${i}</h3>
                     <label for="fecha${i}">Fecha del servicio ${i}:</label>
                     <input type="date" id="fecha${i}" name="fecha${i}" required>
-      <br>
-         <br>
+                    <br>
+                    <br>
                     <label for="hora${i}">Hora del servicio ${i}:</label>
                     <input type="time" id="hora${i}" name="hora${i}" required>
-      <br>
-         <br>
-            <br>
-                    <label for="origen${i}">Origen del servicio ${i}:</label>
-                    <input type="text" id="origen${i}" name="origen${i}" required>
-      <br>
-         <br>
-          
-                    <label for="destino${i}">Destino del servicio ${i}:</label>
-                    <input type="text" id="destino${i}" name="destino${i}" required>
-      <br>
-         <br>
+                    <br>
+                    <br>
+                    <br>
+            <label for="origen${i}">Origen del servicio ${i}:</label>
+<input type="text" id="origen${i}" name="origen${i}" oninput="buscarCoincidencias(${i}, 'origen')" required>
+<div id="suggestions${i}" class="suggestions"></div>
+<br>
+<label for="destino${i}">Destino del servicio ${i}:</label>
+<input type="text" id="destino${i}" name="destino${i}" oninput="buscarCoincidencias(${i}, 'destino')" required>
+<div id="suggestions${i}" class="suggestions"></div>
+<br>
+
+                    <br>
                     <label for="itinerario${i}">Itinerario del servicio ${i}:</label>
                     <textarea id="itinerario${i}" name="itinerario${i}" rows="3" required></textarea>
-      <br>
-         <br>
+                    <br>
+                    <br>
                     <label for="tipoCarro${i}">Tipo de Carro del servicio ${i}:</label>
                     <select id="tipoCarro${i}" name="tipoCarro${i}" required>
                         <option value="Carro de Lujo">Carro de Lujo</option>
@@ -287,22 +342,20 @@ background-color: white;
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#cotizacionForm').submit(function(event) {
-            event.preventDefault(); // Evita que el formulario se envíe normalmente
-
-            // Serializar los datos del formulario
-            var formData = $(this).serialize();
-
-            // Enviar los datos al servidor Node.js
-            $.post('/cotizacion', formData, function(response) {
-                alert(response); // Muestra la respuesta del servidor en una alerta
-                location.reload(); // Recarga la página después de mostrar la alerta
+    <script>
+        $(document).ready(function() {
+            $('#cotizacionForm').submit(function(event) {
+                event.preventDefault(); // Evita que el formulario se envíe normalmente
+                // Serializar los datos del formulario
+                var formData = $(this).serialize();
+                // Enviar los datos al servidor Node.js
+                $.post('/cotizacion', formData, function(response) {
+                    alert(response); // Muestra la respuesta del servidor en una alerta
+                    location.reload(); // Recarga la página después de mostrar la alerta
+                });
             });
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
+               
