@@ -328,7 +328,6 @@ text-align: center;
      
 
 
- {{#if auxiliar}}
 
 
 <div class="tarjeta">
@@ -337,10 +336,19 @@ text-align: center;
   </div>
   <div class="titulo">CONDUCTORES</div>
  <div class="cuerpo">
-     {{#if auxiliar}}
+ {{#if auxiliar}}
+     
         <a href="/agregar-conductor">AGREGAR</a>
   {{/if}}
+
+    {{#if ejecutivo}}
+        <a href="/consulta-conductores2">CONSULTAR</a>
+  {{/if}}
+
+ {{#if auxiliar}}
+
     <a href="/consulta-conductores">CONSULTAR</a>
+     {{/if}}
           {{#if auxiliar}}
     <a href="/consulta-conductores">EDITAR</a>
      {{/if}}
@@ -349,7 +357,6 @@ text-align: center;
     <a href="#">Más información</a>
   </div>
 </div>
-  {{/if}}
 
 <br>
 <br>

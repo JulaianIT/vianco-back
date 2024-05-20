@@ -552,6 +552,7 @@ app.get("/consulta-vehiculos", (req, res) => {
     });
 });
 
+
 app.post("/consulta-vehiculos", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
@@ -791,6 +792,14 @@ app.get('/consulta-conductores', (req, res) => {
     });
 });
 
+
+
+
+
+
+
+
+
 app.post("/consulta-conductores", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
@@ -812,6 +821,69 @@ app.post("/consulta-conductores", (req, res) => {
         res.json({ ...conductor, fotoURL });
     });
 });
+
+
+
+
+
+
+
+
+
+// Ruta para la página de consulta de conductores
+app.get('/consulta-conductores2', (req, res) => {
+    // Consulta SQL para obtener las placas disponibles
+    connection.query('SELECT placa FROM conductores', (error, results) => {
+      if (error) {
+        console.error('Error al obtener las placas:', error);
+        res.status(500).send('Error al obtener las placas');
+        return;
+      }
+      // Renderizar la vista de consulta de conductores con los datos de las placas
+      res.render('operaciones/conductores/conductores2.hbs', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
+    });
+});
+
+
+
+
+
+
+
+
+
+app.post("/consulta-conductores2", (req, res) => {
+    const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+    // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
+    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+        if (error) {
+            console.error("Error al obtener la información del conductor:", error);
+            res.status(500).send("Error al obtener la información del conductor");
+            return;
+        }
+        if (results.length === 0) {
+            // Si no se encuentra ningún conductor con la placa seleccionada, enviar un mensaje de error
+            res.status(404).send("Conductor no encontrado");
+            return;
+        }
+        const conductor = results[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
+        // Enviar la información del conductor al cliente en formato JSON
+      
+        const fotoURL = conductor.foto ? `data:image/jpeg;base64,${conductor.foto.toString('base64')}` : null;
+        res.json({ ...conductor, fotoURL });
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+
+        <title>Consulta de Conductores</title>
+</head>
+          <style>
+
+            /* Establece el tamaño para la imagen del conductor */
+.conductor-image img {
+         border: 4px solid black;
+ border-radius: 12PX;
+    top: -19px;
+    position: relative;
+    max-width: 500px; /* Ancho máximo del 600% del contenedor (ajusta según tus necesidades) */
+    height: auto; /* Altura automática para mantener la proporción de aspecto original */
+}
+
+
+
+#logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+ 
+main{
+    width: 100%;
+    padding: 20px;
+    margin: auto;
+    margin-top: 100px;
+
+}   .busqu{
+            margin-bottom: 25px;
+        border: 2px solid black;
+        padding: 10px;
+        width: 97%;
+
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+         <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+   
+      <style>
+        /* Estilo para el cuerpo del documento */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fff; /* Color de fondo blanco */
+            color: #333; /* Color del texto principal */
+            margin: 0; /* Sin margen exterior */
+            padding: 0; /* Sin relleno interior */
+        }
+        
+        /* Estilo para el contenedor principal */
+        .container {
+            margin: 50px auto; /* Margen superior e inferior de 50px, centrado horizontalmente */
+            padding: 30px; /* Relleno interior de 30px */
+            background-color: #d9d9d9; /* Color de fondo del contenedor */
+            border-radius: 10px; /* Borde redondeado */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+        }
+        
+        /* Estilo para los encabezados */
+        h1 {
+            text-align: center; /* Texto centrado */
+            color: #413d4b; /* Color del texto */
+            margin-bottom: 30px; /* Margen inferior de 30px */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Sombra del texto */
+        }
+        
+        /* Estilo para el grupo de formularios */
+        .form-group {
+            margin-bottom: 20px; /* Margen inferior de 20px */
+        }
+        
+        /* Estilo para las etiquetas de los formularios */
+        label {
+            font-weight: bold; /* Texto en negrita */
+            display:inline-block /* Mostrar en bloque */
+            margin-bottom: 5px; /* Margen inferior de 5px */
+        }
+        
+        /* Estilo para los selectores */
+        select {
+            width: 100%; /* Ancho completo */
+            padding: 10px; /* Relleno de 10px */
+            border-radius: 5px; /* Borde redondeado */
+            border: 1px solid #ccc; /* Borde de 1px sólido con color gris */
+            font-size: 20px; /* Tamaño de fuente de 16px */
+            background-color: #f9f9f9; /* Color de fondo */
+            margin-top: 5px; /* Margen superior de 5px */
+        }
+        
+        /* Estilo para los botones */
+        .btn {
+            background-color: #90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: block; /* Mostrar en bloque */
+            width: 100%; /* Ancho completo */
+            margin-top: 10px; /* Margen superior de 10px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+        }
+        
+        /* Estilo para los botones al pasar el cursor */
+        .btn:hover {
+            background-color: #90c9a7; /* Color de fondo al pasar el cursor */
+        }
+        
+        /* Estilo para la información del vehículo */
+        .info-vehiculo {
+            border: 1px solid #ccc; /* Borde de 1px sólido con color gris */
+            padding: 20px; /* Relleno de 20px */
+            background-color: #f9f9f9; /* Color de fondo */
+            border-radius: 10px; /* Borde redondeado */
+            margin-top: 30px; /* Margen superior de 30px */
+        }
+        
+        /* Estilo para los campos */
+        .campo {
+            margin-bottom: 15px; /* Margen inferior de 15px */
+            overflow: hidden; /* Control de desbordamiento */
+        }
+        
+        /* Estilo para las etiquetas de los campos */
+        .label {
+            font-weight: bold; /* Texto en negrita */
+            float: left; /* Flotar a la izquierda */
+            width: 220px; /* Ancho de 120px */
+            color: #555; /* Color del texto */
+        }
+        
+        /* Estilo para los datos de los campos */
+        .dato {
+            float: left; /* Flotar a la izquierda */
+            width: calc(100% - 20px); /* Ancho calculado */
+            margin-left: 20px; /* Margen izquierdo de 20px */
+         
+            color: #333; /* Color del texto */
+        }
+        
+        /* Estilo para los encabezados de la información del vehículo */
+        .info-vehiculo h2 {
+            color: #413d4b; /* Color del texto */
+            margin-bottom: 20px; /* Margen inferior de 20px */
+            text-align: center; /* Texto centrado */
+            font-size: 30px;
+            border: 2px solid black;
+        }
+        
+        /* Estilo para el botón de volver */
+        .volver-btn {
+            background-color:#90c9a7; /* Color de fondo */
+            color: #fff; /* Color del texto */
+            border: none; /* Sin borde */
+            padding: 12px 20px; /* Relleno */
+            border-radius: 5px; /* Borde redondeado */
+            cursor: pointer; /* Cambio de cursor al pasar */
+            transition: background-color 0.3s ease; /* Transición suave */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+            display: inline-block; /* Mostrar en línea */
+            margin-top: 20px; /* Margen superior de 20px */
+            font-size: 16px; /* Tamaño de fuente de 16px */
+            font-weight: bold; /* Texto en negrita */
+            text-decoration: none; /* Sin decoración de texto */
+        }
+        
+        /* Estilo para el botón de volver al pasar el cursor */
+        .volver-btn:hover {
+            background-color: #d9d9d9; /* Color de fondo al pasar el cursor */
+        }
+      .container {
+    
+    display: grid;
+    grid-template-columns: 1fr auto; /* Dos columnas: una para el contenido y otra para la imagen */
+    grid-gap: 20px; /* Espacio entre las columnas */
+    align-items: center; /* Centra verticalmente los elementos */
+}
+
+
+
+
+       
+
+
+
+.containerr {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 0; /* Eliminar márgenes */
+}
+
+#logoo {
+    margin: 0; /* Eliminar márgenes */
+    width: 30%;
+    margin-right: 10px; /* Margen derecho reducido */
+}
+
+.contenidoo,
+.info {
+    flex-grow: 1;
+    padding: 10px;
+    margin: 0; /* Eliminar márgenes */
+}
+
+strong {
+    font-size: 25px;
+    margin-right: 5px;
+}
+
+.info {
+    font-size: 18px;
+    padding: 25px; /* Relleno adicional para la info */
+}
+
+h3 {
+    text-transform: uppercase;
+    font-size: 32px;
+    text-align: center;
+    margin: 0;
+    padding: 20px; /* Relleno adicional para los encabezados */
+}
+
+p {
+    
+    font-size: 20px;
+    margin: 0;
+    padding: 13px;
+    border: 1px solid black;
+}
+
+.conductor-image{
+
+margin-top: 80px;
+margin-bottom: 80px;
+
+}
+#info-vehiculo{
+
+
+        border: 6px solid black;
+
+
+
+}
+
+.contenedor-columnas {
+    display: flex;
+    justify-content: space-between; /* Espacio entre las columnas */
+}
+
+.columna {
+    width: calc(50% - 10px); /* Ancho de cada columna (50% del contenedor menos el espacio entre columnas) */
+}
+   *{
+    
+  font-family: "Rubik", sans-serif,
+  }
+ h2{
+        border: 3px solid black;
+    text-transform: uppercase;
+    background-color:#90c9a7;
+   padding: 10px;
+    left: -30px;
+text-align: center;
+align-items: center;
+
+  }
+  .png{
+
+    padding: 20px;
+  }  
+  .containerr{
+
+
+
+  }
+  .png{
+            border: 5px solid black;
+
+    padding: 25px;
+    background-color: white;
+  }
+
+  .conductor-container {
+   
+
+    display: flex;
+    align-items: center; /* Centra verticalmente los elementos */
+}
+
+
+
+.conductor-info {  
+    margin-left: 12px;
+    top: -42px; 
+     position: relative;
+    flex-grow: 1; /* Hace que ocupe el espacio restante */
+}
+
+    </style>
+
+<body>
+    <div class="container">
+        <h1>Hoja de Vida del conductor</h1>
+        <form id="consulta-form">
+            <div class="form-group">
+                               <input class="busqu" type="text" id="busqueda-placa" placeholder="Buscar por número de placa...">
+
+                <label for="placa">Selecciona una placa:</label>
+                <select id="placa" name="placa">
+                    {{#each placas}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <button type="submit" class="btn">Consultar</button>
+                                               <button id="descargar-btn" class="btn">Descargar</button>
+
+        </form>
+        <div id="info-conductores" class="info-conductores">
+            <h2>Información del Conductor</h2>
+            <hr>
+            <div class="campo">
+                
+                <span class="label">SELECCIONA UNA PLACA</span>
+            </div>
+            <!-- Agregar el botón de editar después de mostrar la información del vehículo -->
+             <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
+
+            <a href="/" class="volver-btn">Volver al Menú</a>
+
+            <!-- Agregar más campos de información técnica aquí -->
+        </div>
+    </div>
+    <script>
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const busquedaInput = document.getElementById('busqueda-placa');
+    const placaSelect = document.getElementById('placa');
+    const opcionesPlacas = Array.from(placaSelect.querySelectorAll('option'));
+
+    busquedaInput.addEventListener('input', () => {
+        const busqueda = busquedaInput.value.trim().toLowerCase();
+
+        // Vaciar la lista desplegable
+        placaSelect.innerHTML = '';
+
+        // Filtrar las opciones y volver a llenar la lista desplegable
+        opcionesPlacas.forEach(opcion => {
+            const placa = opcion.textContent.trim().toLowerCase();
+            if (placa.includes(busqueda)) {
+                placaSelect.appendChild(opcion.cloneNode(true));
+            }
+        });
+    });
+
+    const consultaForm = document.getElementById('consulta-form');
+
+    consultaForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Evitar que el formulario se envíe por defecto
+
+        const placaSeleccionada = placaSelect.value;
+        const infoVehiculoDiv = document.getElementById('info-vehiculo');
+
+        // Enviar la solicitud POST al servidor
+        fetch('/consulta-vehiculos2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ placa: placaSeleccionada })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al consultar el vehículo');
+            }
+            return response.json();
+        })
+        .then(vehiculo => {
+            // Mostrar la información del vehículo como se muestra en tu código actual
+        })
+        .catch(error => {
+            console.error('Error al consultar el vehículo:', error);
+            infoVehiculoDiv.textContent = 'Error al consultar el vehículo';
+        });
+    });
+});
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const consultaForm = document.getElementById('consulta-form');
+
+    consultaForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Evitar que el formulario se envíe por defecto
+
+        const placaSeleccionada = document.getElementById('placa').value;
+        const infoConductoresDiv = document.getElementById('info-conductores');
+
+        // Enviar la solicitud POST al servidor
+        fetch('/consulta-conductores2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ placa: placaSeleccionada })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al consultar el conductor');
+            }
+            return response.json();
+        })
+        .then(conductor => {
+            const fotoURL = conductor.fotoURL; // Corrección: usar 'fotoURL' en lugar de 'fotoURNL'
+            
+            // Mostrar la información del conductor
+            infoConductoresDiv.innerHTML = `
+            <div class="png">
+                <header>
+         <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+
+            <h2>Información del Conductor</h2>
+            <div class="conductor-container">
+                <div class="conductor-image">
+                    <img src="${fotoURL}" alt="Foto del Conductor" style="width: 360px; float: left;">
+                </div>
+                <div class="conductor-info">
+                    <p><strong>NOMBRES Y APELLIDOS :</strong> ${conductor.conductor}</p>
+                    <p><strong>TIPO DE DOCUMENTO :</strong> ${conductor.tipo_documento}</p>
+                    <p><strong>N° DE DOCUMENTO :</strong> ${conductor.cedula}</p>
+                    <p><strong>FECHA DE NACIMIENTO :</strong> ${conductor.fecha_nacimiento}</p>
+                    <p><strong>FECHA DE EXPEDICION :</strong> ${conductor.fecha_expedicion}</p>
+                    <p><strong>CELULAR :</strong> ${conductor.celular}</p>
+                    <p><strong>EMAIL :</strong> ${conductor.email}</p>
+                    </div>
+                <div style="clear: both;"></div> <!-- Para limpiar los floats -->
+            </div>
+            
+                <p><strong>TIPO DE SANGRE :</strong> ${conductor.tipo_sangre}</p>
+                <p><strong>DIRECCION :</strong> ${conductor.direccion}</p>
+
+              
+                <p><strong>CATEGORIA LICENCIA:</strong> ${conductor.categoria}</p>
+                <p><strong>FECHA DE VIGENCIA:</strong> ${conductor.fecha_vigencia}</p>
+
+                <p><strong>ARL:</strong> ${conductor.arl}</p>
+                <p><strong>EPS :</strong> ${conductor.eps}</p>
+                <p><strong>SEGURIDAD SOCIAL:</strong> ${conductor.seguridad_social}</p>
+                <p><strong>EXAMENES MEDICOS:</strong> ${conductor.fecha_vencimiento_examen}</p>
+                <p><strong>CERTIFICADO N°1:</strong> ${conductor.certificado_1}</p>
+                <p><strong>FECHA DE VIGENCIA:</strong> ${conductor.fecha_certificado_1}</p>
+
+
+                <p><strong> CONTACTO EN CASO DE EMERGENCIA :</strong> ${conductor.contacto_emergencia}</p>
+                <p><strong>TELEFONO EN CASO DE EMERGENCIA:</strong> ${conductor.celular_emergencia}</p>
+                <!-- Agrega más campos de información del conductor aquí -->
+                </div>
+                <button  style="display: none;"   id="editar-conductor-btn" class="btn editar-btn">Editar Información</button>
+            `;
+            
+            // Agregar botón de editar con un id único
+            infoConductoresDiv.innerHTML += `
+                <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
+                <a href="/" class="volver-btn">Volver al Menú</a>
+            `;
+
+            // Ahora registramos el evento click en el botón de editar
+            const editarBtn = document.getElementById('editar-conductor-btn');
+            editarBtn.addEventListener('click', () => {
+                // Redirigir a la página de edición del conductor
+                window.location.href = `./edicionC/${placaSeleccionada}`;
+            });
+        })
+        .catch(error => {
+            console.error('Error al consultar el conductor:', error);
+            infoConductoresDiv.textContent = 'Error al consultar el conductor';
+        });
+    });
+});
+
+
+
+
+    </script>
+    <script>
+    // Función para descargar el contenido como una imagen PNG
+// Función para descargar el contenido como una imagen PNG
+function descargarComoPNG() {
+    console.log("Descargando como PNG...");
+    const container = document.querySelector('.png'); // Selecciona el contenedor principal
+    
+
+    // Ajusta el tamaño de fuente del contenedor
+    container.style.fontSize = "34px"; // Por ejemplo, ajusta el tamaño de fuente a 24px
+    
+    html2canvas(container).then(canvas => { // Convierte el contenido a un lienzo
+        const imgData = canvas.toDataURL('image/png'); // Convierte el lienzo a datos de imagen PNG
+        const link = document.createElement('a'); // Crea un elemento de enlace
+        link.href = imgData; // Establece el atributo href con los datos de la imagen
+        link.download = 'hoja_de_vida_vehiculo.png'; // Establece el nombre de descarga
+        link.click(); // Simula un clic en el enlace para iniciar la descarga
+        
+        // Restablece el tamaño de fuente del contenedor después de la descarga
+        container.style.fontSize = "16px"; // Restablece el tamaño de fuente a 16px (o el valor que desees)
+    });
+}
+
+// Agrega un evento click al botón de descarga
+document.getElementById('descargar-btn').addEventListener('click', descargarComoPNG);
+
+</script>
+</body>
+</html>
