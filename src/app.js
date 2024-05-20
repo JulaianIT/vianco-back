@@ -4287,6 +4287,44 @@ app.get('/informe_general_f', (req, res) => {
 
 
 
+app.get('/seleccionar_hotelVAN', (req, res) => {
+    res.render('operaciones/tarifas/tarifas_van.hbs'); // Renderiza la vista seleccionar_hotel.hbs
+});
+
+
+
+app.get('/tarifasvan', (req, res) => {
+    const hotelSeleccionado = req.query.hotel; // Obtén el nombre del hotel seleccionado desde la consulta
+
+    // Construye la ruta de la imagen basada en el nombre del hotel
+    const rutaImagen = path.join(__dirname, 'public', 'imagenes', `${hotelSeleccionado}.png`);
+
+    // Envía la imagen al cliente
+    res.sendFile(rutaImagen, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(404).send('Imagen no encontrada para el hotel seleccionado');
+        }
+    });
+});
+// 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
