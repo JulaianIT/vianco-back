@@ -168,11 +168,20 @@ background-color: white;
 
 <form id="cotizacionForm" action="/cotizacion" method="POST">
         <h2>FORMULARIO DE COTIZACION</h2>
-        <label for="cliente">Cliente:</label>
-        <input type="text" id="cliente" name="cliente" required>
+
+ <select id="clientes-select" name="cliente" required>
+        <option value="">Selecciona un cliente</option>
+        {{#each clientes}}
+            <option value="{{nombre}}">{{nombre}}</option>
+        {{/each}}
+        <option value="otro">Otro cliente</option>
+    </select>
+
+    <input type="text" id="otro-cliente" name="otro_cliente" placeholder="Escriba el nombre del cliente" style="display: none;">
+
 
         <label for="nombre">Nombre de quien cotiza:</label>
-        <input type="text" id="nombre" name="nombre" required>
+        <input type="text" id="nombre" name="nombre" value=" {{nombreUsuario}}" readonly  required>
 
         <label for="correo">Correo:</label>
         <input type="text" id="correo" name="correo" required>
@@ -203,6 +212,33 @@ background-color: white;
             <ul class="w-full ml-auto flex justify-end pt-1"></ul>
         </nav>
 </footer>
+<script>
+    document.getElementById('clientes-select').addEventListener('change', function() {
+        var otroClienteInput = document.getElementById('otro-cliente');
+        if (this.value === 'otro') {
+            otroClienteInput.style.display = 'block';
+            otroClienteInput.required = true;
+        } else {
+            otroClienteInput.style.display = 'none';
+            otroClienteInput.required = false;
+        }
+    });
+
+    document.getElementById('formulario-cotizacion').addEventListener('submit', function(event) {
+        var clientesSelect = document.getElementById('clientes-select');
+        var otroClienteInput = document.getElementById('otro-cliente');
+
+        if (clientesSelect.value === 'otro') {
+            if (otroClienteInput.value.trim() === '') {
+                alert('Por favor, escriba el nombre del cliente.');
+                event.preventDefault();
+            } else {
+                clientesSelect.value = otroClienteInput.value.trim();
+            }
+        }
+    });
+</script>
+
     <script>
         // JavaScript para agregar dinámicamente los campos de servicios según el número seleccionado
         document.getElementById('numServicios').addEventListener('input', function() {
