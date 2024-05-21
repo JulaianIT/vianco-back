@@ -2314,29 +2314,40 @@ app.post('/cotizacion', (req, res) => {
 app.get('/VE', (req, res) => {
     res.render('cotizaciones/ver_cotizaciones.hbs');
 });
+
 // Ruta para manejar la búsqueda
 app.get('/ver_cotizaciones', (req, res) => {
-    const idCotizacion = req.query.id_cotizacion;
-    if (!idCotizacion) {
-        res.redirect('/VE'); // Redirige de vuelta al formulario si no se proporciona un id_cotizacion
-        return;
+    const idCotizacion = req.query.id_cotizacion; // Ajuste del nombre del parámetro
+    const fechaInicio = req.query.fecha_inicio;
+    const fechaFin = req.query.fecha_fin;
+
+    // Verifica si se proporcionó un ID de cotización
+    if (idCotizacion) {
+        const sql = 'SELECT * FROM cotizaciones WHERE id = ?'; // Ajuste del nombre de la columna
+        connection.query(sql, [idCotizacion], (error, results) => {
+            if (error) {
+                console.error('Error al ejecutar la consulta:', error);
+                res.render('error');
+                return;
+            }
+            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] }); // Renderiza la misma plantilla con los resultados de la búsqueda
+        });
+    } else if (fechaInicio && fechaFin) {
+        // Consulta las cotizaciones dentro del rango de fechas
+        const sql = 'SELECT * FROM cotizaciones WHERE fecha_creacion BETWEEN ? AND ?';
+        connection.query(sql, [fechaInicio, fechaFin], (error, results) => {
+            if (error) {
+                console.error('Error al ejecutar la consulta:', error);
+                res.render('error');
+                return;
+            }
+            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizaciones: results }); // Renderiza la misma plantilla con los resultados de la búsqueda
+        });
+    } else {
+        // Si no se proporciona ningún parámetro de búsqueda, redirige de vuelta al formulario
+        res.redirect('/VE');
     }
-
-    const sql = 'SELECT * FROM cotizaciones WHERE id = ?';
-    connection.query(sql, [idCotizacion], (error, results) => {
-        if (error) {
-            console.error('Error al ejecutar la consulta:', error);
-            res.render('error');
-            return;
-        }
-        res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] }); // Renderiza la misma plantilla con los resultados de la búsqueda
-    });
 });
-
-
-
-
-
 
 
 

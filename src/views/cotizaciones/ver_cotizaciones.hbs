@@ -179,12 +179,22 @@ background-color: #90c9a7;
     <h1></h1>
     <div>
         <div class="busca">
-        <form action="/ver_cotizaciones" method="GET">
-            <label for="numero_fuec"><h2> Buscar por N° cotizacion:</h2></label>
-<input type="text" id="id_cotizacion" name="id_cotizacion">
-            <button type="submit">Buscar</button>
-            <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
-                   
+<form action="/ver_cotizaciones" method="GET">
+    <label for="fecha_inicio"><h2>Desde:</h2></label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio">
+    <label for="fecha_fin"><h2>Hasta:</h2></label>
+    <input type="date" id="fecha_fin" name="fecha_fin">
+    <br>
+    <label for="cotizacion_id"><h2>Seleccionar Cotización:</h2></label>
+    <select id="cotizacion_id" name="id_cotizacion"> <!-- Ajuste del nombre del campo -->
+        {{#each cotizaciones}}
+            <option value="{{this.id}}">{{this.id}}</option>
+        {{/each}}
+    </select>
+    <br>
+    <button type="submit">Buscar</button>
+    <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
+</form>
 
             </div>
         </form>
