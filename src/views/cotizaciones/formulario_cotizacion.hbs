@@ -153,9 +153,25 @@
         <input type="tel" id="contacto" name="contacto" required>
         <label for="ciudad">Ciudad:</label>
         <input type="text" id="ciudad" name="ciudad" required>
+
+
+   <!-- Nueva casilla de verificación -->
+       <label for="adicionales-check">¿Desea agregar información adicional?</label>
+        <input type="checkbox" id="adicionales-check" name="adicionales-check">
+
+        <div id="adicionales-div" style="display: none;">
+            <label for="adicionales">Adicionales:</label>
+            <input type="text" id="adicionales" name="adicionales">
+        </div>
+
+
+
+
+
         <label for="numServicios">Número de servicios a cotizar (1-5):</label>
         <input class="servicio" type="number" id="numServicios" name="numServicios" min="1" max="5" required>
         <div id="servicios"></div>
+        <br>
         <input type="submit" value="Enviar Cotización">
     </form>
     <footer>
@@ -242,6 +258,15 @@
                     console.error('Error al obtener sugerencias de ubicación:', error);
                 });
         }
+         // Mostrar/Ocultar el campo "Adicionales" basado en la casilla de verificación
+      document.getElementById('adicionales-check').addEventListener('change', function() {
+            var adicionalesDiv = document.getElementById('adicionales-div');
+            if (this.checked) {
+                adicionalesDiv.style.display = 'block';
+            } else {
+                adicionalesDiv.style.display = 'none';
+            }
+        });
 
         $(document).ready(function() {
             $('#cotizacionForm').submit(function(event) {

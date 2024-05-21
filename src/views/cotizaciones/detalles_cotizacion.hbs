@@ -179,6 +179,8 @@
 <br>
 <br>
     <form action="/generar_plantilla" method="POST">
+            <input type="hidden" name="adicionales" value="{{cotizacion.adicionales}}">
+
         <!-- Campos ocultos para los datos de la cotización -->
         <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
         <input type="hidden" name="nombre" value="{{cotizacion.nombre}}">
@@ -190,6 +192,7 @@
 
         <!-- Campos ocultos para los datos de servicios -->
         {{#each servicios}}
+
         <input type="hidden" name="servicios[{{@index}}][fecha]" value="{{fecha}}">
         <input type="hidden" name="servicios[{{@index}}][hora]" value="{{hora}}">
         <input type="hidden" name="servicios[{{@index}}][origen]" value="{{origen}}">
@@ -199,7 +202,7 @@
         {{/each}}
         <!-- Tu tabla de servicios -->
         <!-- Botón para enviar el formulario -->
-   
+
     <div class="CLIENTE">
         <h2>DATOS DEL CLIENTE</h2>
         <p><strong>Realizada el:</strong> {{formatDate cotizacion.fecha_creacion}}</p>
@@ -208,9 +211,10 @@
         <p><strong>CORREO:</strong> {{cotizacion.correo}}</p>
         <p><strong>CONTACTO:</strong> {{cotizacion.contacto}}</p>
         <p><strong>CIUDAD:</strong> {{cotizacion.ciudad}}</p>
+        <p><strong>adicionales:</strong> {{cotizacion.adicionales}}</p>
         <p><strong>Número de servicios:</strong> {{cotizacion.num_servicios}}</p>
     </div>
-    <br>
+    <br>S
     <br>
     <br>
     <h2 id="servicios">DETALLES SERVICIOS</h2>
@@ -237,6 +241,7 @@
             <td>{{origen}}</td>
             <td>{{destino}}</td>
             <td>{{hora}}</td>
+            
             <td><input type="number" name="servicios[{{@index}}][valor]" value="{{this.valor}}" required></td>
 <td><input type="text" name="servicios[{{@index}}][observaciones]"></td> <!-- Campo para observaciones -->
         </tr>

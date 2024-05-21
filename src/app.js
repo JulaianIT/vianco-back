@@ -2079,10 +2079,6 @@ app.get('/formulario_cotizaciones', (req, res) => {
 
 
 
-
-// Paso 2: Envío de Cotización y Generación de Notificaciones
-// Paso 2: Envío de Cotización y Generación de Notificaciones
-// Paso 2: Envío de Cotización y Generación de Notificaciones
 app.post('/cotizacion', (req, res) => {
     const cotizacionData = req.body;
     const numServicios = parseInt(cotizacionData.numServicios);
@@ -2098,6 +2094,11 @@ app.post('/cotizacion', (req, res) => {
 
     // Agregar num_servicios a cotizacionData antes de la inserción
     cotizacionData.num_servicios = numServicios;
+
+    // Verificar si 'adicionales' está presente y agregarlo a cotizacionData
+    if (cotizacionData['adicionales']) {
+        cotizacionData.adicionales = cotizacionData['adicionales'];
+    }
 
     // Insertar los datos de la cotización en la base de datos
     connection.beginTransaction(err => {
@@ -2137,6 +2138,11 @@ app.post('/cotizacion', (req, res) => {
         });
     });
 });
+
+
+
+
+
 
 
 
