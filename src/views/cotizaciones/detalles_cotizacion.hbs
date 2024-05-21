@@ -134,7 +134,7 @@
             border: 5px solid black;
             position: relative;
             left: 10%;
-            width: 20%;
+            width: 30%;
             padding: 15px;
             background-color:rgb(144, 201, 167,0.3);
         }
@@ -167,6 +167,33 @@
           .guardar-btn:hover {
             background-color: #d9d9d9;
         }
+        .total-label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.total-input {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.calcular-btn {
+    background-color: #90c9a7;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.calcular-btn:hover {
+    background-color: #d9d9d9;
+}
+
     </style>
 </head>
 <body>
@@ -179,7 +206,7 @@
 <br>
 <br>
     <form action="/generar_plantilla" method="POST">
-            <input type="hidden" name="adicionales" value="{{cotizacion.adicionales}}">
+        <input type="hidden" name="adicionales" value="{{cotizacion.adicionales}}">
 
         <!-- Campos ocultos para los datos de la cotización -->
         <input type="hidden" name="cotizacionId" value="{{cotizacion.id}}">
@@ -203,139 +230,158 @@
         <!-- Tu tabla de servicios -->
         <!-- Botón para enviar el formulario -->
 
-    <div class="CLIENTE">
-        <h2>DATOS DEL CLIENTE</h2>
-        <p><strong>Realizada el:</strong> {{formatDate cotizacion.fecha_creacion}}</p>
-        <p><strong>Quien cotiza:</strong> {{cotizacion.nombre}}</p>
-        <p><strong>CLIENTE:</strong> {{cotizacion.cliente}}</p>
-        <p><strong>CORREO:</strong> {{cotizacion.correo}}</p>
-        <p><strong>CONTACTO:</strong> {{cotizacion.contacto}}</p>
-        <p><strong>CIUDAD:</strong> {{cotizacion.ciudad}}</p>
-        <p><strong>adicionales:</strong> {{cotizacion.adicionales}}</p>
-        <p><strong>Número de servicios:</strong> {{cotizacion.num_servicios}}</p>
-    </div>
-    <br>S
-    <br>
-    <br>
-    <h2 id="servicios">DETALLES SERVICIOS</h2>
-    <br>
-    <table class="servicios-table">
-        <thead>
-        <tr>
-            <th>FECHA</th>
-            <th>TIPO DE CARRO</th>
-            <th>ITINERARIO</th>
-            <th>ORIGEN</th>
-            <th>DESTINO</th>
-             <th>HORA</th>
-            <th>VALOR POR TRASLADO</th>
-            <th>OBSERVACIONES</th> <!-- Nueva columna para observaciones -->
-        </tr>
-        </thead>
-        <tbody>
-        {{#each servicios}}
-        <tr>
-            <td>{{formatDate fecha}}</td>
-            <td>{{tipoCarro}}</td>
-            <td>{{itinerario}}</td>
-            <td>{{origen}}</td>
-            <td>{{destino}}</td>
-            <td>{{hora}}</td>
-            
-            <td><input type="number" name="servicios[{{@index}}][valor]" value="{{this.valor}}" required></td>
-<td><input type="text" name="servicios[{{@index}}][observaciones]"></td> <!-- Campo para observaciones -->
-        </tr>
-        {{/each}}
-        </tbody>
-    </table>
- <div class="TOTAL">
-            <label for="valorTotal">VALOR TOTAL:</label>
-            <input type="text" id="valorTotal" name="valorTotal" readonly>
-            <button type="button" id="calcularTotal">Calcular Total</button>
+        <div class="CLIENTE">
+            <h2>DATOS DEL CLIENTE</h2>
+            <p><strong>Realizada el:</strong> {{formatDate cotizacion.fecha_creacion}}</p>
+            <p><strong>Quien cotiza:</strong> {{cotizacion.nombre}}</p>
+            <p><strong>CLIENTE:</strong> {{cotizacion.cliente}}</p>
+            <p><strong>CORREO:</strong> {{cotizacion.correo}}</p>
+            <p><strong>CONTACTO:</strong> {{cotizacion.contacto}}</p>
+            <p><strong>CIUDAD:</strong> {{cotizacion.ciudad}}</p>
+            <p><strong>adicionales:</strong> {{cotizacion.adicionales}}</p>
+            <p><strong>Número de servicios:</strong> {{cotizacion.num_servicios}}</p>
         </div>
-    <button class="guardar-btn" type="button">Guardar</button>
-    <button class="volver-btn" type="submit" style="display: none;">Generar Plantilla</button>
-</form>
+        <br>
+        <br>
+        <br>
+        <h2 id="servicios">DETALLES SERVICIOS</h2>
+        <br>
+        <table class="servicios-table">
+            <thead>
+            <tr>
+                <th>FECHA</th>
+                <th>TIPO DE CARRO</th>
+                <th>ITINERARIO</th>
+                <th>ORIGEN</th>
+                <th>DESTINO</th>
+                <th>HORA</th>
+                <th>VALOR POR TRASLADO</th>
+                <th>OBSERVACIONES</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each servicios}}
+            <tr>
+                <td>{{formatDate fecha}}</td>
+                <td>{{tipoCarro}}</td>
+                <td>{{itinerario}}</td>
+                <td>{{origen}}</td>
+                <td>{{destino}}</td>
+                <td>{{hora}}</td>
+                <td><input type="number" name="servicios[{{@index}}][valor]" value="{{this.valor}}" required></td>
+                <td><input type="text" name="servicios[{{@index}}][observaciones]"></td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+   <div class="TOTAL">
+    <label for="subtotal" class="total-label">SUBTOTAL:</label>
+    <input type="text" id="subtotal" name="subtotal" class="total-input">
+    <br><br>
+    <label for="descuento" class="total-label">DESCUENTO:</label>
+    <input type="number" id="descuento" name="descuento" class="total-input">
+    <br><br>
+    <label for="valorTotal" class="total-label">VALOR TOTAL:</label>
+    <input type="text" id="valorTotal" name="valorTotal" class="total-input">
+    <br><br>
+    <button type="button" id="calcularTotal" class="calcular-btn">Calcular Total</button>
+</div>
 
-<footer>
-    <section>
-        <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
-        <p>Copyrigt soporteVianco</p>
-        <nav class="">
-            <ul class="w-full ml-auto flex justify-end pt-1"></ul>
-        </nav>
-</footer>
-  <script>
-        // Función para formatear el número y eliminar ".00" si no son necesarios
+        <button class="guardar-btn" type="button">Guardar</button>
+        <button class="volver-btn" type="submit" style="display: none;">Generar Plantilla</button>
+    </form>
+
+    <footer>
+        <section>
+            <a href="mailto:soporte.it.vianco@gmail.com">soporte.it.vianco@gmail.com</a>
+            <p>Copyright soporteVianco</p>
+            <nav class="">
+                <ul class="w-full ml-auto flex justify-end pt-1"></ul>
+            </nav>
+    </footer>
+    <script>
         function formatNumber(number) {
             var formatted = parseFloat(number).toFixed(2);
             return formatted.replace(/\.00$/, '');
         }
 
         document.getElementById('calcularTotal').addEventListener('click', function() {
-            // Obtener todos los campos de valor por traslado
             var valorInputs = document.querySelectorAll('input[name^="servicios"][name$="[valor]"]');
-            var total = 0;
-            // Sumar los valores de todos los campos
+            var subtotal = 0;
             valorInputs.forEach(function(input) {
-                total += parseFloat(input.value) || 0; // Convertir a número y manejar valores nulos
+                subtotal += parseFloat(input.value) || 0;
             });
-            // Formatear el número y actualizar el campo "Valor Total"
+
+            var descuento = parseFloat(document.getElementById('descuento').value) || 0;
+            var total = subtotal - descuento;
+
+            document.getElementById('subtotal').value = formatNumber(subtotal);
             document.getElementById('valorTotal').value = formatNumber(total);
         });
     </script>
 
-<script>
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear().toString();
-        return `${day}/${month}/${year}`;
-    }
-    
-    document.querySelector('.guardar-btn').addEventListener('click', function() {
-        const valorTotal = document.querySelector('input[name="valorTotal"]').value;
-        const servicios = Array.from(document.querySelectorAll('.servicios-table tbody tr')).map(row => {
-            if (!row) {
-                console.error("La fila es nula");
-                return null;
-            }
-            const valorInput = row.querySelector('input[name$="[valor]"]');
-            const valor = valorInput ? valorInput.value : ''; // Manejo de valor nulo
-            const observacionesInput = row.querySelector('input[name$="[observaciones]"]');
-            const observaciones = observacionesInput ? observacionesInput.value : ''; // Manejo de valor nulo
-            return {
-                valor,
-                observaciones
-            };
+    <script>
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear().toString();
+            return `${day}/${month}/${year}`;
+        }
+        
+document.querySelector('.guardar-btn').addEventListener('click', function() {
+    const valorTotal = parseFloat(document.querySelector('input[name="valorTotal"]').value); // Convertir a número
+var subtotal = parseFloat(document.getElementById('subtotal').value) || 0; // Obtener el subtotal del campo oculto en el formulario
+
+    const descuentoInput = document.getElementById('descuento');
+    const descuento = descuentoInput.value.trim() === '' ? 0 : parseFloat(descuentoInput.value); // Convertir a número o establecer en cero si está vacío
+
+    const servicios = Array.from(document.querySelectorAll('.servicios-table tbody tr')).map(row => {
+        if (!row) {
+            console.error("La fila es nula");
+            return null;
+        }
+        const valorInput = row.querySelector('input[name$="[valor]"]');
+        const valor = valorInput ? parseFloat(valorInput.value) : ''; // Convertir a número
+        const observacionesInput = row.querySelector('input[name$="[observaciones]"]');
+        const observaciones = observacionesInput ? observacionesInput.value : '';
+        var subtotal = parseFloat(document.getElementById('subtotal').value) || 0; // Obtener el subtotal del campo oculto en el formulario
+
+        return {
+            valor,
+            observaciones
+        };
+    });
+
+     // Enviar los datos al servidor
+            fetch('/guardar_datos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cotizacionId: '{{cotizacion.id}}',
+                    valorTotal: valorTotal,
+                    subtotal: subtotal, // Enviar el subtotal al servidor
+                    descuento: descuento,
+                    servicios: servicios
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Datos guardados exitosamente');
+                    document.querySelector('.volver-btn').style.display = 'inline-block';
+                } else {
+                    alert('Error al guardar los datos');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud');
+            });
         });
 
-        fetch('/guardar_datos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                cotizacionId: '{{cotizacion.id}}',
-                valorTotal: valorTotal,
-                servicios: servicios
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('Datos guardados exitosamente');
-                // Mostrar el botón de Generar Plantilla después de guardar los datos
-                document.querySelector('.volver-btn').style.display = 'inline-block';
-            } else {
-                alert('Error al guardar los datos');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al procesar la solicitud');
-        });
-    });
-</script>
+
+    </script>
 </body>
 </html>

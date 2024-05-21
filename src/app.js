@@ -2225,16 +2225,18 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
         res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios, cliente: cotizacion });
     });
 });
-
 app.post('/generar_plantilla', (req, res) => {
     // Extraer todos los datos de la cotización del cuerpo de la solicitud
     const cotizacionId = req.body.cotizacionId;
     const valorTotal = req.body.valorTotal;
+    const subtotal = req.body.subtotal;
+    const descuento = req.body.descuento;
+    const adicionales = req.body.adicionales; // Aquí se obtiene el valor de adicionales
     
     // Extraer los datos del cliente del cuerpo de la solicitud
     const cliente = {
         nombre: req.body.nombre,
-        cliente: req.body.cliente, // Cambiar a cliente si es el nombre correcto del campo en el formulario HTML
+        cliente: req.body.cliente,
         correo: req.body.correo,
         contacto: req.body.contacto,
         ciudad: req.body.ciudad,
@@ -2249,6 +2251,9 @@ app.post('/generar_plantilla', (req, res) => {
     res.render('cotizaciones/plantilla_personalizada', { 
         cotizacionId: cotizacionId, 
         valorTotal: valorTotal,
+        subtotal: subtotal,
+        descuento: descuento,
+        adicionales: adicionales, // Aquí se incluye adicionales en el contexto
         cliente: cliente, 
         servicios: servicios
     }, (err, html) => {
@@ -2261,6 +2266,7 @@ app.post('/generar_plantilla', (req, res) => {
         res.send(html);
     });
 });
+
 
 
 
@@ -3178,22 +3184,21 @@ app.get('/ubicaciones/:nombreUsuario', function(req, res) {
 app.get('/ver_ubicaiones', (req, res) => {
     res.render('operaciones/geolocalizacion/ver_ubicaciones.hbs');
 });
-
-
-
 app.post('/guardar_datos', (req, res) => {
     const cotizacionId = req.body.cotizacionId;
     const valorTotal = req.body.valorTotal;
+    const subtotal = req.body.subtotal;
+    const descuento = req.body.descuento;
     const servicios = req.body.servicios;
 
-    // Actualizar el valor total en la tabla de cotizaciones
-    connection.query('UPDATE cotizaciones SET valor_total = ? WHERE id = ?', [valorTotal, cotizacionId], function(err, result) {
+    // Actualizar la tabla de cotizaciones con el nuevo subtotal, descuento y valor total
+    connection.query('UPDATE cotizaciones SET subtotal = ?, descuento = ?, valor_total = ? WHERE id = ?', [subtotal, descuento, valorTotal, cotizacionId], function(err, result) {
         if (err) {
-            console.error('Error al actualizar valor total:', err);
-            return res.status(500).json({ error: 'Error al actualizar valor total' });
+            console.error('Error al actualizar valores:', err);
+            return res.status(500).json({ error: 'Error al actualizar valores' });
         }
 
-        // Recorrer los servicios y guardar cada uno en las columnas correspondientes de la tabla cotizaciones
+        // Recorrer los servicios y actualizar la tabla de cotizaciones
         servicios.slice(0, 5).forEach((servicio, index) => { // Solo procesar los primeros 5 servicios
             if (!servicio) return; // Omitir servicios nulos
             const valorColumn = `valor_${index + 1}`;

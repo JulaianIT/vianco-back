@@ -124,26 +124,26 @@
                 <tr>
                     <td><strong>CLIENTE:</strong> {{cliente.cliente}}</td>
                     <td><strong>COTIZACION N°:</strong> {{cotizacionId}}</td>
-                    <td><strong>Valor Total: $</strong> {{valorTotal}}</td>
+                      <td><strong>N° DE SERVICIOS: </strong> {{cliente.num_servicios}}</td>
                 </tr>
                 <tr>
                     <td><strong>Correo:</strong> {{cliente.correo}}</td>
                     <td><strong>Contacto:</strong> {{cliente.contacto}}</td>
                     <td><strong>Ciudad:</strong> {{cliente.ciudad}}</td>
                 </tr>
-                <tr>
-                    
-                    <td colspan="3"><strong>N° DE SERVICIOS:</strong> {{cliente.num_servicios}}</td>
-
-                </tr>
-                <tr>
-                    <td colspan="3"><strong>ADICIONALES</strong> {{cotizacion.adicionales}}</td>
-
-                 
-
+                    <tr>
+                    <td colspan="3"><strong>ADICIONALES</strong> {{adicionales}}</td>
 
             </tr>
 
+                <tr>
+                     <td><strong>SUBTOTAL :$</strong> {{subtotal}}</td>
+                      <td><strong>DESCUENTO: $</strong> {{descuento}}</td>
+                       <td><strong>Valor Total: $</strong> {{valorTotal}}</td>
+
+
+                </tr>
+            
             </table>
 <br>
 <br>

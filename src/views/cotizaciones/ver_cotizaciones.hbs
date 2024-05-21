@@ -218,7 +218,7 @@ background-color: #90c9a7;
                 <tr>
                     <td><strong>CLIENTE:</strong> {{cotizacion.cliente}}</td>
                     <td><strong>COTIZACION N°:</strong> {{cotizacion.id}}</td>
-                    <td><strong>Valor Total: $</strong>{{cotizacion.valor_total}}</td>
+                  <td><strong>N° DE SERVICIOS: </strong> {{cotizacion.num_servicios}}</td>
                 </tr>
                 <tr>
                     <td><strong>Correo:</strong> {{cotizacion.correo}}</td>
@@ -226,7 +226,10 @@ background-color: #90c9a7;
                     <td><strong>Ciudad:</strong> {{cotizacion.ciudad}}</td>
                 </tr>
                 <tr>
-                    <td colspan="3"><strong>N° DE SERVICIOS:</strong> {{cotizacion.num_servicios}}</td>
+                <td><strong>SUBTOTAL :$</strong>{{cotizacion.subtotal}}</td>
+                 <td><strong>DESCUENTO: $</strong>{{cotizacion.descuento}}</td>
+                       <td><strong>Valor Total: $</strong> {{cotizacion.valor_total}}</td>
+
                 </tr>
                   <tr>
                     <td colspan="3"><strong>ADICIONALES</strong> {{cotizacion.adicionales}}</td>
