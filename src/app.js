@@ -2020,7 +2020,7 @@ app.post('/buscar_por_fecha', async (req, res) => {
         // Consultar la base de datos por la fecha especificada
         const query = 'SELECT * FROM aeropuerto WHERE fecha = ?';
         const [rows, fields] = await connection.promise().query(query, [fecha]);
-        console.log('Datos encontrados:', rows);
+        console.log('Datos encontrados');
 
         // Enviar los resultados como respuesta JSON
         res.json(rows);
