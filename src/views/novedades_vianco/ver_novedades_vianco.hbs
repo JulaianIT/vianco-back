@@ -6,318 +6,367 @@
     <title>Ver Novedades</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1.0/daterangepicker.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1.0/daterangepicker.min.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/imagenes/logo-pestaña.png" type="image/x-icon">
     <style>
-        * {
-            font-family: "Roboto", sans-serif;
-            font-weight: 100;
-            font-style: normal;
-            font-optical-sizing: auto;
-            font-weight: 300;
-            font-style: normal;
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
+        /* Estilos CSS */
         body {
-            background-color: #ccc;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
         }
         header {
-            background-color: white;
+            background-color: #007bff;
+            padding: 10px 0;
+        }
+        header img {
+            max-width: 100px;
+            margin: 0 10px;
         }
         .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .novedad {
-            border: 5px solid black;
-            margin-bottom: 20px;
-            position: relative;
-            left: 25%;
-            text-align: justify;
-            width: 50%;
-            font-size: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            background-color: white;
-        }
-        .novedad h2 {
-            color: black;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        .novedad p {
-            color: black;
-            font-size: 21px;
-            margin-bottom: 8px;
-        }
-        .novedad img {
-            max-width: 100%;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-        .novedad hr {
-            border-top: 1px solid #ccc;
             margin-top: 20px;
-            margin-bottom: 10px;
+            display: flex;
         }
-        #logo {
-            position: relative;
-            left: 90px;
+        .form-container, .table-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .form-container {
             width: 400px;
+            margin-left: 20px;
         }
-        #vigilado {
-            float: right;
-            width: 300px;
+        .table-container {
+            flex: 1;
         }
-        form {
-            background-color: rgba(144, 201, 167);
-            padding: 30px;
-            text-align: center;
+        form h2 {
+            margin-bottom: 20px;
+            color: #90c9a7;
         }
         form label {
-            margin-right: 15px;
-            font-size: 30px;
+            font-weight: bold;
+            color: #495057;
         }
-        input {
-            border: 3px solid black;
-            font-size: 20px;
-            border-radius: 5px;
+        form input[type="text"],
+        form input[type="date"],
+        form select {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-        input[type="date"] {
-            text-align: center;
-            border: 3px solid black;
-            font-size: 20px;
-            border-radius: 5px;
-            padding: 10px;
-            width: 300px;
+        form button[type="submit"],
+        .volver-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin-top: 20px;
+            background-color: #90c9a7;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
         }
-        .volver-btn:hover,
-        .ver:hover {
-            background-color: #d9d9d9;
+        form button[type="submit"]:hover,
+        .volver-btn:hover {
+            background-color: #0056b3;
         }
-        .volver-btn,
         .ver {
-            position: relative;
-            left: 20px;
-            text-transform: uppercase;
-            background-color: #90c9a7;
-            color: #000;
-            border: none;
-            padding: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: bold;
-            text-decoration: none;
+            margin-right: 10px;
         }
-        p {
-            font-size: 20px;
-        }
-    .informe {
-        border-radius: 10px;
-        padding: 25px;
-    position: relative;
-    left: 2%;
-    background-color: rgba(144, 201, 167, 0.7); /* Utiliza rgba para especificar el color con opacidad */
-    border: 3px solid black;
-    width: 20%;
-}
-.form-control{
-align-items: center;
-position: relative;
-left:10%;
-}
-
-               .info {
-           position: relative;
-            left: 20px;
-            text-transform: uppercase;
-            background-color: #90c9a7;
-            color: #000;
-            border: none;
-            padding: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: inline-block;
+        .info {
+            display: block;
             margin-top: 20px;
-            font-size: 15px;
-            font-weight: bold;
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
             text-decoration: none;
-            
-            
-            }
-            .info:hover {
-            background-color: #d9d9d9;
+            transition: background-color 0.3s ease;
+        }
+        .info:hover {
+            background-color: #218838;
+        }
+        #novedadesContainer {
+            margin-top: 20px;
+        }
+        .novedad {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .novedad h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .novedad p {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        .novedad .contenido {
+            display: none;
+        }
+        .bad {
+            color: #dc3545;
+        }
+        footer {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        footer p {
+            margin-bottom: 5px;
+        }
+        .table {
+            width: 100%;
+            border: 1px solid #666567;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            font-family: Arial, sans-serif;
+            margin-bottom: 1rem;
+        }
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid #666567;
+            border-right: 2px solid #666567;
+            color: #413d4b;
+        }
+        .table thead th {
+            background-color: #90c9a7;
+            color: black;
+            border-color: #666567;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #cfd8dc;
+        }
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
         }
     </style>
 </head>
 <body>
-    <header>
-        <img id="membrete" src="/imagenes/menbrete.png"/>
-        <img id="logo" src="/imagenes/logo vianco.png"/>
-        <img id="vigilado" src="/imagenes/vigilado.png"/>
-    </header>
+<div style="display: flex;">
+    <div class="table-container">
+                  <h2 id="tituloNovedades">Todas las Novedades</h2>
 
-    <div class="BUSCAR">
-        <form id="formFecha">
-            <h2>BUSCAR SERVICIO NO CONFORME</h2>
-            <label for="id"><strong> DIGITE EL N° DEL SERVICIO:</strong></label>
-            <input type="text" id="id" name="id"> 
-<button type="submit" id="verNovedadesPorID" class="ver">Ver Novedades</button>
-            <a href="/" class="volver-btn"><strong> Volver al Menú </strong></a>
+        <table class="table">
+
+
+
+
+<div id="novedadesContainer"></div>
+            <!-- Contenido de la tabla -->
+        </table>
+    </div>
+    <div class="form-container">
+        <form id="formBusqueda">
+            <h2>Buscar Servicio No Conforme</h2>
+            <div>
+                <label for="id">N° del Servicio:</label>
+                <input type="text" id="id" name="id">
+            </div>
+            <div>
+                <label for="fechaInicio">Fecha Inicio:</label>
+                <input type="date" id="fechaInicio" name="fechaInicio">
+            </div>
+            <div>
+                <label for="fechaFin">Fecha Final:</label>
+                <input type="date" id="fechaFin" name="fechaFin">
+            </div>
+            <div>
+                <label for="keyword">Palabra Clave:</label>
+                <input type="text" id="keyword" name="keyword">
+            </div>
+            <div>
+                <label for="pendiente">ESTADO:</label>
+                <select id="pendiente" name="pendiente" onchange="cambiarTitulo(this)">
+                    <option value="true">Pendientes</option>
+                    <option value="false">Completados</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="ver">Ver Novedades</button>
+                <a href="/" class="volver-btn">Volver al Menú</a>
+            </div>
         </form>
     </div>
-    <br>
-    <div class="informe">
-        <label for="fechaInicio">FECHA INCIO</label>
-<input type="date" id="fechaInicio" name="fechaInicio" class="form-control" placeholder="Fecha de inicio">
-<br>
-        <label for="fechaFin">FECHA FINAL</label>
-
-<input type="date" id="fechaFin" name="fechaFin" class="form-control" placeholder="Fecha de fin">
-<br>
-            <button type="button" class="info" id="descargarExcel">Descargar Excel</button>
-
 </div>
-<br>
-<br>
-    <hr>
 
-    <div class="novedad-container" id="novedadesContainer"></div>
 
-    <footer>
-        <section>
-            <p>Derechos Reservados &copy; 2024</p>
-            <p class="bad">Desarrollado por: NEXUS</p>
-        </section>
-    </footer>
 
+<footer>
+    <section>
+        <p>Derechos Reservados &copy; 2024</p>
+        <p class="bad">Desarrollado por: NEXUS</p>
+    </section>
+</footer>
     <script>
-  document.getElementById("descargarExcel").addEventListener("click", function () {
-    const fechaInicio = document.getElementById("fechaInicio").value;
-    const fechaFin = document.getElementById("fechaFin").value;
-    descargarInformeExcel(fechaInicio, fechaFin);
-});
-document.getElementById("verNovedadesPorID").addEventListener("click", function (event) {
-    event.preventDefault();
-    const id = document.getElementById("id").value;
-    obtenerNovedadesPorID(id);
-});
+        document.addEventListener("DOMContentLoaded", function () {
+            // Agregamos el evento clic a todos los encabezados de novedades
+            const novedadHeaders = document.querySelectorAll(".novedad h2");
+            novedadHeaders.forEach(header => {
+                header.addEventListener("click", function () {
+                    // Buscamos el contenedor de la novedad y alternamos la clase "expandido"
+                    const novedadDiv = this.parentElement;
+                    novedadDiv.classList.toggle("expandido");
+                    const contenido = novedadDiv.querySelector('.contenido');
+                    contenido.style.display = contenido.style.display === 'none' ? 'block' : 'none';
+                });
+            });
+        });
 
-function obtenerNovedadesPorID(numeroU) {
-    fetch(`/novedad_vianco?numeroU=${numeroU}`) // Cambiar 'id' a 'numeroU'
-        .then(response => response.json())
-        .then(data => mostrarNovedades(data))
-        .catch(error => console.error('Error:', error));
-}
+        function cambiarTitulo(select) {
+            const titulo = document.getElementById("tituloNovedades");
+            if (select.value === "true") {
+                titulo.textContent = "Novedades Pendientes";
+            } else if (select.value === "false") {
+                     titulo.textContent = "Novedades Completadas";
+            } else {
+                titulo.textContent = "Todas las Novedades";
+            }
+        }
 
+        document.getElementById("formBusqueda").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const id = document.getElementById("id").value.trim();
+            const fechaInicio = document.getElementById("fechaInicio").value.trim();
+            const fechaFin = document.getElementById("fechaFin").value.trim();
+            const keyword = document.getElementById("keyword").value.trim();
+            const pendiente = document.getElementById("pendiente").value.trim(); // Obtener el valor de pendiente
+            obtenerNovedades({ id, fechaInicio, fechaFin, keyword, pendiente });
+        });
 
-        // Definición de la función generarInformeExcel
-   document.getElementById("formFecha").addEventListener("submit", function (event) {
-        event.preventDefault();
-        const fechaInicio = document.getElementById("fechaInicio").value;
-        const fechaFin = document.getElementById("fechaFin").value;
-        obtenerNovedades(fechaInicio, fechaFin);
-    });
+        document.getElementById("descargarExcel").addEventListener("click", function () {
+            const fechaInicio = document.getElementById("fechaInicio").value.trim();
+            const fechaFin = document.getElementById("fechaFin").value.trim();
+            descargarInformeExcel(fechaInicio, fechaFin);
+        });
 
-    function obtenerNovedades(fechaInicio, fechaFin) {
-        fetch('/descargar_excell', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ fechaInicio, fechaFin })
-        }).then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(new Blob([blob]));
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'informe.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-        function obtenerNovedades(id) {
-            fetch(`/novedad_vianco?fecha=${id}`)
+        function obtenerNovedades(params) {
+            const queryString = new URLSearchParams(params).toString();
+           
+            fetch(`/novedad_vianco?${queryString}`)
                 .then(response => response.json())
                 .then(data => mostrarNovedades(data))
                 .catch(error => console.error('Error:', error));
         }
+function mostrarNovedades(novedades) {
+    const pendiente = document.getElementById("pendiente").value.trim(); // Obtener el valor de pendiente
+    const novedadesContainer = document.getElementById("novedadesContainer");
+    novedadesContainer.innerHTML = ""; // Limpiar el contenedor
 
-        function mostrarNovedades(novedades) {
-            const novedadesContainer = document.getElementById("novedadesContainer");
-            novedadesContainer.innerHTML = ""; // Limpiar el contenedor
-
-            if (novedades.length === 0) {
-                novedadesContainer.innerHTML = "<p>No hay novedades para esta fecha</p>";
-            } else {
-                novedades.forEach((novedad, index) => {
-                    const novedadDiv = document.createElement("div");
-                    novedadDiv.classList.add("novedad");
-
-                    let contenidoHTML = `<h1>Información de la novedad</h1>`;
-                    contenidoHTML += `<h2><strong>Fecha del servicio no conforme:</strong> ${novedad.fecha_novedad}</p>`;
-                    contenidoHTML += `<p><strong>Realizada por:</strong> ${novedad.realiza}</p>`;
-                    contenidoHTML += `<p><strong>Novedad de Tripulación:</strong> ${novedad.novedad_tripulacion}</p>`;
-                    contenidoHTML += `<p><strong>Novedad de Hotelería:</strong> ${novedad.novedad_hoteleria}</p>`;
-                    contenidoHTML += `<p><strong>Novedad de Ejecutivos:</strong> ${novedad.novedad_ejecutivos}</p>`;
-                    contenidoHTML += `<p><strong>Novedad de Empresas Privadas:</strong> ${novedad.novedad_empresas_privadas}</p>`;
-                    contenidoHTML += `<p><strong>NOVEDADES_TASKGO:</strong> ${novedad.NOVEDADES_TASKGO}</p>`;
-                    contenidoHTML += `<p><strong>Otras novedades:</strong> ${novedad.otras_novedades}</p>`;
-                    contenidoHTML += `<p><strong>Firma:</strong> <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></p>`;
-                    contenidoHTML += `<h2>Seguimiento</h2>`;
-                    contenidoHTML += `<p><strong>Fecha de seguimiento:</strong> ${novedad.fecha_seguimiento}</p>`;
-                    contenidoHTML += `<p><strong>Nombre de seguimiento:</strong> ${novedad.nombre_seguimiento}</p>`;
-                    contenidoHTML += `<p><strong>Detalle de seguimiento:</strong> ${novedad.detalle_seguimiento}</p>`;
-                    contenidoHTML += `<p><strong>Fecha de registro:</strong> ${novedad.fecha_registro}</p>`;
-                    contenidoHTML += `<p><strong>Acciones:</strong> ${novedad.ACCIONES}</p>`;
-
-                    novedadDiv.innerHTML = contenidoHTML;
-                    novedadesContainer.appendChild(novedadDiv);
-                });
-            }
-        }
-
-        // Función para descargar el informe en Excel
-    function descargarInformeExcel(fechaInicio, fechaFin) {
-    fetch('/descargar_excell', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ fechaInicio, fechaFin })
-    }).then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'informe.xlsx';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
+    if (novedades.length === 0) {
+        novedadesContainer.innerHTML = "<p>No hay novedades para los criterios de búsqueda especificados.</p>";
+    } else {
+        const table = crearTablaNovedades(novedades, pendiente);
+        novedadesContainer.appendChild(table);
+    }
 }
 
+function crearTablaNovedades(novedades, pendiente) {
+    const table = document.createElement('table');
+    table.classList.add('table');
 
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+
+    // Definir los encabezados de la tabla basados en el estado seleccionado
+    const headers = pendiente === "true" ?
+        ['N° UNICO', 'Fecha de la novedad ', 'Fecha de envio' ,'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma'] :
+        ['N° UNICO', 'Fecha Novedad', 'Fecha de envio','Enviada por: ', 'Novedad Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Responsable Seguimiento', 'Detalle Seguimiento', 'Fecha Seguimiento', 'Fecha Registro Seguimiento', 'Acciones a tomar', ];
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        tr.appendChild(th);
+    });
+
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    novedades.forEach(novedad => {
+        const tr = document.createElement('tr');
+        if (pendiente === "true") {
+            tr.innerHTML = `
+                <td>${novedad.id}</td>
+                <td>${novedad.fecha}</td>
+                                <td>${novedad.fecha_registro}</td>
+
+                <td>${novedad.realiza}</td>
+                <td>${novedad.novedad_tripulacion}</td>
+                <td>${novedad.novedad_hoteleria}</td>
+                <td>${novedad.novedad_ejecutivos}</td>
+                <td>${novedad.novedad_empresas_privadas}</td>
+                <td>${novedad.otras_novedades}</td>
+                <td><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></td>
+            `;
+        } else {
+            tr.innerHTML = `
+                            <td>${novedad.numeroU}</td>
+                <td>${novedad.fecha}</td>
+                                <td>${novedad.fecha_registro}</td>
+
+                <td>${novedad.realiza}</td>
+                <td>${novedad.novedad_tripulacion}</td>
+                <td>${novedad.novedad_hoteleria}</td>
+                <td>${novedad.novedad_ejecutivos}</td>
+                <td>${novedad.novedad_empresas_privadas}</td>
+                <td>${novedad.otras_novedades}</td>
+                <td>${novedad.nombre_seguimiento}</td>
+                <td>${novedad.detalle_seguimiento}</td>
+                <td>${novedad.fecha_seguimiento}</td>
+                <td>${novedad.fecha_registro_seguimiento}</td>
+                <td>${novedad.ACCIONES}</td>
+            `;
+        }
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    return table;
+}
+
+        function descargarInformeExcel(fechaInicio, fechaFin) {
+            fetch('/descargar_excell', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fechaInicio, fechaFin })
+            }).then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'informe.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error:', error));
+        }
     </script>
 </body>
 </html>
+

@@ -3453,26 +3453,202 @@ app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
 
 
 
-
 app.get('/ver_vianco', (req, res) => {
     res.render('novedades_vianco/ver_novedades_vianco.hbs');
+
 });
+
+
+
+
 app.get('/novedad_vianco', (req, res) => {
-    const numeroU = req.query.numeroU;
+    const { id, fechaInicio, fechaFin, keyword, pendiente, filtroNovedades } = req.query;
 
-    // Preparar la consulta SQL para obtener las novedades que coincidan con el númeroU proporcionado
-    const sql = "SELECT * FROM novedades_completadas_vianco WHERE numeroU LIKE ?";
+    let sql = '';
+    let params = [];
 
-    // Ejecutar la consulta
-    connection.query(sql, [`%${numeroU}%`], (err, result) => {
+    // Construir la consulta base dependiendo del estado de "pendiente"
+    if (pendiente === "true") { 
+        sql = `
+            SELECT 
+                id, 
+                fecha, 
+                realiza, 
+                novedad_tripulacion, 
+                novedad_hoteleria, 
+                novedad_ejecutivos, 
+                novedad_empresas_privadas, 
+                NOVEDADES_TASKGO, 
+                otras_novedades, 
+                fecha_registro, 
+                firma,
+                NULL AS nombre_seguimiento, 
+                NULL AS detalle_seguimiento, 
+                NULL AS fecha_seguimiento, 
+                NULL AS fecha_registro_seguimiento, 
+                NULL AS ACCIONES,
+                NULL AS estado,
+                NULL AS numeroU
+            FROM novedades_vianco
+            WHERE 1=1
+        `;
+        // Agregar filtro para el campo "id" si está presente
+        if (id) {
+            sql += " AND id LIKE ?";
+            params.push(`%${id}%`);
+        }
+    } else if (pendiente === "false") { 
+        sql = `
+            SELECT 
+                id, 
+                fecha_novedad AS fecha, 
+                realiza, 
+                novedad_tripulacion, 
+                novedad_hoteleria, 
+                novedad_ejecutivos, 
+                novedad_empresas_privadas, 
+                NOVEDADES_TASKGO, 
+                otras_novedades, 
+                fecha_registro, 
+                firma, 
+                nombre_seguimiento, 
+                detalle_seguimiento, 
+                fecha_seguimiento, 
+                fecha_registro AS fecha_registro_seguimiento, 
+                ACCIONES,
+                NULL AS estado,
+                numeroU
+            FROM novedades_completadas_vianco
+            WHERE 1=1
+        `;
+        // Agregar filtro para el campo "numeroU" si está presente
+        if (id) {
+            sql += " AND numeroU LIKE ?";
+            params.push(`%${id}%`);
+        }
+    } else { 
+        // Consulta combinada si se buscan todas las novedades
+        sql = `
+            SELECT 
+                id, 
+                fecha, 
+                realiza, 
+                novedad_tripulacion, 
+                novedad_hoteleria, 
+                novedad_ejecutivos, 
+                novedad_empresas_privadas, 
+                NOVEDADES_TASKGO, 
+                otras_novedades, 
+                fecha_registro, 
+                firma,
+                NULL AS nombre_seguimiento, 
+                NULL AS detalle_seguimiento, 
+                NULL AS fecha_seguimiento, 
+                NULL AS fecha_registro_seguimiento, 
+                NULL AS ACCIONES,
+                NULL AS estado,
+                NULL AS numeroU
+            FROM novedades_vianco
+            WHERE 1=1
+        `;
+        // Agregar filtro para el campo "id" si está presente
+        if (id) {
+            sql += " AND id LIKE ?";
+            params.push(`%${id}%`);
+        }
+        // Agregar filtro para el campo "numeroU" si está presente
+        if (id) {
+            sql += " UNION ALL SELECT ..."; 
+            sql += " AND numeroU LIKE ?";
+            params.push(`%${id}%`);
+        }
+    }
+
+    // Agregar filtros según los parámetros de búsqueda (fechaInicio, fechaFin, keyword)
+    if (fechaInicio) {
+        sql += " AND fecha >= ?";
+        params.push(fechaInicio);
+    }
+    if (fechaFin) {
+        sql += " AND fecha <= ?";
+        params.push(fechaFin);
+    }
+    if (keyword) {
+        sql += " AND (novedad_tripulacion LIKE ? OR novedad_hoteleria LIKE ? OR novedad_ejecutivos LIKE ? OR novedad_empresas_privadas LIKE ? OR otras_novedades LIKE ?)";
+        const keywordParam = `%${keyword}%`;
+        params.push(keywordParam, keywordParam, keywordParam, keywordParam, keywordParam);
+    }
+
+    // Agregar filtros adicionales basados en las opciones seleccionadas en el filtroNovedades
+    if (filtroNovedades && filtroNovedades.length > 0) {
+        sql += " AND (";
+        filtroNovedades.forEach((filtro, index) => {
+            if (index > 0) sql += " OR ";
+            sql += `${filtro} = 1`;
+        });
+        sql += ")";
+    }
+
+    connection.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
         } else {
-            res.status(200).json(result); // Devuelve los datos como JSON
+            res.status(200).json(result);
         }
     });
 });
+
+
+
+
+app.post('/descargar_excell', (req, res) => {
+    const { fechaInicio, fechaFin } = req.body;
+    let sql = "SELECT * FROM novedades_completadas_vianco WHERE 1=1";
+    let params = [];
+
+    if (fechaInicio) {
+        sql += " AND fecha_novedad >= ?";
+        params.push(fechaInicio);
+    }
+    if (fechaFin) {
+        sql += " AND fecha_novedad <= ?";
+        params.push(fechaFin);
+    }
+
+    connection.query(sql, params, (err, result) => {
+        if (err) {
+            console.error("Error al obtener las novedades:", err);
+            res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
+        } else {
+            // Aquí se debería generar el archivo Excel con los datos obtenidos
+            const workbook = createExcelWorkbook(result); // Función hipotética para crear el archivo Excel
+            res.setHeader('Content-Disposition', 'attachment; filename="informe.xlsx"');
+            workbook.xlsx.write(res).then(() => {
+                res.end();
+            });
+        }
+    });
+});
+
+function createExcelWorkbook(data) {
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Novedades');
+
+    sheet.columns = [
+        { header: 'ID', key: 'id' },
+        { header: 'Fecha Novedad', key: 'fecha_novedad' },
+        { header: 'Realiza', key: 'realiza' },
+        // Añadir más columnas según los datos que tengas
+    ];
+
+    data.forEach(item => {
+        sheet.addRow(item);
+    });
+
+    return workbook;
+}
 
 
 
