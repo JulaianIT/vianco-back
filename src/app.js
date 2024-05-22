@@ -3459,8 +3459,6 @@ app.get('/ver_vianco', (req, res) => {
 });
 
 
-
-
 app.get('/novedad_vianco', (req, res) => {
     const { id, fechaInicio, fechaFin, keyword, pendiente, filtroNovedades } = req.query;
 
@@ -3497,6 +3495,15 @@ app.get('/novedad_vianco', (req, res) => {
             sql += " AND id LIKE ?";
             params.push(`%${id}%`);
         }
+        // Agregar filtros de fecha según el estado de "pendiente"
+        if (fechaInicio) {
+            sql += " AND fecha >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha <= ?";
+            params.push(fechaFin);
+        }
     } else if (pendiente === "false") { 
         sql = `
             SELECT 
@@ -3525,6 +3532,15 @@ app.get('/novedad_vianco', (req, res) => {
         if (id) {
             sql += " AND numeroU LIKE ?";
             params.push(`%${id}%`);
+        }
+        // Agregar filtros de fecha según el estado de "pendiente"
+        if (fechaInicio) {
+            sql += " AND fecha_novedad >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha_novedad <= ?";
+            params.push(fechaFin);
         }
     } else { 
         // Consulta combinada si se buscan todas las novedades
@@ -3556,6 +3572,15 @@ app.get('/novedad_vianco', (req, res) => {
             sql += " AND id LIKE ?";
             params.push(`%${id}%`);
         }
+        // Agregar filtros de fecha según el estado de "pendiente"
+        if (fechaInicio) {
+            sql += " AND fecha >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha <= ?";
+            params.push(fechaFin);
+        }
         // Agregar filtro para el campo "numeroU" si está presente
         if (id) {
             sql += " UNION ALL SELECT ..."; 
@@ -3563,22 +3588,14 @@ app.get('/novedad_vianco', (req, res) => {
             params.push(`%${id}%`);
         }
     }
-
-    // Agregar filtros según los parámetros de búsqueda (fechaInicio, fechaFin, keyword)
-    if (fechaInicio) {
-        sql += " AND fecha >= ?";
-        params.push(fechaInicio);
-    }
-    if (fechaFin) {
-        sql += " AND fecha <= ?";
-        params.push(fechaFin);
-    }
+    
+    // Agregar filtros según los parámetros de búsqueda (keyword)
     if (keyword) {
         sql += " AND (novedad_tripulacion LIKE ? OR novedad_hoteleria LIKE ? OR novedad_ejecutivos LIKE ? OR novedad_empresas_privadas LIKE ? OR otras_novedades LIKE ?)";
         const keywordParam = `%${keyword}%`;
         params.push(keywordParam, keywordParam, keywordParam, keywordParam, keywordParam);
     }
-
+    
     // Agregar filtros adicionales basados en las opciones seleccionadas en el filtroNovedades
     if (filtroNovedades && filtroNovedades.length > 0) {
         sql += " AND (";
@@ -3588,7 +3605,7 @@ app.get('/novedad_vianco', (req, res) => {
         });
         sql += ")";
     }
-
+    
     connection.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
@@ -3598,7 +3615,6 @@ app.get('/novedad_vianco', (req, res) => {
         }
     });
 });
-
 
 
 

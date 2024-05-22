@@ -161,12 +161,19 @@
         .table-striped tbody tr:nth-child(odd) {
             background-color: #f8f9fa;
         }
+        #tituloNovedades{
+text-align: center;
+align-items: center;
+background: #666567;
+color: white;
+padding: 10px;
+        }
     </style>
 </head>
 <body>
 <div style="display: flex;">
     <div class="table-container">
-                  <h2 id="tituloNovedades">Todas las Novedades</h2>
+                  <h2 id="tituloNovedades">SERVICIOS NO CONFORMES</h2>
 
         <table class="table">
 
@@ -199,8 +206,9 @@
             <div>
                 <label for="pendiente">ESTADO:</label>
                 <select id="pendiente" name="pendiente" onchange="cambiarTitulo(this)">
-                    <option value="true">Pendientes</option>
-                    <option value="false">Completados</option>
+                    <option value="true">nuevas</option>
+                    <option value="false">en proceso</option>
+                     <option value="false">completas</option>
                 </select>
             </div>
             <div>
@@ -281,7 +289,6 @@ function mostrarNovedades(novedades) {
         novedadesContainer.appendChild(table);
     }
 }
-
 function crearTablaNovedades(novedades, pendiente) {
     const table = document.createElement('table');
     table.classList.add('table');
@@ -310,9 +317,8 @@ function crearTablaNovedades(novedades, pendiente) {
         if (pendiente === "true") {
             tr.innerHTML = `
                 <td>${novedad.id}</td>
-                <td>${novedad.fecha}</td>
-                                <td>${novedad.fecha_registro}</td>
-
+                <td>${formatoFecha(novedad.fecha)}</td>
+                <td>${formatoFecha(novedad.fecha_registro)}</td>
                 <td>${novedad.realiza}</td>
                 <td>${novedad.novedad_tripulacion}</td>
                 <td>${novedad.novedad_hoteleria}</td>
@@ -323,10 +329,9 @@ function crearTablaNovedades(novedades, pendiente) {
             `;
         } else {
             tr.innerHTML = `
-                            <td>${novedad.numeroU}</td>
-                <td>${novedad.fecha}</td>
-                                <td>${novedad.fecha_registro}</td>
-
+                <td>${novedad.numeroU}</td>
+                <td>${formatoFecha(novedad.fecha)}</td>
+                <td>${novedad.fecha_registro}</td>
                 <td>${novedad.realiza}</td>
                 <td>${novedad.novedad_tripulacion}</td>
                 <td>${novedad.novedad_hoteleria}</td>
@@ -346,6 +351,16 @@ function crearTablaNovedades(novedades, pendiente) {
     table.appendChild(tbody);
     return table;
 }
+
+// Función para formatear la fecha en "día mes año"
+function formatoFecha(fechaString) {
+    const fecha = new Date(fechaString);
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1; // Los meses en JavaScript son indexados desde 0, por lo que sumamos 1
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+}
+
 
         function descargarInformeExcel(fechaInicio, fechaFin) {
             fetch('/descargar_excell', {
