@@ -1144,7 +1144,7 @@ app.post('/guardar-edicion-contabilidad', (req, res) => {
 // Ruta para renderizar la página del formulario de agregar contabilidad
 app.get("/agregar-contabilidad", (req, res) => {
     // Renderiza el formulario para agregar una nueva entrada de contabilidad
-    res.render("operaciones/aeropuerto/formulario.hbs");
+    res.render("operaciones/administracion/formulario_agregar_contabilidad.hbs");
 });
 
 // Ruta para manejar los datos enviados desde el formulario y agregar una nueva entrada de contabilidad a la base de datos
