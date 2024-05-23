@@ -147,23 +147,22 @@ padding: 15px;
             cursor: pointer;
         }
 
-      #numNotificacionesSinLeer {
-            position: absolute;
-            top: 5px;
-            right: -7px;
-            background-color: #d9d9d9;
-            color: black;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: bold;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-
+  #numNotificacionesSinLeer {
+    position: absolute;
+    top: 5px;
+    right: -7px;
+    background-color: #d9d9d9;
+    color: black;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
         /* Estilos de la ventana emergente */
         #ventanaEmergente {
             display: none;
@@ -238,6 +237,8 @@ text-align: center;
 
 
 }
+
+
   </style>
 </head>
 <body>
@@ -246,9 +247,21 @@ text-align: center;
             <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
         </a>
     </div>
-<div id="campana" onclick="mostrarVentanaEmergente()">
+    
+<div id="campana" onclick="mostrarNotificaciones()">
     <div id="numNotificacionesSinLeer"></div>
 </div>
+<!-- Contenedor de notificaciones -->
+<div id="contenedorNotificaciones" style="display: none;">
+    <!-- Notificaciones -->
+    <div class="notificacion">
+        <span class="mensaje">Notificación 1</span>
+        <button onclick="marcarComoLeida(this)">Marcar como leída</button>
+        <button onclick="eliminarNotificacion(this)">Eliminar</button>
+    </div>
+    <!-- Otras notificaciones aquí -->
+</div>
+
 <header>
                           <a href="/logout" ><img  id="selected" src="/imagenes/apagar.png" alt=""></a>
 
@@ -375,6 +388,13 @@ text-align: center;
   <div class="titulo">SERVICIOS NO CONFORMES</div>
  <div class="cuerpo">
         <a href="/novedades_viancoo">AGREGAR</a>
+
+
+
+
+          {{#if director}}
+  <a href="/asiganr_servicioN">ASIGNACION DE RESPONSABLE</a>
+    {{/if}}
            {{#if director}}
   <a href="/ver_novedades_vianco">PENDIENTES POR REVISAR</a>
     {{/if}}
@@ -626,6 +646,51 @@ text-align: center;
 
 
 </body>
+<script>
+    // Función para verificar si hay notificaciones pendientes para el usuario
+    async function verificarNotificacionesPendientes() {
+        try {
+            // Realizar una solicitud al servidor para verificar las notificaciones pendientes
+            const response = await fetch('/verificar-notificaciones');
+            const data = await response.json();
+            
+            // Si hay notificaciones pendientes, mostrar el número en la campana
+            if (data.notificacionesPendientes) {
+                document.getElementById('numNotificacionesSinLeer').innerText = '1';
+            }
+        } catch (error) {
+            console.error('Error al verificar las notificaciones pendientes:', error);
+        }
+    }
+
+    // Llamar a la función para verificar notificaciones pendientes cuando se cargue la página
+    verificarNotificacionesPendientes();
+
+    // Función para mostrar las notificaciones cuando se haga clic en la campana
+    function mostrarNotificaciones() {
+        const contenedorNotificaciones = document.getElementById('contenedorNotificaciones');
+        contenedorNotificaciones.style.display = 'block';
+    }
+
+    // Función para marcar una notificación como leída
+    function marcarComoLeida(elemento) {
+        // Aquí puedes agregar la lógica para marcar la notificación como leída en el servidor
+        // luego, puedes ocultar la notificación en el cliente
+        const notificacion = elemento.parentElement;
+        notificacion.style.display = 'none';
+    }
+
+    // Función para eliminar una notificación
+    function eliminarNotificacion(elemento) {
+        // Aquí puedes agregar la lógica para eliminar la notificación en el servidor
+        // luego, puedes eliminarla del DOM en el cliente
+        const notificacion = elemento.parentElement;
+        notificacion.remove();
+    }
+</script>
+
+
+
 </html>
 
 

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novedades Vianco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #d9d9d9;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        .novedad {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .novedad:hover {
+            transform: scale(1.02);
+        }
+        .novedad p {
+            margin: 10px 0;
+            color: #555;
+        }
+        .novedad p strong {
+            color: #333;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .form-group input {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .form-group button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .form-group button:hover {
+            background-color: #218838;
+        }
+        select {
+            background-color: #d9d9d9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+        /* Estilos para la imagen */
+        .profile-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 5%;
+            border: 1px solid #333;
+            margin-bottom: 10px;
+        }
+        .responsable {
+            font-weight: bold;
+        }
+        .area-input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <!-- Agregar la imagen, el texto y el área aquí -->
+    <div class="profile-box">
+        <img src="imagenes/JEFE.jpg" alt="Imagen de perfil" class="profile-image">
+        <div class="responsable">Responsable del proceso</div>
+        <div class="nombre">John Restrepo</div>
+         <div class="nombre">DIRECTOR ADMINISTRATIVO</div>
+    </div>
+
+    <div class="container">
+        <h1>Asignar responsable a Servicio no Conforme</h1>
+        {{#each novedades}}
+        <div class="novedad">
+            <p><strong>ID:</strong> {{id}}</p>
+            <p><strong>Fecha de envío:</strong> {{formatDate fecha_registro}}</p>
+            <p><strong>Fecha de la novedad:</strong> {{fecha}}</p>
+            <p><strong>Realiza:</strong> {{realiza}}</p>
+            {{#if novedad_tripulacion}}<p><strong>Novedad Tripulación:</strong> {{novedad_tripulacion}}</p>{{/if}}
+            {{#if novedad_hoteleria}}<p><strong>Novedad Hotelería:</strong> {{novedad_hoteleria}}</p>{{/if}}
+            {{#if novedad_ejecutivos}}<p><strong>Novedad Ejecutivos:</strong> {{novedad_ejecutivos}}</p>{{/if}}
+            {{#if novedad_empresas_privadas}}<p><strong>Novedad Empresas Privadas:</strong> {{novedad_empresas_privadas}}</p>{{/if}}
+            {{#if NOVEDADES_TASKGO}}<p><strong>NOVEDADES TASKGO:</strong> {{NOVEDADES_TASKGO}}</p>{{/if}}
+            {{#if otras_novedades}}<p><strong>Otras Novedades:</strong> {{otras_novedades}}</p>{{/if}}
+            <form action="/asignar-responsable" method="POST" class="form-group">
+                <input type="hidden" name="id" value="{{id}}">
+                <!-- Lista desplegable para seleccionar un responsable -->
+                <select name="responsable" id="responsable" required>
+                    <option value="">Selecciona un responsable</option>
+                    {{#each ../clientes}}
+                        <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+                <button type="submit">Asignar Responsable</button>
+            </form>
+        </div>
+        {{/each}}
+    </div>
+    <script>
+        // Función para formatear la fecha
+        function formatDate(dateString) {
+            const date = new Date(dateString.replace(' ', 'T'));
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+                timeZone: 'America/Bogota'
+            };
+            return date.toLocaleDateString('es-CO', options);
+        }
+    </script>
+</body>
+</html>

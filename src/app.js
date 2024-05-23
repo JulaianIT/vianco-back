@@ -3383,6 +3383,7 @@ app.get('/ver_novedades_vianco', (req, res) => {
 
 
 
+
 // Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
     connection.query('SELECT DISTINCT id FROM novedades_vianco', (error, results) => {
@@ -4640,9 +4641,143 @@ app.get('/tarifasvan', (req, res) => {
 
 
 
+// Función para enviar correo electrónico
+async function enviarCorreoElectronico(responsable, tarea) {
+    // Configurar nodemailer
+    let transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'soporte.it.vianco@gmail.com', // Tu correo electrónico
+            pass: 'iifjwgvmeujfiqhx' // Tu contraseña
+        }
+    });
+
+    // Contenido del correo electrónico
+    let mailOptions = {
+        from: 'tucorreo@gmail.com',
+        to: responsable.email,
+        subject: 'Has sido asignado como responsable de una tarea',
+        html: `<p>Hola ${responsable.name},</p>
+               <p>Has sido designado como responsable de la tarea ID: ${tarea.id}.</p>
+               <p>Por favor, accede a la plataforma para más detalles.</p>`
+    };
+
+    // Enviar correo electrónico
+    await transporter.sendMail(mailOptions);
+}
 
 
 
+
+
+
+app.get('/asiganr_servicioN', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            // Obtener nombre de usuario de la sesión
+            const nombreUsuario = req.session.name;
+            
+            // Consulta para obtener la lista de usuarios
+        // Consulta para obtener la lista de usuarios
+const userQuery = 'SELECT DISTINCT name FROM user';
+const [userRows] = await connection.promise().query(userQuery);
+if (!userRows || userRows.length === 0) {
+    throw new Error("No se encontraron clientes en la base de datos.");
+}
+// Mapear los nombres de usuario
+const clientes = userRows.map(row => row.name);
+
+            // Consulta para obtener las novedades
+            const novedadesQuery = 'SELECT * FROM novedades_vianco WHERE responsable_asignado IS NULL';
+            const [novedadesRows] = await connection.promise().query(novedadesQuery);
+            if (!novedadesRows || novedadesRows.length === 0) {
+                throw new Error("No se encontraron novedades sin asignar responsable en la base de datos.");
+            }
+            // Filtrar novedades que tienen contenido
+            const filteredNovedades = novedadesRows.filter(novedad => 
+                novedad.novedad_tripulacion || 
+                novedad.novedad_hoteleria || 
+                novedad.novedad_ejecutivos || 
+                novedad.novedad_empresas_privadas || 
+                novedad.NOVEDADES_TASKGO || 
+                novedad.otras_novedades
+            );
+
+            // Obtener la fecha actual
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+
+            // Renderizar la plantilla con la información recopilada
+            res.render('novedades_vianco/asignacion_servicioNoconforme.hbs', { 
+                nombreUsuario, 
+                clientes, 
+                novedades: filteredNovedades, 
+                fechaActual 
+            });
+        } else {
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
+    }
+});
+
+
+
+
+// Modificar la ruta para asignar un responsable
+app.post('/asignar-responsable', async (req, res) => {
+    try {
+        // Obtener datos del formulario
+        const idTarea = req.body.id;
+        const responsableName = req.body.responsable;
+
+        // Consulta para obtener la información del usuario responsable
+        const userQuery = 'SELECT name, email FROM user WHERE name = ?';
+        const [userRows] = await connection.promise().query(userQuery, [responsableName]);
+
+        // Verificar si se encontró al usuario responsable
+        if (!userRows || userRows.length === 0) {
+            throw new Error("No se encontró al usuario responsable en la base de datos.");
+        }
+
+        // Obtener el correo electrónico del responsable
+        const responsableEmail = userRows[0].email;
+
+        // Llamar a la función para enviar correo electrónico
+        await enviarCorreoElectronico({ name: responsableName, email: responsableEmail }, { id: idTarea });
+
+        // Actualizar la base de datos con el responsable asignado y la notificación pendiente
+        const updateQuery = 'UPDATE novedades_vianco SET responsable_asignado = ?, notificacion_pendiente = 1 WHERE id = ?';
+        await connection.promise().query(updateQuery, [responsableName, idTarea]);
+
+        // Respuesta al cliente
+        res.status(200).send("Responsable asignado correctamente.");
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
+    }
+});
+
+
+
+// Ruta para verificar notificaciones pendientes
+app.get('/verificar-notificaciones', async (req, res) => {
+    try {
+        // Obtener el nombre de usuario de la sesión
+        const nombreUsuario = req.session.name;
+
+        // Consulta para verificar si hay notificaciones pendientes para el usuario actual
+        const query = 'SELECT COUNT(*) AS count FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
+        const [result] = await connection.promise().query(query, [nombreUsuario]);
+        
+        // Enviar la respuesta al cliente
+        res.json({ notificacionesPendientes: result[0].count > 0 });
+    } catch (error) {
+        console.error('Error al verificar notificaciones pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 
 
