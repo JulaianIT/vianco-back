@@ -164,22 +164,8 @@ padding: 15px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
         /* Estilos de la ventana emergente */
-        #ventanaEmergente {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border: 1px solid black;
-            border-radius: 10px;
-            z-index: 9999;
-        }
 
-        #ventanaEmergente h2 {
-            margin-top: 0;
-        }
+     
 
         #btnCerrar {
             position: absolute;
@@ -238,38 +224,110 @@ text-align: center;
 
 }
 
+#ventanaEmergente {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 9999;
+  max-width: 80%; /* Limita el ancho máximo de la ventana emergente */
+}
+      #ventanaEmergente {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+        #campana {
+            cursor: pointer;
+            position: relative;
+        }
+        #numNotificacionesSinLeer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+#campana {
+    position: relative;
+    top: -60px;
+    left: 40%;
+    width: 40px;
+    height: 40px;
+    background-image: url('/imagenes/campana.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: inline-start;
+    cursor: pointer;
+}
+
+#numNotificacionesSinLeer {
+    position: absolute;
+    top: px;
+    right: -5px;
+    background-color: red; /* Cambié a rojo para mejor visibilidad */
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
 
   </style>
-</head>
+
 <body>
-<div id="button-container">
-        <a id="rastreo" href="/ver_ubicaiones">
-            <img id="car"  src="imagenes/rastreo-de-orden.png" alt="">
-        </a>
+  <header>
+    <a href="/logout"><img id="selected" src="/imagenes/apagar.png" alt=""></a>
+    <h1 id="ingreso">{{name}}</h1>
+<div id="campana" onclick="mostrarNotificaciones('{{name}}')">
+      <span id="numNotificacionesSinLeer"></span>
     </div>
-    
-<div id="campana" onclick="mostrarNotificaciones()">
-    <div id="numNotificacionesSinLeer"></div>
+    <a id="rastreo" href="/ver_ubicaiones"><img id="car" src="imagenes/rastreo-de-orden.png" alt=""></a>
+  </header>
+
+  <div id="ventanaEmergente">
+    <h2>Notificaciones</h2>
+<div id="notificacionesContainer">
+  <!-- Aquí es donde se insertan las notificaciones dinámicamente -->
+  <!-- Dentro de este div, donde se muestran las notificaciones, reemplaza el código de los botones existentes con el código corregido -->
+  <div class="notificacion" data-id="{{_id}}">
+    <span class="mensaje">{{mensaje}}</span>
+    <button class="marcarLeida" onclick="marcarComoLeida('{{_id}}', this)">Marcar como leída</button>
+    <button class="eliminar" onclick="eliminarNotificacion('{{_id}}', this)">Eliminar</button>
+  </div>
 </div>
-<!-- Contenedor de notificaciones -->
-<div id="contenedorNotificaciones" style="display: none;">
-    <!-- Notificaciones -->
-    <div class="notificacion">
-        <span class="mensaje">Notificación 1</span>
-        <button onclick="marcarComoLeida(this)">Marcar como leída</button>
-        <button onclick="eliminarNotificacion(this)">Eliminar</button>
-    </div>
-    <!-- Otras notificaciones aquí -->
+
+    <div id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</div>
+  </div>
+
+  <audio id="notificationSound" src="sonidos/level-upo-191997.mp3" preload="auto"></audio>
+
+
 </div>
 
-<header>
-                          <a href="/logout" ><img  id="selected" src="/imagenes/apagar.png" alt=""></a>
 
-            <h1 id="ingreso" >{{name}}</h1>
 
-    </button>
- 
-</header>
 <br>
 <br>
 <br>
@@ -646,51 +704,95 @@ text-align: center;
 
 
 </body>
-<script>
-    // Función para verificar si hay notificaciones pendientes para el usuario
+ <script>
+    document.addEventListener('DOMContentLoaded', verificarNotificacionesPendientes);
+
     async function verificarNotificacionesPendientes() {
-        try {
-            // Realizar una solicitud al servidor para verificar las notificaciones pendientes
-            const response = await fetch('/verificar-notificaciones');
-            const data = await response.json();
-            
-            // Si hay notificaciones pendientes, mostrar el número en la campana
-            if (data.notificacionesPendientes) {
-                document.getElementById('numNotificacionesSinLeer').innerText = '1';
-            }
-        } catch (error) {
-            console.error('Error al verificar las notificaciones pendientes:', error);
+      try {
+        const response = await fetch('/verificar-notificaciones');
+        const data = await response.json();
+        if (data.notificacionesPendientes !== undefined) {
+          const numNotificacionesSinLeer = document.getElementById('numNotificacionesSinLeer');
+          numNotificacionesSinLeer.innerText = data.notificacionesPendientes;
         }
+      } catch (error) {
+        console.error('Error al verificar las notificaciones pendientes:', error);
+      }
     }
 
-    // Llamar a la función para verificar notificaciones pendientes cuando se cargue la página
-    verificarNotificacionesPendientes();
+async function mostrarNotificaciones(nombreUsuario) {
+  const contenedorNotificaciones = document.getElementById('ventanaEmergente');
+  contenedorNotificaciones.style.display = 'block';
 
-    // Función para mostrar las notificaciones cuando se haga clic en la campana
-    function mostrarNotificaciones() {
-        const contenedorNotificaciones = document.getElementById('contenedorNotificaciones');
-        contenedorNotificaciones.style.display = 'block';
+  try {
+    const response = await fetch(`/notificaciones-pendientes/${nombreUsuario}`);
+    const data = await response.json();
+    const notificacionesContainer = document.getElementById('notificacionesContainer');
+    notificacionesContainer.innerHTML = '';
+
+    if (data && Array.isArray(data)) {
+      data.forEach(notificacion => {
+        const notificacionElement = document.createElement('div');
+        notificacionElement.classList.add('notificacion');
+        notificacionElement.dataset.id = notificacion._id;
+        notificacionElement.innerHTML = `
+          <span class="mensaje">${notificacion.mensaje}</span>
+          <button class="marcarLeida" onclick="marcarComoLeida('${notificacion._id}')">Marcar como leída</button>
+          <button class="eliminar" onclick="eliminarNotificacion('${notificacion._id}', this)">Eliminar</button>
+        `;
+        notificacionesContainer.appendChild(notificacionElement);
+      });
+    } else {
+      console.error('Error: Unexpected data structure for notifications');
+    }
+  } catch (error) {
+    console.error('Error al cargar las notificaciones:', error);
+  }
+}
+
+
+    function cerrarVentanaEmergente() {
+      const ventanaEmergente = document.getElementById('ventanaEmergente');
+      ventanaEmergente.style.display = 'none';
     }
 
-    // Función para marcar una notificación como leída
-    function marcarComoLeida(elemento) {
-        // Aquí puedes agregar la lógica para marcar la notificación como leída en el servidor
-        // luego, puedes ocultar la notificación en el cliente
-        const notificacion = elemento.parentElement;
-        notificacion.style.display = 'none';
+async function marcarComoLeida(id) {
+  try {
+    const response = await fetch(`/marcar-notificacion/${id}`, { method: 'PUT' });
+    if (response.ok) {
+      // Actualizar la interfaz de usuario según sea necesario
+    } else {
+      console.error('Error al marcar la notificación como leída');
+    }
+  } catch (error) {
+    console.error('Error al marcar la notificación como leída:', error);
+  }
+}
+
+
+    async function eliminarNotificacion(id, boton) {
+      try {
+        const response = await fetch(`/eliminar-notificacion/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          const notificacion = boton.parentNode;
+          notificacion.parentNode.removeChild(notificacion);
+          const numNotificacionesSinLeer = document.getElementById('numNotificacionesSinLeer');
+          numNotificacionesSinLeer.innerText = parseInt(numNotificacionesSinLeer.innerText) - 1;
+        } else {
+          console.error('Error al eliminar la notificación');
+        }
+      } catch (error) {
+        console.error('Error al eliminar la notificación:', error);
+      }
     }
 
-    // Función para eliminar una notificación
-    function eliminarNotificacion(elemento) {
-        // Aquí puedes agregar la lógica para eliminar la notificación en el servidor
-        // luego, puedes eliminarla del DOM en el cliente
-        const notificacion = elemento.parentElement;
-        notificacion.remove();
+    setInterval(reproducirSonido, 5000);
+
+    function reproducirSonido() {
+      const audio = document.getElementById('notificationSound');
+      audio.play();
     }
-</script>
-
-
-
+  </script>
 </html>
 
 

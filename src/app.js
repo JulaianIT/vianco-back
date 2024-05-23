@@ -4656,10 +4656,12 @@ async function enviarCorreoElectronico(responsable, tarea) {
     let mailOptions = {
         from: 'tucorreo@gmail.com',
         to: responsable.email,
-        subject: 'Has sido asignado como responsable de una tarea',
+        subject: 'Has sido asignado como responsable De un servicio no conforme',
         html: `<p>Hola ${responsable.name},</p>
-               <p>Has sido designado como responsable de la tarea ID: ${tarea.id}.</p>
-               <p>Por favor, accede a la plataforma para más detalles.</p>`
+               <p>Has sido designado como responsable de  un servicio no conforme  N° UNICO: ${tarea.id}.</p>
+               <p>Por favor, accede a la plataforma en el modulo Servicios no conforme y con el  N° UNICO: ${tarea.id} Realize el respectivo seguimiento para más detalles ingrese a la app Vianco .</p>
+               <p>Agradesco su Atencion y le deseamos un feliz dia de parte del equipo de Soporte vianco.</p>`
+
     };
 
     // Enviar correo electrónico
@@ -4751,30 +4753,56 @@ app.post('/asignar-responsable', async (req, res) => {
         const updateQuery = 'UPDATE novedades_vianco SET responsable_asignado = ?, notificacion_pendiente = 1 WHERE id = ?';
         await connection.promise().query(updateQuery, [responsableName, idTarea]);
 
-        // Respuesta al cliente
-        res.status(200).send("Responsable asignado correctamente.");
+      // Redirigir de vuelta a la página de asignación
+      res.redirect('/asiganr_servicioN');
     } catch (error) {
         console.error("Error:", error);
         res.status(500).send("Error interno del servidor");
     }
 });
 
-
-
-// Ruta para verificar notificaciones pendientes
+// Endpoint to verify notifications
 app.get('/verificar-notificaciones', async (req, res) => {
     try {
-        // Obtener el nombre de usuario de la sesión
+        // Get the username from the session
         const nombreUsuario = req.session.name;
 
-        // Consulta para verificar si hay notificaciones pendientes para el usuario actual
-        const query = 'SELECT COUNT(*) AS count FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
+        // Query to check for pending notifications for the current user
+        const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
         const [result] = await connection.promise().query(query, [nombreUsuario]);
-        
-        // Enviar la respuesta al cliente
-        res.json({ notificacionesPendientes: result[0].count > 0 });
+
+        // Send response to the client
+        res.json({ notificaciones: result });
     } catch (error) {
         console.error('Error al verificar notificaciones pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+app.put('/marcar-notificacion/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        // Mark the notification as read in the database
+        const updateResult = await Notificacion.updateOne({ _id: id }, { leida: true });
+        if (updateResult.nModified === 1) {
+            res.status(200).send('Notificación marcada como leída correctamente');
+        } else {
+            res.status(404).send('Notificación no encontrada');
+        }
+    } catch (error) {
+        console.error('Error al marcar la notificación como leída:', error);
+        res.status(500).send('Error interno del servidor al marcar la notificación como leída');
+    }
+});
+
+app.get('/notificaciones-pendientes/:usuario', async (req, res) => {
+    try {
+        const usuario = req.params.usuario;
+        // Buscar todas las notificaciones pendientes para el usuario dado
+        const notificaciones = await Notificacion.find({ responsable: usuario, leida: false });
+        res.status(200).json(notificaciones);
+    } catch (error) {
+        console.error('Error al obtener las notificaciones pendientes:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
@@ -4786,6 +4814,21 @@ app.get('/verificar-notificaciones', async (req, res) => {
 
 
 
+// Ruta para eliminar una notificación
+app.delete('/eliminar-notificacion/:id', async (req, res) => {
+    try {
+        const id = req.params.id; // Obtener el ID de la solicitud
+        const notificacion = await Notificacion.findByIdAndDelete(id);
+        if (notificacion) {
+            res.status(200).json(notificacion);
+        } else {
+            res.status(404).send('Notificación no encontrada');
+        }
+    } catch (error) {
+        console.error('Error al eliminar la notificación:', error);
+        res.status(500).send('Error interno del servidor al eliminar la notificación');
+    }
+});
 
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
