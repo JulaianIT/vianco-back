@@ -1660,28 +1660,27 @@ app.get('/tarifas', (req, res) => {
 
 
 
-
-app.get('/novedades', (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        res.render('novedades_Callcenter/novedades_Callcenter.hbs', { nombreUsuario });
-    } else {
-        // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+app.get('/novedades', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            const nombreUsuario = req.session.name;
+            const userQuery = 'SELECT DISTINCT name FROM user';
+            const [userRows] = await connection.promise().query(userQuery);
+            if (!userRows || userRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+            const clientes = userRows.map(row => row.name); // Verifica que 'row.name' es el campo correcto
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+            console.log('Renderizando plantilla con:', { nombreUsuario, clientes, fechaActual });
+            res.render('novedades_Callcenter/novedades_Callcenter.hbs', { nombreUsuario, clientes, fechaActual });
+        } else {
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 app.post('/novedades', (req, res) => {

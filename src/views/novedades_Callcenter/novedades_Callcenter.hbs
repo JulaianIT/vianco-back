@@ -274,8 +274,19 @@ label {
     <label for="realiza"><strong>Quién realiza la novedad:</strong></label><br>
     <input type="text" id="realiza" name="realiza" value="{{nombreUsuario}}"  readonly required><br>
         <br>
-<label for="entrega"><strong>A quién se entrega la novedad:</strong></label><br>
-<input type="text" id="entrega" name="entrega" required><br>
+
+
+
+<select name="entrega" id="entrega">
+    <option value="">A quién se entrega la novedad:</option>
+    {{#each clientes}}
+        <option value="{{this}}">{{this}}</option>
+    {{/each}}
+</select>
+
+<br>
+
+
 
 <br>
 <label for="sinNovedad"><strong>Sin novedad:</strong></label>
