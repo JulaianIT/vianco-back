@@ -1683,6 +1683,13 @@ app.get('/novedades', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
 app.post('/novedades', (req, res) => {
     const fecha = req.body.fecha;
     const turno = req.body.turno;
@@ -1908,20 +1915,43 @@ app.get('/novedadess', (req, res) => {
 
 
 
+const moment = require('moment-timezone');
+
+function obtenerFechaActual() {
+    return moment().tz('America/Bogota').format('DD/MM/YYYY HH:mm');
+}
 
 
-
-// Ruta para la página principal
-app.get('/inicio', (req, res) => {
-    res.render('centro_operaciones/inicio_turno.hbs', { title: 'Iniciar Turno' });
+app.get('/inicio', async (req, res) => {
+    try {
+        if (req.session.loggedin === true) {
+            const nombreUsuario = req.session.name;
+            const userQuery = 'SELECT DISTINCT name FROM user';
+            const [userRows] = await connection.promise().query(userQuery);
+            if (!userRows || userRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+            const clientes = userRows.map(row => row.name); // Verifica que 'row.name' es el campo correcto
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+            console.log('Renderizando plantilla con:', { nombreUsuario, clientes, fechaActual, title: 'Iniciar Turno' });
+            res.render('centro_operaciones/inicio_turno.hbs', { nombreUsuario, clientes, fechaActual, title: 'Iniciar Turno' });
+        } else {
+            res.redirect("/login/index");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Error interno del servidor");
+    }
 });
+
+
 
 // Manejar la solicitud POST para iniciar el turno
 app.post('/inicio-turno', (req, res) => {
     const nombre = req.body.nombre;
     const turno = req.body.turno;
 
-    const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const fechaHoraActual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
     const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
     connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
         if (error) {
@@ -1929,14 +1959,14 @@ app.post('/inicio-turno', (req, res) => {
             res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
             return;
         }
-        console.log(`Empleado ${nombre} ha iniciado el turno (${turno}).`);
-        res.render('centro_operaciones/tareas_diarias', { nombre: nombre, turno: turno });
+        console.log(`Empleado ${nombre} ha iniciado el turno (${turno}) a las ${fechaHoraActual}.`);
+        res.render('centro_operaciones/tareas_diarias', { fechaActual: fechaHoraActual, nombre: nombre, turno: turno });
     });
 });
 
-// Ruta para la página de tareas diarias
 app.get('/centro_operaciones/tareas_diarias', (req, res) => {
-    res.render('centro_operaciones/tareas_diarias', { title: 'Tareas Diarias' });
+    const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
+    res.render('centro_operaciones/tareas_diarias', { fechaActual, title: 'Tareas Diarias' });
 });
 
 
@@ -1967,6 +1997,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
         hora_realizada: new Date() // Obtener la hora actual
     };
 
+
     const sql = 'INSERT INTO tareas SET ?';
     connection.query(sql, tarea, (err, result) => {
         if (err) {
@@ -1974,11 +2005,11 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
             return res.status(500).send('Error al guardar la tarea');
         }
         console.log('Tarea insertada correctamente en la base de datos');
-
+    
         // Actualizar la hora de finalización del turno
         const nombre = req.body.nombre;
         const turno = req.body.turno;
-        const horaFin = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const horaFin = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
         const updateQuery = 'UPDATE centro_operaciones_inicio SET hora_fin = ? WHERE nombre_trabajador = ? AND turno = ?';
         connection.query(updateQuery, [horaFin, nombre, turno], (updateErr, updateResult) => {
             if (updateErr) {
@@ -1986,7 +2017,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
                 return res.status(500).send('Error al actualizar la hora de finalización del turno');
             }
             console.log('Hora de finalización del turno actualizada en la base de datos');
-
+    
             // Envía el mensaje de finalización de turno exitosa
             res.locals.successMessage = 'Finalización de turno exitosa.';
             setTimeout(() => {

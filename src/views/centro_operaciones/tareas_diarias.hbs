@@ -211,10 +211,18 @@
     <h1>Tareas para el turno de {{nombre}}</h1>
     <h2>Turno: {{turno}}</h2>
     <div class="tareas">
-    <form  id="tareaForm"        action="/marcar-tarea" method="post">
-        <label id="fecha" for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
-        <input type="date" name="fecha">
-        <br>
+<form id="tareaForm" action="/marcar-tarea" method="post">
+
+
+
+
+  <label id="fecha" for="fecha">POR FAVOR SELECCIONE LA FECHA</label>
+<input type="text" id="tarea" name="fecha" value="{{fechaActual}}">
+         
+
+
+
+
 
 <input type="hidden" name="nombre" value="{{nombre}}">
         <br>
@@ -453,6 +461,7 @@
         </ul>
     </nav>
    </footer>
+
 
     <script>
    // Obtener el valor del turno seleccionado anteriormente

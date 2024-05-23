@@ -168,24 +168,9 @@ strong{
     <form action="/inicio-turno" method="post">
         <h1>INICIAR LABORES</h1>
         <br>
-        <label for="nombre">    <strong>Seleccione su nombre:</strong></label>
-      
+        <label for="nombre">    <strong>INICIAR TURNO DE : {{nombreUsuario}} </strong></label>
+      <input   style="display: none;" type="text" id="nombre" name="nombre" value="{{nombreUsuario}}" >
     
-        <select id="nombre" name="nombre" required>
-            <option value="">Seleccione un empleado...</option>
-            <option value="JAMER CORTEZ">JAMER CORTEZ</option>
-            <option value="CARLOS SERNA">CARLOS SERNA</option>
-            <option value="STIVEN GALINDO">STIVEN GALINDO</option>
-             <option value="JUAN GONZALES">JUAN GONZALES</option>
-            <option value="ORCAR CAYAMBE">ORCAR CAYAMBE</option>
-             <option value="SEBASTIAN MENDOZA">SEBASTIAN MENDOZA</option>
-             <br>
-        <br>
-  <br>
-        <br>
-        <br>
-  <br>
-        <br>
             <!-- Agrega más opciones según sea necesario -->
         </select>
         <br>
