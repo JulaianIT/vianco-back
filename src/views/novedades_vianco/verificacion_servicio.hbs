@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Servicio</title>
+    <style>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Servicio</title>
+    <style>      body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        h1, h2 {
+            color: #413d4b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            border: 2px solid #dddddd;
+        }
+        th {
+            background-color: #90c9a7;
+            color: #ffffff;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+        tr:hover {
+            background-color: #e5f0f5;
+        }
+        .accept-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .accept-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenido, {{ nombreUsuario }}</h1>
+        <h2>Verifique y acepte el seguimiento </h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>N° único</th> 
+                    <th>Fecha de la novedad</th>
+                    <th>Enviada el</th>
+                    <th>Enviada por</th>
+                    <th>Novedad Tripulación</th>
+                    <th>Novedad Hotelería</th>
+                    <th>Novedad Ejecutivos</th>
+                    <th>Novedad Empresas Privadas</th>
+                    <th>Novedades Taskgo</th>
+                    <th>Otras Novedades</th>
+                    <th>Responsable del Seguimiento</th>
+                    <th>Fecha de Seguimiento</th>
+                    <th>Detalle de Seguimiento</th>
+                    <th>Plan de acción</th>
+                    <th>Plazo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each novedades}}
+                    <tr>
+                        <td>{{numeroU}}</td>
+                        <td>{{fecha_registro}}</td>
+                        <td>{{fecha_novedad}}</td>
+                        <td>{{realiza}}</td>
+                        <td>{{novedad_tripulacion}}</td>
+                        <td>{{novedad_hoteleria}}</td>
+                        <td>{{novedad_ejecutivos}}</td>
+                        <td>{{novedad_empresas_privadas}}</td>
+                        <td>{{NOVEDADES_TASKGO}}</td>
+                        <td>{{otras_novedades}}</td>
+                        <td>{{nombre_seguimiento}}</td>
+                        <td>{{fecha_seguimiento}}</td>
+                        <td>{{detalle_seguimiento}}</td>
+                        <td>{{ACCIONES}}</td>
+                            <td>{{Plazo}}</td>
+<td><button class="accept-button" onclick="marcarAceptada('{{id}}', '{{realiza}}')">Marcar como aceptada</button></td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    function marcarAceptada(id, realiza) {
+        fetch('/marcar_aceptada/' + id + '/' + realiza)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al marcar como aceptada');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log(data); // Mensaje del servidor
+            // Recargar la página
+            window.location.reload(true);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Manejar el error, mostrar un mensaje de error al usuario, etc.
+        });
+    }
+</script>
+
+
+</body>
+</html>

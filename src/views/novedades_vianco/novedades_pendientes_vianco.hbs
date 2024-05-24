@@ -591,7 +591,7 @@ function obtenerNovedadesPorId(idSeleccionado) {
             <input type="text" id="fecha_registro-${novedad.id}" name="fecha_registro" placeholder="FECHA DE ENTREGA" value="${novedad.fecha ? new Date(novedad.fecha).toLocaleDateString() : ''}"  style="display: none;" ><BR>
             <BR>
 
-            <label for="nombreSeguimiento-${novedad.id}"><strong>NOMBRE:</strong></label>
+            <label for="nombreSeguimiento-${novedad.id}"><strong>Responsable:</strong></label>
             <input type="text" id="nombreSeguimiento-${novedad.id}" name="nombreSeguimiento" placeholder="Nombre de quien realiza el seguimiento" value="  {{nombreUsuario}}"readonly ><BR>
             <BR>
 
@@ -604,11 +604,17 @@ function obtenerNovedadesPorId(idSeleccionado) {
               <label for="detalleSeguimiento-${novedad.id}"><strong>ANALISIS DE CAUSA:</strong></label><br>
                 <textarea id="detalleSeguimiento-${novedad.id}" name="detalleSeguimiento" placeholder="POR FAVOR DIGITE EL SEGUIMIENTO QUE REALIZO" rows="5" cols="50"></textarea><br>
 
-            <label for="ACCIONES-${novedad.id}"><strong>ACCIONES A CORRECTIVAS:</strong></label><br>
+            <label for="ACCIONES-${novedad.id}"><strong>Plan de acciones</strong></label><br>
             <textarea id="ACCIONES-${novedad.id}" name="ACCIONES" placeholder="POR FAVOR DIGITE LAS ACCIONES QUE TOMO ANTE ESTA NOVEDAD " rows="5" cols="50"></textarea><br>
+<br>
 
-           <button type="button"   class="NO" onclick="marcarNoAplica(${novedad.id})">No Aplica</button>
 
+
+               <label for="Plazo-${novedad.id}"><strong>Plazo</strong></label>
+            <input type="date" id="Plazo-${novedad.id}" name="Plazo" placeholder="Plazo" value="" ><BR>
+            <BR>
+
+        
             
         <button type="submit" class="enviar">Guardar Seguimiento</button>
             </form>
@@ -786,6 +792,7 @@ function guardarSeguimiento(event, idNovedad) {
     const firma = document.getElementById(`firma-${idNovedad}`).value;
     const ACCIONES = document.getElementById(`ACCIONES-${idNovedad}`).value;
     const numeroU = document.getElementById(`numeroU-${idNovedad}`).value;
+    const Plazo = document.getElementById(`Plazo-${idNovedad}`).value;
 
 
 
@@ -810,7 +817,8 @@ function guardarSeguimiento(event, idNovedad) {
         otras_novedades,
         firma,
         ACCIONES,
-        numeroU
+        numeroU,
+        Plazo
     };
     // Enviar los datos del seguimiento al servidor usando una solicitud fetch
     fetch('/api/guardar_seguimiento_vianco', {

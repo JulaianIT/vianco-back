@@ -181,6 +181,9 @@ padding: 10px;
 
 
 <div id="novedadesContainer"></div>
+<div id="novedadesAsignadasContainer"></div>
+<div id="novedadesAceptadasContainer" class="novedades-container"></div>
+
             <!-- Contenido de la tabla -->
         </table>
     </div>
@@ -200,16 +203,18 @@ padding: 10px;
                 <input type="date" id="fechaFin" name="fechaFin">
             </div>
             <div>
-                <label for="keyword">Palabra Clave:</label>
-                <input type="text" id="keyword" name="keyword">
+                <label  style="display: none;"  for="keyword">Palabra Clave:</label>
+                <input style="display: none;"  type="text" id="keyword" name="keyword">
             </div>
             <div>
-                <label for="pendiente">ESTADO:</label>
-                <select id="pendiente" name="pendiente" onchange="cambiarTitulo(this)">
-                    <option value="true">nuevas</option>
-                    <option value="false">en proceso</option>
-                     <option value="false">completas</option>
-                </select>
+              <label for="pendiente">ESTADO:</label>
+<select id="pendiente" name="pendiente" onchange="cambiarTitulo(this)">
+    <option value="nuevas">Nuevas</option>
+    <option value="asignadas">Asignadas</option>
+    <option value="proceso">En Proceso</option>
+    <option value="aceptadas">Aceptadas</option>
+</select>
+
             </div>
             <div>
                 <button type="submit" class="ver">Ver Novedades</button>
@@ -228,67 +233,86 @@ padding: 10px;
     </section>
 </footer>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Agregamos el evento clic a todos los encabezados de novedades
-            const novedadHeaders = document.querySelectorAll(".novedad h2");
-            novedadHeaders.forEach(header => {
-                header.addEventListener("click", function () {
-                    // Buscamos el contenedor de la novedad y alternamos la clase "expandido"
-                    const novedadDiv = this.parentElement;
-                    novedadDiv.classList.toggle("expandido");
-                    const contenido = novedadDiv.querySelector('.contenido');
-                    contenido.style.display = contenido.style.display === 'none' ? 'block' : 'none';
-                });
-            });
+   document.addEventListener("DOMContentLoaded", function () {
+    const novedadHeaders = document.querySelectorAll(".novedad h2");
+    novedadHeaders.forEach(header => {
+        header.addEventListener("click", function () {
+            const novedadDiv = this.parentElement;
+            novedadDiv.classList.toggle("expandido");
+            const contenido = novedadDiv.querySelector('.contenido');
+            contenido.style.display = contenido.style.display === 'none' ? 'block' : 'none';
         });
+    });
+});
 
-        function cambiarTitulo(select) {
-            const titulo = document.getElementById("tituloNovedades");
-            if (select.value === "true") {
-                titulo.textContent = "Novedades Pendientes";
-            } else if (select.value === "false") {
-                     titulo.textContent = "Novedades Completadas";
-            } else {
-                titulo.textContent = "Todas las Novedades";
-            }
-        }
+function cambiarTitulo(selectElement) {
+    const titulo = document.getElementById("tituloNovedades");
+    const estado = selectElement.value;
+    if (estado === "nuevas") {
+        titulo.textContent = "SERVICIOS NO CONFORMES";
+    } else if (estado === "asignadas") {
+        titulo.textContent = "SERVICIOS ASIGNADOS";
+    } else if (estado === "proceso") {
+        titulo.textContent = "SERVICIOS EN PROCESO";
+    } else if (estado === "aceptadas") {
+        titulo.textContent = "SERVICIOS ACEPTADOS";
+    }
+}
 
-        document.getElementById("formBusqueda").addEventListener("submit", function (event) {
-            event.preventDefault();
-            const id = document.getElementById("id").value.trim();
-            const fechaInicio = document.getElementById("fechaInicio").value.trim();
-            const fechaFin = document.getElementById("fechaFin").value.trim();
-            const keyword = document.getElementById("keyword").value.trim();
-            const pendiente = document.getElementById("pendiente").value.trim(); // Obtener el valor de pendiente
-            obtenerNovedades({ id, fechaInicio, fechaFin, keyword, pendiente });
-        });
+document.getElementById("formBusqueda").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const id = document.getElementById("id").value.trim();
+    const fechaInicio = document.getElementById("fechaInicio").value.trim();
+    const fechaFin = document.getElementById("fechaFin").value.trim();
+    const keyword = document.getElementById("keyword").value.trim();
+    const pendiente = document.getElementById("pendiente").value.trim();
+    obtenerNovedades({ id, fechaInicio, fechaFin, keyword, pendiente });
+});
 
-        document.getElementById("descargarExcel").addEventListener("click", function () {
-            const fechaInicio = document.getElementById("fechaInicio").value.trim();
-            const fechaFin = document.getElementById("fechaFin").value.trim();
-            descargarInformeExcel(fechaInicio, fechaFin);
-        });
+document.getElementById("descargarExcel").addEventListener("click", function () {
+    const fechaInicio = document.getElementById("fechaInicio").value.trim();
+    const fechaFin = document.getElementById("fechaFin").value.trim();
+    descargarInformeExcel(fechaInicio, fechaFin);
+});
 
-        function obtenerNovedades(params) {
-            const queryString = new URLSearchParams(params).toString();
-           
-            fetch(`/novedad_vianco?${queryString}`)
-                .then(response => response.json())
-                .then(data => mostrarNovedades(data))
-                .catch(error => console.error('Error:', error));
-        }
+function obtenerNovedades(params) {
+    const queryString = new URLSearchParams(params).toString();
+    fetch(`/novedad_vianco?${queryString}`)
+        .then(response => response.json())
+        .then(data => mostrarNovedades(data))
+        .catch(error => console.error('Error:', error));
+}
+
 function mostrarNovedades(novedades) {
-    const pendiente = document.getElementById("pendiente").value.trim(); // Obtener el valor de pendiente
-    const novedadesContainer = document.getElementById("novedadesContainer");
-    novedadesContainer.innerHTML = ""; // Limpiar el contenedor
+    const pendiente = document.getElementById("pendiente").value.trim();
+    let novedadesContainer;
+    if (pendiente === "nuevas") {
+        novedadesContainer = document.getElementById("novedadesContainer");
+    } else if (pendiente === "asignadas") {
+        novedadesContainer = document.getElementById("novedadesAsignadasContainer");
+    } else if (pendiente === "proceso") {
+        novedadesContainer = document.getElementById("novedadesContainer");
+    } else if (pendiente === "aceptadas") {
+        novedadesContainer = document.getElementById("novedadesAceptadasContainer");
+    }
+
+    novedadesContainer.innerHTML = "";
 
     if (novedades.length === 0) {
         novedadesContainer.innerHTML = "<p>No hay novedades para los criterios de búsqueda especificados.</p>";
     } else {
-        const table = crearTablaNovedades(novedades, pendiente);
+        let table;
+        if (pendiente === "proceso") {
+            table = crearTablaNovedadesProceso(novedades);
+        } else if (pendiente === "aceptadas") {
+            table = crearTablaNovedadesAceptadas(novedades);
+        } else {
+            table = crearTablaNovedades(novedades, pendiente);
+        }
         novedadesContainer.appendChild(table);
     }
 }
+
 function crearTablaNovedades(novedades, pendiente) {
     const table = document.createElement('table');
     table.classList.add('table');
@@ -296,10 +320,13 @@ function crearTablaNovedades(novedades, pendiente) {
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
 
-    // Definir los encabezados de la tabla basados en el estado seleccionado
-    const headers = pendiente === "true" ?
-        ['N° UNICO', 'Fecha de la novedad ', 'Fecha de envio' ,'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma'] :
-        ['N° UNICO', 'Fecha Novedad', 'Fecha de envio','Enviada por: ', 'Novedad Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Responsable Seguimiento', 'Detalle Seguimiento', 'Fecha Seguimiento', 'Fecha Registro Seguimiento', 'Acciones a tomar', ];
+    let headers = [];
+
+    if (pendiente === "nuevas") {
+        headers = ['N° UNICO', 'Fecha de la novedad', 'Fecha de envío', 'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma'];
+    } else if (pendiente === "asignadas") {
+        headers = ['N° UNICO', 'Fecha de la novedad', 'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma', 'Responsable Asignado'];
+    }
 
     headers.forEach(headerText => {
         const th = document.createElement('th');
@@ -314,7 +341,7 @@ function crearTablaNovedades(novedades, pendiente) {
 
     novedades.forEach(novedad => {
         const tr = document.createElement('tr');
-        if (pendiente === "true") {
+        if (pendiente === "nuevas") {
             tr.innerHTML = `
                 <td>${novedad.id}</td>
                 <td>${formatoFecha(novedad.fecha)}</td>
@@ -327,22 +354,18 @@ function crearTablaNovedades(novedades, pendiente) {
                 <td>${novedad.otras_novedades}</td>
                 <td><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></td>
             `;
-        } else {
+        } else if (pendiente === "asignadas") {
             tr.innerHTML = `
-                <td>${novedad.numeroU}</td>
+                <td>${novedad.id}</td>
                 <td>${formatoFecha(novedad.fecha)}</td>
-                <td>${novedad.fecha_registro}</td>
                 <td>${novedad.realiza}</td>
                 <td>${novedad.novedad_tripulacion}</td>
                 <td>${novedad.novedad_hoteleria}</td>
                 <td>${novedad.novedad_ejecutivos}</td>
                 <td>${novedad.novedad_empresas_privadas}</td>
                 <td>${novedad.otras_novedades}</td>
-                <td>${novedad.nombre_seguimiento}</td>
-                <td>${novedad.detalle_seguimiento}</td>
-                <td>${novedad.fecha_seguimiento}</td>
-                <td>${novedad.fecha_registro_seguimiento}</td>
-                <td>${novedad.ACCIONES}</td>
+                <td><img src                ="${novedad.firma}" alt="Firma" style="max-width: 100%;"></td>
+                <td>${novedad.responsable_asignado}</td>
             `;
         }
         tbody.appendChild(tr);
@@ -352,36 +375,127 @@ function crearTablaNovedades(novedades, pendiente) {
     return table;
 }
 
-// Función para formatear la fecha en "día mes año"
+function crearTablaNovedadesProceso(novedades) {
+    const table = document.createElement('table');
+    table.classList.add('table');
+
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+
+    const headers = ['N° UNICO', 'Fecha de Novedad', 'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma', 'Responsable Asignado', 'FECHA DEL SEGUIMIENTO', 'Detalles de seguimiento', 'PLAN A TOMAR', 'Plazo'];
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        tr.appendChild(th);
+    });
+
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    novedades.forEach(novedad => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${novedad.numeroU}</td>
+            <td>${formatoFecha(novedad.fecha_novedad)}</td>
+            <td>${novedad.realiza}</td>
+            <td>${novedad.novedad_tripulacion}</td>
+            <td>${novedad.novedad_hoteleria}</td>
+            <td>${novedad.novedad_ejecutivos}</td>
+            <td>${novedad.novedad_empresas_privadas}</td>
+            <td>${novedad.otras_novedades}</td>
+            <td><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></td>
+            <td>${novedad.nombre_seguimiento}</td>
+            <td>${novedad.fecha_seguimiento}</td>
+            <td>${novedad.detalle_seguimiento}</td>
+            <td>${novedad.ACCIONES}</td>
+            <td>${novedad.Plazo}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    return table;
+}
+
+function crearTablaNovedadesAceptadas(novedades) {
+    const table = document.createElement('table');
+    table.classList.add('table');
+
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+
+    const headers = ['N° UNICO', 'Fecha de Novedad', 'Enviada por:', 'Novedad de Tripulación', 'Novedad Hotelería', 'Novedad Ejecutivos', 'Novedad Empresas Privadas', 'Otras Novedades', 'Firma', 'Responsable Asignado', 'FECHA DEL SEGUIMIENTO', 'Detalles de seguimiento', 'PLAN A TOMAR', 'Plazo' ,'ACEPTADA'];
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        tr.appendChild(th);
+    });
+
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    novedades.forEach(novedad => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+              <td>${novedad.numeroU}</td>
+            <td>${formatoFecha(novedad.fecha_novedad)}</td>
+            <td>${novedad.realiza}</td>
+            <td>${novedad.novedad_tripulacion}</td>
+            <td>${novedad.novedad_hoteleria}</td>
+            <td>${novedad.novedad_ejecutivos}</td>
+            <td>${novedad.novedad_empresas_privadas}</td>
+            <td>${novedad.otras_novedades}</td>
+            <td><img src="${novedad.firma}" alt="Firma" style="max-width: 100%;"></td>
+            <td>${novedad.nombre_seguimiento}</td>
+            <td>${novedad.fecha_seguimiento}</td>
+            <td>${novedad.detalle_seguimiento}</td>
+            <td>${novedad.ACCIONES}</td>
+            <td>${novedad.Plazo}</td>
+              <td>${novedad.aceptadas}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    return table;
+}
+
 function formatoFecha(fechaString) {
     const fecha = new Date(fechaString);
     const dia = fecha.getDate();
-    const mes = fecha.getMonth() + 1; // Los meses en JavaScript son indexados desde 0, por lo que sumamos 1
+    const mes = fecha.getMonth() + 1;
     const año = fecha.getFullYear();
     return `${dia}/${mes}/${año}`;
 }
 
+function descargarInformeExcel(fechaInicio, fechaFin) {
+    fetch('/descargar_excell', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fechaInicio, fechaFin })
+    }).then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'informe.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
 
-        function descargarInformeExcel(fechaInicio, fechaFin) {
-            fetch('/descargar_excell', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ fechaInicio, fechaFin })
-            }).then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(new Blob([blob]));
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'informe.xlsx';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
+
 </body>
 </html>
 

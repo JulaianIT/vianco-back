@@ -3441,11 +3441,11 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU} = req.body;
+    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU];
+    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)';
+    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo];
     
     // Ejecutar la consulta SQL
     connection.query(query, values, (error, results, fields) => {
@@ -3499,8 +3499,8 @@ app.get('/novedad_vianco', (req, res) => {
     let sql = '';
     let params = [];
 
-    // Construir la consulta base dependiendo del estado de "pendiente"
     if (pendiente === "true") { 
+        // SQL for pending novedades
         sql = `
             SELECT 
                 id, 
@@ -3524,12 +3524,10 @@ app.get('/novedad_vianco', (req, res) => {
             FROM novedades_vianco
             WHERE 1=1
         `;
-        // Agregar filtro para el campo "id" si está presente
         if (id) {
             sql += " AND id LIKE ?";
             params.push(`%${id}%`);
         }
-        // Agregar filtros de fecha según el estado de "pendiente"
         if (fechaInicio) {
             sql += " AND fecha >= ?";
             params.push(fechaInicio);
@@ -3538,8 +3536,173 @@ app.get('/novedad_vianco', (req, res) => {
             sql += " AND fecha <= ?";
             params.push(fechaFin);
         }
-    } else if (pendiente === "false") { 
+    } else if (pendiente === "nuevas") { 
+        // SQL for new novedades
         sql = `
+        SELECT 
+            id, 
+            fecha, 
+            realiza, 
+            novedad_tripulacion, 
+            novedad_hoteleria, 
+            novedad_ejecutivos, 
+            novedad_empresas_privadas, 
+            NOVEDADES_TASKGO, 
+            otras_novedades, 
+            fecha_registro, 
+            firma
+        FROM novedades_vianco
+        WHERE responsable_asignado IS NULL
+    `;
+    
+        if (id) {
+            sql += " AND numeroU LIKE ?";
+            params.push(`%${id}%`);
+        }
+        if (fechaInicio) {
+            sql += " AND fecha_novedad >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha_novedad <= ?";
+            params.push(fechaFin);
+        }
+    } else if (pendiente === "asignadas") {
+        // SQL for assigned novedades
+        sql = `
+        SELECT 
+            id, 
+            fecha, 
+            realiza, 
+            novedad_tripulacion, 
+            novedad_hoteleria, 
+            novedad_ejecutivos, 
+            novedad_empresas_privadas, 
+            NOVEDADES_TASKGO, 
+            otras_novedades, 
+            fecha_registro, 
+            firma,
+            responsable_asignado
+        FROM novedades_vianco
+        WHERE responsable_asignado IS NOT NULL
+    `;
+        if (id) {
+            sql += " AND numeroU LIKE ?";
+            params.push(`%${id}%`);
+        }
+        if (fechaInicio) {
+            sql += " AND fecha_novedad >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha_novedad <= ?";
+            params.push(fechaFin);
+        }
+    } else if (pendiente === "proceso") {
+        // SQL for novedades in process
+        sql = `
+        SELECT 
+            id, 
+            numeroU,
+            fecha_novedad, 
+            realiza, 
+            novedad_tripulacion, 
+            novedad_hoteleria, 
+            novedad_ejecutivos, 
+            novedad_empresas_privadas, 
+            NOVEDADES_TASKGO, 
+            otras_novedades, 
+            fecha_registro, 
+            firma,
+            nombre_seguimiento,
+            fecha_seguimiento,
+            fecha_registro,
+            detalle_seguimiento,
+            ACCIONES,
+            Plazo,
+            aceptadas
+        FROM novedades_completadas_vianco
+        WHERE aceptadas IS NULL
+    `;
+        if (id) {
+            sql += " AND numeroU LIKE ?";
+            params.push(`%${id}%`);
+        }
+        if (fechaInicio) {
+            sql += " AND fecha_novedad >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha_novedad <= ?";
+            params.push(fechaFin);
+        }
+    } else if (pendiente === "aceptadas") {
+        // SQL for accepted novedades
+        sql = `
+            SELECT       
+            id, 
+            numeroU,
+            fecha_novedad, 
+            realiza, 
+            novedad_tripulacion, 
+            novedad_hoteleria, 
+            novedad_ejecutivos, 
+            novedad_empresas_privadas, 
+            NOVEDADES_TASKGO, 
+            otras_novedades, 
+            fecha_registro, 
+            firma,
+            nombre_seguimiento,
+            fecha_seguimiento,
+            fecha_registro,
+            detalle_seguimiento,
+            ACCIONES,
+            Plazo,
+            aceptadas
+            FROM novedades_completadas_vianco 
+            WHERE aceptadas = 1
+        `;
+    
+    } else { 
+        // SQL for all novedades
+        sql = `
+        SELECT 
+        id, 
+        numeroU,
+        fecha_novedad, 
+        realiza, 
+        novedad_tripulacion, 
+        novedad_hoteleria, 
+        novedad_ejecutivos, 
+        novedad_empresas_privadas, 
+        NOVEDADES_TASKGO, 
+        otras_novedades, 
+        fecha_registro, 
+        firma,
+        nombre_seguimiento,
+        fecha_seguimiento,
+        fecha_registro,
+        detalle_seguimiento,
+        ACCIONES,
+        Plazo,
+        aceptadas
+    FROM novedades_completadas_vianco
+    WHERE 1=1
+        `;
+        if (id) {
+            sql += " AND id LIKE ?";
+            params.push(`%${id}%`);
+        }
+        if (fechaInicio) {
+            sql += " AND fecha >= ?";
+            params.push(fechaInicio);
+        }
+        if (fechaFin) {
+            sql += " AND fecha <= ?";
+            params.push(fechaFin);
+        }
+        sql += `
+            UNION ALL 
             SELECT 
                 id, 
                 fecha_novedad AS fecha, 
@@ -3562,12 +3725,10 @@ app.get('/novedad_vianco', (req, res) => {
             FROM novedades_completadas_vianco
             WHERE 1=1
         `;
-        // Agregar filtro para el campo "numeroU" si está presente
         if (id) {
             sql += " AND numeroU LIKE ?";
             params.push(`%${id}%`);
         }
-        // Agregar filtros de fecha según el estado de "pendiente"
         if (fechaInicio) {
             sql += " AND fecha_novedad >= ?";
             params.push(fechaInicio);
@@ -3576,61 +3737,14 @@ app.get('/novedad_vianco', (req, res) => {
             sql += " AND fecha_novedad <= ?";
             params.push(fechaFin);
         }
-    } else { 
-        // Consulta combinada si se buscan todas las novedades
-        sql = `
-            SELECT 
-                id, 
-                fecha, 
-                realiza, 
-                novedad_tripulacion, 
-                novedad_hoteleria, 
-                novedad_ejecutivos, 
-                novedad_empresas_privadas, 
-                NOVEDADES_TASKGO, 
-                otras_novedades, 
-                fecha_registro, 
-                firma,
-                NULL AS nombre_seguimiento, 
-                NULL AS detalle_seguimiento, 
-                NULL AS fecha_seguimiento, 
-                NULL AS fecha_registro_seguimiento, 
-                NULL AS ACCIONES,
-                NULL AS estado,
-                NULL AS numeroU
-            FROM novedades_vianco
-            WHERE 1=1
-        `;
-        // Agregar filtro para el campo "id" si está presente
-        if (id) {
-            sql += " AND id LIKE ?";
-            params.push(`%${id}%`);
-        }
-        // Agregar filtros de fecha según el estado de "pendiente"
-        if (fechaInicio) {
-            sql += " AND fecha >= ?";
-            params.push(fechaInicio);
-        }
-        if (fechaFin) {
-            sql += " AND fecha <= ?";
-            params.push(fechaFin);
-        }
-        // Agregar filtro para el campo "numeroU" si está presente
-        if (id) {
-            sql += " UNION ALL SELECT ..."; 
-            sql += " AND numeroU LIKE ?";
-            params.push(`%${id}%`);
-        }
     }
     
-    // Agregar filtros según los parámetros de búsqueda (keyword)
     if (keyword) {
         sql += " AND (novedad_tripulacion LIKE ? OR novedad_hoteleria LIKE ? OR novedad_ejecutivos LIKE ? OR novedad_empresas_privadas LIKE ? OR otras_novedades LIKE ?)";
         const keywordParam = `%${keyword}%`;
         params.push(keywordParam, keywordParam, keywordParam, keywordParam, keywordParam);
     }
     
-    // Agregar filtros adicionales basados en las opciones seleccionadas en el filtroNovedades
     if (filtroNovedades && filtroNovedades.length > 0) {
         sql += " AND (";
         filtroNovedades.forEach((filtro, index) => {
@@ -4673,31 +4787,25 @@ async function enviarCorreoElectronico(responsable, tarea) {
 
 
 
-
-
-
 app.get('/asiganr_servicioN', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
             // Obtener nombre de usuario de la sesión
             const nombreUsuario = req.session.name;
-            
+
             // Consulta para obtener la lista de usuarios
-        // Consulta para obtener la lista de usuarios
-const userQuery = 'SELECT DISTINCT name FROM user';
-const [userRows] = await connection.promise().query(userQuery);
-if (!userRows || userRows.length === 0) {
-    throw new Error("No se encontraron clientes en la base de datos.");
-}
-// Mapear los nombres de usuario
-const clientes = userRows.map(row => row.name);
+            const userQuery = 'SELECT DISTINCT name FROM user';
+            const [userRows] = await connection.promise().query(userQuery);
+            if (!userRows || userRows.length === 0) {
+                throw new Error("No se encontraron clientes en la base de datos.");
+            }
+            // Mapear los nombres de usuario
+            const clientes = userRows.map(row => row.name);
 
             // Consulta para obtener las novedades
             const novedadesQuery = 'SELECT * FROM novedades_vianco WHERE responsable_asignado IS NULL';
             const [novedadesRows] = await connection.promise().query(novedadesQuery);
-            if (!novedadesRows || novedadesRows.length === 0) {
-                throw new Error("No se encontraron novedades sin asignar responsable en la base de datos.");
-            }
+
             // Filtrar novedades que tienen contenido
             const filteredNovedades = novedadesRows.filter(novedad => 
                 novedad.novedad_tripulacion || 
@@ -4716,7 +4824,8 @@ const clientes = userRows.map(row => row.name);
                 nombreUsuario, 
                 clientes, 
                 novedades: filteredNovedades, 
-                fechaActual 
+                fechaActual, 
+                mensaje: filteredNovedades.length === 0 ? "No hay servicios para asignar." : null
             });
         } else {
             res.redirect("/login/index");
@@ -4726,6 +4835,9 @@ const clientes = userRows.map(row => row.name);
         res.status(500).send("Error interno del servidor");
     }
 });
+
+
+
 
 
 
@@ -4833,11 +4945,184 @@ app.delete('/eliminar-notificacion/:id', async (req, res) => {
     }
 });
 
+
+
+// Ruta para verificación de servicios
+app.get('/verificacion_servicio', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        // Consultar las novedades completadas desde la base de datos
+        connection.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results, fields) => {
+            if (error) throw error;
+            // Renderizar la vista y pasar las novedades como datos
+            res.render('novedades_vianco/verificacion_servicio.hbs', { nombreUsuario, novedades: results });
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+
+
+
+
+
+    
+});
+// Ruta para marcar una novedad como aceptada
+app.get('/marcar_aceptada/:id', (req, res) => {
+    const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
+
+    // Actualizar el estado de la novedad en la base de datos como aceptada
+    connection.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
+        if (error) throw error;
+
+        // Consultar el email del usuario que realizó la acción
+        connection.query('SELECT email FROM user WHERE email = ?', realiza, (error, results, fields) => {
+            if (error) throw error;
+            const userEmail = results[0].email; // Suponiendo que el email es único
+
+            // Enviar correo electrónico de confirmación
+            enviarCorreo(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.');
+
+            // Redirigir a la página de verificación de servicios
+            res.redirect('/verificacion_servicio');
+        });
+    });
+});
+
+app.get('/marcar_aceptada/:id/:realiza', (req, res) => {
+    const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
+    const realiza = req.params.realiza; // Obtener el nombre de la persona que realiza desde la URL
+
+    // Consultar el nombre del usuario que realizó la acción
+    connection.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
+        if (error) {
+            console.error('Error al actualizar la base de datos:', error);
+            res.status(500).send('Error al actualizar la base de datos');
+            return;
+        }
+
+        // Consultar el email del usuario basado en el nombre
+        connection.query('SELECT email FROM user WHERE name = ?', realiza, (error, results, fields) => {
+            if (error) {
+                console.error('Error al consultar la base de datos:', error);
+                res.status(500).send('Error al consultar la base de datos');
+                return;
+            }
+            const userEmail = results[0].email; // Suponiendo que el email es único
+
+            // Enviar correo electrónico de confirmación
+            enviarCorreoVerificacion(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.', (error, info) => {
+                if (error) {
+                    console.error('Error al enviar el correo electrónico:', error);
+                    // Manejar el error, tal vez mostrar un mensaje de error al usuario
+                    res.status(500).send('Error al enviar el correo electrónico');
+                    return;
+                }
+
+                console.log('Correo electrónico enviado con éxito:', info);
+
+                // Respondemos con un estado de éxito
+                res.status(200).send('Correo electrónico enviado y novedad marcada como aceptada en la base de datos');
+            });
+        });
+    });
+});
+
+
+
+
+
+
+
+// Función para enviar correo electrónico de verificación con un texto más formal
+function enviarCorreoVerificacion(destinatario, asunto, contenido) {
+    // Configurar el transporte del correo electrónico
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'soporte.it.vianco@gmail.com', // Tu correo electrónico
+            pass: 'iifjwgvmeujfiqhx' // Tu contraseña
+        }
+    });
+
+    // Texto más formal del correo electrónico
+    const contenidoFormal = `Estimado/a [Nombre del Usuario],
+
+Nos complace informarle que su servicio ha sido verificado correctamente. Este es un paso importante para garantizar la calidad y la eficiencia de nuestros servicios. Si tiene alguna pregunta o necesita más asistencia, no dude en ponerse en contacto con nosotros.
+
+Atentamente,
+Equipo de Soporte de Vianco`;
+
+    // Configurar el correo electrónico
+    const mailOptions = {
+        from: 'soporte.it.vianco@gmail.com', // Dirección de correo electrónico del remitente
+        to: destinatario, // Dirección de correo electrónico del destinatario
+        subject: asunto, // Asunto del correo electrónico
+        text: contenidoFormal // Contenido del correo electrónico (en formato de texto sin formato)
+    };
+
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Correo electrónico enviado: ' + info.response);
+        }
+    });
+}
+
+
+
+
+
+
+// Ruta para manejar la consulta de servicios
+app.get('/Consulta_mia', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        // Consulta a la base de datos para obtener los servicios del usuario actual
+        const query = "SELECT * FROM novedades_completadas_vianco WHERE realiza = ?";
+        connection.query(query, [nombreUsuario], (err, results) => {
+            if (err) {
+                console.error('Error al consultar la base de datos: ', err);
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            // Renderiza la plantilla y pasa los resultados como contexto
+            res.render('novedades_vianco/consulta_mia_SN.hbs', { nombreUsuario, servicios: results });
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
 });
+
+
+
+
+
+
+
+
+
+
+
 
 const EXPRESS_PORT = 3001; // Elige el puerto que desees para la aplicación Express
 app.listen(EXPRESS_PORT, () => {

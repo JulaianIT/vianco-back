@@ -456,8 +456,16 @@ text-align: center;
            {{#if director}}
   <a href="/ver_novedades_vianco">PENDIENTES POR REVISAR</a>
     {{/if}}
-    <a href="/ver_vianco">CONSULTAR</a>
-  
+
+
+          {{#if director}}
+  <a href="/verificacion_servicio">VERIFICACION</a>
+    {{/if}}
+         {{#if director}}
+    <a href="/ver_vianco">CONSULTA GENERAL</a>
+  {{/if}}
+      <a href="/Consulta_mia">CONSULTA INDIVIDUAL</a>
+
   </div>
   <div class="pie">
     <a href="#">Más información</a>
