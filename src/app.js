@@ -3383,41 +3383,44 @@ app.get('/ver_novedades_vianco', (req, res) => {
 
 
 
-
-// Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
-    connection.query('SELECT DISTINCT id FROM novedades_vianco', (error, results) => {
+    const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
+    const query = 'SELECT DISTINCT id FROM novedades_vianco WHERE responsable_asignado = ?';
+
+    connection.query(query, [nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las IDs disponibles:', error);
-            res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
+            res.status(500).json({ error: 'Error interno del servidor' });
         } else {
-            const idsDisponibles = results.map(result => result.id); // Mapea solo los IDs de los resultados
-            res.json(idsDisponibles); // Devuelve un JSON con los IDs disponibles
+            const idsDisponibles = results.map(result => result.id);
+            res.json(idsDisponibles);
         }
     });
 });
 
-// Backend (Endpoint /api/obtener_novedades)// Backend (Endpoint /api/obtener_novedades)
+
 app.get('/api/obtener_novedades_vianco/:id', (req, res) => {
     const id = req.params.id;
-    const query = 'SELECT id,fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro FROM novedades_vianco WHERE id = ?';
-    connection.query(query, [id], (error, results) => {
+    const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
+    const query = 'SELECT id, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro, responsable_asignado FROM novedades_vianco WHERE id = ? AND responsable_asignado = ?';
+
+    connection.query(query, [id, nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         } else {
-            // Aquí tienes los resultados de la consulta SQL
-            // Itera sobre los resultados para procesar cada fila
             results.forEach(row => {
-                const firmaBase64 = row.firma;
-                const firmaBinaria = Buffer.from(firmaBase64, 'base64');
-                row.firmaBinaria = firmaBinaria;
+                if (row.firma) {
+                    const firmaBase64 = row.firma;
+                    const firmaBinaria = Buffer.from(firmaBase64, 'base64');
+                    row.firmaBinaria = firmaBinaria;
+                }
             });
-            // Devuelve los resultados
             res.json(results);
         }
     });
 });
+
 
 // Backend (Endpoint /api/eliminar_novedad)
 app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {

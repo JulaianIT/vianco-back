@@ -483,7 +483,11 @@ function obtenerNovedadesPorId(idSeleccionado) {
                         </div>
 
                        
-                  
+                   <div class="campo">
+                            <label><strong>RESPONSABLE DEL SEGUIMIENTO:</strong></label>
+                            <span>${novedad.responsable_asignado || ''}</span>
+                        </div>
+
                   
                         ${novedad.novedad_tripulacion ? `
                         <div class="campo1">
