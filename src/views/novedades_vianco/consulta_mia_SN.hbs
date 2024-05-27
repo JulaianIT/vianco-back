@@ -3,39 +3,58 @@
 <head>
     <title>Consulta de Servicios</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
         .completada {
-                        background-color: green;
-            padding: 5px;
-
-            color: black;
+            background-color: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
         }
         .en-proceso {
-            padding: 5px;
-            background-color: yellow;
-            color: black;
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Bienvenido, {{ nombreUsuario }}</h1>
-    <h2>cosulte todos sus servicios no conformes:</h2>
+    <h2>Consulte todos sus servicios no conformes:</h2>
     {{#if servicios.length}}
         <table>
             <thead>
                 <tr>
-                    <th>N° UNICO</th>
+                    <th>N° ÚNICO</th>
                     <th>Realizado por</th>
                     <th>Fecha de la novedad</th>
                     <th>Novedad de tripulación</th>
