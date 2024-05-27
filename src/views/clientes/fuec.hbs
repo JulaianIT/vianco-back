@@ -159,42 +159,25 @@ width: 50%;
 <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 
 
-
 <script>
     // Función para obtener las placas de vehículos y llenar el select
     function obtenerPlacas() {
-        fetch('/vehiculos_Novencidos')
+        fetch('/vehiculos_vencidos') // Cambio aquí
             .then(response => response.json())
             .then(vehiculos => {
                 const placaSelect = document.getElementById('placa');
                 placaSelect.innerHTML = ''; // Limpiar opciones anteriores
                 vehiculos.forEach(vehiculo => {
-                    // Verificar si el vehículo tiene algún documento vencido
-                    if (!esDocumentoVencido(vehiculo)) {
-                        const option = document.createElement('option');
-                        option.value = vehiculo.placa;
-                        option.textContent = vehiculo.placa;
-                        placaSelect.appendChild(option);
-                    }
+                    const option = document.createElement('option');
+                    option.value = vehiculo.placa;
+                    option.textContent = vehiculo.placa;
+                    placaSelect.appendChild(option);
                 });
             })
             .catch(error => {
                 console.error('Error al obtener los vehículos:', error);
                 alert('Error al cargar las placas de vehículos. Por favor, inténtalo de nuevo.');
             });
-    }
-
-    // Función para verificar si un vehículo tiene algún documento vencido
-    function esDocumentoVencido(vehiculo) {
-        const fechaActual = new Date().toISOString().split('T')[0]; // Obtener la fecha actual en formato YYYY-MM-DD
-
-        // Verificar si alguna de las fechas de los documentos es menor o igual a la fecha actual
-        return vehiculo.Fecha_vigencia_soat <= fechaActual ||
-            vehiculo.Fecha_vigencia <= fechaActual ||
-            vehiculo.Vigencia_polizas <= fechaActual ||
-            vehiculo.Fecha_final_operacion <= fechaActual ||
-            vehiculo.Fecha_final_preventiva_1 <= fechaActual ||
-            vehiculo.fecha_vigencia_convenio <= fechaActual;
     }
 
     // Llamar a la función para obtener las placas al cargar la página
@@ -294,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Llenar select de clientes, vehículos y conductores al cargar la página
     Promise.all([
         fetch('/clientes2').then(response => response.json()), // Cambiar la ruta a /clientes2
-        fetch('/vehiculos').then(response => response.json()),
+        fetch('/vehiculoos').then(response => response.json()),
         fetch('/conductoress').then(response => response.json())
     ]).then(([clientes, vehiculos, conductores]) => {
         // Llenar select de clientes
@@ -403,6 +386,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener todos los conductores disponibles
+    fetch('/conductoress')
+        .then(response => response.json())
+        .then(conductores => {
+            const conductorSelect2 = document.getElementById('conductor2');
+            const conductorSelect3 = document.getElementById('conductor3');
+            conductores.forEach(conductor => {
+                // Crear opciones para conductor 2
+                const option2 = document.createElement('option');
+                option2.value = conductor.id;
+                option2.textContent = conductor.conductor;
+                conductorSelect2.appendChild(option2);
+                // Crear opciones para conductor 3
+                const option3 = document.createElement('option');
+                option3.value = conductor.id;
+                option3.textContent = conductor.conductor;
+                conductorSelect3.appendChild(option3);
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener conductores:', error);
+            alert('Error al cargar los conductores. Por favor, inténtalo de nuevo.');
+        });
+});
+
 
 </script>
 
