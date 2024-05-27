@@ -720,8 +720,18 @@ float: none;
             <a href="/VE">CONSULTAR </a>
 
          {{#if director}}
-    <a href="/cotizaciones_pendientes">PENDIENTES</a>
+    <a href="/cotizaciones_pendientes">PENDIENTES POR DARLE VALOR </a>
 {{/if}}
+
+      {{#if director}}
+    <a href="/verificacion_cotizacion"> PENDIENTES POR AUTORIZAR</a>
+{{/if}}
+
+
+
+
+
+
       {{#if callcenter}}
     <a href="/cotizaciones_pendientes">PENDIENTES</a>
 {{/if}}

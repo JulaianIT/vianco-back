@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Servicio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        h1, h2 {
+            color: #413d4b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            border: 2px solid #dddddd;
+        }
+        th {
+            background-color: #90c9a7;
+            color: #ffffff;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+        tr:hover {
+            background-color: #e5f0f5;
+        }
+        .accept-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .accept-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenido, {{ nombreUsuario }}</h1>
+        <h2>Verifique y acepte el seguimiento </h2>
+        {{#each novedades}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Primaria</th> 
+                        <th>Cliente</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Contacto</th>
+                        <th>Ciudad</th>
+                        <th>Número de Servicios</th>
+                        <th>Fecha de Creación</th>
+                        <th>Fecha 1</th>
+                        <th>Hora 1</th>
+                        <th>Origen 1</th>
+                        <th>Destino 1</th>
+                        <th>Itinerario 1</th>
+                        <th>Tipo Carro 1</th>
+                        <th>Fecha 2</th>
+                        <th>Hora 2</th>
+                        <th>Origen 2</th>
+                        <th>Destino 2</th>
+                        <th>Itinerario 2</th>
+                        <th>Tipo Carro 2</th>
+                        <th>Fecha 3</th>
+                        <th>Hora 3</th>
+                        <th>Origen 3</th>
+                        <th>Destino 3</th>
+                        <th>Itinerario 3</th>
+                        <th>Tipo Carro 3</th>
+                        <th>Fecha 4</th>
+                        <th>Hora 4</th>
+                        <th>Origen 4</th>
+                        <th>Destino 4</th>
+                        <th>Itinerario 4</th>
+                        <th>Tipo Carro 4</th>
+                        <th>Fecha 5</th>
+                        <th>Hora 5</th>
+                        <th>Origen 5</th>
+                        <th>Destino 5</th>
+                        <th>Itinerario 5</th>
+                        <th>Tipo Carro 5</th>
+                        <th>Realizada</th>
+                        <th>Valor Total</th>
+                        <th>Valor 1</th>
+                        <th>Valor 2</th>
+                        <th>Valor 3</th>
+                        <th>Valor 4</th>
+                        <th>Valor 5</th>
+                        <th>Observaciones 1</th>
+                        <th>Observaciones 2</th>
+                        <th>Observaciones 3</th>
+                        <th>Observaciones 4</th>
+                        <th>Observaciones 5</th>
+                        <th>Adicionales-check</th>
+                        <th>Adicionales</th>
+                        <th>Subtotal</th>
+                        <th>Descuento</th>
+                        <th>Verificadas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{id }}</td>
+                        <td>{{cliente}}</td>
+                        <td>{{nombre}}</td>
+                        <td>{{correo}}</td>
+                        <td>{{contacto}}</td>
+                        <td>{{ciudad}}</td>
+                        <td>{{num_servicios}}</td>
+                        <td>{{fecha_creacion}}</td>
+                        <td>{{fecha1}}</td>
+                        <td>{{hora1}}</td>
+                        <td>{{origen1}}</td>
+                        <td>{{destino1}}</td>
+                        <td>{{itinerario1}}</td>
+                        <td>{{tipoCarro1}}</td>
+                        <td>{{fecha2}}</td>
+                        <td>{{hora2}}</td>
+                        <td>{{origen2}}</td>
+                        <td>{{destino2}}</td>
+                        <td>{{itinerario2}}</td>
+                        <td>{{tipoCarro2}}</td>
+                        <td>{{fecha3}}</td>
+                        <td>{{hora3}}</td>
+                        <td>{{origen3}}</td>
+                        <td>{{destino3}}</td>
+                        <td>{{itinerario3}}</td>
+                        <td>{{tipoCarro3}}</td>
+                        <td>{{fecha4}}</td>
+                        <td>{{hora4}}</td>
+                        <td>{{origen4}}</td>
+                        <td>{{destino4}}</td>
+                        <td>{{itinerario4}}</td>
+                        <td>{{tipoCarro4}}</td>
+                        <td>{{fecha5}}</td>
+                        <td>{{hora5}}</td>
+                        <td>{{origen5}}</td>
+                        <td>{{destino5}}</td>
+                        <td>{{itinerario5}}</td>
+                        <td>{{tipoCarro5}}</td>
+                        <td>{{realizada}}</td>
+                        <td>{{valor_total}}</td>
+                        <td>{{valor_1}}</td>
+                        <td>{{valor_2}}</td>
+                        <td>{{valor                        3}}</td>
+                        <td>{{valor_4}}</td>
+                        <td>{{valor_5}}</td>
+                        <td>{{observaciones_1}}</td>
+                        <td>{{observaciones_2}}</td>
+                        <td>{{observaciones_3}}</td>
+                        <td>{{observaciones_4}}</td>
+                        <td>{{observaciones_5}}</td>
+                        <td>{{adicionales-check}}</td>
+                        <td>{{adicionales}}</td>
+                        <td>{{subtotal}}</td>
+                        <td>{{descuento}}</td>
+                        <td>{{verificadas}}</td>
+                        <td><button class="accept-button" onclick="marcarAceptada('{{id}}', '{{realizada}}')">Cerrar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        {{/each}}
+    </div>
+
+    <script>
+        function marcarAceptada(id, realiza) {
+            fetch('/marcar_aceptada/' + id + '/' + realiza)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al marcar como aceptada');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log(data); // Mensaje del servidor
+                // Recargar la página
+                window.location.reload(true);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Manejar el error, mostrar un mensaje de error al usuario, etc.
+            });
+        }
+    </script>
+</body>
+</html>
+

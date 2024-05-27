@@ -81,41 +81,28 @@
             <thead>
                 <tr>
                     <th>N° único</th> 
-                    <th>Fecha de la novedad</th>
-                    <th>Enviada el</th>
+                    <th>cliente</th>
                     <th>Enviada por</th>
-                    <th>Novedad Tripulación</th>
-                    <th>Novedad Hotelería</th>
-                    <th>Novedad Ejecutivos</th>
-                    <th>Novedad Empresas Privadas</th>
-                    <th>Novedades Taskgo</th>
-                    <th>Otras Novedades</th>
-                    <th>Responsable del Seguimiento</th>
-                    <th>Fecha de Seguimiento</th>
-                    <th>Detalle de Seguimiento</th>
-                    <th>Plan de acción</th>
-                    <th>Plazo</th>
-                    <th>Acciones</th>
+                    <th>Enviada por</th>
+                    <th>correo</th>
+                    <th>contacto	</th>
+                    <th>ciudad</th>
+                    <th>num_servicios</th>
+                    <th>fecha_creacion</th>
+                    <th>fecha1</th>
+                    <th>hora1</th>
+             
                 </tr>
             </thead>
             <tbody>
                 {{#each novedades}}
                     <tr>
-                        <td>{{numeroU}}</td>
-                        <td>{{fecha_registro}}</td>
-                        <td>{{fecha_novedad}}</td>
-                        <td>{{realiza}}</td>
-                        <td>{{novedad_tripulacion}}</td>
-                        <td>{{novedad_hoteleria}}</td>
-                        <td>{{novedad_ejecutivos}}</td>
-                        <td>{{novedad_empresas_privadas}}</td>
-                        <td>{{NOVEDADES_TASKGO}}</td>
-                        <td>{{otras_novedades}}</td>
-                        <td>{{nombre_seguimiento}}</td>
-                        <td>{{fecha_seguimiento}}</td>
-                        <td>{{detalle_seguimiento}}</td>
-                        <td>{{ACCIONES}}</td>
-                            <td>{{Plazo}}</td>
+                        <td>{{id }}</td>
+                        <td>{{cliente}}</td>
+                        <td>{{nombre}}</td>
+                        <td>{{correo}}</td>
+                        <td>{{contacto}}</td>
+                   
 <td><button class="accept-button" onclick="marcarAceptada('{{id}}', '{{realiza}}')">Cerrar</button></td>
                     </tr>
                 {{/each}}

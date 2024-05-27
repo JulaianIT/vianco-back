@@ -1739,7 +1739,7 @@ function generateMessageId() {
 // Enviar correo electrónico
 transporter.sendMail({
     from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
-    to: 'nidia.vianco@gmail.com,calidad.vianco@gmail.com', // El destinatario del correo electrónico
+    to: 'soporte.it.vianco@gmail.com', // El destinatario del correo electrónico
     subject: 'alerta no denovedad centro operaciones', // El asunto del correo electrónico
     html: '<p><strong>Estimados,</strong></p><br>' +
           '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
@@ -2951,7 +2951,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                     }
 
                     const consultaVehiculo = `
-                        SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a
+                        SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a,Num_tarjeta_operacion
                         FROM vehiculos 
                         WHERE placa = '${placa}'`;
 
@@ -3024,7 +3024,8 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                                             Marca: vehiculo.Marca,
                                             Clase_vehiculo: vehiculo.Clase_vehiculo,
                                             No_movil: vehiculo.No_movil,
-                                            Afiliado_a: vehiculo.Afiliado_a
+                                            Afiliado_a: vehiculo.Afiliado_a,
+                                            Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
                                         },
                                         ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
                                         qrDataURL: qrDataURL // Agregar la URL del código QR al template
@@ -3093,7 +3094,8 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                                             Marca: vehiculo.Marca,
                                             Clase_vehiculo: vehiculo.Clase_vehiculo,
                                             No_movil: vehiculo.No_movil,
-                                            Afiliado_a: vehiculo.Afiliado_a
+                                            Afiliado_a: vehiculo.Afiliado_a,
+                                            Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
                                         },
                                         ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
                                         qrDataURL: qrDataURL // Agregar la URL del código QR al template
@@ -3313,7 +3315,6 @@ app.get('/novedades_viancoo', (req, res) => {
 
 
 
-
 app.post('/novedades_vianco', (req, res) => {
     const fecha = req.body.fecha;
     const realiza = req.body.realiza;
@@ -3335,42 +3336,60 @@ app.post('/novedades_vianco', (req, res) => {
         } else {
             console.log('Novedad guardada exitosamente en la base de datos.');
 
-            // Configurar transporte de correo electrónico
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'callcenter.vianco@gmail.com',
-                    pass: 'mdfaqssdhgoedbmw'
-                }
-            });
-
-            // Generar un ID de mensaje único
-            function generateMessageId() {
-                return `vianco_${Date.now()}@dominio.com`;
-            }
-
-            // Enviar correo electrónico
-            transporter.sendMail({
-                from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
-                to: 'cdazavianco@gmail.com,soporte.it.vianco@gmail.com,jrestrepovianco@gmail.com', // El destinatario del correo electrónico
-                subject: 'alerta no denovedad Vianco', // El asunto del correo electrónico
-                html: '<p><strong>Estimados,</strong></p><br>' +
-                      '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
-                      '<p>Recuerde realizar el seguimiento en la app en el módulo novedades pendientes.</p>', // El contenido del correo electrónico en HTML
-                messageId: generateMessageId() // Generar un ID de mensaje único
-            }, (error, info) => {
-                if (error) {
-                    console.error('Error al enviar el correo electrónico:', error);
-                } else {
-                    console.log('Correo electrónico enviado:', info.response);
-                }
-            });
+            // Enviar correo electrónico utilizando la nueva función
+            enviarCorreoNOVEDADD('soporte.it.vianco@gmail.com', 'Alerta de nueva novedad Vianco', `
+                <p><strong>Estimados,</strong></p>
+                <br>
+                <p>Me complace informarles que se ha agregado una nueva novedad al sistema de nuestro equipo de centro de operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p>
+                <br>
+                <p>Recuerden realizar el seguimiento en la aplicación en el módulo de novedades pendientes.</p>
+            `);
 
             const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades_viancoo";</script>';
             res.send(alertScript);
         }
     });
 });
+
+function enviarCorreoNOVEDADD(destinatario, asunto, contenido) {
+    // Configurar el transporte del correo electrónico
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'soporte.it.vianco@gmail.com', // Tu correo electrónico
+            pass: 'iifjwgvmeujfiqhx' // Tu contraseña
+        }
+    });
+
+    // Texto más formal del correo electrónico
+    const contenidoFormal = `Estimado/a [Nombre del Usuario],
+
+Nos complace informarle que su servicio ha sido verificado correctamente. Este es un paso importante para garantizar la calidad y la eficiencia de nuestros servicios. Si tiene alguna pregunta o necesita más asistencia, no dude en ponerse en contacto con nosotros.
+
+Atentamente,
+Equipo de Soporte de Vianco`;
+// Configurar el correo electrónico
+const mailOptions = {
+    from: 'soporte.it.vianco@gmail.com', // Dirección de correo electrónico del remitente
+    to: 'soporte.it.vianco@gmail.com', // Dirección de correo electrónico del destinatario (siempre el mismo)
+    subject: asunto, // Asunto del correo electrónico
+    html: contenidoFormal // Contenido del correo electrónico (en formato HTML)
+};
+
+    
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Correo electrónico enviado: ' + info.response);
+        }
+    });
+}
+
+
+
+
 
 
 
@@ -5116,8 +5135,30 @@ app.get('/Consulta_mia', (req, res) => {
 
 
 
-
-
+// Ruta para verificación de servicios
+app.get('/verificacion_cotizacion', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        // Consultar las cotizaciones no verificadas desde la base de datos
+        connection.query('SELECT * FROM cotizaciones WHERE verificadas IS NULL OR verificadas = 0', (error, results, fields) => {
+            if (error) throw error;
+            // Agrupar cotizaciones por número de servicios
+            const cotizacionesPorServicios = {};
+            results.forEach(cotizacion => {
+                const numServicios = cotizacion.num_servicios;
+                if (!cotizacionesPorServicios[numServicios]) {
+                    cotizacionesPorServicios[numServicios] = [];
+                }
+                cotizacionesPorServicios[numServicios].push(cotizacion);
+            });
+            // Renderizar la vista y pasar las cotizaciones agrupadas como datos
+            res.render('cotizaciones/verificarCotizacion.hbs', { nombreUsuario, cotizacionesPorServicios });
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
 
 
 
