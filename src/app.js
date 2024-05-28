@@ -433,7 +433,7 @@ app.get("/logout", (req, res) => {
 });
 
 // Ruta para administrar roles
-app.get("/admin/roles", (req, res) => {
+app.get("/admin/roless", (req, res) => {
     // Verificar si el usuario tiene permisos de administrador
     if (req.session.loggedin && req.session.roles.includes('gerencia')) {
         // Obtener los usuarios y sus roles desde la base de datos
@@ -444,7 +444,7 @@ app.get("/admin/roles", (req, res) => {
                 return;
             }
             // Renderizar la vista de administración de roles con los datos de los usuarios
-            res.render("admin/roles", { users: results });
+            res.render("admin/roles.hbs", { users: results });
         });
     } else {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
@@ -452,16 +452,6 @@ app.get("/admin/roles", (req, res) => {
 });
 
 
-// Ruta para la página de ajustes de roles
-app.get("/admin/roles", (req, res) => {
-    // Verificar si el usuario tiene permisos de administrador
-    if (req.session.loggedin && req.session.roles.includes('gerencia')) {
-        // Aquí puedes agregar la lógica para mostrar la página de ajustes de roles
-        res.render("admin/roles"); // Esto renderiza una vista llamada "roles.hbs", por ejemplo
-    } else {
-        res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
-    }
-});
 
 // Ruta para mostrar el formulario de edición de roles
 app.get("/admin/roles/:id/edit", (req, res) => {
@@ -5163,10 +5153,48 @@ app.get('/verificacion_cotizacion', (req, res) => {
 
 
 
-// Inicia el servidor de Socket.IO en el puerto especificado
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
+
+
+
+
+app.get('/nuevo_tikect_soporte', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        // Aquí obtienes el correo electrónico del usuario de la base de datos
+        const query = 'SELECT email FROM user WHERE name = ?';
+        connection.query(query, [nombreUsuario], (error, results) => {
+            if (error) {
+                console.error('Error al obtener el correo electrónico del usuario:', error);
+                // Maneja el error apropiadamente
+                res.redirect("/login/index");
+                return;
+            }
+            // Si se encuentra el correo electrónico, pásalo a la página
+            const emailUsuario = results[0].email;
+            res.render('SoporteIT/crear_tikect.hbs', { nombreUsuario, emailUsuario });
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+app.post('/guardar_ticket', (req, res) => {
+    const { usuario, email, asunto, prioridad, descripcion } = req.body;
+
+    // Preparar la consulta de inserción
+    const sql = "INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES (?, ?, ?, ?, ?)";
+    connection.query(sql, [usuario, email, asunto, prioridad, descripcion], (error, results) => {
+        if (error) {
+            console.error('Error al insertar el ticket:', error);
+            res.status(500).send('Error interno al guardar el ticket');
+            return;
+        }
+        console.log('Nuevo ticket creado con ID:', results.insertId);
+        res.send('¡Ticket creado exitosamente!');
+    });
 });
 
 
@@ -5175,9 +5203,11 @@ server.listen(PORT, () => {
 
 
 
-
-
-
+// Inicia el servidor de Socket.IO en el puerto especificado
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Servidor Socket.IO escuchando en el puerto ${PORT}`);
+});
 
 
 const EXPRESS_PORT = 3001; // Elige el puerto que desees para la aplicación Express

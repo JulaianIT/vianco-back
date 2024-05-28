@@ -361,7 +361,6 @@ align-items: center;
                 <span class="label">SELECCIONA UNA PLACA</span>
             </div>
             <!-- Agregar el botón de editar después de mostrar la información del vehículo -->
-             <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
 
             <a href="/" class="volver-btn">Volver al Menú</a>
 
@@ -512,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Agregar botón de editar con un id único
             infoConductoresDiv.innerHTML += `
-                <a href="/agregar-conductor" class="volver-btn">Agregar Nuevo Conductor</a>
+                <a href="/agregar-conductor"   style="display: none;"  class="volver-btn">Agregar Nuevo Conductor</a>
                 <a href="/" class="volver-btn">Volver al Menú</a>
             `;
 
