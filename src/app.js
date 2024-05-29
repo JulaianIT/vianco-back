@@ -255,6 +255,9 @@ app.post('/guardar-programacion', (req, res) => {
         res.status(200).send('Programación del vehículo guardada exitosamente');
     });
 });
+
+
+
  // Ruta para mostrar la página de ver_programacion.hbs
 app.get('/ver-programacion', (req, res) => {
     // Consulta a la base de datos para obtener todas las bases y horarios disponibles
@@ -5157,24 +5160,25 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
 
 
 app.post('/guardar_ticket', (req, res) => {
-    const { usuario, email, asunto, prioridad, descripcion } = req.body;
+    const { usuario, email, asunto, otro_asunto, prioridad, descripcion } = req.body;
+
+    // Verificar si el valor del campo de asunto es "Otro"
+    const asuntoFinal = (asunto === 'Otro') ? otro_asunto : asunto;
 
     // Preparar la consulta de inserción
     const sql = "INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES (?, ?, ?, ?, ?)";
-    connection.query(sql, [usuario, email, asunto, prioridad, descripcion], (error, results) => {
+    connection.query(sql, [usuario, email, asuntoFinal, prioridad, descripcion], (error, results) => {
         if (error) {
             console.error('Error al insertar el ticket:', error);
             res.status(500).send('Error interno al guardar el ticket');
             return;
         }
         console.log('Nuevo ticket creado con ID:', results.insertId);
-        res.send('¡Ticket creado exitosamente!');
+        
+        // Enviar una respuesta JSON indicando que el ticket se ha creado exitosamente
+        res.json({ message: '¡Ticket creado exitosamente!' });
     });
 });
-
-
-
-
 
 
 
