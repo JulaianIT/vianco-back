@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tickets Pendientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #d9d9d9;
+        }
+        h1 {
+            color: #666567;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            border: 1px solid #90c9a7;
+            text-align: left;
+        }
+        th {
+            background-color: #90c9a7;
+            color: #666567;
+            font-weight: bold;
+        }
+        .respuesta textarea {
+            width: calc(100% - 30px);
+            height: 100px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        .respuesta button {
+            background-color: #90c9a7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .respuesta button:hover {
+            background-color: #76a88d;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de Tickets Pendientes</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Asunto</th>
+            <th>Prioridad</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Respuesta</th>
+            <th>Fecha de Creación</th>
+            <th>Fecha de Respuesta</th>
+             <th>RESPONDER TICKET</th>
+
+        </tr>
+        {{#each tickets}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.usuario}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.asunto}}</td>
+                <td>{{this.prioridad}}</td>
+                <td>{{this.descripcion}}</td>
+                <td>{{this.estado}}</td>
+                <td>{{this.respuesta}}</td>
+                <td>{{this.fechaCreacion}}</td>
+                <td>{{this.fechaRespuesta}}</td>
+                <td class="respuesta">
+                    <form action="/responder_ticket/{{this.id}}" method="POST">
+                        <textarea name="respuesta" placeholder="Escribe tu respuesta aquí"></textarea><br>
+                        <button type="submit">Enviar Respuesta</button>
+                    </form>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</body>
+</html>

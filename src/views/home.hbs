@@ -479,7 +479,9 @@ float: none;
                 <li class="tecc"><p class="active"> <img id="tec" src="/imagenes/apoyo-tecnico.png" alt=""></p>
                             <ul class="menu-vertical">
                                 <li><a href="/nuevo_tikect_soporte">ENVIAR TIKECT</a></li>
-                                <li><a href="#">Ayuda</a></li>
+                                       {{#if soporte}}
+                                <li><a href="/revisar_tickets">VER TIKECT PENDIENTES</a></li>
+                                {{/if}}
                             </ul>
                         </li>
                       

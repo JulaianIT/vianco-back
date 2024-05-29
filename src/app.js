@@ -152,8 +152,9 @@ app.get("/menu", (req, res) => {
         const director = roles.includes('director');
         const gerencia = roles.includes('gerencia');
         const aeropuerto = roles.includes('aeropuerto');
-       
-        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto }); // Pasar los roles a la plantilla
+        const soporte = roles.includes('soporte');
+
+        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto ,soporte}); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
@@ -180,8 +181,9 @@ app.get("/", (req, res) => {
         const director = roles.includes('director');
         const gerencia = roles.includes('gerencia');
         const aeropuerto = roles.includes('aeropuerto');
-       
-        res.render("operaciones/menu.operaciones.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto }); // Pasar los roles a la plantilla
+        const soporte = roles.includes('soporte');
+
+        res.render("operaciones/menu.operaciones.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login/index");
     }
@@ -4999,7 +5001,6 @@ app.get('/verificacion_servicio', (req, res) => {
 
 
 
-
 // Ruta para marcar una novedad como aceptada
 app.get('/marcar_aceptada/:id', (req, res) => {
     const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
@@ -5009,28 +5010,30 @@ app.get('/marcar_aceptada/:id', (req, res) => {
         if (error) throw error;
 
         // Consultar el email del usuario que realizó la acción
-        connection.query('SELECT email FROM user WHERE email = ?', realiza, (error, results, fields) => {
+        connection.query('SELECT email FROM user WHERE id = ?', idNovedad, (error, results, fields) => {
             if (error) throw error;
-            const userEmail = results[0].email; // Suponiendo que el email es único
+            
+            // Verificar si hay resultados en la consulta
+            if (results && results.length > 0) {
+                const userEmail = results[0].email; // Suponiendo que el email es único
 
-            // Enviar correo electrónico de confirmación
-            enviarCorreo(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.');
+                // Enviar correo electrónico de confirmación
+                enviarCorreoVerificacionn(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.');
 
-            // Redirigir a la página de verificación de servicios
-            res.redirect('/verificacion_servicio');
+                // Redirigir a la página de verificación de servicios
+                res.redirect('/verificacion_servicio');
+            } else {
+                console.error('No se encontró ningún usuario con el ID proporcionado');
+                res.status(404).send('Usuario no encontrado');
+            }
         });
     });
 });
 
 
 
-
-
-
-
-
 // Función para enviar correo electrónico de verificación con un texto más formal
-function enviarCorreoVerificacion(destinatario, asunto, contenido) {
+function enviarCorreoVerificacionn(destinatario, asunto, contenido) {
     // Configurar el transporte del correo electrónico
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -5243,6 +5246,53 @@ app.post('/guardar_ticket', (req, res) => {
         });
     });
 });
+
+
+
+
+app.get('/revisar_tickets', (req, res) => {
+    if (req.session.loggedin === true) {
+        // Consulta los tickets en estado pendiente desde la base de datos
+        const query = 'SELECT * FROM tickets_soporte WHERE estado = ?';
+        connection.query(query, ['pendiente'], (error, results) => {
+            if (error) {
+                console.error('Error al obtener los tickets en estado pendiente:', error);
+                // Maneja el error apropiadamente
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            // Renderiza la vista de tickets pendientes, pasando los resultados de la consulta
+            res.render('SoporteIT/responder_tikect.hbs', { tickets: results });
+        });
+    } else {
+        // Redirige al usuario al inicio de sesión si no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+app.post('/responder_ticket/:id', (req, res) => {
+    if (req.session.loggedin === true) {
+        const ticketId = req.params.id;
+        const respuesta = req.body.respuesta;
+        const fechaRespuesta = new Date(); // Obtén la fecha y hora actual
+
+        const query = 'UPDATE tickets_soporte SET estado = ?, respuesta = ?, fechaRespuesta = ? WHERE id = ?';
+        connection.query(query, ['completo', respuesta, fechaRespuesta, ticketId], (error, results) => {
+            if (error) {
+                console.error('Error al responder al ticket:', error);
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            res.redirect('/revisar_tickets');
+        });
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
+
 
 
 
