@@ -5159,13 +5159,29 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'soporte.it.vianco@gmail.com',
+        pass: 'caerdeblynmsfzvc'
+    }
+});
+
 app.post('/guardar_ticket', (req, res) => {
     const { usuario, email, asunto, otro_asunto, prioridad, descripcion } = req.body;
 
-    // Verificar si el valor del campo de asunto es "Otro"
     const asuntoFinal = (asunto === 'Otro') ? otro_asunto : asunto;
 
-    // Preparar la consulta de inserción
     const sql = "INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES (?, ?, ?, ?, ?)";
     connection.query(sql, [usuario, email, asuntoFinal, prioridad, descripcion], (error, results) => {
         if (error) {
@@ -5174,11 +5190,64 @@ app.post('/guardar_ticket', (req, res) => {
             return;
         }
         console.log('Nuevo ticket creado con ID:', results.insertId);
-        
-        // Enviar una respuesta JSON indicando que el ticket se ha creado exitosamente
-        res.json({ message: '¡Ticket creado exitosamente!' });
+
+        const mailOptions = {
+            from: 'soporte.it.vianco@gmail.com',
+            to: email,
+            subject: 'Ticket de Soporte Creado Exitosamente',
+            html: `
+                <div style="font-family: 'Arial', sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <div style="background-color: #4CAF50; color: white; padding: 20px; text-align: center;">
+                        <h1 style="margin: 0;">VIANCO Soporte</h1>
+                        <h2 style="margin: 0; font-size: 24px;">Ticket Creado Exitosamente</h2>
+                    </div>
+                    <div style="padding: 20px; background-color: #f9f9f9;">
+                        <p>Estimado/a <strong>${usuario}</strong>,</p>
+                        <p>Su ticket ha sido creado exitosamente. Pronto nuestro equipo de soporte hará las validaciones necesarias para dar una pronta solución.</p>
+                        <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px;">Detalles del Ticket:</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white;">
+                            <tr>
+                                <th style="text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Asunto:</th>
+                                <td style="padding: 10px; border: 1px solid #ddd;">${asuntoFinal}</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Prioridad:</th>
+                                <td style="padding: 10px; border: 1px solid #ddd;">${prioridad}</td>
+                            </tr>
+                            <tr>
+                                <th style="text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Descripción:</th>
+                                <td style="padding: 10px; border: 1px solid #ddd;">${descripcion}</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 20px;">Gracias por contactarnos.</p>
+                        <p>Atentamente,</p>
+                        <p><strong>Equipo de Soporte de VIANCO</strong></p>
+                    </div>
+                    <div style="background-color: #f1f1f1; color: #333; padding: 10px; text-align: center;">
+                        <p style="margin: 0;">&copy; 2024 VIANCO. Todos los derechos reservados.</p>
+                        <p style="margin: 0;"><a href="" style="color: #4CAF50; text-decoration: none;">Julian Soporte IT</a></p>
+                    </div>
+                </div>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.error('Error al enviar el correo electrónico:', err);
+                res.status(500).send('Error al enviar el correo electrónico');
+                return;
+            }
+            console.log('Correo electrónico enviado:', info.response);
+
+            res.json({ message: '¡Ticket creado exitosamente y correo electrónico enviado!' });
+        });
     });
 });
+
+
+
+
+
 
 
 
