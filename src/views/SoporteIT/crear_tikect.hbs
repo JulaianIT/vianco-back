@@ -646,6 +646,90 @@ ul.social-network li {
   background-color: #F9F9F9;
 }
 
+@media only screen and (max-width: 768px) {
+
+header{
+display: none;
+
+}
+
+
+.avatar {
+    position: relative;
+    top:-1120px;
+    right: -25%;
+	width: 30%;
+	height: 10%;
+	box-sizing: border-box;
+	border: 5px white solid;
+	border-radius: 50%;
+	overflow: hidden;
+	box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+	transform: translatey(0px);
+	animation: float 6s ease-in-out infinite;
+	img { width: 100%; height: auto; }
+}
+
+
+
+
+
+.content {
+       position: relative;
+    top:-1150px;
+    right: 10%;
+	width: 100%;
+	max-width: 100px;
+	padding: 20px 40px;
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.suppoprt-me {
+	display: inline-block;
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+	width: 20vw;
+	max-width: 250px;
+	min-width: 200px;
+	z-index: 9;
+	img {
+		width: 100%;
+		height: auto;
+	}
+}
+
+    .explanation {
+			
+			position: relative;
+			top: 200px;
+			left: 5px;
+                       font-size: 16px;
+            width: 85%;
+            padding: 20px;
+text-align: justify;
+            color: white; /* Cambiado el color del texto */
+        }
+
+
+
+ .form-container {
+        position: relative;
+        top: 260px;
+        left: -5px;
+        width: 80%;
+        padding: 20px;
+        border: 1px solid black;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        transform: rotateX(90deg) scale(0);
+        transform-origin: top center;
+        animation: despegar 1s forwards;
+    }
+
+    }
+
     </style>
 </head>
 <body>
