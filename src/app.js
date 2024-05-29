@@ -3327,7 +3327,7 @@ app.post('/novedades_vianco', (req, res) => {
             console.log('Novedad guardada exitosamente en la base de datos.');
 
             // Enviar correo electrónico utilizando la nueva función
-            enviarCorreoNOVEDADD('soporte.it.vianco@gmail.com', 'Alerta de nueva novedad Vianco', `
+            enviarCorreoNOVEDADD('calidadvianco@gmail.com', 'Alerta de nueva servicio no confirme Vianco', `
                 <p><strong>Estimados,</strong></p>
                 <br>
                 <p>Me complace informarles que se ha agregado una nueva novedad al sistema de nuestro equipo de centro de operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p>
@@ -3354,14 +3354,14 @@ function enviarCorreoNOVEDADD(destinatario, asunto, contenido) {
     // Texto más formal del correo electrónico
     const contenidoFormal = `Estimado/a [Nombre del Usuario],
 
-Nos complace informarle que su servicio ha sido verificado correctamente. Este es un paso importante para garantizar la calidad y la eficiencia de nuestros servicios. Si tiene alguna pregunta o necesita más asistencia, no dude en ponerse en contacto con nosotros.
-
+    Me complace informarles que se ha agregado una nuebo servicio no conforme  al sistema de nuestro equipo de centro de operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.
 Atentamente,
+
 Equipo de Soporte de Vianco`;
 // Configurar el correo electrónico
 const mailOptions = {
     from: 'soporte.it.vianco@gmail.com', // Dirección de correo electrónico del remitente
-    to: 'soporte.it.vianco@gmail.com', // Dirección de correo electrónico del destinatario (siempre el mismo)
+    to: 'calidadvianco@gmail.com', // Dirección de correo electrónico del destinatario (siempre el mismo)
     subject: asunto, // Asunto del correo electrónico
     html: contenidoFormal // Contenido del correo electrónico (en formato HTML)
 };
@@ -4900,6 +4900,15 @@ app.post('/asignar-responsable', async (req, res) => {
     }
 });
 
+
+
+
+
+
+
+
+
+
 // Endpoint to verify notifications
 app.get('/verificar-notificaciones', async (req, res) => {
     try {
@@ -4971,27 +4980,23 @@ app.delete('/eliminar-notificacion/:id', async (req, res) => {
 
 
 
+
 // Ruta para verificación de servicios
 app.get('/verificacion_servicio', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        // Consultar las novedades completadas desde la base de datos
-        connection.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results, fields) => {
+        connection.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results) => {
             if (error) throw error;
-            // Renderizar la vista y pasar las novedades como datos
-            res.render('novedades_vianco/verificacion_servicio.hbs', { nombreUsuario, novedades: results });
+            res.render('novedades_vianco/verificacion_servicio', { nombreUsuario, novedades: results });
         });
     } else {
-        // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login/index");
     }
-
-
-
-
-
-    
 });
+
+
+
+
 // Ruta para marcar una novedad como aceptada
 app.get('/marcar_aceptada/:id', (req, res) => {
     const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
@@ -5014,44 +5019,6 @@ app.get('/marcar_aceptada/:id', (req, res) => {
     });
 });
 
-app.get('/marcar_aceptada/:id/:realiza', (req, res) => {
-    const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
-    const realiza = req.params.realiza; // Obtener el nombre de la persona que realiza desde la URL
-
-    // Consultar el nombre del usuario que realizó la acción
-    connection.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
-        if (error) {
-            console.error('Error al actualizar la base de datos:', error);
-            res.status(500).send('Error al actualizar la base de datos');
-            return;
-        }
-
-        // Consultar el email del usuario basado en el nombre
-        connection.query('SELECT email FROM user WHERE name = ?', realiza, (error, results, fields) => {
-            if (error) {
-                console.error('Error al consultar la base de datos:', error);
-                res.status(500).send('Error al consultar la base de datos');
-                return;
-            }
-            const userEmail = results[0].email; // Suponiendo que el email es único
-
-            // Enviar correo electrónico de confirmación
-            enviarCorreoVerificacion(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.', (error, info) => {
-                if (error) {
-                    console.error('Error al enviar el correo electrónico:', error);
-                    // Manejar el error, tal vez mostrar un mensaje de error al usuario
-                    res.status(500).send('Error al enviar el correo electrónico');
-                    return;
-                }
-
-                console.log('Correo electrónico enviado con éxito:', info);
-
-                // Respondemos con un estado de éxito
-                res.status(200).send('Correo electrónico enviado y novedad marcada como aceptada en la base de datos');
-            });
-        });
-    });
-});
 
 
 
@@ -5071,7 +5038,7 @@ function enviarCorreoVerificacion(destinatario, asunto, contenido) {
     });
 
     // Texto más formal del correo electrónico
-    const contenidoFormal = `Estimado/a [Nombre del Usuario],
+    const contenidoFormal = `Estimado/a ,
 
 Nos complace informarle que su servicio ha sido verificado correctamente. Este es un paso importante para garantizar la calidad y la eficiencia de nuestros servicios. Si tiene alguna pregunta o necesita más asistencia, no dude en ponerse en contacto con nosotros.
 
@@ -5095,6 +5062,14 @@ Equipo de Soporte de Vianco`;
         }
     });
 }
+
+
+
+
+
+
+
+
 
 
 

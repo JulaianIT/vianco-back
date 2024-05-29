@@ -5,13 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación de Servicio</title>
     <style>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación de Servicio</title>
-    <style>      body {
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -81,56 +75,65 @@
             <thead>
                 <tr>
                     <th>N° único</th> 
-                    <th>cliente</th>
+                    <th>Fecha de la novedad</th>
+                    <th>Enviada el</th>
                     <th>Enviada por</th>
-                    <th>Enviada por</th>
-                    <th>correo</th>
-                    <th>contacto	</th>
-                    <th>ciudad</th>
-                    <th>num_servicios</th>
-                    <th>fecha_creacion</th>
-                    <th>fecha1</th>
-                    <th>hora1</th>
-             
+                    <th>Novedad Tripulación</th>
+                    <th>Novedad Hotelería</th>
+                    <th>Novedad Ejecutivos</th>
+                    <th>Novedad Empresas Privadas</th>
+                    <th>Novedades Taskgo</th>
+                    <th>Otras Novedades</th>
+                    <th>Responsable del Seguimiento</th>
+                    <th>Fecha de Seguimiento</th>
+                    <th>Detalle de Seguimiento</th>
+                    <th>Plan de acción</th>
+                    <th>Plazo</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each novedades}}
                     <tr>
-                        <td>{{id }}</td>
-                        <td>{{cliente}}</td>
-                        <td>{{nombre}}</td>
-                        <td>{{correo}}</td>
-                        <td>{{contacto}}</td>
-                   
-<td><button class="accept-button" onclick="marcarAceptada('{{id}}', '{{realiza}}')">Cerrar</button></td>
+                        <td>{{numeroU}}</td>
+                        <td>{{fecha_registro}}</td>
+                        <td>{{fecha_novedad}}</td>
+                        <td>{{realiza}}</td>
+                        <td>{{novedad_tripulacion}}</td>
+                        <td>{{novedad_hoteleria}}</td>
+                        <td>{{novedad_ejecutivos}}</td>
+                        <td>{{novedad_empresas_privadas}}</td>
+                        <td>{{NOVEDADES_TASKGO}}</td>
+                        <td>{{otras_novedades}}</td>
+                        <td>{{nombre_seguimiento}}</td>
+                        <td>{{fecha_seguimiento}}</td>
+                        <td>{{detalle_seguimiento}}</td>
+                        <td>{{ACCIONES}}</td>
+                        <td>{{Plazo}}</td>
+                        <td><button class="accept-button" onclick="marcarAceptada('{{id}}')">Marcar como aceptada</button></td>
                     </tr>
                 {{/each}}
             </tbody>
         </table>
     </div>
 
-<script>
-    function marcarAceptada(id, realiza) {
-        fetch('/marcar_aceptada/' + id + '/' + realiza)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al marcar como aceptada');
-            }
-            return response.text();
-        })
-        .then(data => {
-            console.log(data); // Mensaje del servidor
-            // Recargar la página
-            window.location.reload(true);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Manejar el error, mostrar un mensaje de error al usuario, etc.
-        });
-    }
-</script>
-
-
+    <script>
+        function marcarAceptada(id) {
+            fetch('/marcar_aceptada/' + id)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al marcar como aceptada');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log(data); // Mensaje del servidor
+                    window.location.reload(true);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </body>
 </html>
