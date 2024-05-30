@@ -134,46 +134,50 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateCells = document.querySelectorAll('.fecha-servicio');
-            dateCells.forEach(cell => {
-                const date = new Date(cell.textContent);
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                cell.textContent = date.toLocaleDateString('es-ES', options);
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateCells = document.querySelectorAll('.fecha-servicio');
+        dateCells.forEach(cell => {
+            const date = new Date(cell.textContent);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            cell.textContent = date.toLocaleDateString('es-ES', options);
+        });
 
-            const saveButtons = document.querySelectorAll('.save-button');
-            saveButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const row = button.closest('tr');
-                    const ticketId = row.dataset.id;
-                    const placa = row.querySelector('input.editable[value="{{this.placa}}"]').value;
-                    const conductor = row.querySelector('input.editable[value="{{this.conductor}}"]').value;
-                    const celular = row.querySelector('input.editable[value="{{this.celular}}"]').value;
-                    const valorque_noscobran = row.querySelector('input.editable[value="{{this.valorque_noscobran}}"]').value;
-
-                    fetch(`/guardar-datos_conductor_SERIVICIOTERCERIZADO/${ticketId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            placa: placa,
-                            conductor: conductor,
-                            celular: celular,
-                            valorque_noscobran: valorque_noscobran
-                        })
+        const saveButtons = document.querySelectorAll('.save-button');
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const row = button.closest('tr');
+                const ticketId = row.dataset.id;
+                const placa = row.querySelector('input.editable[value="{{this.placa}}"]').value;
+                const conductor = row.querySelector('input.editable[value="{{this.conductor}}"]').value;
+                const celular = row.querySelector('input.editable[value="{{this.celular}}"]').value;
+                const valorque_noscobran = row.querySelector('input.editable[value="{{this.valorque_noscobran}}"]').value;
+                
+                fetch(`/guardar-datos_conductor_SERIVICIOTERCERIZADO/${ticketId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        placa: placa,
+                        conductor: conductor,
+                        celular: celular,
+                        valorque_noscobran: valorque_noscobran
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.reload) {
+                        window.location.reload(); // Recarga la página si se indica en la respuesta del servidor
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>

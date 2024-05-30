@@ -5497,23 +5497,6 @@ app.get('/ServiciosTerceros_pendientes', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
     if (req.session.loggedin === true) {
         const ticketId = req.params.id;
@@ -5526,25 +5509,107 @@ app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
                 res.status(500).send({ message: 'Error interno del servidor' });
                 return;
             }
-            res.send({ message: 'Datos actualizados correctamente' });
+            
+            // Email sending logic
+            sendEmail(ticketId, placa, conductor, celular, res);
         });
     } else {
         res.status(403).send({ message: 'No autorizado' });
     }
 });
 
+function sendEmail(ticketId, placa, conductor, celular, res) {
+    // Obtener el correo electrónico del servicio tercerizado y toda la información del servicio
+    const getEmailAndServiceQuery = 'SELECT email, realizadopor, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto FROM servicios_terceros WHERE id = ?';
+    connection.query(getEmailAndServiceQuery, [ticketId], (getError, getResult) => {
+        if (getError) {
+            console.error('Error al obtener la información del servicio:', getError);
+            res.status(500).send({ message: 'Error interno del servidor' });
+            return;
+        }
+
+        // Verificar si se obtuvo correctamente la información del servicio
+        if (getResult.length === 0) {
+            console.error('No se pudo obtener la información del servicio');
+            res.status(500).send({ message: 'No se pudo obtener la información del servicio' });
+            return;
+        }
+
+        // Obtener el correo electrónico del destinatario
+        const email = getResult[0].email;
+
+        // Verificar si la dirección de correo electrónico es válida
+        if (!email || !validateEmail(email)) {
+            console.error('La dirección de correo electrónico es inválida');
+            res.status(500).send({ message: 'La dirección de correo electrónico es inválida' });
+            return;
+        }
+
+        // Construir el cuerpo del mensaje del correo electrónico con toda la información del servicio
+        const serviceInfo = getResult[0];
+        const fechaServicio = new Date(serviceInfo.fecha_servicio).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        const mailBody = `Estimado/a,   ${serviceInfo.realizadopor}
+
+Nos complace informarle que el servicio tercerizado que solicitó  para la fecha  ${fechaServicio} ha sido confirmado. 
+
+ Recuerde el servicio que solicito fue 
+
+- Realizado por: ${serviceInfo.realizadopor}
+- Número de tarea: ${serviceInfo.numero_tarea}
+- Fecha de servicio: ${fechaServicio}
+- Hora de servicio: ${serviceInfo.hora_servicio}
+- Tipo de vehículo: ${serviceInfo.tipo_vehiculo}
+- Otro vehículo: ${serviceInfo.otro_vehiculo}
+- Cliente: ${serviceInfo.cliente}
+- Otro cliente: ${serviceInfo.otro_cliente}
+- Punto de origen: ${serviceInfo.punto_origen}
+- Punto de destino: ${serviceInfo.punto_destino}
+- Observaciones: ${serviceInfo.observaciones}
+- Nombre de persona de contacto: ${serviceInfo.nombrePersona}
+- Contacto: ${serviceInfo.contacto}
+
+
+Datos de la asignación del vehículo:
+- Estado: asignado
+- Placa: ${placa}
+- Conductor: ${conductor}
+- Celular: ${celular}
+
+
+Por favor, revise los cambios realizados.
+
+Atentamente,
+SOPORTE IT VIANCO`;
+
+        // Enviar el correo electrónico
+        const mailOptions = {
+            from: 'soporte.it.vianco@gmail.com',
+            to: email,
+            subject: 'Actualización de Datos del Servicio Tercerizado',
+            text: mailBody
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error al enviar el correo electrónico:', error);
+                res.status(500).send({ message: 'Error al enviar el correo electrónico.' });
+            } else {
+                console.log('Correo electrónico enviado:', info.response);
+                // Enviar una respuesta al cliente indicando éxito y recargar la página
+                res.send({ message: 'Datos actualizados correctamente', success: true, reload: true });
+            }
+        });
+    });
+}
 
 
 
-
-
-
-
-
-
-
-
-
+// Función para validar la dirección de correo electrónico
+function validateEmail(email) {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+}
 
 
 
