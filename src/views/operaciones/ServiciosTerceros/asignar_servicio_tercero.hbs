@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Servicios Tercerizados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+        }
+
+        header {
+            background-color: #90c9a7;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            text-align: center;
+            color: #666567;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #90c9a7;
+            color: #fff;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        footer {
+            background-color: #90c9a7;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .save-button {
+            background-color: #90c9a7;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background-color: #76b090;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ASIGNACION DE CONDUCTOR TERCERIZADO</h1>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Solicitado por:</th>
+                <th>Número de Tarea</th>
+                <th>Fecha del Servicio</th>
+                <th>Hora del Servicio</th>
+                <th>Tipo de Vehículo</th>
+                <th>Otro Vehículo</th>
+                <th>Cliente</th>
+                <th>Otro Cliente</th>
+                <th>Punto de Origen</th>
+                <th>Punto de Destino</th>
+                <th>Observaciones</th>
+                <th>Persona de Contacto</th>
+                <th>Contacto</th>
+                <th>Valor Dado por el Cliente</th>
+                <th>Información de Asignación</th>
+                <th>Estado</th>
+                <th>Placa</th>
+                <th>Conductor</th>
+                <th>Celular</th>
+                <th>Coste del Proveedor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each servicios}}
+                <tr data-id="{{this.id}}">
+                    <td>{{this.realizadopor}}</td>
+                    <td>{{this.numero_tarea}}</td>
+                    <td class="fecha-servicio">{{this.fecha_servicio}}</td>
+                    <td>{{this.hora_servicio}}</td>
+                    <td>{{this.tipo_vehiculo}}</td>
+                    <td>{{this.otro_vehiculo}}</td>
+                    <td>{{this.cliente}}</td>
+                    <td>{{this.otro_cliente}}</td>
+                    <td>{{this.punto_origen}}</td>
+                    <td>{{this.punto_destino}}</td>
+                    <td>{{this.observaciones}}</td>
+                    <td>{{this.nombrePersona}}</td>
+                    <td>{{this.contacto}}</td>
+                    <td>{{this.valor_dadoCliente}}</td>
+                    <td>{{this.informacion_asignacion}}</td>
+                    <td>{{this.estado}}</td>
+                    <td><input type="text" value="{{this.placa}}" class="editable" /></td>
+                    <td><input type="text" value="{{this.conductor}}" class="editable" /></td>
+                    <td><input type="text" value="{{this.celular}}" class="editable" /></td>
+                    <td><input type="text" value="{{this.valorque_noscobran}}" class="editable" /></td>
+                    <td><button class="save-button">Guardar</button></td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <footer>
+        <p>© 2024 Servicios Tercerizados. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateCells = document.querySelectorAll('.fecha-servicio');
+            dateCells.forEach(cell => {
+                const date = new Date(cell.textContent);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                cell.textContent = date.toLocaleDateString('es-ES', options);
+            });
+
+            const saveButtons = document.querySelectorAll('.save-button');
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = button.closest('tr');
+                    const ticketId = row.dataset.id;
+                    const placa = row.querySelector('input.editable[value="{{this.placa}}"]').value;
+                    const conductor = row.querySelector('input.editable[value="{{this.conductor}}"]').value;
+                    const celular = row.querySelector('input.editable[value="{{this.celular}}"]').value;
+                    const valorque_noscobran = row.querySelector('input.editable[value="{{this.valorque_noscobran}}"]').value;
+
+                    fetch(`/guardar-datos_conductor_SERIVICIOTERCERIZADO/${ticketId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            placa: placa,
+                            conductor: conductor,
+                            celular: celular,
+                            valorque_noscobran: valorque_noscobran
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

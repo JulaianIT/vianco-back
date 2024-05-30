@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario TaskGo</title>
+ <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #d9d9d9;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], input[type="time"], select, textarea {
+            width: calc(100% - 12px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus, select:focus, textarea:focus {
+            border-color: #90c9a7;
+        }
+        select, textarea {
+            height: 40px;
+        }
+        input[type="submit"] {
+            background-color: #90c9a7;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #d9d9d9;
+        }
+                    
+#logo{
+    position: relative;
+    left: 90px;
+
+    width: 400px;
+
+}
+#vigilado {
+    float: right; /* Alinea la imagen a la izquierda dentro del header */
+    width: 300px;
+}
+
+ header{
+    background-color: white;
+ }
+    </style>
+</head>
+<body>
+       <header>
+        <img id="membrete"   src="/imagenes/menbrete.png"/>
+        <img  id="logo"      src="/imagenes/logo vianco.png"/>
+        <img  id="vigilado"  src="/imagenes/vigilado.png"/>
+        <hr>
+        
+       
+ 
+
+
+
+
+    </header>
+   <br>
+   <br>
+   <br>
+    <form action="/guardar-servicio_tercero" method="POST" id="formulario">
+    <H2>Bienvenido {{nombreUsuario}} </H2>
+
+        <input style="display: none;" type="text" id="realizadopor" name="realizadopor" value="{{nombreUsuario}}" readonly  >
+        <input style="display: none;" type="text" id="email" name="email" value="{{emailUsuario}}" readonly  >
+
+
+
+     <label for="numero_tarea">Número de Tarea de TaskGo *</label>
+        <input type="text" id="numero_tarea" name="numero_tarea" required>
+
+        <label for="fecha_servicio">Fecha del Servicio *</label>
+        <input type="date" id="fecha_servicio" name="fecha_servicio" required>
+
+        <label for="hora_servicio">Hora de Prestación del Servicio *</label>
+        <input type="time" id="hora_servicio" name="hora_servicio" required>
+
+        <label for="tipo_vehiculo">Tipología del Vehículo Solicitado *</label>
+        <select id="tipo_vehiculo" name="tipo_vehiculo" required onchange="toggleOtroVehiculoField()">
+            <option value="Aerovan">Aerovan de 11 a 17 PAX</option>
+            <option value="Buseton">Buseton de 20 a 25 PAX</option>
+            <option value="Bus">Bus de 30 a 40 PAX</option>
+            <option value="Automovil_lujo">Automóvil de Lujo</option>
+            <option value="Otro_lujo">Otro de Lujo</option>
+            <option value="Carga">Carga</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <br>
+                <input type="text" id="otro-vehiculo" name="otro_vehiculo" placeholder="Especifique el tipo de vehículo" style="display: none;">
+
+        <br>
+        <label for="nombre">SELECCIONE EL CLIENTE:</label>
+        <select id="clientes-select" name="cliente" required onchange="toggleOtroClienteField()">
+            <option value="">Selecciona un cliente</option>
+            {{#each clientes}}
+                <option value="{{nombre}}">{{nombre}}</option>
+            {{/each}}
+            <option value="otro">Otro cliente</option>
+        </select>
+        <br>
+        <input type="text" id="otro-cliente" name="otro_cliente" placeholder="Escriba el nombre del cliente" style="display: none;">
+        <br>
+        <br>
+        <label for="punto_origen">Punto de Origen *</label>
+        <input type="text" id="punto_origen" name="punto_origen" required>
+
+        <label for="punto_destino">Punto de Destino *</label>
+        <input type="text" id="punto_destino" name="punto_destino" required>
+
+        <label for="observaciones">Observaciones (No Vuelo- Datos Importantes para tener en cuenta) *</label>
+        <textarea id="observaciones" name="observaciones" rows="4" required></textarea>
+
+        <label for="nombrePersona">Nombre de la Persona de Contacto *</label>
+        <input type="text" id="nombrePersona" name="nombrePersona" required>
+
+          <label for="contacto"> Número de la Persona de Contacto *</label>
+        <input type="text" id="contacto" name="contacto" required>
+
+
+
+        <label for="valor_dadoCliente">Valor Cierre de la Tarea y/o Valor Contratado *</label>
+        <input type="text" id="valor_dadoCliente" name="valor_dadoCliente" required>
+
+      
+
+        <label for="informacion_asignacion">Información de Asignación</label>
+        <input type="text" id="informacion_asignacion" name="informacion_asignacion">
+
+        <input type="submit" value="Enviar">
+    </form>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+    <script>
+        function toggleOtroClienteField() {
+            var select = document.getElementById("clientes-select");
+            var otroClienteInput = document.getElementById("otro-cliente");
+            if (select.value === "otro") {
+                otroClienteInput.style.display = "block";
+            } else {
+                otroClienteInput.style.display = "none";
+            }
+        }
+
+        function toggleOtroVehiculoField() {
+            var select = document.getElementById("tipo_vehiculo");
+            var otroVehiculoInput = document.getElementById("otro-vehiculo");
+            if (select.value === "Otro") {
+                otroVehiculoInput.style.display = "block";
+            } else {
+                otroVehiculoInput.style.display = "none";
+            }
+        }
+
+
+
+
+
+
+    </script>
+ <script>
+    // Obtén los parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+    // Verifica si hay un parámetro de "enviado" con el valor de "exito"
+    if (params.has('enviado') && params.get('enviado') === 'exito') {
+        // Muestra una alerta con el mensaje
+        alert('¡Enviado con éxito!');
+    }
+</script>
+</body>
+</html>

@@ -5250,6 +5250,13 @@ app.post('/guardar_ticket', (req, res) => {
 
 
 
+
+
+
+
+
+
+
 app.get('/revisar_tickets', (req, res) => {
     if (req.session.loggedin === true) {
         // Consulta los tickets en estado pendiente desde la base de datos
@@ -5278,6 +5285,7 @@ app.post('/responder_ticket/:id', (req, res) => {
         const respuesta = req.body.respuesta;
         const fechaRespuesta = new Date(); // Obtén la fecha y hora actual
 
+        // Actualiza el ticket en la base de datos
         const query = 'UPDATE tickets_soporte SET estado = ?, respuesta = ?, fechaRespuesta = ? WHERE id = ?';
         connection.query(query, ['completo', respuesta, fechaRespuesta, ticketId], (error, results) => {
             if (error) {
@@ -5285,12 +5293,251 @@ app.post('/responder_ticket/:id', (req, res) => {
                 res.status(500).send('Error interno del servidor');
                 return;
             }
-            res.redirect('/revisar_tickets');
+
+            // Aquí asumimos que el correo electrónico del destinatario está almacenado en la base de datos
+            // Supongamos que tienes un campo 'email' en la tabla 'tickets_soporte'
+            const emailQuery = 'SELECT email FROM tickets_soporte WHERE id = ?';
+            connection.query(emailQuery, [ticketId], (emailError, emailResults) => {
+                if (emailError) {
+                    console.error('Error al obtener el correo electrónico:', emailError);
+                    res.status(500).send('Error interno del servidor');
+                    return;
+                }
+
+                const destinatario = emailResults[0].email;
+                const mailOptions = {
+                    from: 'soporte.it.vianco@gmail.com',
+                    to: destinatario,
+                    subject: 'Respuesta a tu ticket de soporte',
+                    html: `
+                    <html>
+                    <head>
+                        <style>
+                            /* Estilos para el cuerpo del correo */
+                            body {
+                                font-family: Arial, sans-serif;
+                                line-height: 1.6;
+                            }
+                            /* Estilos para el encabezado */
+                            .header {
+                                background-color: #f4f4f4;
+                                padding: 20px;
+                            }
+                            /* Estilos para el contenido */
+                            .content {
+                                padding: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Respuesta a tu ticket de soporte</h1>
+                        </div>
+                        <div class="content">
+                            <p>Buen dia mi estimado,</p>
+                            <p>Tu ticket ha sido respondido. a continuacion veras la respuesta:</p>
+                            <p>${respuesta}</p>
+                            <p>Fecha de respuesta: ${fechaRespuesta}</p>
+                            <p>Saludos,</p>
+                            <p>El equipo de soporte</p>
+                        </div>
+                    </body>
+                    </html>
+                `
+            };
+
+                // Envía el correo electrónico
+                transporter.sendMail(mailOptions, (mailError, info) => {
+                    if (mailError) {
+                        console.error('Error al enviar el correo:', mailError);
+                        res.status(500).send('Error interno del servidor');
+                        return;
+                    }
+                    console.log('Correo enviado:', info.response);
+                    res.json({ message: 'Datos insertados correctamente' });
+                });
+            });
         });
     } else {
         res.redirect("/login/index");
     }
 });
+
+
+
+
+
+
+
+
+
+
+// Ruta para clientes
+app.get('/SolictarServicioTerceros', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+
+        // Consulta a la base de datos para obtener el correo electrónico del usuario
+        const query = 'SELECT email FROM user WHERE name = ?';
+        connection.query(query, [nombreUsuario], (error, userResult) => {
+            if (error) {
+                console.error('Error al obtener el correo electrónico del usuario:', error);
+                res.status(500).send('Error interno del servidor');
+                return; // Agregado para evitar que el código continúe después del error
+            }
+
+            // Consulta a la base de datos para obtener la información de los clientes
+            connection.query('SELECT * FROM clientes', (error, clientesResult) => {
+                if (error) {
+                    console.error('Error al obtener los clientes:', error);
+                    res.status(500).send('Error interno del servidor');
+                    return; // Agregado para evitar que el código continúe después del error
+                }
+
+                // Si se obtienen los resultados correctamente
+                // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta y el correo electrónico del usuario
+                res.render('operaciones/ServiciosTerceros/solictarServicio.hbs', { nombreUsuario, emailUsuario: userResult[0].email, clientes: clientesResult });
+            });
+        });
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
+
+app.post('/guardar-servicio_tercero', (req, res) => {
+    const {
+        realizadopor,
+        email,
+        numero_tarea,
+        fecha_servicio,
+        hora_servicio,
+        tipo_vehiculo,
+        otro_vehiculo,
+        cliente,
+        otro_cliente,
+        punto_origen,
+        punto_destino,
+        observaciones,
+        nombrePersona,
+        contacto,
+        valor_dadoCliente,
+        informacion_asignacion
+    } = req.body;
+
+    // Query to insert data into the 'servicios_terceros' table
+    const sql = `INSERT INTO servicios_terceros (realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente, informacion_asignacion) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    // Execute the query
+    connection.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente, informacion_asignacion], (err, result) => {
+        if (err) {
+            console.error('Error al insertar datos:', err);
+            res.status(500).send('Error al guardar los datos en la base de datos.');
+        } else {
+            console.log('Datos insertados correctamente');
+
+            // Send email notification
+            const mailOptions = {
+                from: 'soporte.it.vianco@gmail.com',
+                to: 'cdaza.vianco@gmail.com ',
+                subject: 'Nueva Solicitud de Servicio Tercerizado',
+                html: `
+                    <p>Estimado/a CAMILO DAZA,</p>
+                    <p>Me complace informarle que se ha registrado una nueva solicitud de servicio tercerizado. Por favor, tome un momento para revisar los detalles proporcionados y confirmar su validez.</p>
+                    <p>Su confirmación es fundamental para proceder con el servicio de manera adecuada.</p>
+                    <p>Quedamos a la espera de su respuesta.</p>
+                    <p>Atentamente,<br/>SOPORTE IT VIANCO</p>
+                `
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error al enviar el correo:', error);
+                    res.status(500).send('Error al enviar el correo.');
+                } else {
+                    console.log('Correo enviado:', info.response);
+                    res.redirect('/SolictarServicioTerceros?enviado=exito');
+                }
+            });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/ServiciosTerceros_pendientes', (req, res) => {
+    if (req.session.loggedin === true) {
+        // Consulta los servicios tercerizados en estado pendiente desde la base de datos
+        const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
+        connection.query(query, ['pendiente'], (error, results) => {
+            if (error) {
+                console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
+                // Maneja el error apropiadamente
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            
+            // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
+            res.render('operaciones/ServiciosTerceros/asignar_servicio_tercero.hbs', { servicios: results });
+        });
+    } else {
+        // Redirige al usuario al inicio de sesión si no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
+    if (req.session.loggedin === true) {
+        const ticketId = req.params.id;
+        const { placa, conductor, celular, valorque_noscobran } = req.body;
+
+        const query = 'UPDATE servicios_terceros SET estado = ?, placa = ?, conductor = ?, celular = ?, valorque_noscobran = ? WHERE id = ?';
+        connection.query(query, ['asignado', placa, conductor, celular, valorque_noscobran, ticketId], (error, results) => {
+            if (error) {
+                console.error('Error al actualizar el ticket:', error);
+                res.status(500).send({ message: 'Error interno del servidor' });
+                return;
+            }
+            res.send({ message: 'Datos actualizados correctamente' });
+        });
+    } else {
+        res.status(403).send({ message: 'No autorizado' });
+    }
+});
+
+
+
+
+
+
 
 
 
