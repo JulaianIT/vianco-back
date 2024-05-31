@@ -5649,6 +5649,70 @@ function validateEmail(email) {
 
 
 
+
+
+
+
+
+
+
+
+
+app.get('/ServiciosTerceros_asignados', (req, res) => {
+    if (req.session.loggedin === true) {
+        // Consulta los servicios tercerizados en estado pendiente desde la base de datos
+        const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
+        connection.query(query, ['asignado'], (error, results) => {
+            if (error) {
+                console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
+                // Maneja el error apropiadamente
+                res.status(500).send('Error interno del servidor');
+                return;
+            }
+            
+            // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
+            res.render('operaciones/ServiciosTerceros/verificacionservicios.hbs', { servicios: results });
+        });
+    } else {
+        // Redirige al usuario al inicio de sesión si no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+app.post('/guardar_VERIFICACIONSERVICIO_TERCERO/:id', (req, res) => {
+    if (req.session.loggedin === true) {
+        const servicioterceroId = req.params.id;
+        const { valorCliente, costeProveedor, facturacion } = req.body;
+
+        let estadoServicio = 'asignado'; // Por defecto, el estado es PENDIENTE
+
+        if (facturacion === 'PAGADO') {
+            estadoServicio = 'PAGADO'; // Si la facturación es PAGADO, el estado se actualiza a PAGADO
+        }
+
+        const query = 'UPDATE servicios_terceros SET valor_dadoCliente = ?, valorque_noscobran = ?, facturacion = ?, estado = ? WHERE id = ?';
+        connection.query(query, [valorCliente, costeProveedor, facturacion, estadoServicio, servicioterceroId], (error, results) => {
+            if (error) {
+                console.error('Error al actualizar el servicio:', error);
+                res.status(500).send({ message: 'Error interno del servidor' });
+                return;
+            }
+            res.status(200).send({ message: 'Servicio actualizado correctamente' });
+        });
+    } else {
+        res.status(403).send({ message: 'No autorizado' });
+    }
+});
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
