@@ -5527,76 +5527,112 @@ function sendEmail(ticketId, placa, conductor, celular, res) {
             res.status(500).send({ message: 'Error interno del servidor' });
             return;
         }
-
-        // Verificar si se obtuvo correctamente la información del servicio
+    
         if (getResult.length === 0) {
             console.error('No se pudo obtener la información del servicio');
             res.status(500).send({ message: 'No se pudo obtener la información del servicio' });
             return;
         }
-
-        // Obtener el correo electrónico del destinatario
+    
         const email = getResult[0].email;
-
-        // Verificar si la dirección de correo electrónico es válida
+    
         if (!email || !validateEmail(email)) {
             console.error('La dirección de correo electrónico es inválida');
             res.status(500).send({ message: 'La dirección de correo electrónico es inválida' });
             return;
         }
-
-        // Construir el cuerpo del mensaje del correo electrónico con toda la información del servicio
+    
         const serviceInfo = getResult[0];
         const fechaServicio = new Date(serviceInfo.fecha_servicio).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
-
-        const mailBody = `Estimado/a,   ${serviceInfo.realizadopor}
-
-Nos complace informarle que el servicio tercerizado que solicitó  para la fecha  ${fechaServicio} ha sido confirmado. 
-
- Recuerde el servicio que solicito fue 
-
-- Realizado por: ${serviceInfo.realizadopor}
-- Número de tarea: ${serviceInfo.numero_tarea}
-- Fecha de servicio: ${fechaServicio}
-- Hora de servicio: ${serviceInfo.hora_servicio}
-- Tipo de vehículo: ${serviceInfo.tipo_vehiculo}
-- Otro vehículo: ${serviceInfo.otro_vehiculo}
-- Cliente: ${serviceInfo.cliente}
-- Otro cliente: ${serviceInfo.otro_cliente}
-- Punto de origen: ${serviceInfo.punto_origen}
-- Punto de destino: ${serviceInfo.punto_destino}
-- Observaciones: ${serviceInfo.observaciones}
-- Nombre de persona de contacto: ${serviceInfo.nombrePersona}
-- Contacto: ${serviceInfo.contacto}
-
-
-Datos de la asignación del vehículo:
-- Estado: asignado
-- Placa: ${placa}
-- Conductor: ${conductor}
-- Celular: ${celular}
-
-
-Por favor, revise los cambios realizados.
-
-Atentamente,
-SOPORTE IT VIANCO`;
-
-        // Enviar el correo electrónico
+    
+        const mailBody = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    line-height: 1.6;
+                }
+                .container {
+                    width: 80%;
+                    margin: auto;
+                    border: 1px solid #ccc;
+                    padding: 20px;
+                    border-radius: 10px;
+                    background-color: #f9f9f9;
+                }
+                h1, h2 {
+                    color:#90c9a7;
+                }
+                .section-title {
+                    font-size: 1.2em;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                    color: #0056b3;
+                }
+                .section-content {
+                    margin-bottom: 20px;
+                }
+                .footer {
+                    margin-top: 20px;
+                    font-size: 0.9em;
+                    color: #555;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Estimado/a, ${serviceInfo.realizadopor}</h1>
+                <p>Nos complace informarle que el servicio tercerizado que solicitó para la fecha ${fechaServicio} ha sido confirmado.</p>
+                <div class="section-title">Detalles del Servicio:</div>
+                <div class="section-content">
+                    <p><strong>Realizado por:</strong> ${serviceInfo.realizadopor}</p>
+                    <p><strong>Número de tarea:</strong> ${serviceInfo.numero_tarea}</p>
+                    <p><strong>Fecha de servicio:</strong> ${fechaServicio}</p>
+                    <p><strong>Hora de servicio:</strong> ${serviceInfo.hora_servicio}</p>
+                    <p><strong>Tipo de vehículo:</strong> ${serviceInfo.tipo_vehiculo}</p>
+                    <p><strong>Otro vehículo:</strong> ${serviceInfo.otro_vehiculo}</p>
+                    <p><strong>Cliente:</strong> ${serviceInfo.cliente}</p>
+                    <p><strong>Otro cliente:</strong> ${serviceInfo.otro_cliente}</p>
+                    <p><strong>Punto de origen:</strong> ${serviceInfo.punto_origen}</p>
+                    <p><strong>Punto de destino:</strong> ${serviceInfo.punto_destino}</p>
+                    <p><strong>Observaciones:</strong> ${serviceInfo.observaciones}</p>
+                    <p><strong>Nombre de persona de contacto:</strong> ${serviceInfo.nombrePersona}</p>
+                    <p><strong>Contacto:</strong> ${serviceInfo.contacto}</p>
+                </div>
+                <div class="section-title">Datos de la Asignación del Vehículo:</div>
+                <div class="section-content">
+                    <p><strong>Estado:</strong> asignado</p>
+                    <p><strong>Placa:</strong> ${placa}</p>
+                    <p><strong>Conductor:</strong> ${conductor}</p>
+                    <p><strong>Celular:</strong> ${celular}</p>
+                </div>
+                <div class="footer">
+                    <p>Por favor, revise los cambios realizados.</p>
+                    <p>Atentamente,<br>SOPORTE IT VIANCO</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+    
         const mailOptions = {
             from: 'soporte.it.vianco@gmail.com',
             to: email,
             subject: 'Actualización de Datos del Servicio Tercerizado',
-            text: mailBody
+            html: mailBody
         };
-
+    
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error('Error al enviar el correo electrónico:', error);
                 res.status(500).send({ message: 'Error al enviar el correo electrónico.' });
             } else {
                 console.log('Correo electrónico enviado:', info.response);
-                // Enviar una respuesta al cliente indicando éxito y recargar la página
                 res.send({ message: 'Datos actualizados correctamente', success: true, reload: true });
             }
         });
