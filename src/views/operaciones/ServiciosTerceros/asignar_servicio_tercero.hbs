@@ -119,10 +119,11 @@
                     <td>{{this.valor_dadoCliente}}</td>
                     <td>{{this.informacion_asignacion}}</td>
                     <td>{{this.estado}}</td>
-                    <td><input type="text" value="{{this.placa}}" class="editable" /></td>
-                    <td><input type="text" value="{{this.conductor}}" class="editable" /></td>
-                    <td><input type="text" value="{{this.celular}}" class="editable" /></td>
-                    <td><input type="text" value="{{this.valorque_noscobran}}" class="editable" /></td>
+                  <td><input type="text" value="{{this.placa}}" class="editable" data-field="placa" /></td>
+<td><input type="text" value="{{this.conductor}}" class="editable" data-field="conductor" /></td>
+<td><input type="text" value="{{this.celular}}" class="editable" data-field="celular" /></td>
+<td><input type="text" value="{{this.valorque_noscobran}}" class="editable" data-field="valorque_noscobran" /></td>
+
                     <td><button class="save-button">Guardar</button></td>
                 </tr>
             {{/each}}
@@ -147,20 +148,20 @@
             button.addEventListener('click', function() {
                 const row = button.closest('tr');
                 const ticketId = row.dataset.id;
-                const placa = row.querySelector('input.editable[value="{{this.placa}}"]').value;
-                const conductor = row.querySelector('input.editable[value="{{this.conductor}}"]').value;
-                const celular = row.querySelector('input.editable[value="{{this.celular}}"]').value;
-                const valorque_noscobran = row.querySelector('input.editable[value="{{this.valorque_noscobran}}"]').value;
-                
+          const placa = row.querySelector('input.editable[data-field="placa"]').value;
+const conductor = row.querySelector('input.editable[data-field="conductor"]').value;
+const celular = row.querySelector('input.editable[data-field="celular"]').value;
+const valorque_noscobran = row.querySelector('input.editable[data-field="valorque_noscobran"]').value;
+
                 fetch(`/guardar-datos_conductor_SERIVICIOTERCERIZADO/${ticketId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        placa: placa,
-                        conductor: conductor,
-                        celular: celular,
+                        placa:placa,
+                        conductor:conductor,
+                        celular:celular,
                         valorque_noscobran: valorque_noscobran
                     })
                 })

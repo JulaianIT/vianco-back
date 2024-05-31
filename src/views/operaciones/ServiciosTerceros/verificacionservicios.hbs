@@ -133,9 +133,10 @@
                     <td class="coste-proveedor" contenteditable="true">{{this.valorque_noscobran}}</td>
                     <td class="margen-ganancia"></td>
                     <td class="ganancia-neta"></td>
-                   <td class="facturacion" contenteditable="true">
+                    <td class="facturacion" data-facturacion="{{this.facturacion}}" contenteditable="true">
                         <select>
-                            <option value="PENDIENTE">PENDIENTE</option>
+                             <option value="PENDIENTE">PENDIENTE</option>
+                             <option value="VALIDADO">VALIDADO</option>
                             <option value="PAGADO">PAGADO</option>
                         </select>
                     </td>
@@ -150,6 +151,7 @@
     </footer>
 
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             const dateCells = document.querySelectorAll('.fecha-servicio');
             dateCells.forEach(cell => {
@@ -228,6 +230,18 @@ document.querySelectorAll('.save-button').forEach(button => {
 });
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    const facturacionCells = document.querySelectorAll('.facturacion');
+
+    facturacionCells.forEach(cell => {
+        const facturacionDB = cell.dataset.facturacion; // Obtiene el valor de facturación de la base de datos
+        const selectElement = cell.querySelector('select');
+        
+        // Si el valor de facturación es null o está vacío, establece el valor predeterminado como "PENDIENTE"
+        // De lo contrario, establece el valor de facturación de la base de datos
+        selectElement.value = facturacionDB ? facturacionDB : 'PENDIENTE';
+    });
+});
 
     </script>
 </body>
