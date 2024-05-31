@@ -91,11 +91,12 @@
                 <th>Persona de Contacto</th>
                 <th>Contacto</th>
                 <th>Valor Dado por el Cliente</th>
-                <th>Información de Asignación</th>
                 <th>Estado</th>
                 <th>Placa</th>
                 <th>Conductor</th>
                 <th>Celular</th>
+                                <th>Provedor</th>
+
                                     <th>COSTO PROVEDOR</th>
                 <th>Acciones</th>
             </tr>
@@ -117,11 +118,12 @@
                     <td>{{this.nombrePersona}}</td>
                     <td>{{this.contacto}}</td>
                     <td>{{this.valor_dadoCliente}}</td>
-                    <td>{{this.informacion_asignacion}}</td>
                     <td>{{this.estado}}</td>
                   <td><input type="text" value="{{this.placa}}" class="editable" data-field="placa" /></td>
 <td><input type="text" value="{{this.conductor}}" class="editable" data-field="conductor" /></td>
 <td><input type="text" value="{{this.celular}}" class="editable" data-field="celular" /></td>
+<td><input type="text" value="{{this.Provedor}}" class="editable" data-field="Provedor" /></td>
+
 <td><input type="text" value="{{this.valorque_noscobran}}" class="editable" data-field="valorque_noscobran" /></td>
 
                     <td><button class="save-button">Guardar</button></td>
@@ -151,7 +153,10 @@
           const placa = row.querySelector('input.editable[data-field="placa"]').value;
 const conductor = row.querySelector('input.editable[data-field="conductor"]').value;
 const celular = row.querySelector('input.editable[data-field="celular"]').value;
+const Provedor = row.querySelector('input.editable[data-field="Provedor"]').value;
+
 const valorque_noscobran = row.querySelector('input.editable[data-field="valorque_noscobran"]').value;
+
 
                 fetch(`/guardar-datos_conductor_SERIVICIOTERCERIZADO/${ticketId}`, {
                     method: 'POST',
@@ -162,6 +167,7 @@ const valorque_noscobran = row.querySelector('input.editable[data-field="valorqu
                         placa:placa,
                         conductor:conductor,
                         celular:celular,
+                        Provedor:Provedor,
                         valorque_noscobran: valorque_noscobran
                     })
                 })

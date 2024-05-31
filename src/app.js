@@ -5422,15 +5422,14 @@ app.post('/guardar-servicio_tercero', (req, res) => {
         nombrePersona,
         contacto,
         valor_dadoCliente,
-        informacion_asignacion
     } = req.body;
 
     // Query to insert data into the 'servicios_terceros' table
-    const sql = `INSERT INTO servicios_terceros (realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente, informacion_asignacion) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO servicios_terceros (realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     // Execute the query
-    connection.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente, informacion_asignacion], (err, result) => {
+    connection.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente], (err, result) => {
         if (err) {
             console.error('Error al insertar datos:', err);
             res.status(500).send('Error al guardar los datos en la base de datos.');
@@ -5500,10 +5499,10 @@ app.get('/ServiciosTerceros_pendientes', (req, res) => {
 app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
     if (req.session.loggedin === true) {
         const ticketId = req.params.id;
-        const { placa, conductor, celular, valorque_noscobran } = req.body;
+        const { placa, conductor, celular,Provedor, valorque_noscobran } = req.body;
 
-        const query = 'UPDATE servicios_terceros SET estado = ?, placa = ?, conductor = ?, celular = ?, valorque_noscobran = ? WHERE id = ?';
-        connection.query(query, ['asignado', placa, conductor, celular, valorque_noscobran, ticketId], (error, results) => {
+        const query = 'UPDATE servicios_terceros SET estado = ?, placa = ?, conductor = ?, celular = ?,Provedor = ?, valorque_noscobran = ? WHERE id = ?';
+        connection.query(query, ['asignado', placa, conductor, celular, Provedor,valorque_noscobran, ticketId], (error, results) => {
             if (error) {
                 console.error('Error al actualizar el ticket:', error);
                 res.status(500).send({ message: 'Error interno del servidor' });
@@ -5517,6 +5516,11 @@ app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
         res.status(403).send({ message: 'No autorizado' });
     }
 });
+
+
+
+
+
 
 function sendEmail(ticketId, placa, conductor, celular, res) {
     // Obtener el correo electrónico del servicio tercerizado y toda la información del servicio
