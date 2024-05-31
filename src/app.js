@@ -5713,6 +5713,49 @@ app.post('/guardar_VERIFICACIONSERVICIO_TERCERO/:id', (req, res) => {
 
 
 
+app.get('/consultar_servicioT', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        const { id, fecha_inicio, fecha_fin, estado } = req.query;
+
+        let query = 'SELECT * FROM servicios_terceros WHERE 1=1';
+        let queryParams = [];
+
+        if (id) {
+            query += ' AND id = ?';
+            queryParams.push(id);
+        }
+        if (fecha_inicio && fecha_fin) {
+            query += ' AND fecha_servicio BETWEEN ? AND ?';
+            queryParams.push(fecha_inicio, fecha_fin);
+        } else if (fecha_inicio) {
+            query += ' AND fecha_servicio >= ?';
+            queryParams.push(fecha_inicio);
+        } else if (fecha_fin) {
+            query += ' AND fecha_servicio <= ?';
+            queryParams.push(fecha_fin);
+        }
+        if (estado) {
+            query += ' AND estado = ?';
+            queryParams.push(estado);
+        }
+
+        connection.query(query, queryParams, (err, results) => {
+            if (err) {
+                return res.status(500).send('Error en la consulta a la base de datos');
+            }
+            res.render('operaciones/ServiciosTerceros/consultar_servicioT.hbs', { nombreUsuario, results });
+        });
+    } else {
+        res.redirect('/login/index');
+    }
+});
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

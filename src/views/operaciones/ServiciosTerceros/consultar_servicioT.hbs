@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Servicios</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container-fluid {
+            flex: 1;
+        }
+
+        .jumbotron {
+            background-color: #f8f9fa;
+            padding: 2rem 1rem;
+            margin-bottom: 0;
+        }
+
+        .card {
+            margin-bottom: 1rem;
+        }
+
+        .table-responsive {
+            margin-top: 1rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .btn-primary i {
+            margin-right: 0.5rem;
+        }
+
+        thead.thead-dark th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .alert-warning {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="jumbotron text-center">
+            <h1 class="mb-4">Bienvenido, {{nombreUsuario}}</h1>
+            <h2 class="mb-4">Consulta de Servicios tercerizados</h2>
+        </div>
+        <div class="row no-gutters flex-row-reverse">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" action="/consultar_servicioT" class="mb-4">
+                            <div class="form-group">
+                                <label for="id">ID:</label>
+                                <input type="text" id="id" name="id" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_inicio">Fecha de Inicio:</label>
+                                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_fin">Fecha Final:</label>
+                                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="estado">Estado:</label>
+                                <select id="estado" name="estado" class="form-control">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="asignado">Asignado</option>
+                                    <option value="pagado">Pagado</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                {{#if results.length}}
+                    <h3 class="mb-4">Resultados de la búsqueda:</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>ENVIADO POR</th>
+                                    <th>Número de Tarea</th>
+                                    <th>Fecha de Servicio</th>
+                                    <th>Hora de Servicio</th>
+                                    <th>Tipo de Vehículo</th>
+                                    <th>Otro Vehículo</th>
+                                    <th>Cliente</th>
+                                    <th>Otro Cliente</th>
+                                    <th>Origen</th>
+                                    <th>Destino</th>
+                                    <th>Observaciones</th>
+                                    <th>Nombre Persona</th>
+                                    <th>Contacto</th>
+                                    <th>Valor Dado Cliente</th>
+                                    <th>Información de Asignación</th>
+                                    <th>Estado</th>
+                                    <th>Placa</th>
+                                    <th>Conductor</th>
+                                    <th>Celular</th>
+                                    <th>COSTO PROVEDOR</th>
+                                    <th>Facturación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each results}}
+                                <tr>
+                                    <td>{{this.id}}</td>
+                                    <td>{{this.realizadopor}}</td>
+                                    <td>{{this.numero_tarea}}</td>
+                                    <td class="fecha-servicio">{{this.fecha_servicio}}</td>
+                                    <td>{{this.hora_servicio}}</td>
+                                    <td>{{this.tipo_vehiculo}}</td>
+                                    <td>{{this.otro_vehiculo}}</td>
+                                    <td>{{this.cliente}}</td>
+                                    <td>{{this.otro_cliente}}</td>
+                                    <td>{{this.punto_origen}}</td>
+                                    <td>{{this.punto_destino}}</td>
+                                    <td>{{this.observaciones}}</td>
+                                    <td>{{this.nombrePersona}}</td>
+                                    <td>{{this.contacto}}</td>
+                                    <td>{{this.valor_dadoCliente}}</td>
+                                    <td>{{this.informacion_asignacion}}</td>
+                                    <td>{{this.estado}}</td>
+                                    <td>{{this.placa}}</td>
+                                    <td>{{this.conductor}}</td>
+                                    <td>{{this.celular}}</td>
+                                    <td>{{this.valorque_noscobran}}</td>
+                                    <td>{{this.facturacion}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                {{else}}
+                    <p class="alert alert-warning">No se encontraron resultados.</p>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    <footer class="footer bg-dark text-white text-center py-3">
+        <div class="container">
+            <span>&copy; 2024 Nombre de tu Empresa. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateCells = document.querySelectorAll('.fecha-servicio');
+            dateCells.forEach(cell => {
+                const date = new Date(cell.textContent);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                cell.textContent = date.toLocaleDateString('es-ES', options);
+            });
+        });
+    </script>
+</body>
+</html>
