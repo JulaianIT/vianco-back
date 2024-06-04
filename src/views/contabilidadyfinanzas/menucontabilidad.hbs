@@ -463,129 +463,11 @@ float: none;
 <br>
 <br>
 <div class="opera">
-<h1>OPERACIONES</h1>
+<h1>Contabilidad y Finanzas</h1>
 </div>
 
 <div class="menu">
 
-
-
-
-
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/avion.png" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">RECEPCIONES</div>
-  <div class="cuerpo">
-        <a href="/formulario">AGREGAR</a>
-
-    <a href="/buscar_por_fecha">CONSULTAR</a>
-    {{#if callcenter}}
-    <a href="#">EDITAR</a>
-       {{/if}}
-
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-<br>
-<br>
-
-
-
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/terceros.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">SERVICIOS DE TERCEROS</div>
-  <div class="cuerpo">
-        <a href="/SolictarServicioTerceros">SOLICITAR</a>
-        <a href="/ServiciosTerceros_pendientes">PENDIENTES POR CONFIRMAR</a>
-            <a href="/consultar_servicioT">consultar</a>
-
-
-  
-
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-<br>
-<br>
-
-
-
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/coche.png.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">VEHICULOS</div>
-  <div class="cuerpo">
-
- 
-    {{#if auxiliar}}
-        <a href="/agregar-vehiculo">AGREGAR</a>
-      {{/if}}
-   
-    {{#if ejecutivo}}
-
-          <a href="/consulta-vehiculos2">CONSULTAR</a>
-           {{/if}}
-           {{#if auxiliar}}
-      <a href="/consulta-vehiculos">CONSULTAR</a>
-          {{/if}}
-
-      {{#if auxiliar}}
-    <a href="/consulta-vehiculos">EDITAR</a>
-      {{/if}}
-{{#if auxiliar}}
-        <a href="/consulta_vencidos">DOCUMENTOS VENCIDOS</a>
-      {{/if}}
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-
-<br>
-<br>
-     
-
-
-
-
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/conductor.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">CONDUCTORES</div>
- <div class="cuerpo">
- {{#if auxiliar}}
-     
-        <a href="/agregar-conductor">AGREGAR</a>
-  {{/if}}
-
-    {{#if ejecutivo}}
-        <a href="/consulta-conductores2">CONSULTAR</a>
-  {{/if}}
-
- {{#if auxiliar}}
-
-    <a href="/consulta-conductores">CONSULTAR</a>
-     {{/if}}
-          {{#if auxiliar}}
-    <a href="/consulta-conductores">EDITAR</a>
-     {{/if}}
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-
-<br>
 <br>
 
 <br>
@@ -603,23 +485,9 @@ float: none;
  <div class="cuerpo">
         <a href="/novedades_viancoo">AGREGAR</a>
 
-
-
-
-          {{#if director}}
-  <a href="/asiganr_servicioN">ASIGNACION DE RESPONSABLE</a>
-    {{/if}}
-           {{#if director}}
+    
   <a href="/ver_novedades_vianco">PENDIENTES POR REVISAR</a>
-    {{/if}}
-
-
-          {{#if director}}
-  <a href="/verificacion_servicio">VERIFICACION</a>
-    {{/if}}
-         {{#if director}}
-    <a href="/ver_vianco">CONSULTA GENERAL</a>
-  {{/if}}
+  
       <a href="/Consulta_mia">CONSULTA INDIVIDUAL</a>
 
   </div>
@@ -639,78 +507,20 @@ float: none;
 
 
 
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/calendario.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">PROGRAMACION VEHICULOS</div>
- <div class="cuerpo">
-        <a href="/llegadas_salidas">AGREGAR LLEGAS Y SALIDAS</a>
-        <a href="/programacion-vehiculos">AGREGAR PROGRAMACION</a>
-        <a href="/ver-programacion">CONSULTAR</a>
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-
-
-
-
-<br>
-
-
-
-{{#if callcenter}}
-  <div class="tarjeta">
-    <div class="imagen-circulo">
-      <img src="imagenes/CENTROOP.jpg" alt="Imagen de la tarjeta">
-    </div>
-    <div class="titulo">CENTRO OPERACIONES</div>
-    <div class="cuerpo">
-      <a href="/inicio">INICIAR TURNO</a>
-      <a href="/novedades">AGREGAR NOVEDAD</a>
-      <a href="/ver_novedades_C">CONSULTAR NOVEDADES</a>
- 
-    </div>
-    <div class="pie">
-      <a href="#">Más información</a>
-    </div>
-  </div>
-{{/if}}
-{{#if director}}
-  <div class="tarjeta">
-    <div class="imagen-circulo">
-      <img src="/imagenes/call.jpg" alt="Imagen de la tarjeta">
-    </div>
-    <div class="titulo">CONTROL CENTRO OPERACIONES</div>
-    <div class="cuerpo">
-            <a href="/ver_novedades">NOVEDADES PENDIENTES</a>
-
-      <a href="/ver_novedades_C">CONSULTAR NOVEDADES</a>
-    </div>
-    <div class="pie">
-      <a href="#">Más información</a>
-    </div>
-  </div>
-{{/if}}
-
-
-
 <br>
 
   {{#if auxiliar}}
 
 <div class="tarjeta">
   <div class="imagen-circulo">
-    <img src="/imagenes/acuerdo-de-contribuyente.jpg" alt="Imagen de la tarjeta">
+    <img src="imagenes/aDdministracio.jpg" alt="Imagen de la tarjeta">
   </div>
-  <div class="titulo">CLIENTES</div>
+  <div class="titulo">ADMINISTRACION</div>
  <div class="cuerpo">
-        <a href="/nuevo_cliente">AGREGAR</a>
+        <a href="/agregar-contabilidad">AGREGAR</a>
 
-    <a href="/clientess">CONSULTAR</a>
-    <a href="">EDITAR</a>
+    <a href="/consulta-contabilidad">CONSULTAR</a>
+    <a href="/consulta-contabilidad">EDITAR</a>
   </div>
   <div class="pie">
     <a href="#">Más información</a>
@@ -718,138 +528,46 @@ float: none;
 </div>
 
 <br>
-
    {{/if}}
-  {{#if director}}
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/Vehicle-Check-List.png" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">INSPECCION </div>
- <div class="cuerpo">
-        <a href="/inspeccion">AGREGAR</a>
-
-    <a href="/consulta_inspeccion">CONSULTAR</a>
-    <a href="/pagina-indicadores">INDICADORES</a>
-
-    
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-
-<br>
-
- {{/if}}
- {{#if auxiliar}}
 
 
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/licencias.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">FUEC </div>
- <div class="cuerpo">
-        <a href="/seleccionar">CREAR</a>
 
-    <a href="/dat">CONSULTAR INDIVIDUAL</a>
-    <a href="/informe_general_f">INFORME GENERAL</a>
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
-
-<br>
-
-{{/if}}
- {{#if director}}
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/Fotolia_163365444_S_777fsa.jpg" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">AUDITORIA</div>
- <div class="cuerpo">
-        <a href="/auditoria">AGREGAR</a>
-
-    <a href="/consulta_auditoria">CONSULTAR </a>
-    <a href="">INDICADOR</a>
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
 
 <br>
 
 
-{{/if}}
+<br>
 
-
-
-
-
-
-
-
-
-<div class="tarjeta">
-  <div class="imagen-circulo">
-    <img src="imagenes/Diseño sin título.png" alt="Imagen de la tarjeta">
-  </div>
-  <div class="titulo">COTIZACIONES</div>
- <div class="cuerpo">
-        <a href="/formulario_cotizaciones">AGREGAR</a>
-            <a href="/VE">CONSULTAR </a>
-
-         {{#if director}}
-    <a href="/cotizaciones_pendientes">PENDIENTES POR DARLE VALOR </a>
-{{/if}}
-
-      {{#if director}}
-    <a href="/verificacion_cotizacion"> PENDIENTES POR AUTORIZAR</a>
-{{/if}}
-
-
-
-
-
-
-      {{#if callcenter}}
-    <a href="/cotizaciones_pendientes">PENDIENTES</a>
-{{/if}}
-  </div>
-  <div class="pie">
-    <a href="#">Más información</a>
-  </div>
-</div>
 
 <br>
 
 
-
-
-
 <div class="tarjeta">
   <div class="imagen-circulo">
-    <img src="imagenes/images.jpeg" alt="Imagen de la tarjeta">
+    <img src="imagenes/terceros.jpg" alt="Imagen de la tarjeta">
   </div>
-  <div class="titulo">TARIFAS</div>
- <div class="cuerpo">
-        <a href="">AGREGAR</a>
-    <a href="/seleccionar_hotel">CONSULTAR tarifas SUV </a>
-        <a href="/seleccionar_hotelVAN">CONSULTAR tarifas Van</a>
+  <div class="titulo">SERVICIOS DE TERCEROS</div>
+  <div class="cuerpo">
+            <a href="/ServiciosTerceros_asignados">VERIFICACION</a>
+            <a href="/consultar_servicioT">CONSULTAR</a>
+
+
+  
 
   </div>
   <div class="pie">
     <a href="#">Más información</a>
   </div>
 </div>
+<br>
+
+
+
 
 <br>
 
 
+<br>
 
 
 
