@@ -5798,6 +5798,32 @@ app.get("/menucontabilidad", (req, res) => {
 
 
 
+// Ruta para el menu de contabilidad
+app.get("/menucomercial", (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
+
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
+
+
+
+        const auxiliar = roles.includes('auxiliar');
+        const cordinacion = roles.includes('cordinacion');
+        const director = roles.includes('director');
+        const gerencia = roles.includes('gerencia');
+        const aeropuerto = roles.includes('aeropuerto');
+        const soporte = roles.includes('soporte');
+
+        res.render("Comercial/menucomercial.hbs",{ name: req.session.name, auxiliar, cordinacion, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
+    } else {
+        res.redirect("/login/index");
+    }
+});
+
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado

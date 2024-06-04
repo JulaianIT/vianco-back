@@ -401,6 +401,21 @@ float: none;
             background-size: cover;
             background-repeat: no-repeat;
         }
+        #selected{
+
+  position: relative;
+            top: 1px;
+            left: -28%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-end;
+            cursor: pointer;
+
+}
 </style>
 
     <div class="background-container"></div>
@@ -419,6 +434,8 @@ float: none;
 </div>
     {{/if}}
 <header>
+                          <li><a href="/logout" id="selected"><img src="/imagenes/apagar.png" alt=""></a></li>  
+
             <h1 id="ingreso" >{{name}}</h1>
 
  <button id="toggleNavButton" class="flecha">
@@ -427,7 +444,8 @@ float: none;
  
 </header>
 
-<hr>
+
+
             <div id="ventanaEmergente" style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
             <span id="btnCerrar" onclick="cerrarVentanaEmergente()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: #666;">Cerrar</span>
             <div class="VENTANA" style="text-align: center;">
@@ -505,7 +523,19 @@ float: none;
                         {{/if}}
 
                 
-                      <li><a href="/logout" id="selected"><img src="/imagenes/apagar.png" alt=""></a></li>  
+
+        {{#if contabilidad}}
+
+
+    <li class="geree"> <a href="/menucomercial" class="active"> <img id="vi" src="imagenes/contrato-comercial.png" alt="">
+</p>
+                            <ul class="menu-vertical">
+                            <li><p >COMERCIAL</p></li>
+
+                            </ul>
+                        </li>
+                        {{/if}}
+
 
   </ul>
 
