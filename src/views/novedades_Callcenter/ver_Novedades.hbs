@@ -583,8 +583,8 @@ function obtenerNovedadesPorFecha(fechaSeleccionada) {
                               <!-- Mostrar la firma si está presente -->
                         ${novedad.firma ? `
                         <div class="campo">
-                            <label><strong>FIRMA DE QUIEN RECIBE :</strong></label><br>
-                            <img src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
+                            <label style="display: none;" ><strong>FIRMA DE QUIEN RECIBE :</strong></label><br>
+                            <img style="display: none;"  src="${novedad.firma}" alt="Firma" style="max-width: 100%;">
                         </div>` : ''}
 
                         <div class="campo">

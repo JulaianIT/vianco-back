@@ -115,6 +115,21 @@ padding: 15px;
             cursor: pointer;
 
 }
+#rastreo{
+
+    position: relative;
+            top: -74px;
+            left: 78%;
+            width: 80px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
 
     #car{
  
@@ -135,8 +150,8 @@ padding: 15px;
             position: relative;
             top: 20px;
             left: 90%;
-            width: 40px;
-            height: 40px;
+            width: 80px;
+            height: 80px;
             background-image: url('/imagenes/campana.png');
             background-size: cover;
             background-repeat: no-repeat;
@@ -189,7 +204,7 @@ padding: 15px;
     position: relative;
     width: 10%;
    color: black;
-   left: 90%;
+   left: 10%;
     top: -20%;
 float: none;
 
@@ -263,10 +278,10 @@ text-align: center;
         }
 #campana {
     position: relative;
-    top: -60px;
-    left: 80%;
-    width: 40px;
-    height: 40px;
+    top: -145px;
+    left: 79%;
+    width: 50px;
+    height: 50px;
     background-image: url('/imagenes/campana.png');
     background-size: cover;
     background-repeat: no-repeat;
@@ -302,8 +317,8 @@ text-align: center;
 
 #campana {
     position: relative;
-    top: -60px;
-    left: 10%;
+    top: -100px;
+    left: 5%;
     width: 40px;
     height: 40px;
     background-image: url('/imagenes/campana.png');
@@ -320,15 +335,16 @@ text-align: center;
 
 
   #ingreso{
-    padding: 4px;
+  
+    padding: 1px;
    border-radius: 3px;
     text-align: center;
     font-size: 30px;
     position: relative;
-    width: 10%;
+    width: 5%;
    color: black;
    left: 50%;
-    top: -20%;
+    top: 110px;
 float: none;
 
    }
@@ -352,16 +368,69 @@ float: none;
 
 
     }
+#HOME{
+
+  position: relative;
+            top: 10px;
+            left: 70%;
+            width: 80px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
 
 
 
+
+@media only screen and (max-width: 768px) {
+
+#HOME{
+
+  position: relative;
+            top: 40px;
+            left: 22%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+
+}
+#rastreo{
+
+    position: relative;
+            top: -34px;
+            left: 35%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+ }
 
   </style>
 
 <body>
   <header>
+        <a href="/menu"><img id="HOME" src="imagenes/boton-de-inicio.png" alt=""></a>
+
+    
     <a href="/logout"><img id="selected" src="/imagenes/apagar.png" alt=""></a>
-    <h1 id="ingreso">{{name}}</h1>
+    <h1 id="ingreso">BIENVENIDO {{name}}</h1>
 <div id="campana" onclick="mostrarNotificaciones('{{name}}')">
       <span id="numNotificacionesSinLeer"></span>
     </div>
