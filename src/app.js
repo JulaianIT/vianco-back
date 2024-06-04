@@ -5826,6 +5826,166 @@ app.get("/menucomercial", (req, res) => {
 
 
 
+
+app.get('/PQRS', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('Comercial/crear_pqrs.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+
+app.post('/PQRS', (req, res) => {
+    const fecha = req.body.fecha;
+    const realiza = req.body.realiza;
+    const novedad_tripulacion = req.body.novedad_tripulacion || '';
+    const novedad_hoteleria = req.body.novedad_hoteleria || '';
+    const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
+    const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
+    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
+    const otrasNovedades = req.body.novedad_OTRAS || '';
+    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
+    console.log("Firma en formato base64 recibida:", firmaBase64);
+
+    const sql = 'INSERT INTO PQRS (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)'; // Corregido aquí
+
+    connection.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
+        if (error) {
+            console.error('Error al insertar la novedad en la base de datos:', error);
+            res.status(500).send('Error interno del servidor.');
+        } else {
+            console.log('Novedad guardada exitosamente en la base de datos.');
+
+            // Enviar correo electrónico utilizando la nueva función
+            enviarCorreoNOVEDADD('calidadvianco@gmail.com', 'Alerta de nueva servicio no confirme Vianco', `
+                <p><strong>Estimados,</strong></p>
+                <br>
+                <p>Me complace informarles que se ha agregado una nueva novedad al sistema de nuestro equipo de centro de operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p>
+                <br>
+                <p>Recuerden realizar el seguimiento en la aplicación en el módulo de novedades pendientes.</p>
+            `);
+
+            const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/PQRS";</script>';
+            res.send(alertScript);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/menuGerencia', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        res.render('admin/menugerencia.hbs', { nombreUsuario });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+
+
+
+async function obtenerDatoscontabilidadA() {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION FROM contabilidad";
+      connection.query(query, (error, results) => {
+        if (error) reject(error);
+        resolve(results);
+      });
+    });
+  }
+  app.get('/Calcular_administracion', async (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        const fechaActual = new Date();
+        const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        const mesActual = meses[fechaActual.getMonth()]; // Obtener el nombre del mes actual
+
+        try {
+            const vehiculos = await obtenerDatoscontabilidadA();
+            // Obtener el valor de administración para el mes actual
+            const valorAdminMesActual = obtenerValorAdministracionMesActual(vehiculos, mesActual);
+            res.render('contabilidadyfinanzas/administracion/calcular_administracion.hbs', { nombreUsuario, vehiculos, valorAdminMesActual });
+        } catch (error) {
+            console.error("Error al obtener datos de vehículos:", error);
+            res.status(500).send("Error interno del servidor.");
+        }
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+function obtenerValorAdministracionMesActual(vehiculos, mesActual) {
+    // Buscar el valor de administración correspondiente al mes actual en el array de vehículos
+    for (const vehiculo of vehiculos) {
+        if (vehiculo[mesActual]) {
+            return vehiculo[mesActual];
+        }
+    }
+    return null; // Si no se encuentra el valor para el mes actual, se puede devolver null o algún otro valor predeterminado
+}
+
+
+function obtenerValorAdministracionMesActual(vehiculos, mesActual) {
+    // Buscar el valor de administración correspondiente al mes actual en el array de vehículos
+    for (const vehiculo of vehiculos) {
+        if (vehiculo[mesActual]) {
+            return vehiculo[mesActual];
+        }
+    }
+    return null; // Si no se encuentra el valor para el mes actual, se puede devolver null o algún otro valor predeterminado
+}
+
+// Ruta para manejar las solicitudes POST para actualizar el valor en la base de datos
+app.post('/actualizar_valor_pagar', (req, res) => {
+    const { mes, valor, placa } = req.body;
+  
+    // Log de la solicitud para depuración
+    console.log(`Valor recibido: ${valor}, Mes: ${mes}, Placa: ${placa}`);
+  
+    // Aquí debes escribir el código para actualizar el valor en la base de datos según el mes recibido
+  
+    // Convertir el valor a un número decimal
+    const valorDecimal = parseFloat(valor);
+  
+    // Por ejemplo, podrías ejecutar una consulta SQL para actualizar el valor
+    const sql = `UPDATE contabilidad SET ${mes} = ? WHERE placa = ?`;
+  
+    connection.query(sql, [valorDecimal, placa], (err, result) => {
+      if (err) {
+        console.error('Error al ejecutar la consulta SQL: ', err);
+        res.status(500).send('Error al actualizar el valor en la base de datos');
+        return;
+      }
+      console.log('Valor actualizado correctamente en la base de datos');
+      res.status(200).send('Valor actualizado correctamente');
+    });
+});
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

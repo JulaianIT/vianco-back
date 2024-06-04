@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Administración</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+</head>
+<body>
+    <h1>Bienvenido, {{nombreUsuario}}</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Conductor</th>
+                <th>Administración</th>
+                <th>Días Trabajados</th>
+                <th>Costos de Administración</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each vehiculos}}
+                <tr id="row-{{@index}}">
+                    <td>{{this.placa}}</td>
+                    <td>{{this.NOMBRES_CONTRATO}}</td>
+                    <td class="valor-administracion">{{this.VALOR_ADMINISTRACION}}</td>
+                    <td><input type="number" name="diasTrabajados" class="dias-trabajados" data-index="{{@index}}" oninput="calcularValorPagar({{@index}})" min="1"></td>
+                    <td class="valor-pagar">VALOR A PAGAR</td>
+                    <td><button onclick="actualizarValorPagar({{@index}})">Actualizar</button></td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <script>
+        function calcularDiasMes(mes, año) {
+            return new Date(año, mes, 0).getDate();
+        }
+
+        function llenarDiasTrabajados() {
+            var fechaActual = new Date();
+            var mes = fechaActual.getMonth() + 1; // Los meses en JavaScript van de 0 a 11
+            var año = fechaActual.getFullYear();
+            var diasDelMes = calcularDiasMes(mes, año);
+
+            var inputsDiasTrabajados = document.querySelectorAll('.dias-trabajados');
+            inputsDiasTrabajados.forEach(function(input) {
+                input.value = diasDelMes;
+                input.max = diasDelMes;
+                calcularValorPagar(input.dataset.index); // Calcular el valor de inmediato
+            });
+        }
+
+        function calcularValorPagar(index) {
+            var row = document.getElementById('row-' + index);
+            var diasTrabajadosInput = row.querySelector('.dias-trabajados');
+            var valorAdministracionText = row.querySelector('.valor-administracion').innerText;
+            var valorPagarCell = row.querySelector('.valor-pagar');
+            var diasTrabajados = parseInt(diasTrabajadosInput.value);
+
+            // Asegurarse de que valorAdministracionText se convierta correctamente a número
+            var valorAdministracion = parseFloat(valorAdministracionText.replace(',', '').replace('$', ''));
+
+            // Verificar si los valores son números válidos
+            if (isNaN(diasTrabajados) || isNaN(valorAdministracion)) {
+                valorPagarCell.innerText = 'VALOR A PAGAR';
+                return;
+            }
+
+            var valorPagar;
+            if (diasTrabajados < 15) {
+                valorPagar = valorAdministracion * 0.5;
+            } else {
+                valorPagar = valorAdministracion;
+            }
+
+            // Formatear el valor a pagar sin decimales si es un número entero
+            valorPagarCell.innerText = '$' + (valorPagar % 1 === 0 ? valorPagar : valorPagar.toFixed(2));
+        }
+
+function actualizarValorPagar(index) {
+    var row = document.getElementById('row-' + index);
+        var placa = row.querySelector('td:first-child').innerText; // Obtener el valor de la placa
+
+    var valorPagarCell = row.querySelector('.valor-pagar');
+    var valorPagar = parseFloat(valorPagarCell.innerText.replace('$', ''));
+
+    // Obtener el mes actual
+    var fechaActual = new Date();
+    var meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    var mesActual = meses[fechaActual.getMonth()];
+
+    // Enviar la solicitud al servidor para actualizar el valor en la base de datos
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/actualizar_valor_pagar', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Actualizar la interfaz con el nuevo valor
+            valorPagarCell.innerText = '$' + valorPagar.toFixed(2);
+        } else {
+            // Mostrar un mensaje de error si la actualización falló
+            console.error('Error al actualizar el valor.');
+        }
+    };
+    xhr.onerror = function() {
+        console.error('Error de red al intentar actualizar el valor.');
+    };
+    xhr.send(JSON.stringify({ mes: mesActual, valor: valorPagar, placa: placa })); // Agregar la placa a la solicitud
+}
+
+
+
+        // Llenar automáticamente los campos de días trabajados con los días del mes actual al cargar la página
+        window.onload = function() {
+            llenarDiasTrabajados();
+            completarTituloCostosAdministracion();
+        };
+
+        function completarTituloCostosAdministracion() {
+            var fechaActual = new Date();
+            var meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            var mesActual = meses[fechaActual.getMonth()];
+            var thCostosAdministracion = document.querySelector('th:nth-child(5)');
+            thCostosAdministracion.innerText = 'Costos de Administración ' + mesActual;
+        }
+    </script>
+
+</body>
+</html>
