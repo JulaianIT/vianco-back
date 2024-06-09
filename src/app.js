@@ -65,22 +65,38 @@ const connection = mysql.createConnection({
     queueLimit: 0
 });
 
-
-
-
-
-
-
-// Conecta con la base de datos
-connection.connect(err => {
+connection.connect((err) => {
     if (err) {
-        console.error("Error al conectar con la base de datos:", err);
+        console.error('Error connecting to the database:', err);
         return;
     }
-    console.log("Conectado a la base de datos");
-
- 
+    console.log('Connected to the database.');
 });
+
+
+connection.on('error', (err) => {
+    console.error('Database error:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        // Reconnect if the connection to the server is lost.
+        handleDisconnect();
+    } else {
+        throw err;
+    }
+});
+
+function handleDisconnect() {
+    connection = mysql.createConnection(connection.config);
+    connection.connect((err) => {
+        if (err) {
+            console.error('Error reconnecting to the database:', err);
+            setTimeout(handleDisconnect, 2000); // Try to reconnect after 2 seconds
+        } else {
+            console.log('Reconnected to the database.');
+        }
+    });
+}
+
+
 
 app.use((req, res, next) => {
     req.db = connection;
