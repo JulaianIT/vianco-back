@@ -59,44 +59,46 @@ const connection = mysql.createConnection({
     user: "viancote_soporte",
     password: "MXPwPzz4zlU=",
     database: "viancote_nodelogin",
-    port: "3306",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err);
-        return;
-    }
-    console.log('Connected to the database.');
+    port: "3306"
 });
 
 
-connection.on('error', (err) => {
-    console.error('Database error:', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-        // Reconnect if the connection to the server is lost.
-        handleDisconnect();
-    } else {
-        throw err;
-    }
-});
-
-function handleDisconnect() {
-    connection = mysql.createConnection(connection.config);
-    connection.connect((err) => {
+// Función para enviar un ping a la base de datos periódicamente
+function sendPing() {
+    connection.ping(err => {
         if (err) {
-            console.error('Error reconnecting to the database:', err);
-            setTimeout(handleDisconnect, 2000); // Try to reconnect after 2 seconds
+            console.error("Error al enviar ping a la base de datos:", err);
         } else {
-            console.log('Reconnected to the database.');
+            console.log("Ping enviado a la base de datos");
         }
     });
 }
 
+// Configura el intervalo para enviar el ping cada 5 minutos (300,000 milisegundos)
+const pingInterval = setInterval(sendPing, 300000);
 
+// Maneja los eventos de error y cierre de la conexión
+connection.on('error', err => {
+    console.error("Error en la conexión a la base de datos:", err);
+    clearInterval(pingInterval); // Detiene el intervalo cuando se produce un error
+});
+
+connection.on('close', () => {
+    console.log("Conexión a la base de datos cerrada");
+    clearInterval(pingInterval); // Detiene el intervalo cuando se cierra la conexión
+});
+
+// Conecta con la base de datos
+connection.connect(err => {
+    if (err) {
+        console.error("Error al conectar con la base de datos:", err);
+        return;
+    }
+    console.log("Conectado a la base de datos");
+
+    // Envía el primer ping después de conectar
+    sendPing();
+});
 
 app.use((req, res, next) => {
     req.db = connection;
@@ -4912,9 +4914,74 @@ app.post('/asignar-responsable', async (req, res) => {
 
 
 
+// Endpoint to verify notifications
+app.get('/verificar-notificaciones', async (req, res) => {
+    try {
+        // Get the username from the session
+        const nombreUsuario = req.session.name;
+
+        // Query to check for pending notifications for the current user
+        const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
+        const [result] = await connection.promise().query(query, [nombreUsuario]);
+
+        // Send response to the client
+        res.json({ notificaciones: result });
+    } catch (error) {
+        console.error('Error al verificar notificaciones pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+app.put('/marcar-notificacion/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        // Mark the notification as read in the database
+        const updateResult = await Notificacion.updateOne({ _id: id }, { leida: true });
+        if (updateResult.nModified === 1) {
+            res.status(200).send('Notificación marcada como leída correctamente');
+        } else {
+            res.status(404).send('Notificación no encontrada');
+        }
+    } catch (error) {
+        console.error('Error al marcar la notificación como leída:', error);
+        res.status(500).send('Error interno del servidor al marcar la notificación como leída');
+    }
+});
+
+app.get('/notificaciones-pendientes/:usuario', async (req, res) => {
+    try {
+        const usuario = req.params.usuario;
+        // Buscar todas las notificaciones pendientes para el usuario dado
+        const notificaciones = await Notificacion.find({ responsable: usuario, leida: false });
+        res.status(200).json(notificaciones);
+    } catch (error) {
+        console.error('Error al obtener las notificaciones pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 
 
+
+
+
+
+
+// Ruta para eliminar una notificación
+app.delete('/eliminar-notificacion/:id', async (req, res) => {
+    try {
+        const id = req.params.id; // Obtener el ID de la solicitud
+        const notificacion = await Notificacion.findByIdAndDelete(id);
+        if (notificacion) {
+            res.status(200).json(notificacion);
+        } else {
+            res.status(404).send('Notificación no encontrada');
+        }
+    } catch (error) {
+        console.error('Error al eliminar la notificación:', error);
+        res.status(500).send('Error interno del servidor al eliminar la notificación');
+    }
+});
 
 
 
