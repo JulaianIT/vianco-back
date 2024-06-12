@@ -6126,8 +6126,34 @@ async function obtenerDatosParaExcel(fechaInicio, fechaFin) {
 
 
 
-
-
+// Ruta para manejar la solicitud POST de guardar edición
+app.post('/guardar_edicionAE', function(req, res) {
+    const datosEditados = req.body;
+  
+    // Consulta SQL para actualizar los datos
+    const sql = `UPDATE aeropuerto  SET  cliente = ?, hora = ?, nombre_pasajero = ?, vuelo = ?, placa = ?, conductor = ?, celular_conductor = ? WHERE id = ?`;
+    const values = [
+      datosEditados.cliente,
+      datosEditados.hora,
+      datosEditados.nombre_pasajero,
+      datosEditados.vuelo,
+      datosEditados.placa,
+      datosEditados.conductor,
+      datosEditados.celular_conductor,
+      datosEditados.id
+    ];
+  
+    // Ejecutar la consulta SQL
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error('Error al actualizar los datos:', err);
+        res.status(500).send('Error al actualizar los datos');
+      } else {
+        console.log('Datos actualizados correctamente');
+        res.send('Datos actualizados correctamente');
+      }
+    });
+  });
 
 
 
