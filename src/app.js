@@ -5960,9 +5960,16 @@ app.get('/menuGerencia', (req, res) => {
 
 
 
+
+
+
+
+
+
+
 async function obtenerDatoscontabilidadA() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION FROM contabilidad";
+      const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION,junio FROM contabilidad";
       connection.query(query, (error, results) => {
         if (error) reject(error);
         resolve(results);
@@ -6037,6 +6044,27 @@ app.post('/actualizar_valor_pagar', (req, res) => {
       res.status(200).send('Valor actualizado correctamente');
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
