@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Indicadores de Aeropuerto</title>
+  <!-- Incluye Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Incluye jQuery y jQuery UI -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #d9d9d9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+   
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #413d4b;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    canvas {
+      margin: auto;
+      display: block;
+    }
+    .date-inputs {
+      margin-bottom: 20px;
+    }
+    input[type="text"], button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+    button {
+      background-color: #90c9a7;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666567;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #666567;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #90c9a7;
+      color: #413d4b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bienvenido, <span id="nombreUsuario">{{nombreUsuario}}</span></h1>
+    <h2>Indicadores de Aeropuerto</h2>
+
+    <div class="date-inputs">
+      <input type="text" id="fechaInicio" placeholder="Fecha de inicio">
+      <input type="text" id="fechaFin" placeholder="Fecha de fin">
+      <button id="descargarExcel">Descargar Informe Excel</button>
+    </div>
+
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <table>
+      <tr>
+        <th>Indicador</th>
+        <th>Datos</th>
+      </tr>
+      <tr>
+        <td>Recepciones Hoy:</td>
+        <td><span id="recepcionesHoy">{{indicadores.recepcionesHoy}}</span></td>
+      </tr>
+      <tr>
+        <td>Recepciones Últimos 15 Días:</td>
+        <td><span id="recepcionesUltimos15">{{indicadores.recepcionesUltimos15}}</span></td>
+      </tr>
+      <tr>
+        <td>Recepciones Mensuales:</td>
+        <td><span id="recepcionesMensuales">{{indicadores.recepcionesMensuales}}</span></td>
+      </tr>
+      <tr>
+        <td>Conductor más activo en los últimos 15 días:</td>
+        <td><span id="conductorMasActivo">{{indicadores.conductorMasActivo}}</span></td>
+      </tr>
+      <tr>
+        <td>Cliente más activo en los últimos 15 días:</td>
+        <td><span id="clienteMasActivo">{{indicadores.clienteMasActivo}}</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    const indicadores = {
+      recepcionesHoy: {{indicadores.recepcionesHoy}},
+      recepcionesUltimos15: {{indicadores.recepcionesUltimos15}},
+      recepcionesMensuales: {{indicadores.recepcionesMensuales}}
+    };
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Hoy', 'Últimos 15 días', 'Mensuales'],
+        datasets: [{
+          label: 'Recepciones',
+          data: [indicadores.recepcionesHoy, indicadores.recepcionesUltimos15, indicadores.recepcionesMensuales],
+          backgroundColor: [
+            'rgba(144, 201, 167, 0.5)',
+            'rgba(144, 201, 167, 0.5)',
+            'rgba(144, 201, 167, 0.5)',
+          ],
+          borderColor: [
+            'rgba(144, 201, 167, 1)',
+            'rgba(144, 201, 167, 1)',
+            'rgba(144, 201, 167, 1)',
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        legend: {
+          display: false
+        },
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 10
+          }
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      $('#fechaInicio').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+      $('#fechaFin').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+
+      function descargarInformeExcel() {
+        const fechaInicio = $('#fechaInicio').val();
+        const fechaFin = $('#fechaFin').val();
+
+        if (fechaInicio && fechaFin) {
+          window.location.href = `/descargar-informe-excel-aeropuerto?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+        } else {
+          alert("Debe ingresar ambas fechas.");
+        }
+      }
+
+      document.getElementById('descargarExcel').addEventListener('click', descargarInformeExcel);
+    });
+  </script>
+</body>
+</html>

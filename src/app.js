@@ -5986,6 +5986,153 @@ app.post('/actualizar_valor_pagar', (req, res) => {
 
 
 
+const getIndicadores = async () => {
+    const connection = await mysql.createConnection({
+        host: "69.61.31.131",
+        user: "viancote_soporte",
+        password: "MXPwPzz4zlU=",
+        database: "viancote_nodelogin",
+        port: "3306"
+    });
+
+    try {
+        // Obtener la fecha actual y la fecha hace 15 días
+        const hoy = new Date();
+        const hace15Dias = new Date();
+        hace15Dias.setDate(hace15Dias.getDate() - 15);
+
+        // Consulta para obtener el número de recepciones hoy
+        const [recepcionesHoyResult] = await connection.promise().query('SELECT COUNT(*) AS recepcionesHoy FROM aeropuerto WHERE DATE(fecha) = ?', [hoy.toISOString().split('T')[0]]);
+
+        // Consulta para obtener el número de recepciones mensuales
+        const firstDayOfMonth = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        const lastDayOfMonth = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        const firstDayOfMonthString = firstDayOfMonth.toISOString().split('T')[0];
+        const lastDayOfMonthString = lastDayOfMonth.toISOString().split('T')[0];
+        const [recepcionesMensualesResult] = await connection.promise().query('SELECT COUNT(*) AS recepcionesMensuales FROM aeropuerto WHERE fecha >= ? AND fecha <= ?', [firstDayOfMonthString, lastDayOfMonthString]);
+
+        // Consulta para obtener el número de recepciones en los últimos 15 días
+        const [recepcionesUltimos15Result] = await connection.promise().query('SELECT COUNT(*) AS recepcionesUltimos15 FROM aeropuerto WHERE fecha >= ? AND fecha < ? AND fecha < ?', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0], firstDayOfMonthString]);
+
+        // Consulta para obtener el conductor que más realiza en los últimos 15 días
+        const [conductorMasActivoResult] = await connection.promise().query('SELECT conductor, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= ? AND fecha < ? GROUP BY conductor ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
+
+        // Consulta para obtener el cliente que más ha estado activo en los últimos 15 días
+        const [clienteMasActivoResult] = await connection.promise().query('SELECT cliente, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= ? AND fecha < ? GROUP BY cliente ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
+
+        // Devuelve los indicadores como un objeto
+        return {
+            recepcionesHoy: recepcionesHoyResult[0].recepcionesHoy,
+            recepcionesUltimos15: recepcionesUltimos15Result[0].recepcionesUltimos15,
+            recepcionesMensuales: recepcionesMensualesResult[0].recepcionesMensuales,
+            conductorMasActivo: conductorMasActivoResult.length > 0 ? conductorMasActivoResult[0].conductor : 'N/A', // Si no hay resultados, muestra 'N/A'
+            clienteMasActivo: clienteMasActivoResult.length > 0 ? clienteMasActivoResult[0].cliente : 'N/A' // Si no hay resultados, muestra 'N/A'
+        };
+    } catch (err) {
+        throw new Error(err.message);
+    } finally {
+        if (connection) {
+            await connection.end();
+        }
+    }
+};
+
+module.exports = {
+    getIndicadores
+};
+
+
+  
+// Tu ruta para indicadoresAERO
+app.get('/indicadoresAERO', async (req, res) => {
+    if (req.session.loggedin === true) {
+      const nombreUsuario = req.session.name;
+      try {
+        const indicadores = await getIndicadores();
+        res.render('operaciones/aeropuerto/indicadores.hbs', { 
+          nombreUsuario, 
+          indicadores 
+        });
+      } catch (error) {
+        console.error('Error al obtener los indicadores:', error.message);
+        res.status(500).send('Error al obtener los indicadores');
+      }
+    } else {
+      // Manejo para el caso en que el usuario no está autenticado
+      res.redirect("/login/index");
+    }
+  });
+
+
+
+
+// Ruta para descargar el informe en Excel
+router.get('/descargar-informe-excel-aeropuerto', async (req, res) => {
+    try {
+        const fechaInicio = req.query.fechaInicio;
+        const fechaFin = req.query.fechaFin;
+
+        // Aquí debes obtener los datos del servidor usando las fechas proporcionadas
+        const datos = await obtenerDatosParaExcel(fechaInicio, fechaFin);
+
+        // Crear el archivo Excel
+        const workbook = new excel.Workbook();
+        const worksheet = workbook.addWorksheet('Informe');
+
+        // Agregar encabezados con los nombres correctos
+        worksheet.addRow(['Fecha', 'Cliente', 'Nombre del Pasajero', 'Vuelo', 'Placa', 'Conductor']);
+
+        // Agregar datos
+        datos.forEach(dato => {
+            worksheet.addRow([dato.fecha, dato.cliente, dato.nombre_pasajero, dato.vuelo, dato.placa, dato.conductor]);
+        });
+
+        // Configurar el tipo de contenido y enviar el archivo Excel al cliente
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=informe.xlsx');
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error('Error al descargar el informe en Excel:', error);
+        res.status(500).send('Error al generar el informe en Excel');
+    }
+});
+
+// Función para obtener los datos desde la base de datos
+async function obtenerDatosParaExcel(fechaInicio, fechaFin) {
+    return new Promise((resolve, reject) => {
+        // Realiza la consulta a la base de datos utilizando las fechas proporcionadas
+        const query = `SELECT fecha, cliente, nombre_pasajero, vuelo, placa, conductor FROM aeropuerto WHERE fecha BETWEEN ? AND ?`;
+        connection.query(query, [fechaInicio, fechaFin], (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Inicia el servidor de Socket.IO en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
