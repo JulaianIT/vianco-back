@@ -2032,10 +2032,64 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
 
 
 
-// Ruta para la página de búsqueda y visualización de datos
-app.get('/buscar_por_fecha', (req, res) => {
-    res.render('operaciones/aeropuerto/recepciones_aeropuerto.hbs'); // Renderiza el formulario de búsqueda
+
+
+
+
+
+
+
+
+// Ruta para la página principal vianco
+app.get("/buscar_por_fecha", (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        console.log(`El usuario ${nombreUsuario} está autenticado.`);
+        req.session.nombreGuardado = nombreUsuario; // Guarda el nombre en la sesión
+
+        const rolesString = req.session.roles;
+        const roles = Array.isArray(rolesString) ? rolesString : [];
+        otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
+
+
+
+        const auxiliar = roles.includes('auxiliar');
+        const ejecutivo = roles.includes('ejecutivo');
+        const cordinacion = roles.includes('cordinacion');
+        const callcenter = roles.includes('callcenter');
+        const director = roles.includes('director');
+        const gerencia = roles.includes('gerencia');
+        const contabilidad = roles.includes('contabilidad');
+        const soporte = roles.includes('soporte');
+
+        res.render("operaciones/aeropuerto/recepciones_aeropuerto.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, contabilidad ,soporte}); // Pasar los roles a la plantilla
+    } else {
+        res.redirect("/login/index");
+    }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Ruta para procesar la búsqueda por fecha
 app.post('/buscar_por_fecha', async (req, res) => {

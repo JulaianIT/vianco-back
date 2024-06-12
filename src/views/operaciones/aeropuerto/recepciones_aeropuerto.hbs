@@ -429,8 +429,12 @@ $(document).ready(function() {
                                 <td><span class="static-data">${recepcion.conductor}</span><input type="text" class="form-control editable-data edit-conductor" style="display: none;" value="${recepcion.conductor}"></td>
                                 <td><span class="static-data">${recepcion.celular_conductor}</span><input type="text" class="form-control editable-data edit-celular-conductor" style="display: none;" value="${recepcion.celular_conductor}"></td>
                                 <td>
+                                {{#if callcenter}}
+
                                     <button class="editar-btn" data-id="${recepcion.id}">Editar</button>
+                                   
                                     <button class="guardar-btn" data-id="${recepcion.id}" style="display: none;">Guardar</button>
+                               {{/if}}
                                 </td>
                             </tr>
                         `).join('')}
