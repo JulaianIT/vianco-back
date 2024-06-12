@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envío de PQRS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Rubik", sans-serif;
+            background-color: #d9d9d9;
+            margin: 0;
+            padding: 0;
+        }
+        .contenido {
+            background-color: white;
+            width: 40%;
+            padding: 30px;
+            margin: 50px auto;
+            border-radius: 5px;
+            border: 3px solid black;
+            font-size: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input[type="text"],
+        textarea {
+            font-size: 16px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .enviar {
+            background-color: #90c9a7;
+            color: #000;
+            border: none;
+            padding: 25px 38px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .enviar:hover {
+            background-color: #d9d9d9;
+        }
+        .mensaje-exito {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #90c9a7;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenido">
+        <h1>Envío de PQRS</h1>
+        <form id="novedadForm">
+            <label for="fecha">Fecha de la PQRS:</label>
+            <input type="date" id="fecha" name="fecha" required><br><br>
+            
+            <label for="correo">correo:</label>
+            <input type="text" id="correo" name="correo" required><br><br>
+            
+            <label for="realiza">Quién realiza la PQRS:</label>
+            <input type="text" id="realiza" name="realiza" required ><br><br>
+            
+            <label for="tipo">Tipo de PQRS:</label><br>
+            <input type="radio" id="sugerencia" name="tipo" value="sugerencia" required>
+            <label for="sugerencia">Sugerencia</label><br>
+            
+            <input type="radio" id="queja" name="tipo" value="queja">
+            <label for="queja">Queja</label><br>
+            
+            <input type="radio" id="reclamo" name="tipo" value="reclamo">
+            <label for="reclamo">Reclamo</label><br><br>
+            
+            <label for="descripcion">Describa su queja:</label><br>
+            <textarea id="descripcion" name="descripcion" rows="4" cols="50" required></textarea><br><br>
+            
+            <input class="enviar" type="button" value="Enviar" onclick="enviarFormulario()">
+        </form>
+        <div id="mensajeExito" class="mensaje-exito">¡Registro de PQRS enviado correctamente!</div>
+    </div>
+
+    <script>
+        function enviarFormulario() {
+            const form = document.getElementById('novedadForm');
+            const formData = new FormData(form);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/guardar_pqrs', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        document.getElementById('mensajeExito').style.display = 'block';
+                        form.reset();
+                    } else {
+                        console.error('Error al enviar el formulario:', xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send(new URLSearchParams(formData));
+        }
+    </script>
+</body>
+</html>

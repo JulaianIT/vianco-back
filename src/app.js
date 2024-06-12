@@ -5884,7 +5884,7 @@ app.get("/menucomercial", (req, res) => {
 app.get('/PQRS', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        res.render('Comercial/crear_pqrs.hbs', { nombreUsuario });
+        res.render('Comercial/PQRS/crear_pqrs.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login/index");
@@ -5897,42 +5897,66 @@ app.get('/PQRS', (req, res) => {
 
 
 
-app.post('/PQRS', (req, res) => {
+// Definir la ruta para procesar el formulario de PQRS
+app.post('/guardar_pqrs', (req, res) => {
+    // Recuperar los datos del formulario
     const fecha = req.body.fecha;
+    const correo = req.body.correo;
     const realiza = req.body.realiza;
-    const novedad_tripulacion = req.body.novedad_tripulacion || '';
-    const novedad_hoteleria = req.body.novedad_hoteleria || '';
-    const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
-    const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
-    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
-    const otrasNovedades = req.body.novedad_OTRAS || '';
-    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
-    console.log("Firma en formato base64 recibida:", firmaBase64);
+    const tipo = req.body.tipo;
+    const descripcion = req.body.descripcion;
 
-    const sql = 'INSERT INTO PQRS (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)'; // Corregido aquí
+    // Construir la consulta SQL para insertar los datos
+    const sql = `INSERT INTO pqrs (fecha, correo, realiza, tipo, descripcion) 
+                 VALUES (?, ?, ?, ?, ?)`;
 
-    connection.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
+    // Ejecutar la consulta SQL con los datos del formulario
+    connection.query(sql, [fecha, correo, realiza, tipo, descripcion], (error, results, fields) => {
         if (error) {
-            console.error('Error al insertar la novedad en la base de datos:', error);
-            res.status(500).send('Error interno del servidor.');
+            console.error("Error al guardar la PQRS:", error);
+            res.status(500).send("Error al guardar la PQRS.");
         } else {
-            console.log('Novedad guardada exitosamente en la base de datos.');
+            console.log("Registro de PQRS guardado correctamente.");
 
-            // Enviar correo electrónico utilizando la nueva función
-            enviarCorreoNOVEDADD('calidadvianco@gmail.com', 'Alerta de nueva servicio no confirme Vianco', `
-                <p><strong>Estimados,</strong></p>
-                <br>
-                <p>Me complace informarles que se ha agregado una nueva novedad al sistema de nuestro equipo de centro de operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p>
-                <br>
-                <p>Recuerden realizar el seguimiento en la aplicación en el módulo de novedades pendientes.</p>
-            `);
+            // Enviar correo electrónico pasando los datos necesarios
+            enviarCorreeeo(correo, fecha, realiza, tipo, descripcion);
 
-            const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/PQRS";</script>';
-            res.send(alertScript);
+            res.status(200).send("Registro de PQRS guardado correctamente.");
         }
     });
 });
 
+// Función para enviar el correo electrónico
+function enviarCorreeeo(destinatario, fecha, realiza, tipo, descripcion) {
+    // Opciones del correo electrónico
+    const mailOptions = {
+        from: 'soporte.it.vianco@gmail.com', // Remitente (puedes cambiarlo)
+        to: destinatario,
+        subject: 'Nueva PQRS Generada',
+        html: `
+            <p>Estimado/a Jefe Dario Perdomo</p>
+            <p>Le informamos que se ha generado una nueva PQRS en el sistema:</p>
+            <ul>
+                <li><strong>Fecha de la PQRS:</strong> ${fecha}</li>
+                <li><strong>Realizada por:</strong> ${realiza}</li>
+                <li><strong>Tipo de PQRS:</strong> ${tipo}</li>
+                <li><strong>Descripción:</strong> ${descripcion}</li>
+            </ul>
+            <p>Por favor, tome las acciones necesarias para revisar y responder según corresponda.</p>
+            <p>Atentamente,</p>
+            <p>Tu Equipo de Soporte</p>
+        `
+    };
+
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+        } else {
+            console.log('Correo electrónico enviado:', info.response);
+        }
+    });
+}
 
 
 
