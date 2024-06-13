@@ -5880,19 +5880,10 @@ app.get("/menucomercial", (req, res) => {
 
 
 
-
 app.get('/PQRS', (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        res.render('Comercial/PQRS/crear_pqrs.hbs', { nombreUsuario });
-    } else {
-        // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
-    }
+    const nombreUsuario = req.session ? req.session.name : 'Invitado';
+    res.render('Comercial/PQRS/crear_pqrs.hbs', { nombreUsuario });
 });
-
-
-
 
 
 
@@ -6444,12 +6435,13 @@ app.get('/consultapqr/:tipo', (req, res) => {
         const nombreUsuario = req.session.name;
         const tipoPQRS = req.params.tipo;
 
-        // Consulta SQL para obtener las PQRS según el tipo seleccionado
         let sql;
         if (tipoPQRS === 'pendientes') {
             sql = 'SELECT * FROM pqrs WHERE estado IS NULL';
         } else if (tipoPQRS === 'completadas') {
             sql = 'SELECT * FROM pqrs WHERE estado = "Respondida"';
+        } else if (tipoPQRS === 'todas') {
+            sql = 'SELECT * FROM pqrs';
         } else {
             return res.status(400).send('Tipo de PQRS no válido');
         }
@@ -6460,7 +6452,6 @@ app.get('/consultapqr/:tipo', (req, res) => {
                 return res.status(500).send('Error al consultar las PQRS');
             }
 
-            // Generar el HTML dinámico para mostrar los resultados
             let htmlResult = '';
             results.forEach(pqr => {
                 htmlResult += `
@@ -6469,20 +6460,28 @@ app.get('/consultapqr/:tipo', (req, res) => {
                         <td>${formatDate(pqr.fecha)}</td>
                         <td>${pqr.correo}</td>
                         <td>${pqr.realiza}</td>
+                        <td>${pqr.tipo}</td>
                         <td>${pqr.descripcion}</td>
+                        <td>${pqr.estado}</td>
+                        <td>${pqr.responsable}</td>
+                          <td>${pqr.fecha_seguimiento}</td>
+                        <td>${pqr.seguimiento}</td>
                         <td>${pqr.acciones}</td>
                     </tr>
                 `;
             });
 
-            // Enviar el HTML generado como respuesta
             res.send(htmlResult);
         });
     } else {
-        // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login/index");
     }
 });
+
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+}
 
 
 

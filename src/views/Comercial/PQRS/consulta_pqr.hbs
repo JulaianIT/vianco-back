@@ -4,6 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de PQRS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #413d4b;
+        }
+        p {
+            text-align: center;
+            color: #666567;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #75b895;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #90c9a7;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #90c9a7;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .error {
+            text-align: center;
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <h1>Consulta de PQRS</h1>
@@ -12,6 +75,7 @@
     <form id="consultaForm">
         <label for="tipoPQRS">Seleccione el tipo de PQRS:</label>
         <select name="tipoPQRS" id="tipoPQRS">
+            <option value="todas">Todas las PQRS</option>
             <option value="pendientes">PQRS Pendientes</option>
             <option value="completadas">PQRS Completadas</option>
         </select>
@@ -24,7 +88,7 @@
 
     <script>
         document.getElementById('consultaForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Evita que se envíe el formulario por defecto
+            event.preventDefault();
 
             const tipoSeleccionado = document.getElementById('tipoPQRS').value;
 
@@ -39,19 +103,24 @@
                                     <th>Fecha</th>
                                     <th>Correo</th>
                                     <th>Realiza</th>
+                                    <th>Tipo</th>
                                     <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Responsable</th>
+                                    <th>Fecha de Seguimiento</th>
+                                    <th>Seguimiento</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${data} <!-- Aquí se insertan las filas generadas desde Node.js -->
+                                ${data}
                             </tbody>
                         </table>
                     `;
                 })
                 .catch(error => {
                     console.error('Error al obtener los datos:', error);
-                    document.getElementById('resultadoPQRS').innerHTML = 'Error al obtener los datos';
+                    document.getElementById('resultadoPQRS').innerHTML = '<p class="error">Error al obtener los datos</p>';
                 });
         });
     </script>
