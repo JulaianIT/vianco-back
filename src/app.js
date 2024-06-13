@@ -5934,7 +5934,7 @@ function enviarCorreeeo(destinatario, fecha, realiza, tipo, descripcion) {
         to: destinatario,
         subject: 'Nueva PQRS Generada',
         html: `
-            <p>Estimado/a Jefe Dario Perdomo</p>
+            <p>Estimado  Dario Perdomo</p>
             <p>Le informamos que se ha generado una nueva PQRS en el sistema:</p>
             <ul>
                 <li><strong>Fecha de la PQRS:</strong> ${fecha}</li>
@@ -6260,6 +6260,141 @@ app.post('/guardar_edicionAE', function(req, res) {
       }
     });
   });
+
+
+
+// Ruta para consultar PQRS con estado null
+router.get('/seguimientopqr', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+
+        // Consultar PQRS con estado null
+        const query = `
+            SELECT * 
+            FROM pqrs
+            WHERE estado IS NULL
+        `;
+
+        connection.query(query, (error, results) => {
+            if (error) {
+                console.error('Error al obtener PQRS:', error);
+                res.status(500).send('Error interno al obtener PQRS');
+            } else {
+                // Modificar resultados para mostrar "Pendiente" cuando estado es null
+                results.forEach(pqr => {
+                    if (pqr.estado === null) {
+                        pqr.estado = 'Pendiente';
+                    }
+                });
+
+                res.render('Comercial/PQRS/seguimientopqr.hbs', { nombreUsuario, pqrsList: results });
+            }
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+
+// Función para formatear la fecha
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+}
+
+
+app.post('/guardar-seguimientoo', (req, res) => {
+    const pqrsId = req.body.pqrsId;
+    const responsable = req.body.responsable;
+    const fechaSeguimiento = req.body.fechaSeguimiento;
+    const seguimiento = req.body.seguimiento;
+    const acciones = req.body.acciones;
+    const correoDestino = req.body.correo;
+    const realiza = req.body.realiza;
+    const descripcion = req.body.descripcion;
+
+    const fecha = req.body.fecha; // Asegúrate de que esta variable coincida con el nombre del campo en tu formulario
+    
+    // Validación de campos
+    if (!responsable || !fechaSeguimiento || !seguimiento || !acciones) {
+        return res.status(400).send('Todos los campos son obligatorios');
+    }
+
+    // Aquí continúa tu lógica de actualización en la base de datos y envío de correo
+    // Ejemplo:
+    const sql = 'UPDATE pqrs SET responsable = ?, fecha_seguimiento = ?, seguimiento = ?, acciones = ?, estado = ? WHERE id = ?';
+    connection.query(sql, [responsable, fechaSeguimiento, seguimiento, acciones, 'Respondida', pqrsId], (err, result) => {
+        if (err) {
+            console.error('Error al guardar el seguimiento:', err);
+            return res.status(500).send('Error al guardar el seguimiento');
+        }
+
+        // Configurar el contenido del correo
+        const mailOptions = {
+            from: 'soporte.it.vianco@gmail.com',
+            to: correoDestino,
+            subject: 'Respuesta a PQRS',
+            html: `
+                <p>Estimado/a Usuario/a,</p>
+                <p>Su PQRS ha sido respondida satisfactoriamente. A continuación, encontrará los detalles:</p>
+                <table border="1" cellpadding="5" cellspacing="0">
+                    <tr>
+                        <td><strong>Responsable del seguimiento:</strong></td>
+                        <td>${responsable}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha de Seguimiento:</strong></td>
+                        <td>${fechaSeguimiento}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seguimiento realizado:</strong></td>
+                        <td>${seguimiento}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Acciones a tomar:</strong></td>
+                        <td>${acciones}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha de creación de la PQRS:</strong></td>
+                        <td>${fecha}</td> <!-- Asegúrate de que 'fecha' esté disponible y tenga el formato correcto -->
+                    </tr>
+                    <tr>
+                        <td><strong>Correo del usuario:</strong></td>
+                        <td>${correoDestino}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Realiza:</strong></td>
+                        <td>${realiza}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Descripción:</strong></td>
+                        <td>${descripcion}</td> <!-- Ajusta según cómo recibes 'descripcion' en req.body -->
+                    </tr>
+                </table>
+                <p>Gracias por su atención.</p>
+                <p>Atentamente,</p>
+                <p>Equipo de Soporte</p>
+            `
+        };
+
+        // Envía el correo electrónico y maneja la respuesta
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error al enviar el correo:', error);
+                // Manejo de error al enviar correo
+            } else {
+                console.log('Correo enviado:', info.response);
+                // Manejo de éxito al enviar correo
+            }
+        });
+
+        // Redirigir de vuelta a la misma página o a donde sea necesario
+        res.redirect('/seguimientopqr'); // Ajusta esta ruta según tu configuración
+    });
+});
+
 
 
 
