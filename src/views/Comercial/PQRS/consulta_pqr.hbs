@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de PQRS</title>
+</head>
+<body>
+    <h1>Consulta de PQRS</h1>
+    <p>Bienvenido, {{ nombreUsuario }}</p>
+
+    <form id="consultaForm">
+        <label for="tipoPQRS">Seleccione el tipo de PQRS:</label>
+        <select name="tipoPQRS" id="tipoPQRS">
+            <option value="pendientes">PQRS Pendientes</option>
+            <option value="completadas">PQRS Completadas</option>
+        </select>
+        <button type="submit">Consultar</button>
+    </form>
+
+    <div id="resultadoPQRS">
+        <!-- Aquí se mostrarán dinámicamente los resultados de la consulta -->
+    </div>
+
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que se envíe el formulario por defecto
+
+            const tipoSeleccionado = document.getElementById('tipoPQRS').value;
+
+            fetch(`/consultapqr/${tipoSeleccionado}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('resultadoPQRS').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Correo</th>
+                                    <th>Realiza</th>
+                                    <th>Descripción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data} <!-- Aquí se insertan las filas generadas desde Node.js -->
+                            </tbody>
+                        </table>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                    document.getElementById('resultadoPQRS').innerHTML = 'Error al obtener los datos';
+                });
+        });
+    </script>
+</body>
+</html>

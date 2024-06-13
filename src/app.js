@@ -5930,7 +5930,7 @@ app.post('/guardar_pqrs', (req, res) => {
 function enviarCorreeeo(destinatario, fecha, realiza, tipo, descripcion) {
     // Opciones del correo electrónico
     const mailOptions = {
-        from: 'soporte.it.vianco@gmail.com', // Remitente (puedes cambiarlo)
+        from: 'dperdomo@viancotetransporta.com', // Remitente (puedes cambiarlo)
         to: destinatario,
         subject: 'Nueva PQRS Generada',
         html: `
@@ -6397,6 +6397,92 @@ app.post('/guardar-seguimientoo', (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/consultapqr', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+
+        // Consulta SQL para obtener las PQRS
+        const sql = 'SELECT * FROM pqrs';
+        connection.query(sql, (err, results) => {
+            if (err) {
+                console.error('Error al consultar las PQRS:', err);
+                return res.status(500).send('Error al consultar las PQRS');
+            }
+
+            // Filtrar las PQRS según su estado
+            const pendientes = results.filter(pqr => pqr.estado === null);
+            const completadas = results.filter(pqr => pqr.estado === 'Respondida');
+
+            // Renderizar la plantilla con los datos
+            res.render('Comercial/PQRS/consulta_pqr.hbs', {
+                nombreUsuario,
+                pendientes,
+                completadas
+            });
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
+
+
+app.get('/consultapqr/:tipo', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        const tipoPQRS = req.params.tipo;
+
+        // Consulta SQL para obtener las PQRS según el tipo seleccionado
+        let sql;
+        if (tipoPQRS === 'pendientes') {
+            sql = 'SELECT * FROM pqrs WHERE estado IS NULL';
+        } else if (tipoPQRS === 'completadas') {
+            sql = 'SELECT * FROM pqrs WHERE estado = "Respondida"';
+        } else {
+            return res.status(400).send('Tipo de PQRS no válido');
+        }
+
+        connection.query(sql, (err, results) => {
+            if (err) {
+                console.error('Error al consultar las PQRS:', err);
+                return res.status(500).send('Error al consultar las PQRS');
+            }
+
+            // Generar el HTML dinámico para mostrar los resultados
+            let htmlResult = '';
+            results.forEach(pqr => {
+                htmlResult += `
+                    <tr>
+                        <td>${pqr.id}</td>
+                        <td>${formatDate(pqr.fecha)}</td>
+                        <td>${pqr.correo}</td>
+                        <td>${pqr.realiza}</td>
+                        <td>${pqr.descripcion}</td>
+                        <td>${pqr.acciones}</td>
+                    </tr>
+                `;
+            });
+
+            // Enviar el HTML generado como respuesta
+            res.send(htmlResult);
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login/index");
+    }
+});
 
 
 
