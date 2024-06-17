@@ -11,6 +11,8 @@ const PDFDocument = require('pdfkit');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const html2canvas = require('html2canvas');
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid'); // Utiliza UUID para generar IDs únicos
+
 const db = require('./app'); // Asegúrate de que la ruta sea correcta
 let turnoIniciado = false;
 const flash = require('express-flash');
@@ -27,7 +29,17 @@ function htmlToPdf(html, options, callback) {
     });
 }
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'soporte.it.vianco@gmail.com',
+        pass: 'caerdeblynmsfzvc'
+    },
+    messageId: uuidv4(), // Genera un Message-ID único para cada correo enviado
 
+});
+
+const crypto = require('crypto'); // Importa el módulo crypto
 
 // Importar el manejador de webhook
 const webhookHandler = require("./webhook/webhookHandler");
@@ -114,8 +126,291 @@ app.use(session({
 // Configurar la ruta para el webhook y usar el manejador de webhook
 app.post("/webhook", webhookHandler.handleWebhook);
 
-// Rutas para el login
-app.use("/login", loginRoutes);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Render login form
+app.get("/login", (req, res) => {
+    if (req.session.loggedin) {
+        res.redirect("/");  // Redirigir a la página principal si ya está autenticado
+    } else {
+        res.render("login/index.hbs", { error: null });  // Renderizar el formulario de inicio de sesión con un mensaje de error nulo
+    }
+});
+
+
+
+
+
+// Handle login authentication
+app.post("/auth", (req, res) => {
+    const data = req.body;
+    const connection = req.db;
+
+    connection.query("SELECT * FROM user WHERE email = ? AND password = ?", [data.email, data.password], (err, userData) => {
+        if (err) {
+            console.error("Error fetching user from database:", err);  // Manejar errores al recuperar datos del usuario desde la base de datos
+            res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
+            return;
+        }
+
+        if (userData.length > 0) {
+            const user = userData[0];
+            req.session.loggedin = true;  // Establecer sesión como autenticada
+            req.session.name = user.name;  // Guardar nombre de usuario en la sesión
+            req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];  // Guardar roles del usuario en la sesión
+
+            res.redirect("/");  // Redirigir a la página principal después del inicio de sesión exitoso
+        } else {
+            // Renderizar página de inicio de sesión con mensaje de error
+            res.render("login/index.hbs", { error: "Usuario no encontrado o contraseña incorrecta" });
+        }
+    });
+});
+
+// Render register form
+app.get("/register", (req, res) => {
+    if (req.session.loggedin) {
+        res.redirect("/");  // Redirigir a la página principal si ya está autenticado
+    } else {
+        res.render("login/register.hbs", { error: null });  // Renderizar el formulario de registro con mensaje de error nulo
+    }
+});
+
+// Handle user registration
+app.post("/storeUser", (req, res) => {
+    const data = req.body;
+    const connection = req.db;
+
+    connection.query("SELECT * FROM user WHERE email = ?", [data.email], (err, userData) => {
+        if (err) {
+            console.error("Error fetching user from database:", err);  // Manejar errores al recuperar datos del usuario desde la base de datos
+            res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
+            return;
+        }
+
+        if (userData.length > 0) {
+            res.render("login/register.hbs", { error: "User with this email already exists" });  // Renderizar página de registro con mensaje de usuario ya existente
+            return;
+        }
+
+        connection.query("INSERT INTO user SET ?", data, (err, rows) => {
+            if (err) {
+                console.error("Error inserting user into database:", err);  // Manejar errores al insertar usuario en la base de datos
+                res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
+            } else {
+                console.log("User registered successfully");  // Registrar registro exitoso del usuario
+                res.redirect("/");  // Redirigir a la página principal después del registro exitoso
+            }
+        });
+    });
+});
+
+// Handle logout
+app.get("/logout", (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error("Error destroying session:", err);  // Manejar errores al destruir la sesión
+            res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
+        } else {
+            res.redirect("/login");  // Redirigir a la página de inicio de sesión después de cerrar sesión
+        }
+    });
+});
+
+// Middleware to protect routes that require authentication
+function requireLogin(req, res, next) {
+    if (req.session.loggedin) {
+        next();  // Pasar al siguiente middleware si está autenticado
+    } else {
+        res.redirect("/login");  // Redirigir a la página de inicio de sesión si no está autenticado
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Handle forgot password
+app.post("/forgot-password", (req, res) => {
+    const { email } = req.body;
+    const connection = req.db;
+
+    // Generar un token único y establecer la fecha de expiración
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpiration = new Date();
+    resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1); // Token válido por 1 hora
+
+    connection.query("UPDATE user SET resetToken = ?, resetTokenExpiration = ? WHERE email = ?", [resetToken, resetTokenExpiration, email], (err, result) => {
+        if (err) {
+            console.error("Error updating reset token in database:", err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        // Check if user with provided email exists
+        if (result.affectedRows === 0) {
+            res.render("login/index.hbs", { error: "Correo electrónico no encontrado" });
+        } else {
+            const mailOptions = {
+                from: 'nexus.innovationss@gmail.com',
+                to: email,
+                subject: 'Recuperación de Contraseña',
+                html: `
+                    <p>Hola,</p>
+                    <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+                    <a href="https://vianco-back-svdl.onrender.com/reset-password?token=${resetToken}">Restablecer Contraseña</a>
+                    <p>Este enlace expirará en 1 hora.</p>
+                    <p>Si no solicitaste esto, por favor ignora este correo y tu contraseña permanecerá sin cambios.</p>
+                `
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error("Error sending email:", error);
+                    res.status(500).send("Error al enviar el correo electrónico");
+                } else {
+                    console.log("Email sent:", info.response);
+                    res.render("login/index.hbs", { successMessage: "Se ha enviado un correo electrónico con instrucciones para restablecer la contraseña" });
+                }
+            });
+        }
+    });
+});
+
+// Página para restablecer la contraseña (GET)
+app.get("/reset-password", (req, res) => {
+    const token = req.query.token; // Obtiene el token de la consulta
+    console.log("Token recibido en GET:", token);
+  
+    // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
+    connection.query(
+      "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
+      [token],
+      (err, results) => {
+        if (err) {
+          console.error("Error al verificar el token:", err);
+          res.status(500).send("Error interno al verificar el token");
+        } else {
+          if (results.length === 0) {
+            res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
+          } else {
+            // Mostrar el formulario para restablecer la contraseña
+            res.render("login/reset-password.hbs", { token });
+          }
+        }
+      }
+    );
+});
+
+// Procesar restablecimiento de contraseña (POST)
+app.post("/reset-password", (req, res) => {
+    const { token, password } = req.body;
+
+    // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
+    connection.query(
+      "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
+      [token],
+      (err, results) => {
+        if (err) {
+          console.error("Error al verificar el token:", err);
+          res.status(500).send("Error interno al verificar el token");
+        } else {
+          if (results.length === 0) {
+            res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
+          } else {
+            const user = results[0];
+
+            // Actualizar la contraseña en la base de datos y limpiar el token
+            connection.query(
+              "UPDATE user SET password = ?, resetToken = NULL, resetTokenExpiration = NULL WHERE id = ?",
+              [password, user.id],
+              (updateErr, updateResult) => {
+                if (updateErr) {
+                  console.error("Error al actualizar la contraseña:", updateErr);
+                  res.status(500).send("Error interno al actualizar la contraseña");
+                } else {
+                  console.log("Contraseña actualizada exitosamente para el usuario:", user.email);
+
+                  // Redirigir al usuario a la página de inicio de sesión con un mensaje de éxito
+                  res.render("login/index.hbs", { successMessage: "Contraseña restablecida exitosamente" });
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -156,7 +451,7 @@ app.get("/menu", (req, res) => {
 
         res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, contabilidad ,soporte}); // Pasar los roles a la plantilla
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -185,7 +480,7 @@ app.get("/", (req, res) => {
 
         res.render("operaciones/menu.operaciones.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -235,7 +530,7 @@ app.get("/programacion-vehiculos", (req, res) => {
             });
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -434,7 +729,7 @@ app.get("/logout", (req, res) => {
     if (req.session.loggedin === true) {
         req.session.destroy();
     }
-    res.redirect("/login/index");
+    res.redirect("/login");
 });
 
 // Ruta para administrar roles
@@ -615,7 +910,7 @@ app.get('/edicion/:placa', async (req, res) => {
                 res.render('operaciones/vehiculos/edicion.hbs', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
             });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -702,7 +997,7 @@ app.get('/agregar-vehiculo', async (req, res) => {
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
             res.render('operaciones/vehiculos/formulario_agregar.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -1255,7 +1550,7 @@ app.get('/formulario', async (req, res) => {
                 });
             });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error('Error al procesar la solicitud:', error);
@@ -1669,7 +1964,7 @@ app.get('/novedades', async (req, res) => {
             console.log('Renderizando plantilla con:', { nombreUsuario, clientes, fechaActual });
             res.render('novedades_Callcenter/novedades_Callcenter.hbs', { nombreUsuario, clientes, fechaActual });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -1768,7 +2063,7 @@ app.get('/ver_novedades', (req, res) => {
         res.render('novedades_Callcenter/ver_Novedades.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -1931,7 +2226,7 @@ app.get('/inicio', async (req, res) => {
             console.log('Renderizando plantilla con:', { nombreUsuario, clientes, fechaActual, title: 'Iniciar Turno' });
             res.render('centro_operaciones/inicio_turno.hbs', { nombreUsuario, clientes, fechaActual, title: 'Iniciar Turno' });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -2064,7 +2359,7 @@ app.get("/buscar_por_fecha", (req, res) => {
 
         res.render("operaciones/aeropuerto/recepciones_aeropuerto.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, contabilidad ,soporte}); // Pasar los roles a la plantilla
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -2152,7 +2447,7 @@ app.get('/formulario_cotizaciones', (req, res) => {
             }
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -3354,7 +3649,7 @@ app.get('/novedades_viancoo', (req, res) => {
         res.render('novedades_vianco/novedades_vianco.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -3456,7 +3751,7 @@ app.get('/ver_novedades_vianco', (req, res) => {
         res.render('novedades_vianco/novedades_pendientes_vianco.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -3978,7 +4273,7 @@ app.get('/inspeccion', (req, res) => {
         res.render('Inspección/Inspección_form.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -4192,7 +4487,7 @@ app.get('/pagina-indicadores', (req, res) => {
         res.render('Inspección/indicadores.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -4266,7 +4561,7 @@ app.get('/auditoria', (req, res) => {
         res.render('auditoria/auditoria_cordinador.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -4473,7 +4768,7 @@ app.get('/llegadas_salidas', async (req, res) => {
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
             res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -4523,7 +4818,7 @@ app.get('/consulta_vencidos', (req, res) => {
         res.render('operaciones/vehiculos/consulta_documentosVencidos.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -4806,7 +5101,7 @@ app.get('/informe_general_f', (req, res) => {
         }
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -4911,7 +5206,7 @@ app.get('/asiganr_servicioN', async (req, res) => {
                 mensaje: filteredNovedades.length === 0 ? "No hay servicios para asignar." : null
             });
         } else {
-            res.redirect("/login/index");
+            res.redirect("/login");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -5049,7 +5344,7 @@ app.get('/verificacion_servicio', (req, res) => {
             res.render('novedades_vianco/verificacion_servicio', { nombreUsuario, novedades: results });
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5153,7 +5448,7 @@ app.get('/Consulta_mia', (req, res) => {
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5181,7 +5476,7 @@ app.get('/verificacion_cotizacion', (req, res) => {
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5201,7 +5496,7 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
             if (error) {
                 console.error('Error al obtener el correo electrónico del usuario:', error);
                 // Maneja el error apropiadamente
-                res.redirect("/login/index");
+                res.redirect("/login");
                 return;
             }
             // Si se encuentra el correo electrónico, pásalo a la página
@@ -5210,7 +5505,7 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5225,14 +5520,6 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
 
 
 
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'soporte.it.vianco@gmail.com',
-        pass: 'caerdeblynmsfzvc'
-    }
-});
 
 app.post('/guardar_ticket', (req, res) => {
     const { usuario, email, asunto, otro_asunto, prioridad, descripcion } = req.body;
@@ -5327,7 +5614,7 @@ app.get('/revisar_tickets', (req, res) => {
         });
     } else {
         // Redirige al usuario al inicio de sesión si no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5413,7 +5700,7 @@ app.post('/responder_ticket/:id', (req, res) => {
             });
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5454,7 +5741,7 @@ app.get('/SolictarServicioTerceros', (req, res) => {
             });
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5545,7 +5832,7 @@ app.get('/ServiciosTerceros_pendientes', (req, res) => {
         });
     } else {
         // Redirige al usuario al inicio de sesión si no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5733,7 +6020,7 @@ app.get('/ServiciosTerceros_asignados', (req, res) => {
         });
     } else {
         // Redirige al usuario al inicio de sesión si no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5805,7 +6092,7 @@ app.get('/consultar_servicioT', (req, res) => {
             res.render('operaciones/ServiciosTerceros/consultar_servicioT.hbs', { nombreUsuario, results });
         });
     } else {
-        res.redirect('/login/index');
+        res.redirect('/login');
     }
 });
 
@@ -5846,7 +6133,7 @@ app.get("/menucontabilidad", (req, res) => {
 
         res.render("contabilidadyfinanzas/menucontabilidad.hbs",{ name: req.session.name, auxiliar, cordinacion, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5874,7 +6161,7 @@ app.get("/menucomercial", (req, res) => {
 
         res.render("Comercial/menucomercial.hbs",{ name: req.session.name, auxiliar, cordinacion, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -5966,7 +6253,7 @@ app.get('/menuGerencia', (req, res) => {
         res.render('admin/menugerencia.hbs', { nombreUsuario });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -6009,7 +6296,7 @@ async function obtenerDatoscontabilidadA() {
         }
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -6156,7 +6443,7 @@ app.get('/indicadoresAERO', async (req, res) => {
       }
     } else {
       // Manejo para el caso en que el usuario no está autenticado
-      res.redirect("/login/index");
+      res.redirect("/login");
     }
   });
 
@@ -6283,7 +6570,7 @@ router.get('/seguimientopqr', (req, res) => {
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -6425,7 +6712,7 @@ app.get('/consultapqr', (req, res) => {
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
@@ -6474,7 +6761,7 @@ app.get('/consultapqr/:tipo', (req, res) => {
             res.send(htmlResult);
         });
     } else {
-        res.redirect("/login/index");
+        res.redirect("/login");
     }
 });
 
