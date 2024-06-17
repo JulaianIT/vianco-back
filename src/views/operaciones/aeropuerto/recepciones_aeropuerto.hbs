@@ -379,104 +379,136 @@ $(document).ready(function() {
         });
     });
 
-    // Función para mostrar las recepciones en las tablas
-    function mostrarRecepciones(recepciones) {
-        const recepcionesContainer = $('#recepcionesContainer');
-        recepcionesContainer.empty(); // Limpiar el contenedor
+// Función para mostrar las recepciones en las tablas
+function mostrarRecepciones(recepciones) {
+    const recepcionesContainer = $('#recepcionesContainer');
+    recepcionesContainer.empty(); // Limpiar el contenedor
 
-        // Función para crear las tablas de recepciones para cada cliente
-        function crearTablaClientes(recepciones, cliente) {
-            // Convertir la hora en formato militar a minutos desde la medianoche
-            recepciones.forEach(recepcion => {
-                const [hora, minutos, segundos] = recepcion.hora.split(':').map(Number);
-                recepcion.horaNumerica = hora * 60 + minutos + segundos / 60;
-            });
-
-            // Ordenar las recepciones por hora numérica de forma ascendente
-            recepciones.sort((a, b) => a.horaNumerica - b.horaNumerica);
-
-            // Reemplazar espacios en blanco en el nombre del cliente por guiones y convertir a minúsculas
-            const clienteId = cliente.replace(/\s+/g, '-').toLowerCase();
-
-            // Crear la tabla HTML para el cliente
-            const tablaHTML = `
-                <div class="titulo-tabla">${cliente} <span class="flecha">&#9660;</span></div>
-                <table id="tabla-${clienteId}" style="display: none;"> <!-- Ocultar la tabla inicialmente -->
-                    <thead>
-                        <tr>
-                            <th>FECHA DE ENVIO</th>
-                            <th>Cliente</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Nombre del Pasajero</th>
-                            <th>N° de Vuelo</th>
-                            <th>Placa</th>
-                            <th>Conductor</th>
-                            <th>Celular del Conductor</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${recepciones.map(recepcion => `
-                            <tr>
-                                <td><span class="static-data">${formatDateTime(recepcion.fecha_de_subida)}</span> </td>
-                                <td><span class="static-data">${recepcion.cliente}</span><input type="text" class="form-control editable-data edit-cliente" style="display: none;" value="${recepcion.cliente}"></td>
-                                <td><span class="static-data">${new Date(recepcion.fecha).toLocaleDateString()}</span></td>
-                                <td><span class="static-data">${recepcion.hora}</span><input type="text" class="form-control editable-data edit-hora" style="display: none;" value="${recepcion.hora}"></td>
-                                <td><span class="static-data">${recepcion.nombre_pasajero}</span><input type="text" class="form-control editable-data edit-nombre-pasajero" style="display: none;" value="${recepcion.nombre_pasajero}"></td>
-                                <td><span class="static-data">${recepcion.vuelo}</span><input type="text" class="form-control editable-data edit-vuelo" style="display: none;" value="${recepcion.vuelo}"></td>
-                                <td><span class="static-data">${recepcion.placa}</span><input type="text" class="form-control editable-data edit-placa" style="display: none;" value="${recepcion.placa}"></td>
-                                <td><span class="static-data">${recepcion.conductor}</span><input type="text" class="form-control editable-data edit-conductor" style="display: none;" value="${recepcion.conductor}"></td>
-                                <td><span class="static-data">${recepcion.celular_conductor}</span><input type="text" class="form-control editable-data edit-celular-conductor" style="display: none;" value="${recepcion.celular_conductor}"></td>
-                                <td>
-                                {{#if callcenter}}
-
-                                    <button class="editar-btn" data-id="${recepcion.id}">Editar</button>
-                                   
-                                    <button class="guardar-btn" data-id="${recepcion.id}" style="display: none;">Guardar</button>
-                               {{/if}}
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-
-            return tablaHTML;
-        }
-
-        // Organizar las recepciones por cliente
-        const clientesNH = [];
-        const otrosClientes = {};
-
+    // Función para crear una única tabla de recepciones
+    function crearTablaRecepciones(recepciones, cliente) {
+        // Convertir la hora en formato militar a minutos desde la medianoche
         recepciones.forEach(recepcion => {
-            if (recepcion.cliente.includes('NH')) {
-                clientesNH.push(recepcion);
-            } else {
-                if (!otrosClientes[recepcion.cliente]) {
-                    otrosClientes[recepcion.cliente] = [];
-                }
-                otrosClientes[recepcion.cliente].push(recepcion);
-            }
+            const [hora, minutos, segundos] = recepcion.hora.split(':').map(Number);
+            recepcion.horaNumerica = hora * 60 + minutos + segundos / 60;
         });
 
-        // Mostrar la tabla para los clientes NH
-        if (clientesNH.length > 0) {
-            const tablaClientesNH = crearTablaClientes(clientesNH, 'Clientes NH');
-            recepcionesContainer.append(tablaClientesNH);
+        // Ordenar las recepciones por hora numérica de forma ascendente
+        recepciones.sort((a, b) => a.horaNumerica - b.horaNumerica);
+
+        // Determinar el título completo para la tabla
+        let tituloCompleto = cliente;
+        if (cliente.includes('NH')) {
+            // Extraer el nombre completo del cliente NH
+            const match = cliente.match(/H\d+\.\s(.+)/);
+            if (match) {
+                tituloCompleto = match[1]; // Usar el nombre completo del cliente NH
+            }
         }
 
-        // Mostrar las tablas para los otros clientes
-        Object.keys(otrosClientes).forEach(cliente => {
-            const tablaCliente = crearTablaClientes(otrosClientes[cliente], cliente);
-            recepcionesContainer.append(tablaCliente);
-        });
+        // Reemplazar espacios en blanco en el nombre del cliente por guiones y convertir a minúsculas
+        const clienteId = cliente.replace(/\s+/g, '-').toLowerCase();
 
-        // Asignar eventos de clic a las flechas para mostrar/ocultar tablas
-        $('.flecha').click(function() {
-            $(this).toggleClass('rotate'); // Rotar la flecha
-            $(this).parent().next('table').toggle(); // Mostrar u ocultar la tabla siguiente
-        });
+        // Crear la tabla HTML
+        const tablaHTML = `
+            <div class="titulo-tabla">${tituloCompleto} <span class="flecha">&#9660;</span></div>
+            <table style="display: none;">
+                <thead>
+                    <tr>
+                        <th>FECHA DE ENVIO</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Nombre del Pasajero</th>
+                        <th>N° de Vuelo</th>
+                        <th>Placa</th>
+                        <th>Conductor</th>
+                        <th>Celular del Conductor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${recepciones.map(recepcion => `
+                        <tr>
+                            <td><span class="static-data">${formatDateTime(recepcion.fecha_de_subida)}</span></td>
+                            <td><span class="static-data">${recepcion.cliente}</span><input type="text" class="form-control editable-data edit-cliente" style="display: none;" value="${recepcion.cliente}"></td>
+                            <td><span class="static-data">${new Date(recepcion.fecha).toLocaleDateString()}</span></td>
+                            <td><span class="static-data">${recepcion.hora}</span><input type="text" class="form-control editable-data edit-hora" style="display: none;" value="${recepcion.hora}"></td>
+                            <td><span class="static-data">${recepcion.nombre_pasajero}</span><input type="text" class="form-control editable-data edit-nombre-pasajero" style="display: none;" value="${recepcion.nombre_pasajero}"></td>
+                            <td><span class="static-data">${recepcion.vuelo}</span><input type="text" class="form-control editable-data edit-vuelo" style="display: none;" value="${recepcion.vuelo}"></td>
+                            <td><span class="static-data">${recepcion.placa}</span><input type="text" class="form-control editable-data edit-placa" style="display: none;" value="${recepcion.placa}"></td>
+                            <td><span class="static-data">${recepcion.conductor}</span><input type="text" class="form-control editable-data edit-conductor" style="display: none;" value="${recepcion.conductor}"></td>
+                            <td><span class="static-data">${recepcion.celular_conductor}</span><input type="text" class="form-control editable-data edit-celular-conductor" style="display: none;" value="${recepcion.celular_conductor}"></td>
+                            <td>
+                                {{#if callcenter}}
+                                    <button class="editar-btn" data-id="${recepcion.id}">Editar</button>
+                                    <button class="guardar-btn" data-id="${recepcion.id}" style="display: none;">Guardar</button>
+                                {{/if}}
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        return tablaHTML;
+    }
+
+    // Organizar las recepciones por cliente
+    const clientesNH = {}; // Objeto para almacenar las recepciones de clientes NH
+    const todosClientesNH = []; // Arreglo para todas las recepciones de clientes NH
+    const otrosClientes = {}; // Objeto para almacenar las recepciones de otros clientes
+
+    // Iterar sobre todas las recepciones
+    recepciones.forEach(recepcion => {
+        // Verificar si el cliente contiene 'NH'
+        if (recepcion.cliente.includes('NH')) {
+            // Extraer el nombre completo del cliente NH
+            const match = recepcion.cliente.match(/H\d+\.\s(.+)/);
+            const clienteNHKey = match ? match[0] : recepcion.cliente; // Usar el nombre completo o el cliente completo si no hay coincidencia
+
+            // Verificar si ya existe la clave para ese cliente NH, si no, crearla
+            if (!clientesNH[clienteNHKey]) {
+                clientesNH[clienteNHKey] = []; // Inicializar el arreglo para ese cliente NH
+            }
+
+            // Agregar la recepción al arreglo correspondiente del cliente NH
+            clientesNH[clienteNHKey].push(recepcion);
+            // También agregar la recepción al arreglo de todos los clientes NH
+            todosClientesNH.push(recepcion);
+        } else {
+            // Si no es un cliente NH, agregar la recepción al objeto de otros clientes
+            if (!otrosClientes[recepcion.cliente]) {
+                otrosClientes[recepcion.cliente] = [];
+            }
+            otrosClientes[recepcion.cliente].push(recepcion);
+        }
+    });
+
+    // Mostrar la tabla para todos los clientes NH juntos
+    if (todosClientesNH.length > 0) {
+        const tablaTodosClientesNH = crearTablaRecepciones(todosClientesNH, 'Todos los Clientes NH');
+        recepcionesContainer.append(tablaTodosClientesNH);
+    }
+
+    // Mostrar las tablas para los clientes NH individuales
+    Object.keys(clientesNH).forEach(clienteNH => {
+        const tablaClientesNH = crearTablaRecepciones(clientesNH[clienteNH], clienteNH);
+        recepcionesContainer.append(tablaClientesNH);
+    });
+
+    // Mostrar las tablas para los otros clientes
+    Object.keys(otrosClientes).forEach(cliente => {
+        const tablaCliente = crearTablaRecepciones(otrosClientes[cliente], cliente);
+        recepcionesContainer.append(tablaCliente);
+    });
+
+    // Asignar eventos de clic a las flechas para mostrar/ocultar tablas
+    $('.flecha').click(function() {
+        $(this).toggleClass('rotate'); // Rotar la flecha
+        $(this).parent().next('table').toggle(); // Mostrar u ocultar la tabla siguiente
+    });
+
+
 
         // Asignar eventos de clic a los botones de edición
         $('.editar-btn').click(function(event) {
