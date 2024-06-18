@@ -23,7 +23,7 @@
         h1, h2 {
             color: #413d4b;
             margin-bottom: 20px;
-            text-align: center;
+            text-align: center;   
         }
         table {
             width: 100%;
@@ -49,8 +49,7 @@
         tr:hover {
             background-color: #e5f0f5;
         }
-        .accept-button {
-            background-color: #4CAF50;
+        .accept-button, .reject-button {
             border: none;
             color: white;
             padding: 10px 20px;
@@ -62,17 +61,147 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+        .accept-button {
+            background-color: #4CAF50;
+        }
         .accept-button:hover {
             background-color: #45a049;
+        }
+        .reject-button {
+            background-color: #f44336;
+        }
+        .reject-button:hover {
+            background-color: #e53935;
+            
+        }
+        /* Estilos para la animación de despliegue */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Estilo inicial de la tabla antes de la animación */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    opacity: 0; /* Comienza oculta */
+    animation: fadeIn 0.5s forwards; /* Aplica la animación fadeIn */
+}
+.toggle-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.toggle-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+    body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        h1, h2 {
+            color: #413d4b;
+            margin-bottom: 20px;
+            text-align: center;   
+        }
+        .servicios-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #dddddd;
+            border-radius: 10px;
+        }
+        .toggle-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-bottom: 10px;
+        }
+        .toggle-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        .servicios-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .servicios-table th, .servicios-table td {
+            padding: 10px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        .servicios-table th {
+            background-color: #90c9a7;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .servicios-table tbody tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+        .servicios-table tbody tr:hover {
+            background-color: #e5f0f5;
+        }
+        .accept-button, .reject-button {
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .accept-button {
+            background-color: #4CAF50;
+        }
+        .accept-button:hover {
+            background-color: #45a049;
+        }
+        .reject-button {
+            background-color: #f44336;
+        }
+        .reject-button:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenido, {{ nombreUsuario }}</h1>
-        <h2>Verifique y acepte el seguimiento </h2>
-        {{#each novedades}}
-            <table>
+        <h1>Bienvenido, {{nombreUsuario}}</h1>
+        <h2>Verifique y acepte el seguimiento</h2>
+        {{#each cotizacionesPorServicios}}
+                <div class="servicios-container">
+
+            <button class="toggle-button" data-key="{{@key}}" onclick="toggleServicios('{{@key}}')">Mostrar Servicios ({{@key}})</button>
+
+            <h3>Número de Servicios: {{@key}}</h3>
+<table id="servicios-{{@key}}" style="display: none;">
                 <thead>
                     <tr>
                         <th>ID Primaria</th> 
@@ -130,11 +259,13 @@
                         <th>Subtotal</th>
                         <th>Descuento</th>
                         <th>Verificadas</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {{#each this}}
                     <tr>
-                        <td>{{id }}</td>
+                        <td>{{id}}</td>
                         <td>{{cliente}}</td>
                         <td>{{nombre}}</td>
                         <td>{{correo}}</td>
@@ -176,7 +307,7 @@
                         <td>{{valor_total}}</td>
                         <td>{{valor_1}}</td>
                         <td>{{valor_2}}</td>
-                        <td>{{valor                        3}}</td>
+                        <td>{{valor_3}}</td>
                         <td>{{valor_4}}</td>
                         <td>{{valor_5}}</td>
                         <td>{{observaciones_1}}</td>
@@ -184,21 +315,46 @@
                         <td>{{observaciones_3}}</td>
                         <td>{{observaciones_4}}</td>
                         <td>{{observaciones_5}}</td>
-                        <td>{{adicionales-check}}</td>
+                        <td>{{adicionales_check}}</td>
                         <td>{{adicionales}}</td>
                         <td>{{subtotal}}</td>
                         <td>{{descuento}}</td>
                         <td>{{verificadas}}</td>
-                        <td><button class="accept-button" onclick="marcarAceptada('{{id}}', '{{realizada}}')">Cerrar</button></td>
+                        <td>
+                            <button class="accept-button" onclick="marcarAceptada('{{id}}')">Aceptar</button>
+                            <button class="reject-button" onclick="marcarRechazada('{{id}}')">Rechazar</button>
+                        </td>
                     </tr>
+                    {{/each}}
                 </tbody>
             </table>
         {{/each}}
     </div>
-
     <script>
-        function marcarAceptada(id, realiza) {
-            fetch('/marcar_aceptada/' + id + '/' + realiza)
+function toggleServicios(numeroServicios) {
+    var tableId = 'servicios-' + numeroServicios;
+    var table = document.getElementById(tableId);
+    var button = document.querySelector('.toggle-button[data-key="' + numeroServicios + '"]');
+
+    if (table.style.display === 'none') {
+        table.style.display = 'table'; // Muestra la tabla
+        button.textContent = 'Ocultar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón
+    } else {
+        table.style.display = 'none'; // Oculta la tabla
+        button.textContent = 'Mostrar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón de vuelta
+    }
+}
+
+</script>
+    <script>
+        function marcarAceptada(id) {
+            fetch('/marcar_aceptada/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ realizada: 'Sí' }) // Aquí puedes ajustar el valor de 'realizada' según sea necesario
+            })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al marcar como aceptada');
@@ -215,7 +371,30 @@
                 // Manejar el error, mostrar un mensaje de error al usuario, etc.
             });
         }
+
+        function marcarRechazada(id) {
+            fetch('/marcar_rechazada/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al marcar como rechazada');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log(data); // Mensaje del servidor
+                // Recargar la página
+                window.location.reload(true);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Manejar el error, mostrar un mensaje de error al usuario, etc.
+            });
+        }
     </script>
 </body>
 </html>
-

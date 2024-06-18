@@ -172,7 +172,7 @@ app.post("/auth", (req, res) => {
             req.session.name = user.name;  // Guardar nombre de usuario en la sesión
             req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];  // Guardar roles del usuario en la sesión
 
-            res.redirect("/");  // Redirigir a la página principal después del inicio de sesión exitoso
+            res.redirect("/menu");  // Redirigir a la página principal después del inicio de sesión exitoso
         } else {
             // Renderizar página de inicio de sesión con mensaje de error
             res.render("login/index.hbs", { error: "Usuario no encontrado o contraseña incorrecta" });
@@ -5455,12 +5455,26 @@ app.get('/Consulta_mia', (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Ruta para verificación de servicios
 app.get('/verificacion_cotizacion', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        // Consultar las cotizaciones no verificadas desde la base de datos
-        connection.query('SELECT * FROM cotizaciones WHERE verificadas IS NULL OR verificadas = 0', (error, results, fields) => {
+        // Consultar las cotizaciones realizadas pero no verificadas desde la base de datos
+        connection.query('SELECT * FROM cotizaciones WHERE realizada = 1 AND verificadas IS NULL', (error, results, fields) => {
             if (error) throw error;
             // Agrupar cotizaciones por número de servicios
             const cotizacionesPorServicios = {};
@@ -5472,13 +5486,56 @@ app.get('/verificacion_cotizacion', (req, res) => {
                 cotizacionesPorServicios[numServicios].push(cotizacion);
             });
             // Renderizar la vista y pasar las cotizaciones agrupadas como datos
-            res.render('cotizaciones/verificarCotizacion.hbs', { nombreUsuario, cotizacionesPorServicios });
+            res.render('cotizaciones/verificarCotizacion', { nombreUsuario, cotizacionesPorServicios });
         });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login");
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Ruta para marcar una cotización como aceptada
+app.post('/marcar_aceptada/:id', (req, res) => {
+    const id = req.params.id;
+    connection.query('UPDATE cotizaciones SET verificadas = 1 WHERE id = ?', [id], (error, results, fields) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error al marcar como aceptada');
+        }
+        res.send('Cotización aceptada correctamente');
+    });
+});
+
+// Ruta para marcar una cotización como rechazada
+app.post('/marcar_rechazada/:id', (req, res) => {
+    const id = req.params.id;
+    connection.query('UPDATE cotizaciones SET verificadas = 0 WHERE id = ?', [id], (error, results, fields) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error al marcar como rechazada');
+        }
+        res.send('Cotización rechazada correctamente');
+    });
+});
+
+
 
 
 

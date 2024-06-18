@@ -347,6 +347,23 @@ display: none;
 
 
         }
+             .password-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .password-container input {
+            width: 100%;
+            padding-right: 30px; /* Espacio para el icono */
+            box-sizing: border-box;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -364,8 +381,8 @@ display: none;
 <form method="POST" action="/auth">
     <input name="email" type="email" class="text" placeholder="Correo electrónico">
     <span>Email</span><br>
-    <input name="password" type="password" class="text" placeholder="Contraseña">
-    <span>Password</span><br>
+   <input id="password" name="password" type="password" class="text" placeholder="Contraseña">
+     <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>    <span>Password</span><br>
     <input type="checkbox" id="checkbox-1-1" class="custom-checkbox">
     <label for="checkbox-1-1">Keep me Signed in</label>
 
@@ -394,6 +411,19 @@ display: none;
 
         </div>
     </main>
+      <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const passwordToggle = document.querySelector('.toggle-password');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordToggle.textContent = '🙈';
+            } else {
+                passwordField.type = 'password';
+                passwordToggle.textContent = '👁️';
+            }
+        }
+    </script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const forgotPasswordLink = document.querySelector("#forgotPasswordLink");
