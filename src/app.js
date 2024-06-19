@@ -578,6 +578,14 @@ app.get('/ver-programacion', (req, res) => {
         });
     });
 });
+
+
+
+
+
+
+
+
 const handlebars = require('handlebars');
 const expressHandlebars = require('express-handlebars');
 
@@ -2689,39 +2697,34 @@ app.get('/VE', (req, res) => {
     res.render('cotizaciones/ver_cotizaciones.hbs');
 });
 
-// Ruta para manejar la búsqueda
 app.get('/ver_cotizaciones', (req, res) => {
-    const idCotizacion = req.query.id_cotizacion; // Ajuste del nombre del parámetro
-    const fechaInicio = req.query.fecha_inicio;
-    const fechaFin = req.query.fecha_fin;
+    const idCotizacion = req.query.id_cotizacion;
 
-    // Verifica si se proporcionó un ID de cotización
     if (idCotizacion) {
-        const sql = 'SELECT * FROM cotizaciones WHERE id = ?'; // Ajuste del nombre de la columna
+        const sql = 'SELECT * FROM cotizaciones WHERE id = ?';
         connection.query(sql, [idCotizacion], (error, results) => {
             if (error) {
                 console.error('Error al ejecutar la consulta:', error);
                 res.render('error');
                 return;
             }
-            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] }); // Renderiza la misma plantilla con los resultados de la búsqueda
-        });
-    } else if (fechaInicio && fechaFin) {
-        // Consulta las cotizaciones dentro del rango de fechas
-        const sql = 'SELECT * FROM cotizaciones WHERE fecha_creacion BETWEEN ? AND ?';
-        connection.query(sql, [fechaInicio, fechaFin], (error, results) => {
-            if (error) {
-                console.error('Error al ejecutar la consulta:', error);
-                res.render('error');
-                return;
+            if (results.length > 0) {
+                res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] });
+            } else {
+                res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: null });
             }
-            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizaciones: results }); // Renderiza la misma plantilla con los resultados de la búsqueda
         });
     } else {
-        // Si no se proporciona ningún parámetro de búsqueda, redirige de vuelta al formulario
-        res.redirect('/VE');
+        res.redirect('/VE'); // Si no se proporciona un ID válido, redirige al formulario de búsqueda
     }
 });
+
+
+
+
+
+
+
 
 
 

@@ -166,6 +166,13 @@ button[type="submit"]:hover {
 background-color: #90c9a7;
 
 }
+#aunno{
+    font-size: 200%;
+    color: red;
+    padding: 30px;
+    text-align: center;
+    background-color: #90c9a7;
+}
     </style>
     <header>
         <img id="membrete" src="/imagenes/menbrete.png"/>
@@ -179,30 +186,18 @@ background-color: #90c9a7;
     <h1></h1>
     <div>
         <div class="busca">
-<form action="/ver_cotizaciones" method="GET">
-    <label for="fecha_inicio"><h2>Desde:</h2></label>
-    <input type="date" id="fecha_inicio" name="fecha_inicio">
-    <label for="fecha_fin"><h2>Hasta:</h2></label>
-    <input type="date" id="fecha_fin" name="fecha_fin">
-    <br>
-    <label for="cotizacion_id"><h2>Seleccionar Cotización:</h2></label>
-    <select id="cotizacion_id" name="id_cotizacion"> <!-- Ajuste del nombre del campo -->
-        {{#each cotizaciones}}
-            <option value="{{this.id}}">{{this.id}}</option>
-        {{/each}}
-    </select>
-    <br>
-    <button type="submit">Buscar</button>
-    <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
-</form>
-
-            </div>
+    <form action="/ver_cotizaciones" method="GET">
+            <label for="id_cotizacion"><h2>Buscar por ID de Cotización:</h2></label>
+            <input type="text" id="id_cotizacion" name="id_cotizacion">
+            <button type="submit">Buscar</button>
+            <a href="/" class="volver-btn"><strong>Volver al Menú</strong></a>
         </form>
     </div>
     <br>
     <br>
          {{#if cotizacion}}
-        
+                {{#if cotizacion.verificadas}}
+
  <h2 id="id" >Cotizacion N°: {{cotizacion.id}}</h2>
          <button class="volver-btn " id="convertirBtn">DESCARGAR</button>
 
@@ -210,7 +205,8 @@ background-color: #90c9a7;
  
         <br>
            
-           
+               <div class="marca-agua"> <!-- Marca de agua -->
+
             <div class="TO">
     <div class="container" id="contenedor">
         <header>
@@ -241,7 +237,12 @@ background-color: #90c9a7;
                        <td><strong>Valor Total: $</strong> {{cotizacion.valor_total}}</td>
 
                 </tr>
-                  <tr>
+                 <tr>
+    <td colspan="3">
+        <strong>ESTADO :</strong>
+        <span id="estadoCotizacion">{{cotizacion.verificadas}}</span>
+    </td>
+</tr>
                     <td colspan="3"><strong>ADICIONALES</strong> {{cotizacion.adicionales}}</td>
                 </tr>
             </table>
@@ -278,7 +279,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino1}}</td>
         <td>{{cotizacion.hora1}}</td>
         <td>${{cotizacion.valor_1}}</td>
-                <td>${{cotizacion.observaciones_1}}</td>
+        <td>{{cotizacion.observaciones_1}}</td>
 
     </tr>
     {{/if}}
@@ -292,7 +293,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino2}}</td>
         <td>{{cotizacion.hora2}}</td>
         <td>$ {{cotizacion.valor_2}}</td>
-                <td>$ {{cotizacion.observaciones_2}}</td>
+                <td> {{cotizacion.observaciones_2}}</td>
 
     </tr>
     {{/if}}
@@ -306,7 +307,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino3}}</td>
         <td>{{cotizacion.hora3}}</td>
         <td>$ {{cotizacion.valor_3}}</td>
-                <td>$ {{cotizacion.observaciones_3}}</td>
+                <td> {{cotizacion.observaciones_3}}</td>
 
     </tr>
     {{/if}}
@@ -320,7 +321,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino4}}</td>
         <td>{{cotizacion.hora4}}</td>
         <td>$ {{cotizacion.valor_4}}</td>
-                <td>$ {{cotizacion.observaciones_4}}</td>
+                <td>{{cotizacion.observaciones_4}}</td>
 
     </tr>
     {{/if}}
@@ -334,7 +335,7 @@ background-color: #90c9a7;
         <td>{{cotizacion.destino5}}</td>
         <td>{{cotizacion.hora5}}</td>
         <td>$ {{cotizacion.valor_5}}</td>
-                <td>$ {{cotizacion.observaciones_5}}</td>
+                <td> {{cotizacion.observaciones_5}}</td>
 
     </tr>
     {{/if}}
@@ -372,40 +373,77 @@ background-color: #90c9a7;
            
            
            
-           
+           </div>
            
            
             <!-- Agrega los campos adicionales según sea necesario -->
-        {{else}}
-            <p>No se encontró ninguna cotización con el ID proporcionado.</p>
+       {{else}}
+            <p id="aunno" >Su cotización aún no se ha verificado. Contacte con gerencia para aprobar la cotización.</p>
         {{/if}}
+    {{else}}
+        <p>No se encontró ninguna cotización con el ID proporcionado.</p>
+    {{/if}}
     </div>
        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('convertirBtn').addEventListener('click', function() {
-                // Captura el contenedor específico por su ID
-                const container = document.getElementById('contenedor');
-                
-                // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
-                html2canvas(container, {
-                    width: container.scrollWidth, // Captura el ancho completo del contenedor
-                    height: container.scrollHeight // Captura la altura completa del contenedor
-                }).then(canvas => {
-                    // Convierte el canvas en una URL de datos
-                    const dataUrl = canvas.toDataURL();
+document.addEventListener('DOMContentLoaded', function() {
+    // Captura el estado de la cotización
+    const estadoCotizacion = document.getElementById('estadoCotizacion').textContent;
 
-                    // Crea un enlace para descargar la imagen
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = 'COTIZACION';
-                    a.textContent = 'Descargar Imagen';
-                    document.body.appendChild(a);
+    // Verifica si el estado es "0" (RECHAZADA)
+    if (estadoCotizacion === '0') {
+        // Busca la tabla de la cotización
+        const tablaCotizacion = document.querySelector('.todo table');
 
-                    // Simula un clic en el enlace para iniciar la descarga
-                    a.click();
-                });
-            });
-        });
+        // Crea una fila nueva para la marca de agua
+        const marcaAguaRow = document.createElement('tr');
+        const marcaAguaCell = document.createElement('td');
+        marcaAguaCell.setAttribute('colspan', '3');
+        marcaAguaCell.style.backgroundColor = 'red'; // Color de fondo rojo fuerte
+        marcaAguaCell.style.color = 'white'; // Color de texto blanco
+        marcaAguaCell.style.textAlign = 'center'; // Alineación centrada del texto
+        marcaAguaCell.style.fontSize = '24px'; // Tamaño de fuente
+
+        // Contenido de la celda de la marca de agua
+        marcaAguaCell.textContent = 'COTIZACIÓN RECHAZADA';
+
+        // Agrega la celda a la fila y la fila a la tabla
+        marcaAguaRow.appendChild(marcaAguaCell);
+        tablaCotizacion.appendChild(marcaAguaRow);
+    }
+});
+
+    </script>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Captura el estado de la cotización
+    const estadoCotizacion = document.getElementById('estadoCotizacion').textContent.trim();
+
+    // Verifica si el estado es "0" (RECHAZADA)
+    if (estadoCotizacion === '0') {
+        // Busca la tabla de la cotización
+        const tablaCotizacion = document.querySelector('.todo table');
+
+        // Crea una fila nueva para la marca de agua
+        const marcaAguaRow = document.createElement('tr');
+        const marcaAguaCell = document.createElement('td');
+        marcaAguaCell.setAttribute('colspan', '3');
+        marcaAguaCell.style.backgroundColor = 'red'; // Color de fondo rojo fuerte
+        marcaAguaCell.style.color = 'white'; // Color de texto blanco
+        marcaAguaCell.style.textAlign = 'center'; // Alineación centrada del texto
+        marcaAguaCell.style.fontSize = '24px'; // Tamaño de fuente
+
+        // Contenido de la celda de la marca de agua
+        marcaAguaCell.textContent = 'COTIZACIÓN RECHAZADA';
+
+        // Agrega la celda a la fila y la fila a la tabla
+        marcaAguaRow.appendChild(marcaAguaCell);
+        tablaCotizacion.appendChild(marcaAguaRow);
+    } else if (estadoCotizacion === '1') {
+        // Si el estado es "1", cambia el texto del estado a "APROBADA"
+        const estadoCotizacionElement = document.getElementById('estadoCotizacion');
+        estadoCotizacionElement.textContent = 'APROBADA';
+    }
+});
     </script>
 </body>
 </html>

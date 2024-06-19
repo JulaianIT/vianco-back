@@ -145,69 +145,17 @@
                 </tr>
             
             </table>
+
+         <h1>para poder obtener la cotizacion completa solicite su aprobacion y descargue en consulta con el N° {{cotizacionId}} </h1>
+
+
+
+
+
 <br>
 <br>
 
-            <table>
-                <caption>Vianco Te Transporta a un mundo lleno de experiencias</caption>
-              
-                <thead>
-                     <br>
-               <br>
-                    <tr>
-                        <th>FECHA</th>
-                        <th>TIPO DE CARRO</th>
-                        <th>ITINERARIO</th>
-                        <th>ORIGEN</th>
-                        <th>DESTINO</th>
-                        <th>HORA</th>
-                        <th>VALOR POR TRASLADO</th>
-                        <th>OBSERVACIONES</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each servicios}}
-                    <tr>
-                        <td>{{formatDate fecha}}</td>
-                        <td>{{tipoCarro}}</td>
-                        <td>{{itinerario}}</td>
-                        <td>{{origen}}</td>
-                        <td>{{destino}}</td>
-                        <td>{{hora}}</td>
-                        <td>$ {{valor}}</td>
-                        
-<td>{{observaciones}}</td>
-                                                
-
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-                <br>
-            <h2><strong>Total de la cotización: $</strong> {{valorTotal}}</h2>
-
-            <h2>Observaciones / Notas</h2>
-            <ol>
-                <li>Esta cotización tiene una vigencia de 30 días a partir de la fecha de envío.</li>
-                <li>Para reservar el vehículo, deben realizar el pago del 50% del valor total y el otro 50% el día antes de iniciar el servicio.</li>
-                <li>Los vehículos cuentan con amenities y los conductores altamente calificados.</li>
-                <li>Los vehículos son modelos recientes</li>
-                <li>Cualquier cambio debe ser comunicado al Callcenter o al ejecutivo de cuenta.</li>
-            </ol>
- <br>
-            <br>
-            <p><strong>Atentamente</strong></p>
-            <p>VIANCO TE TRANSPORTA S.A.S</p>
-
-            <br>
-            <br>
-            <br>
-            </div>
-                                                <img  id="aba" src="/imagenes/abajo_cotizacion.png"/>
-
-        </div>
-
+  
 
    <script>
         document.addEventListener('DOMContentLoaded', function() {
