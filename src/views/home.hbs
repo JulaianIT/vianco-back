@@ -466,91 +466,64 @@ float: none;
         <br><br>
     
             <nav class="navbar">
-            <label class="logo" for=""></label>
-             <img  id="logo"   src=""/>
-            <ul class="menu-horizontal">
+        <label class="logo" for="logo"></label>
+        <ul class="menu-horizontal">
+            <li class="geree">
+                <a href="/" class="active">
+                    <img id="vi" src="imagenes/consultante.png" alt="Consultante">
+                    <ul class="menu-vertical">
+                        <li><p>OPERACIONES</p></li>
+                    </ul>
+                </a>
+            </li>
 
+            {{#if gerencia}}
+            <li class="geree">
+                <a href="/menuGerencia" class="active">
+                    <img id="calll" src="/imagenes/mujer-de-negocios.png" alt="Gerencia">
+                    <ul class="menu-vertical">
+                        <li><a href="/menuGerencia">GERENCIA</a></li>
+                        <!-- Asegúrate de ajustar el contenido de este menú según tu aplicación -->
+                    </ul>
+                </a>
+            </li>
+            {{/if}}
 
-
-
-
-    <li class="geree"> <a href="/" class="active"> <img id="vi" src="imagenes/consultante.png" alt="">
-</p>
-                            <ul class="menu-vertical">
-                            <li><p >OPERACIONES</p></li>
-
-                            </ul>
-                        </li>
-
-                
-
-        {{#if gerencia}}
-                      <li class="geree"><p class="active"> <img id="calll" src="/imagenes/mujer-de-negocios.png" alt=""></p>
-                            <ul class="menu-vertical">
-                            <li><a href="/admin/roless">Ajustes de PERMISOS</a></li>
-                            <li><a href="/menuGerencia">MENU</a></li>
-
-
-                            </ul>
-                        </li>
+            <li class="tecc">
+                <a href="/nuevo_tikect_soporte" class="active">
+                    <img id="tec" src="/imagenes/apoyo-tecnico.png" alt="Soporte Técnico">
+                    <ul class="menu-vertical">
+                        <li><a href="/nuevo_tikect_soporte">ENVIAR TIKECT</a></li>
+                        {{#if soporte}}
+                        <li><a href="/revisar_tickets">VER TIKECT PENDIENTES</a></li>
                         {{/if}}
- 
+                    </ul>
+                </a>
+            </li>
 
-                <li class="tecc"><p class="active"> <img id="tec" src="/imagenes/apoyo-tecnico.png" alt=""></p>
-                            <ul class="menu-vertical">
-                                <li><a href="/nuevo_tikect_soporte">ENVIAR TIKECT</a></li>
-                                       {{#if soporte}}
-                                <li><a href="/revisar_tickets">VER TIKECT PENDIENTES</a></li>
-                                {{/if}}
-                            </ul>
-                        </li>
-                      
+            {{#if contabilidad}}
+            <li class="geree">
+                <a href="/menucontabilidad" class="active">
+                    <img id="vi" src="imagenes/calculo.png" alt="Contabilidad y Finanzas">
+                    <ul class="menu-vertical">
+                        <li><p>Contabilidad y Finanzas</p></li>
+                    </ul>
+                </a>
+            </li>
+            {{/if}}
 
-
-
-
-
-
-
-        {{#if contabilidad}}
-
-
-    <li class="geree"> <a href="/menucontabilidad" class="active"> <img id="vi" src="imagenes/calculo.png" alt="">
-</p>
-                            <ul class="menu-vertical">
-                            <li><p >Contabilidad y Finanzas</p></li>
-
-                            </ul>
-                        </li>
-                        {{/if}}
-
-                
-
-        {{#if contabilidad}}
-
-
-    <li class="geree"> <a href="/menucomercial" class="active"> <img id="vi" src="imagenes/contrato-comercial.png" alt="">
-</p>
-                            <ul class="menu-vertical">
-                            <li><p >COMERCIAL</p></li>
-
-                            </ul>
-                        </li>
-                        {{/if}}
-
-
-  </ul>
-
-
-
-
-
-
-
-
-
-  
-</nav>
+            {{#if contabilidad}}
+            <li class="geree">
+                <a href="/menucomercial" class="active">
+                    <img id="vi" src="imagenes/contrato-comercial.png" alt="Comercial">
+                    <ul class="menu-vertical">
+                        <li><p>COMERCIAL</p></li>
+                    </ul>
+                </a>
+            </li>
+            {{/if}}
+        </ul>
+    </nav>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>

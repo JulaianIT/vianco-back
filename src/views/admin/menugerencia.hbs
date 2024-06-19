@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+     
+
+      background-color: #90c9a7;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      max-width: 90%;
+      margin: 80px auto 20px;
+    }
+
+    .tarjeta {
+      width: 280px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-10px);
+    }
+
+    .imagen-circulo {
+      width: 100%;
+      height: 120px;
+      overflow: hidden;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .imagen-circulo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .titulo {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 15px 10px;
+      text-align: center;
+    }
+
+    .cuerpo {
+      padding: 15px 10px;
+    }
+
+    .cuerpo a {
+      display: block;
+      padding: 8px 0;
+      text-decoration: none;
+      color: #333;
+      text-align: center;
+      border-top: 1px solid #ccc;
+    }
+
+    .pie {
+      background:  #90c9a7;
+      border-radius: 0 0 15px 15px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .pie a {
+      text-decoration: none;
+      color: black;
+    }
+      header{
+padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+
+  }
+  #vi{
+  width: 100%;
+}
+#selected{
+
+  position: relative;
+            top: 20px;
+            left: 72%;
+            width: 60px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+#rastreo{
+
+    position: relative;
+            top: -74px;
+            left: 78%;
+            width: 80px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+
+    #car{
+ 
+      position: relative;
+            top: -60px;
+            left: 85%;
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+    }
+     #campana {
+            position: relative;
+            top: 20px;
+            left: 90%;
+            width: 80px;
+            height: 80px;
+            background-image: url('/imagenes/campana.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+        }
+
+  #numNotificacionesSinLeer {
+    position: absolute;
+    top: 5px;
+    right: -7px;
+    background-color: #d9d9d9;
+    color: black;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+        /* Estilos de la ventana emergente */
+
+     
+
+        #btnCerrar {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+    header{
+   left: 4%;
+padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    z-index: 1500; /* Asegura que esté por encima del encabezado */
+
+
+    }
+   #ingreso{
+    padding: 4px;
+   border-radius: 3px;
+    text-align: center;
+    font-size: 30px;
+    position: relative;
+    width: 10%;
+   color: black;
+   left: 10%;
+    top: -20%;
+float: none;
+
+   }
+#toggleNavButton{
+    border: 0px;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    bottom:40px;
+    left: 3%;
+position: relative;
+float: left;
+cursor: pointer;
+width: 10%;
+   z-index: 1500; /* Asegura que esté por encima del encabezado */
+}
+a:hover{
+
+
+    background-color:#90c9a7 ;
+}
+.opera{
+  align-items: center;
+  border border-radius: 10px;
+  position: relative;
+  width: 20%;
+  padding: 5px;
+background-color: #ccc;
+text-align: center;
+
+
+}
+
+#ventanaEmergente {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 9999;
+  max-width: 80%; /* Limita el ancho máximo de la ventana emergente */
+}
+      #ventanaEmergente {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+        #campana {
+            cursor: pointer;
+            position: relative;
+        }
+        #numNotificacionesSinLeer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+#campana {
+    position: relative;
+    top: -145px;
+    left: 79%;
+    width: 50px;
+    height: 50px;
+    background-image: url('/imagenes/campana.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: inline-start;
+    cursor: pointer;
+}
+
+#numNotificacionesSinLeer {
+    position: absolute;
+    top: px;
+    right: -5px;
+    background-color: red; /* Cambié a rojo para mejor visibilidad */
+    color: white;
+    border-radius: 50%;
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+@media only screen and (max-width: 768px) {
+
+#campana {
+    position: relative;
+    top: -100px;
+    left: 5%;
+    width: 40px;
+    height: 40px;
+    background-image: url('/imagenes/campana.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: inline-start;
+    cursor: pointer;
+}
+
+
+
+
+  #ingreso{
+  
+    padding: 1px;
+   border-radius: 3px;
+    text-align: center;
+    font-size: 30px;
+    position: relative;
+    width: 5%;
+   color: black;
+   left: 50%;
+    top: 110px;
+float: none;
+
+   }
+
+#selected{
+
+  position: relative;
+            top: 40px;
+            left: 28%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+
+
+
+    }
+#HOME{
+
+  position: relative;
+            top: 10px;
+            left: 70%;
+            width: 80px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+
+
+
+
+@media only screen and (max-width: 768px) {
+
+#HOME{
+
+  position: relative;
+            top: 40px;
+            left: 22%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+
+}
+#rastreo{
+
+    position: relative;
+            top: -34px;
+            left: 35%;
+            width: 50px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          float: inline-start;
+            cursor: pointer;
+
+}
+ }
+
+  </style>
+
+<body>
+  <header>
+        <a href="/menu"><img id="HOME" src="imagenes/boton-de-inicio.png" alt=""></a>
+
+    
+    <a href="/logout"><img id="selected" src="/imagenes/apagar.png" alt=""></a>
+    <h1 id="ingreso">BIENVENIDO {{name}}</h1>
+    </div>
+  </header>
+
+  <div id="ventanaEmergente">
+    <h2>Notificaciones</h2>
+<div id="notificacionesContainer">
+  <!-- Aquí es donde se insertan las notificaciones dinámicamente -->
+  <!-- Dentro de este div, donde se muestran las notificaciones, reemplaza el código de los botones existentes con el código corregido -->
+  <div class="notificacion" data-id="{{_id}}">
+    <span class="mensaje">{{mensaje}}</span>
+    <button class="marcarLeida" onclick="marcarComoLeida('{{_id}}', this)">Marcar como leída</button>
+    <button class="eliminar" onclick="eliminarNotificacion('{{_id}}', this)">Eliminar</button>
+  </div>
+</div>
+
+    <div id="btnCerrar" onclick="cerrarVentanaEmergente()">Cerrar</div>
+  </div>
+
+  <audio id="notificationSound" src="sonidos/level-upo-191997.mp3" preload="auto"></audio>
+
+
+</div>
+
+
+
+<br>
+<br>
+<br>
+<div class="opera">
+<h1>GERENCIA</h1>
+</div>
+
+<div class="menu">
+
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/avion.png" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">RECEPCIONES</div>
+  <div class="cuerpo">
+
+    <a href="/buscar_por_fecha">CONSULTAR</a>
+
+          
+    <a href="/indicadoresAERO">INDICADORES</a>
+    
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+<br>
+<br>
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/terceros.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">SERVICIOS DE TERCEROS</div>
+  <div class="cuerpo">
+            <a href="/consultar_servicioT">consultar</a>
+
+
+  
+
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+<br>
+<br>
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/coche.png.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">VEHICULOS</div>
+  <div class="cuerpo">
+
+ 
+ 
+
+
+    
+          
+      <a href="/consulta-vehiculos">CONSULTAR</a>
+       
+   
+        <a href="/consulta_vencidos">DOCUMENTOS VENCIDOS</a>
+     
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+<br>
+     
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/conductor.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">CONDUCTORES</div>
+ <div class="cuerpo">
+ 
+
+
+    <a href="/consulta-conductores">CONSULTAR</a>
+    
+    
+  
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+<br>
+
+<br>
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/Software-de-PQR-1.png" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">PQRS</div>
+ <div class="cuerpo">
+        <a href="/PQRS">AGREGAR</a>
+   
+
+
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+<br>
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/no-conforme.png.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">SERVICIOS NO CONFORMES</div>
+ <div class="cuerpo">
+        <a href="/novedades_viancoo">AGREGAR</a>
+
+
+
+
+        
+  <a href="/asiganr_servicioN">ASIGNACION DE RESPONSABLE</a>
+ 
+  <a href="/ver_novedades_vianco">PENDIENTES POR REVISAR</a>
+    
+
+
+       
+  <a href="/verificacion_servicio">VERIFICACION</a>
+
+    <a href="/ver_vianco">CONSULTA GENERAL</a>
+  
+
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/calendario.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">PROGRAMACION VEHICULOS</div>
+ <div class="cuerpo">
+        <a href="/ver-programacion">CONSULTAR</a>
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+
+
+
+<br>
+
+
+
+  <div class="tarjeta">
+    <div class="imagen-circulo">
+      <img src="/imagenes/call.jpg" alt="Imagen de la tarjeta">
+    </div>
+    <div class="titulo">CONTROL CENTRO OPERACIONES</div>
+    <div class="cuerpo">
+            <a href="/ver_novedades">NOVEDADES PENDIENTES</a>
+
+      <a href="/ver_novedades_C">CONSULTAR NOVEDADES</a>
+    </div>
+    <div class="pie">
+      <a href="#">Más información</a>
+    </div>
+  </div>
+
+
+
+
+<br>
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="/imagenes/acuerdo-de-contribuyente.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">CLIENTES</div>
+ <div class="cuerpo">
+
+    <a href="/clientess">CONSULTAR</a>
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/Vehicle-Check-List.png" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">INSPECCION </div>
+ <div class="cuerpo">
+
+    <a href="/consulta_inspeccion">CONSULTAR</a>
+    <a href="/pagina-indicadores">INDICADORES</a>
+
+    
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+ 
+ 
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/licencias.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">FUEC </div>
+ <div class="cuerpo">
+
+    <a href="/informe_general_f">INFORME GENERAL</a>
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+
+ 
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/Fotolia_163365444_S_777fsa.jpg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">AUDITORIA</div>
+ <div class="cuerpo">
+
+    <a href="/consulta_auditoria">CONSULTAR </a>
+    <a href="">INDICADOR</a>
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+
+
+
+
+
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/Diseño sin título.png" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">COTIZACIONES</div>
+ <div class="cuerpo">
+
+
+
+ 
+    <a href="/verificacion_cotizacion"> PENDIENTES POR AUTORIZAR</a>
+
+            <a href="">CONSULTAR GENERAL </a>
+
+
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+
+
+
+
+<div class="tarjeta">
+  <div class="imagen-circulo">
+    <img src="imagenes/images.jpeg" alt="Imagen de la tarjeta">
+  </div>
+  <div class="titulo">TARIFAS</div>
+ <div class="cuerpo">
+    <a href="/seleccionar_hotel">CONSULTAR tarifas SUV </a>
+        <a href="/seleccionar_hotelVAN">CONSULTAR tarifas Van</a>
+
+  </div>
+  <div class="pie">
+    <a href="#">Más información</a>
+  </div>
+</div>
+
+<br>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</body>
+ <script>
+    document.addEventListener('DOMContentLoaded', verificarNotificacionesPendientes);
+
+    async function verificarNotificacionesPendientes() {
+      try {
+        const response = await fetch('/verificar-notificaciones');
+        const data = await response.json();
+        if (data.notificacionesPendientes !== undefined) {
+          const numNotificacionesSinLeer = document.getElementById('numNotificacionesSinLeer');
+          numNotificacionesSinLeer.innerText = data.notificacionesPendientes;
+        }
+      } catch (error) {
+        console.error('Error al verificar las notificaciones pendientes:', error);
+      }
+    }
+
+async function mostrarNotificaciones(nombreUsuario) {
+  const contenedorNotificaciones = document.getElementById('ventanaEmergente');
+  contenedorNotificaciones.style.display = 'block';
+
+  try {
+    const response = await fetch(`/notificaciones-pendientes/${nombreUsuario}`);
+    const data = await response.json();
+    const notificacionesContainer = document.getElementById('notificacionesContainer');
+    notificacionesContainer.innerHTML = '';
+
+    if (data && Array.isArray(data)) {
+      data.forEach(notificacion => {
+        const notificacionElement = document.createElement('div');
+        notificacionElement.classList.add('notificacion');
+        notificacionElement.dataset.id = notificacion._id;
+        notificacionElement.innerHTML = `
+          <span class="mensaje">${notificacion.mensaje}</span>
+          <button class="marcarLeida" onclick="marcarComoLeida('${notificacion._id}')">Marcar como leída</button>
+          <button class="eliminar" onclick="eliminarNotificacion('${notificacion._id}', this)">Eliminar</button>
+        `;
+        notificacionesContainer.appendChild(notificacionElement);
+      });
+    } else {
+      console.error('Error: Unexpected data structure for notifications');
+    }
+  } catch (error) {
+    console.error('Error al cargar las notificaciones:', error);
+  }
+}
+
+
+    function cerrarVentanaEmergente() {
+      const ventanaEmergente = document.getElementById('ventanaEmergente');
+      ventanaEmergente.style.display = 'none';
+    }
+
+async function marcarComoLeida(id) {
+  try {
+    const response = await fetch(`/marcar-notificacion/${id}`, { method: 'PUT' });
+    if (response.ok) {
+      // Actualizar la interfaz de usuario según sea necesario
+    } else {
+      console.error('Error al marcar la notificación como leída');
+    }
+  } catch (error) {
+    console.error('Error al marcar la notificación como leída:', error);
+  }
+}
+
+
+    async function eliminarNotificacion(id, boton) {
+      try {
+        const response = await fetch(`/eliminar-notificacion/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          const notificacion = boton.parentNode;
+          notificacion.parentNode.removeChild(notificacion);
+          const numNotificacionesSinLeer = document.getElementById('numNotificacionesSinLeer');
+          numNotificacionesSinLeer.innerText = parseInt(numNotificacionesSinLeer.innerText) - 1;
+        } else {
+          console.error('Error al eliminar la notificación');
+        }
+      } catch (error) {
+        console.error('Error al eliminar la notificación:', error);
+      }
+    }
+
+    setInterval(reproducirSonido, 5000);
+
+    function reproducirSonido() {
+      const audio = document.getElementById('notificationSound');
+      audio.play();
+    }
+  </script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+   

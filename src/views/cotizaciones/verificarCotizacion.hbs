@@ -4,349 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación de Servicio</title>
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2;
+            background: linear-gradient(to right, #f2f2f2, #ffffff);
+            color: #333;
         }
+
         .container {
-            max-width: 100%;
+            max-width: 800px;
             margin: 20px auto;
             padding: 20px;
             background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-        h1, h2 {
-            color: #413d4b;
-            margin-bottom: 20px;
-            text-align: center;   
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 15px;
-            border: 2px solid #dddddd;
-        }
-        th {
-            background-color: #90c9a7;
-            color: #ffffff;
-            text-align: left;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        tr:nth-child(even) {
-            background-color: #f7f7f7;
-        }
-        tr:hover {
-            background-color: #e5f0f5;
-        }
-        .accept-button, .reject-button {
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .accept-button {
-            background-color: #4CAF50;
-        }
-        .accept-button:hover {
-            background-color: #45a049;
-        }
-        .reject-button {
-            background-color: #f44336;
-        }
-        .reject-button:hover {
-            background-color: #e53935;
-            
-        }
-        /* Estilos para la animación de despliegue */
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-/* Estilo inicial de la tabla antes de la animación */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    border-radius: 20px;
-    overflow: hidden;
-    opacity: 0; /* Comienza oculta */
-    animation: fadeIn 0.5s forwards; /* Aplica la animación fadeIn */
-}
-.toggle-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.toggle-button:hover {
-    background-color: #2980b9;
-    transform: scale(1.05);
-}
-    body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
-        .container {
-            max-width: 100%;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-        h1, h2 {
-            color: #413d4b;
-            margin-bottom: 20px;
-            text-align: center;   
-        }
-        .servicios-container {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 2px solid #dddddd;
             border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
+
+        h1, h2, h3 {
+            color: black;
+            text-align: center; /* Centrar los títulos */
+        }
+
         .toggle-button {
-            background-color: #3498db;
-            color: white;
+          text-transform: uppercase;
+            background-color:  rgb(144,201,167);
+            color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
-            margin-bottom: 10px;
         }
+
         .toggle-button:hover {
-            background-color: #2980b9;
+            background-color:rgb(102, 101, 103);
             transform: scale(1.05);
         }
-        .servicios-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .servicios-table th, .servicios-table td {
-            padding: 10px;
-            border: 1px solid #dddddd;
-            text-align: left;
-        }
-        .servicios-table th {
-            background-color: #90c9a7;
-            color: #ffffff;
-            font-weight: bold;
-        }
-        .servicios-table tbody tr:nth-child(even) {
-            background-color: #f7f7f7;
-        }
-        .servicios-table tbody tr:hover {
-            background-color: #e5f0f5;
-        }
+
         .accept-button, .reject-button {
             border: none;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
+
         .accept-button {
-            background-color: #4CAF50;
+            background-color:  rgb(144,201,167);
         }
+
         .accept-button:hover {
             background-color: #45a049;
         }
+
         .reject-button {
             background-color: #f44336;
         }
+
         .reject-button:hover {
             background-color: #e53935;
+        }
+
+        .servicio {
+            border: 1px solid black;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .servicio h4 {
+            font-size: 25px;
+            color: rgb(144,201,167);
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Bienvenido, {{nombreUsuario}}</h1>
-        <h2>Verifique y acepte el seguimiento</h2>
+        <h2>Verifique y acepte la cotizaciones</h2>
+        <br>
         {{#each cotizacionesPorServicios}}
+            {{#if this}} <!-- Verificar si hay servicios -->
                 <div class="servicios-container">
+                                        <h3>COTIZACIONES DE {{@key}} SERVICIOS</h3>
 
-            <button class="toggle-button" data-key="{{@key}}" onclick="toggleServicios('{{@key}}')">Mostrar Servicios ({{@key}})</button>
+                    <button class="toggle-button" data-key="{{@key}}" onclick="toggleServicios('{{@key}}')">Mostrar cotizacion de  ({{@key}})  </button>
+                    <div id="servicios-{{@key}}" style="display: none;">
+                        {{#each this}}
+                          <br>
+                        <br>
+                            <div class="servicio">
+                                <div class="servicio">
 
-            <h3>Número de Servicios: {{@key}}</h3>
-<table id="servicios-{{@key}}" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>ID Primaria</th> 
-                        <th>Cliente</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Contacto</th>
-                        <th>Ciudad</th>
-                        <th>Número de Servicios</th>
-                        <th>Fecha de Creación</th>
-                        <th>Fecha 1</th>
-                        <th>Hora 1</th>
-                        <th>Origen 1</th>
-                        <th>Destino 1</th>
-                        <th>Itinerario 1</th>
-                        <th>Tipo Carro 1</th>
-                        <th>Fecha 2</th>
-                        <th>Hora 2</th>
-                        <th>Origen 2</th>
-                        <th>Destino 2</th>
-                        <th>Itinerario 2</th>
-                        <th>Tipo Carro 2</th>
-                        <th>Fecha 3</th>
-                        <th>Hora 3</th>
-                        <th>Origen 3</th>
-                        <th>Destino 3</th>
-                        <th>Itinerario 3</th>
-                        <th>Tipo Carro 3</th>
-                        <th>Fecha 4</th>
-                        <th>Hora 4</th>
-                        <th>Origen 4</th>
-                        <th>Destino 4</th>
-                        <th>Itinerario 4</th>
-                        <th>Tipo Carro 4</th>
-                        <th>Fecha 5</th>
-                        <th>Hora 5</th>
-                        <th>Origen 5</th>
-                        <th>Destino 5</th>
-                        <th>Itinerario 5</th>
-                        <th>Tipo Carro 5</th>
-                        <th>Realizada</th>
-                        <th>Valor Total</th>
-                        <th>Valor 1</th>
-                        <th>Valor 2</th>
-                        <th>Valor 3</th>
-                        <th>Valor 4</th>
-                        <th>Valor 5</th>
-                        <th>Observaciones 1</th>
-                        <th>Observaciones 2</th>
-                        <th>Observaciones 3</th>
-                        <th>Observaciones 4</th>
-                        <th>Observaciones 5</th>
-                        <th>Adicionales-check</th>
-                        <th>Adicionales</th>
-                        <th>Subtotal</th>
-                        <th>Descuento</th>
-                        <th>Verificadas</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each this}}
-                    <tr>
-                        <td>{{id}}</td>
-                        <td>{{cliente}}</td>
-                        <td>{{nombre}}</td>
-                        <td>{{correo}}</td>
-                        <td>{{contacto}}</td>
-                        <td>{{ciudad}}</td>
-                        <td>{{num_servicios}}</td>
-                        <td>{{fecha_creacion}}</td>
-                        <td>{{fecha1}}</td>
-                        <td>{{hora1}}</td>
-                        <td>{{origen1}}</td>
-                        <td>{{destino1}}</td>
-                        <td>{{itinerario1}}</td>
-                        <td>{{tipoCarro1}}</td>
-                        <td>{{fecha2}}</td>
-                        <td>{{hora2}}</td>
-                        <td>{{origen2}}</td>
-                        <td>{{destino2}}</td>
-                        <td>{{itinerario2}}</td>
-                        <td>{{tipoCarro2}}</td>
-                        <td>{{fecha3}}</td>
-                        <td>{{hora3}}</td>
-                        <td>{{origen3}}</td>
-                        <td>{{destino3}}</td>
-                        <td>{{itinerario3}}</td>
-                        <td>{{tipoCarro3}}</td>
-                        <td>{{fecha4}}</td>
-                        <td>{{hora4}}</td>
-                        <td>{{origen4}}</td>
-                        <td>{{destino4}}</td>
-                        <td>{{itinerario4}}</td>
-                        <td>{{tipoCarro4}}</td>
-                        <td>{{fecha5}}</td>
-                        <td>{{hora5}}</td>
-                        <td>{{origen5}}</td>
-                        <td>{{destino5}}</td>
-                        <td>{{itinerario5}}</td>
-                        <td>{{tipoCarro5}}</td>
-                        <td>{{realizada}}</td>
-                        <td>{{valor_total}}</td>
-                        <td>{{valor_1}}</td>
-                        <td>{{valor_2}}</td>
-                        <td>{{valor_3}}</td>
-                        <td>{{valor_4}}</td>
-                        <td>{{valor_5}}</td>
-                        <td>{{observaciones_1}}</td>
-                        <td>{{observaciones_2}}</td>
-                        <td>{{observaciones_3}}</td>
-                        <td>{{observaciones_4}}</td>
-                        <td>{{observaciones_5}}</td>
-                        <td>{{adicionales_check}}</td>
-                        <td>{{adicionales}}</td>
-                        <td>{{subtotal}}</td>
-                        <td>{{descuento}}</td>
-                        <td>{{verificadas}}</td>
-                        <td>
-                            <button class="accept-button" onclick="marcarAceptada('{{id}}')">Aceptar</button>
-                            <button class="reject-button" onclick="marcarRechazada('{{id}}')">Rechazar</button>
-                        </td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
+                                <h4>N° COTIZACION : {{id}}</h4>
+                                <p>{{#if cliente}}<strong>Cliente:</strong> {{cliente}}{{/if}}</p>
+                                <p>{{#if nombre}}<strong>Nombre:</strong> {{nombre}}{{/if}}</p>
+                                <p>{{#if correo}}<strong>Correo:</strong> {{correo}}{{/if}}</p>
+                                <p>{{#if contacto}}<strong>Contacto:</strong> {{contacto}}{{/if}}</p>
+                                <p>{{#if ciudad}}<strong>Ciudad:</strong> {{ciudad}}{{/if}}</p>
+                                <p>{{#if num_servicios}}<strong>Número de Servicios:</strong> {{num_servicios}}{{/if}}</p>
+                                <p>{{#if fecha1}}<strong>Fecha 1:</strong> <span class="fecha" id="fecha1">{{fecha1}}</span> <strong>Hora 1:</strong> {{hora1}}{{/if}}</p>
+                                <p>{{#if origen1}}<strong>Origen 1:</strong> {{origen1}} <strong>Destino 1:</strong> {{destino1}}{{/if}}</p>
+                                <p>{{#if itinerario1}}<strong>Itinerario 1:</strong> {{itinerario1}} <strong>Tipo Carro 1:</strong> {{tipoCarro1}}{{/if}}</p>
+                                <p>{{#if fecha2}}<strong>Fecha 2:</strong> <span class="fecha" id="fecha2">{{fecha2}}</span> <strong>Hora 2:</strong> {{hora2}}{{/if}}</p>
+                                <p>{{#if origen2}}<strong>Origen 2:</strong> {{origen2}} <strong>Destino 2:</strong> {{destino2}}{{/if}}</p>
+                                <p>{{#if itinerario2}}<strong>Itinerario 2:</strong> {{itinerario2}} <strong>Tipo Carro 2:</strong> {{tipoCarro2}}{{/if}}</p>
+                                <p>{{#if fecha3}}<strong>Fecha 3:</strong> <span class="fecha" id="fecha3">{{fecha3}}</span> <strong>Hora 3:</strong> {{hora3}}{{/if}}</p>
+                                <p>{{#if origen3}}<strong>Origen 3:</strong> {{origen3}} <strong>Destino 3:</strong> {{destino3}}{{/if}}</p>
+                                <p>{{#if itinerario3}}<strong>Itinerario 3:</strong> {{itinerario3}} <strong>Tipo Carro 3:</strong> {{tipoCarro3}}{{/if}}</p>
+                                <p>{{#if fecha4}}<strong>Fecha 4:</strong> <span class="fecha" id="fecha4">{{fecha4}}</span> <strong>Hora 4:</strong> {{hora4}}{{/if}}</p>
+                                <p>{{#if origen4}}<strong>Origen 4:</strong> {{origen4}} <strong>Destino 4:</strong> {{destino4}}{{/if}}</p>
+                                <p>{{#if itinerario4}}<strong>Itinerario 4:</strong> {{itinerario4}} <strong>Tipo Carro 4:</strong> {{tipoCarro4}}{{/if}}</p>
+                                <p>{{#if fecha5}}<strong>Fecha 5:</strong> <span class="fecha" id="fecha5">{{fecha5}}</span> <strong>Hora 5:</strong> {{hora5}}{{/if}}</p>
+                                <p>{{#if origen5}}<strong>Origen 5:</strong> {{origen5}} <strong>Destino 5:</strong> {{destino5}}{{/if}}</p>
+                                <p>{{#if itinerario5}}<strong>Itinerario 5:</strong> {{itinerario5}} <strong>Tipo Carro 5:</strong> {{tipoCarro5}}{{/if}}</p>
+                                <p>{{#if valor_1}}<strong>Valor 1:</strong> {{valor_1}}{{/if}}</p>
+                                <p>{{#if valor_2}}<strong>Valor 2:</strong> {{valor_2}}{{/if}}</p>
+                                <p>{{#if valor_3}}<strong>Valor 3:</strong> {{valor_3}}{{/if}}</p>
+                                <p>{{#if valor_4}}<strong>Valor 4:</strong> {{valor_4}}{{/if}}</p>
+                                <p>{{#if valor_5}}<strong>Valor 5:</strong> {{valor_5}}{{/if}}</p>
+                                <p>{{#if observaciones_1}}<strong>Observaciones 1:</strong> {{observaciones_1}}{{/if}}</p>
+                                <p>{{#if observaciones_2}}<strong>Observaciones 2:</strong> {{observaciones_2}}{{/if}}</p>
+                                <p>{{#if observaciones_3}}<strong>Observaciones 3:</strong> {{observaciones_3}}{{/if}}</p>
+                                <p>{{#if observaciones_4}}<strong>Observaciones 4:</strong> {{observaciones_4}}{{/if}}</p>
+                                <p>{{#if observaciones_5}}<strong>Observaciones 5:</strong> {{observaciones_5}}{{/if}}</p>
+                                <p>{{#if adicionales_check}}<strong>Adicionales-check:</strong> {{adicionales_check}}{{/if}}</p>
+                                <p>{{#if adicionales}}<strong>Adicionales:</strong> {{adicionales}}{{/if}}</p>
+                                <p>{{#if subtotal}}<strong>Subtotal:</strong> {{subtotal}}{{/if}}</p>
+                                <p>{{#if descuento}}<strong>Descuento:</strong> {{descuento}}{{/if}}</p
+                                <p>{{#if valor_total}}<strong>Valor Total:</strong> {{valor_total}}{{/if}}</p>
+                                <button class="accept-button" onclick="marcarAceptada('{{id}}')">Aceptar</button>
+                                <button class="reject-button" onclick="marcarRechazada('{{id}}')">Rechazar</button>
+                            </div>
+</div>
+                        {{/each}}
+                    </div>
+                </div>
+            {{/if}}
         {{/each}}
     </div>
     <script>
-function toggleServicios(numeroServicios) {
-    var tableId = 'servicios-' + numeroServicios;
-    var table = document.getElementById(tableId);
-    var button = document.querySelector('.toggle-button[data-key="' + numeroServicios + '"]');
+        function toggleServicios(numeroServicios) {
+            var serviciosContainer = document.getElementById('servicios-' + numeroServicios);
+            var button = document.querySelector('.toggle-button[data-key="' + numeroServicios + '"]');
 
-    if (table.style.display === 'none') {
-        table.style.display = 'table'; // Muestra la tabla
-        button.textContent = 'Ocultar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón
-    } else {
-        table.style.display = 'none'; // Oculta la tabla
-        button.textContent = 'Mostrar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón de vuelta
-    }
-}
-
-</script>
-    <script>
+            if (serviciosContainer.style.display === 'none') {
+                serviciosContainer.style.display = 'block'; // Muestra los servicios
+                button.textContent = 'Ocultar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón
+            } else {
+                serviciosContainer.style.display = 'none'; // Oculta los servicios
+                button.textContent = 'Mostrar Servicios (' + numeroServicios + ')'; // Cambia el texto del botón de vuelta
+            }
+        }
         function marcarAceptada(id) {
             fetch('/marcar_aceptada/' + id, {
                 method: 'POST',
@@ -396,5 +217,27 @@ function toggleServicios(numeroServicios) {
             });
         }
     </script>
+    <script>
+    // Función para formatear la fecha a 'dd/mm/yyyy'
+    function formatDate(dateString) {
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', options);
+    }
+
+    // Función para actualizar las fechas en el HTML
+ // Función para actualizar las fechas en el HTML
+function updateDateElements() {
+    const fechaElements = document.querySelectorAll('.fecha');
+    fechaElements.forEach(element => {
+        element.textContent = formatDate(element.textContent);
+    });
+}
+
+// Llama a la función para actualizar las fechas cuando se cargue la página
+window.addEventListener('DOMContentLoaded', updateDateElements);
+
+</script>
+
 </body>
 </html>
