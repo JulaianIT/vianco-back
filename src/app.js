@@ -152,33 +152,61 @@ app.get("/login", (req, res) => {
 
 
 
-
-
-// Handle login authentication
+// Handle login authentication for empresa
 app.post("/auth", (req, res) => {
     const data = req.body;
     const connection = req.db;
 
     connection.query("SELECT * FROM user WHERE email = ? AND password = ?", [data.email, data.password], (err, userData) => {
         if (err) {
-            console.error("Error fetching user from database:", err);  // Manejar errores al recuperar datos del usuario desde la base de datos
-            res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
+            console.error("Error fetching user from database:", err);
+            res.status(500).send("Internal Server Error");
             return;
         }
 
         if (userData.length > 0) {
             const user = userData[0];
-            req.session.loggedin = true;  // Establecer sesión como autenticada
-            req.session.name = user.name;  // Guardar nombre de usuario en la sesión
-            req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];  // Guardar roles del usuario en la sesión
-
-            res.redirect("/menu");  // Redirigir a la página principal después del inicio de sesión exitoso
+            req.session.loggedin = true;
+            req.session.name = user.name;
+            req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];
+            res.redirect("/menu");
         } else {
-            // Renderizar página de inicio de sesión con mensaje de error
             res.render("login/index.hbs", { error: "Usuario no encontrado o contraseña incorrecta" });
         }
     });
 });
+
+// Handle login authentication for cliente
+app.post("/auth-cliente", (req, res) => {
+    const data = req.body;
+    const connection = req.db;
+
+    connection.query("SELECT * FROM cliente WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
+        if (err) {
+            console.error("Error fetching cliente from database:", err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        if (clienteData.length > 0) {
+            const cliente = clienteData[0];
+            req.session.loggedin = true;
+            req.session.name = cliente.name;
+            req.session.roles = typeof cliente.roles === 'string' ? cliente.roles.split(',') : [];
+            res.redirect("/menu-cliente");
+        } else {
+            res.render("login/index.hbs", { error: "Cliente no encontrado o contraseña incorrecta" });
+        }
+    });
+});
+
+
+
+
+
+
+
+
 
 // Render register form
 app.get("/register", (req, res) => {

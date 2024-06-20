@@ -38,6 +38,7 @@
 
         .active {
             border-bottom: 2px solid #1161ed;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .nonactive {
@@ -52,6 +53,7 @@
             letter-spacing: 2px;
             display: inline-block;
             font-weight: 100;
+            cursor: pointer;
         }
 
         h2:first-child {
@@ -211,79 +213,81 @@
             outline: none;
             box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
         }
-.error-message {
-    color: red;
-    font-size: 19px;
-    margin-top: 5px;
-}
 
-/* Estilos para el formulario de recuperación de contraseña */
-#forgotPasswordForm {
-    background-color: #333;
-    padding: 30px;
-    border-radius: 10px;
-    margin-top: 20px;
-    text-align: center;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
-}
+        .error-message {
+            color: red;
+            font-size: 19px;
+            margin-top: 5px;
+        }
 
-#forgotPasswordForm h2 {
-    color: #fff;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
+        /* Estilos para el formulario de recuperación de contraseña */
+        #forgotPasswordForm {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+        }
 
-#forgotPasswordForm .text {
-    width: calc(100% - 40px); /* Ajustar el ancho del input */
-    margin: 10px 0;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
+        #forgotPasswordForm h2 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
 
-#forgotPasswordForm .signin {
-    background-color: #90c9a7;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    margin-top: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+        #forgotPasswordForm .text {
+            width: calc(100% - 40px); /* Ajustar el ancho del input */
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
 
-#forgotPasswordForm .signin:hover {
-    background-color: #4082f5;
-}
+        #forgotPasswordForm .signin {
+            background-color: #90c9a7;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-#forgotPasswordForm .message {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    margin-top: 10px;
-}
+        #forgotPasswordForm .signin:hover {
+            background-color: #4082f5;
+        }
 
-#forgotPasswordForm hr {
-    border-color: rgba(255, 255, 255, 0.2);
-    margin-top: 20px;
-}
+        #forgotPasswordForm .message {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        #forgotPasswordForm hr {
+            border-color: rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+
         header {
             margin: 0;
-
             background-color: #ffff;
         }
-     #logo{
-    position: relative;
-    left: 20%;
 
-    width: 13%;
+        #logo {
+            position: relative;
+            left: 20%;
+            width: 13%;
+        }
 
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 13%;
-}
+        #vigilado {
+            float: right; /* Alinea la imagen a la izquierda dentro del header */
+            width: 13%;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -296,67 +300,57 @@
             background-attachment: fixed;
         }
 
-
-#forgotPasswordLink{
-color: white;
-font-size: 20px;
-
-}
-
-#forgotPasswordLink:hover{
-
-color: #90c9a7;
-
-}
-    @media only screen and (max-width: 768px) {
-      
-
-        header {
-            margin: 0;
-display: none;
-            background-color: #ffff;
-        }
-     #logo{
-    position: relative;
-    left: 20%;
-
-    width: 13%;
-
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 13%;
-}
-
-
-    .login {
-            position: relative;
-            height: 50%;
-            width:  70%;
-            margin: auto;
-            padding: 60px 60px;
-            background: url(https://picsum.photos/id/1004/5616/3744) no-repeat center center #505050;
-            background-size: cover;
-            box-shadow: 0px 30px 60px -5px #000;
+        #forgotPasswordLink {
+            color: white;
+            font-size: 20px;
         }
 
-
-
-
-
-
-
+        #forgotPasswordLink:hover {
+            color: #90c9a7;
         }
-             .password-container {
+
+        @media only screen and (max-width: 768px) {
+            header {
+                margin: 0;
+                display: none;
+                background-color: #ffff;
+            }
+
+            #logo {
+                position: relative;
+                left: 20%;
+                width: 13%;
+            }
+
+            #vigilado {
+                float: right; /* Alinea la imagen a la izquierda dentro del header */
+                width: 13%;
+            }
+
+            .login {
+                position: relative;
+                height: 50%;
+                width: 70%;
+                margin: auto;
+                padding: 60px 60px;
+                background: url(https://picsum.photos/id/1004/5616/3744) no-repeat center center #505050;
+                background-size: cover;
+                box-shadow: 0px 30px 60px -5px #000;
+            }
+        }
+
+        .password-container {
             position: relative;
             display: inline-block;
             width: 100%;
         }
+
         .password-container input {
             width: 100%;
             padding-right: 30px; /* Espacio para el icono */
             box-sizing: border-box;
         }
+
         .toggle-password {
             position: absolute;
             right: 10px;
@@ -367,7 +361,7 @@ display: none;
     </style>
 </head>
 <body>
-        <header>
+    <header>
         <img id="membrete" src="/imagenes/menbrete.png"/>
         <img id="logo" src="../imagenes/logo vianco.png"/>
         <img id="vigilado" src="../imagenes/vigilado.png"/>
@@ -376,42 +370,70 @@ display: none;
     <br>
     <main>
         <div class="login">
-            <h2 class="active">Sign In</h2>
-            <h2 class="nonactive">Sign Up</h2>
-<form method="POST" action="/auth">
-    <input name="email" type="email" class="text" placeholder="Correo electrónico">
-    <span>Email</span><br>
-   <input id="password" name="password" type="password" class="text" placeholder="Contraseña">
-     <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>    <span>Password</span><br>
-    <input type="checkbox" id="checkbox-1-1" class="custom-checkbox">
-    <label for="checkbox-1-1">Keep me Signed in</label>
+            <h2 id="empresa" class="active" onclick="toggleForm('empresa')">EMPRESA</h2>
+            <h2 id="clientes" class="nonactive" onclick="toggleForm('clientes')">CLIENTES</h2>
 
-    <button class="entrar">Entrar</button>
-    <hr>
-    <br>
-<a id="forgotPasswordLink" href="#">olvistaste tu contraseña?</a>
-<br>
-<br>
-<br>
-<br>
-    <!-- Error message display -->
-    {{#if error}}
-        <p class="error-message">{{error}}</p>
-    {{/if}}
-</form>
-<br>
-<br>
-<form id="forgotPasswordForm" method="POST" action="/forgot-password" style="display: none;">
-    <input name="email" type="email" class="text" placeholder="Correo electrónico">
-    <input type="hidden" id="emailSent" name="emailSent" value="false"> <!-- Campo oculto para controlar el envío de correo -->
-    <button id="sendEmailButton" class="signin">Enviar</button>
-    <p class="message">Te enviaremos un correo electrónico con instrucciones para recuperar tu contraseña.</p>
-    <hr>
-</form>
+            <form id="empresaForm" method="POST" action="/auth">
+                <input name="email" type="email" class="text" placeholder="Correo electrónico">
+                <span>Email</span><br>
+                <div class="password-container">
+                    <input id="password" name="password" type="password" class="text" placeholder="Contraseña">
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
+                <span>Password</span><br>
+                <input type="checkbox" id="checkbox-1-1" class="custom-checkbox">
+                <label for="checkbox-1-1">Keep me Signed in</label>
+                <button class="entrar">Entrar</button>
+            </form>
 
+            <form id="clientesForm" method="POST" action="/auth-cliente" style="display:none;">
+                <input name="email" type="email" class="text" placeholder="Correo electrónico">
+                <span>Email</span><br>
+                <div class="password-container">
+                    <input id="password" name="password" type="password" class="text" placeholder="Contraseña">
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
+                <span>Password</span><br>
+                <input type="checkbox" id="checkbox-1-2" class="custom-checkbox">
+                <label for="checkbox-1-2">Keep me Signed in</label>
+                <button class="entrar">Entrar</button>
+            </form>
+
+            <hr>
+            <a id="forgotPasswordLink" href="#">¿Olvidaste tu contraseña?</a>
+
+            <form id="forgotPasswordForm" method="POST" action="/forgot-password" style="display:none;">
+                <input name="email" type="email" class="text" placeholder="Correo electrónico">
+                <button id="sendEmailButton" class="signin">Enviar</button>
+                <p class="message">Te enviaremos un correo electrónico con instrucciones para recuperar tu contraseña.</p>
+                <hr>
+            </form>
         </div>
     </main>
-      <script>
+    <script>
+        function toggleForm(formType) {
+            const empresaForm = document.getElementById('empresaForm');
+            const clientesForm = document.getElementById('clientesForm');
+            const empresaTab = document.getElementById('empresa');
+            const clientesTab = document.getElementById('clientes');
+
+            if (formType === 'empresa') {
+                empresaForm.style.display = 'block';
+                clientesForm.style.display = 'none';
+                empresaTab.classList.add('active');
+                clientesTab.classList.remove('active');
+                empresaTab.classList.remove('nonactive');
+                clientesTab.classList.add('nonactive');
+            } else {
+                empresaForm.style.display = 'none';
+                clientesForm.style.display = 'block';
+                empresaTab.classList.remove('active');
+                clientesTab.classList.add('active');
+                empresaTab.classList.add('nonactive');
+                clientesTab.classList.remove('nonactive');
+            }
+        }
+
         function togglePasswordVisibility() {
             const passwordField = document.getElementById('password');
             const passwordToggle = document.querySelector('.toggle-password');
@@ -423,49 +445,32 @@ display: none;
                 passwordToggle.textContent = '👁️';
             }
         }
-    </script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const forgotPasswordLink = document.querySelector("#forgotPasswordLink");
-        const forgotPasswordForm = document.querySelector("#forgotPasswordForm");
 
-        // Escucha el clic en el enlace "Forgot Password?"
-        forgotPasswordLink.addEventListener("click", function(event) {
-            event.preventDefault(); // Previene el comportamiento por defecto del enlace
-            forgotPasswordForm.style.display = "block"; // Muestra el formulario de olvidaste tu contraseña
-        });
-    });
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
     const forgotPasswordLink = document.querySelector("#forgotPasswordLink");
     const forgotPasswordForm = document.querySelector("#forgotPasswordForm");
-    const sendEmailButton = document.querySelector("#sendEmailButton");
-    const emailSentInput = document.querySelector("#emailSent");
 
-    // Escucha el clic en el enlace "Forgot Password?"
     forgotPasswordLink.addEventListener("click", function(event) {
-        event.preventDefault(); // Previene el comportamiento por defecto del enlace
-        forgotPasswordForm.style.display = "block"; // Muestra el formulario de olvidaste tu contraseña
+        event.preventDefault();
+        forgotPasswordForm.style.display = "block";
     });
 
-    // Escucha el envío del formulario de recuperación de contraseña
     forgotPasswordForm.addEventListener("submit", function(event) {
-        event.preventDefault(); // Previene el comportamiento por defecto del formulario
+        event.preventDefault();
 
-        // Verifica si ya se envió el correo
-        const emailSent = emailSentInput.value === "true";
-        if (emailSent) {
+        // Añadir un log para verificar si el submit está siendo llamado
+        console.log("Submit de formulario de restablecimiento de contraseña llamado.");
+
+        const emailSentInput = document.querySelector("#emailSent");
+        if (emailSentInput && emailSentInput.value === "true") {
             console.log("Correo ya enviado, evitando enviar nuevamente.");
             return;
         }
-
-        // Cambia el valor del campo oculto para indicar que se envió el correo
-        emailSentInput.value = "true";
-
-        // Envía el formulario
+        if (emailSentInput) emailSentInput.value = "true";
         this.submit();
     });
 });
+
+    </script>
 </body>
 </html>
