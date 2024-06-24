@@ -65,55 +65,41 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+const { Client } = require('pg');
 
-const connection = mysql.createConnection({
-    host: "69.61.31.131",
-    user: "viancote_soporte",
-    password: "MXPwPzz4zlU=",
-    database: "viancote_nodelogin",
-    port: "3306"
+
+// Configurar la conexión utilizando las credenciales directamente
+const client = new Client({
+    host: '34.66.160.104',
+    user: 'soporte',
+    password: '1034277764C',
+    database: 'vianco',
+    port: 5432,
+    connectionTimeoutMillis: 20000 // Aumenta el tiempo de espera a 20 segundos
 });
-
-
-// Función para enviar un ping a la base de datos periódicamente
-function sendPing() {
-    connection.ping(err => {
-        if (err) {
-            console.error("Error al enviar ping a la base de datos:", err);
-        } else {
-            console.log("Ping enviado a la base de datos");
-        }
-    });
-}
-
-// Configura el intervalo para enviar el ping cada 5 minutos (300,000 milisegundos)
-const pingInterval = setInterval(sendPing, 300000);
-
-// Maneja los eventos de error y cierre de la conexión
-connection.on('error', err => {
-    console.error("Error en la conexión a la base de datos:", err);
-    clearInterval(pingInterval); // Detiene el intervalo cuando se produce un error
-});
-
-connection.on('close', () => {
-    console.log("Conexión a la base de datos cerrada");
-    clearInterval(pingInterval); // Detiene el intervalo cuando se cierra la conexión
-});
-
-// Conecta con la base de datos
-connection.connect(err => {
+  
+  // Conectar a la base de datos
+  client.connect(err => {
     if (err) {
-        console.error("Error al conectar con la base de datos:", err);
+        console.error('Error connecting to the database: ', err);
         return;
     }
-    console.log("Conectado a la base de datos");
+    console.log('Connected to the database.');
 
-    // Envía el primer ping después de conectar
-    sendPing();
+    // Realizar una consulta de prueba para asegurar que la conexión funciona
+    client.query('SELECT 1 + 1 AS solution', (err, res) => {
+        if (err) {
+            console.error('Error during query: ', err);
+        } else {
+            console.log('The solution is: ', res.rows[0].solution);
+        }
+        // No cierres la conexión aquí si necesitas usarla más adelante
+        // client.end();
+    });
 });
 
-app.use((req, res, next) => {
-    req.db = connection;
+  app.use((req, res, next) => {
+    req.db = client;
     next();
 });
 
@@ -131,7 +117,18 @@ app.post("/webhook", webhookHandler.handleWebhook);
 
 
 
-
+// Cerrar la conexión a la base de datos cuando la aplicación se cierra
+process.on('SIGINT', () => {
+    console.log("Closing database connection...");
+    client.end(err => {
+        if (err) {
+            console.error('Error closing the database connection: ', err);
+        } else {
+            console.log("Database connection closed.");
+        }
+        process.exit(err ? 1 : 0);
+    });
+});
 
 
 
@@ -149,57 +146,64 @@ app.get("/login", (req, res) => {
         res.render("login/index.hbs", { error: null });  // Renderizar el formulario de inicio de sesión con un mensaje de error nulo
     }
 });
-
-
-
-// Handle login authentication for empresa
+// Endpoint para autenticación
 app.post("/auth", (req, res) => {
     const data = req.body;
-    const connection = req.db;
+  
+    // Asegúrate de que los datos de correo electrónico y contraseña están presentes
+    if (!data.email || !data.password) {
+        return res.render("login/index.hbs", { error: "Por favor, proporciona un correo electrónico y una contraseña" });
+    }
 
-    connection.query("SELECT * FROM user WHERE email = ? AND password = ?", [data.email, data.password], (err, userData) => {
-        if (err) {
-            console.error("Error fetching user from database:", err);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
-
+    // Consulta parametrizada
+    const query = 'SELECT * FROM "user" WHERE email = $1 AND password = $2';
+    const values = [data.email, data.password];
+  
+    client.query(query, values)
+      .then(result => {
+        const userData = result.rows;
         if (userData.length > 0) {
-            const user = userData[0];
-            req.session.loggedin = true;
-            req.session.name = user.name;
-            req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];
-            res.redirect("/menu");
+          const user = userData[0];
+          req.session.loggedin = true;
+          req.session.name = user.name;
+          req.session.roles = typeof user.roles === 'string' ? user.roles.split(',') : [];
+          res.redirect("/menu");
         } else {
-            res.render("login/index.hbs", { error: "Usuario no encontrado o contraseña incorrecta" });
+          res.render("login/index.hbs", { error: "Usuario no encontrado o contraseña incorrecta" });
         }
-    });
+      })
+      .catch(err => {
+        console.error("Error fetching user from database:", err);
+        res.status(500).send("Internal Server Error");
+      });
 });
 
-// Handle login authentication for cliente
+// Endpoint para autenticación de cliente
 app.post("/auth-cliente", (req, res) => {
     const data = req.body;
-    const connection = req.db;
-
-    connection.query("SELECT * FROM cliente WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
-        if (err) {
-            console.error("Error fetching cliente from database:", err);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
-
+  
+    // Consulta parametrizada
+    const query = "SELECT * FROM cliente WHERE email = $1 AND password = $2";
+    const values = [data.email, data.password];
+  
+    client.query(query, values)
+      .then(result => {
+        const clienteData = result.rows;
         if (clienteData.length > 0) {
-            const cliente = clienteData[0];
-            req.session.loggedin = true;
-            req.session.name = cliente.name;
-            req.session.roles = typeof cliente.roles === 'string' ? cliente.roles.split(',') : [];
-            res.redirect("/menu-cliente");
+          const cliente = clienteData[0];
+          req.session.loggedin = true;
+          req.session.name = cliente.name;
+          req.session.roles = typeof cliente.roles === 'string' ? cliente.roles.split(',') : [];
+          res.redirect("/menu-cliente");
         } else {
-            res.render("login/index.hbs", { error: "Cliente no encontrado o contraseña incorrecta" });
+          res.render("login/index.hbs", { error: "Cliente no encontrado o contraseña incorrecta" });
         }
-    });
-});
-
+      })
+      .catch(err => {
+        console.error("Error fetching cliente from database:", err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
 
 
 
@@ -217,34 +221,45 @@ app.get("/register", (req, res) => {
     }
 });
 
+
+
 // Handle user registration
 app.post("/storeUser", (req, res) => {
     const data = req.body;
-    const connection = req.db;
 
-    connection.query("SELECT * FROM user WHERE email = ?", [data.email], (err, userData) => {
-        if (err) {
-            console.error("Error fetching user from database:", err);  // Manejar errores al recuperar datos del usuario desde la base de datos
-            res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
-            return;
-        }
-
-        if (userData.length > 0) {
-            res.render("login/register.hbs", { error: "User with this email already exists" });  // Renderizar página de registro con mensaje de usuario ya existente
-            return;
-        }
-
-        connection.query("INSERT INTO user SET ?", data, (err, rows) => {
-            if (err) {
-                console.error("Error inserting user into database:", err);  // Manejar errores al insertar usuario en la base de datos
-                res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
-            } else {
-                console.log("User registered successfully");  // Registrar registro exitoso del usuario
-                res.redirect("/");  // Redirigir a la página principal después del registro exitoso
+    client.query('SELECT * FROM "user" WHERE email = $1', [data.email])
+        .then(result => {
+            if (result.rows.length > 0) {
+                res.render("login/register.hbs", { error: "User with this email already exists" });
+                return;
             }
+
+            const insertQuery = 'INSERT INTO "user" (name, email, password) VALUES ($1, $2, $3)';
+            const insertValues = [data.name, data.email, data.password];
+
+            client.query(insertQuery, insertValues)
+                .then(insertResult => {
+                    console.log("User registered successfully");
+                    res.redirect("/");
+                })
+                .catch(insertErr => {
+                    console.error("Error inserting user into database:", insertErr);
+                    res.status(500).send("Internal Server Error");
+                });
+        })
+        .catch(err => {
+            console.error("Error fetching user from database:", err);
+            res.status(500).send("Internal Server Error");
         });
-    });
 });
+
+
+
+
+
+
+
+
 
 // Handle logout
 app.get("/logout", (req, res) => {
@@ -258,6 +273,10 @@ app.get("/logout", (req, res) => {
     });
 });
 
+
+
+
+
 // Middleware to protect routes that require authentication
 function requireLogin(req, res, next) {
     if (req.session.loggedin) {
@@ -270,42 +289,29 @@ function requireLogin(req, res, next) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Handle forgot password
 app.post("/forgot-password", (req, res) => {
     const { email } = req.body;
-    const connection = req.db;
 
     // Generar un token único y establecer la fecha de expiración
     const resetToken = crypto.randomBytes(20).toString('hex');
     const resetTokenExpiration = new Date();
     resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1); // Token válido por 1 hora
 
-    connection.query("UPDATE user SET resetToken = ?, resetTokenExpiration = ? WHERE email = ?", [resetToken, resetTokenExpiration, email], (err, result) => {
-        if (err) {
-            console.error("Error updating reset token in database:", err);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
+    console.log('Current server time:', new Date());
+    console.log('Generated reset token:', resetToken);
+    console.log('Token expiration time:', resetTokenExpiration);
 
-        // Check if user with provided email exists
-        if (result.affectedRows === 0) {
-            res.render("login/index.hbs", { error: "Correo electrónico no encontrado" });
-        } else {
+    const updateQuery = 'UPDATE "user" SET reset_token = $1, reset_token_expiration = $2 WHERE email = $3';
+    const updateValues = [resetToken, resetTokenExpiration, email];
+
+    client.query(updateQuery, updateValues)
+        .then(result => {
+            if (result.rowCount === 0) {
+                res.render("login/index.hbs", { error: "Correo electrónico no encontrado" });
+                return;
+            }
+
             const mailOptions = {
                 from: 'nexus.innovationss@gmail.com',
                 to: email,
@@ -319,6 +325,14 @@ app.post("/forgot-password", (req, res) => {
                 `
             };
 
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'soporte.it.vianco@gmail.com',
+                    pass: 'caerdeblynmsfzvc'
+                }
+            });
+
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.error("Error sending email:", error);
@@ -328,88 +342,83 @@ app.post("/forgot-password", (req, res) => {
                     res.render("login/index.hbs", { successMessage: "Se ha enviado un correo electrónico con instrucciones para restablecer la contraseña" });
                 }
             });
-        }
-    });
+        })
+        .catch(err => {
+            console.error("Error updating reset token in database:", err);
+            res.status(500).send("Internal Server Error");
+        });
 });
 
-// Página para restablecer la contraseña (GET)
 app.get("/reset-password", (req, res) => {
     const token = req.query.token; // Obtiene el token de la consulta
     console.log("Token recibido en GET:", token);
-  
+
     // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
-    connection.query(
-      "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
-      [token],
-      (err, results) => {
-        if (err) {
-          console.error("Error al verificar el token:", err);
-          res.status(500).send("Error interno al verificar el token");
-        } else {
-          if (results.length === 0) {
-            res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
-          } else {
-            // Mostrar el formulario para restablecer la contraseña
-            res.render("login/reset-password.hbs", { token });
-          }
-        }
-      }
-    );
+    const query = 'SELECT *, NOW() as current_db_time FROM "user" WHERE reset_token = $1 AND reset_token_expiration > NOW()';
+    const values = [token];
+
+    client.query(query, values)
+        .then(results => {
+            if (results.rows.length === 0) {
+                console.log("Token verification failed. Token might be invalid or expired.");
+                res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
+            } else {
+                const user = results.rows[0];
+                console.log("Current database time:", user.current_db_time);
+                console.log("Token expiration time from DB:", user.reset_token_expiration);
+
+                // Mostrar el formulario para restablecer la contraseña
+                res.render("login/reset-password.hbs", { token });
+            }
+        })
+        .catch(err => {
+            console.error("Error al verificar el token:", err);
+            res.status(500).send("Error interno al verificar el token");
+        });
 });
+
+
 
 // Procesar restablecimiento de contraseña (POST)
 app.post("/reset-password", (req, res) => {
     const { token, password } = req.body;
 
     // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
-    connection.query(
-      "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
-      [token],
-      (err, results) => {
-        if (err) {
-          console.error("Error al verificar el token:", err);
-          res.status(500).send("Error interno al verificar el token");
-        } else {
-          if (results.length === 0) {
-            res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
-          } else {
-            const user = results[0];
+    const query = 'SELECT *, NOW() as current_db_time FROM "user" WHERE reset_token = $1 AND reset_token_expiration > NOW()';
+    const values = [token];
 
-            // Actualizar la contraseña en la base de datos y limpiar el token
-            connection.query(
-              "UPDATE user SET password = ?, resetToken = NULL, resetTokenExpiration = NULL WHERE id = ?",
-              [password, user.id],
-              (updateErr, updateResult) => {
-                if (updateErr) {
-                  console.error("Error al actualizar la contraseña:", updateErr);
-                  res.status(500).send("Error interno al actualizar la contraseña");
-                } else {
-                  console.log("Contraseña actualizada exitosamente para el usuario:", user.email);
+    client.query(query, values)
+        .then(results => {
+            if (results.rows.length === 0) {
+                console.log("Token verification failed. Token might be invalid or expired.");
+                res.status(400).send("El token para restablecer la contraseña es inválido o ha expirado");
+            } else {
+                const user = results.rows[0];
+                console.log("Current database time:", user.current_db_time);
+                console.log("Token expiration time from DB:", user.reset_token_expiration);
 
-                  // Redirigir al usuario a la página de inicio de sesión con un mensaje de éxito
-                  res.render("login/index.hbs", { successMessage: "Contraseña restablecida exitosamente" });
-                }
-              }
-            );
-          }
-        }
-      }
-    );
+                // Actualizar la contraseña en la base de datos y limpiar el token
+                const updateQuery = 'UPDATE "user" SET password = $1, reset_token = NULL, reset_token_expiration = NULL WHERE id = $2';
+                const updateValues = [password, user.id];
+
+                client.query(updateQuery, updateValues)
+                    .then(updateResult => {
+                        console.log("Contraseña actualizada exitosamente para el usuario:", user.email);
+
+                        // Redirigir al usuario a la página de inicio de sesión con un mensaje de éxito
+                        res.render("login/index.hbs", { successMessage: "Contraseña restablecida exitosamente" });
+                    })
+                    .catch(updateErr => {
+                        console.error("Error al actualizar la contraseña:", updateErr);
+                        res.status(500).send("Error interno al actualizar la contraseña");
+                    });
+            }
+        })
+        .catch(err => {
+            console.error("Error al verificar el token:", err);
+            res.status(500).send("Error interno al verificar el token");
+        });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -455,6 +464,7 @@ app.use(router);
 
 
 
+
 // Ruta para la página principal vianco
 app.get("/menu", (req, res) => {
     if (req.session.loggedin === true) {
@@ -466,8 +476,6 @@ app.get("/menu", (req, res) => {
         const roles = Array.isArray(rolesString) ? rolesString : [];
         otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
 
-
-
         const auxiliar = roles.includes('auxiliar');
         const ejecutivo = roles.includes('ejecutivo');
         const cordinacion = roles.includes('cordinacion');
@@ -477,7 +485,7 @@ app.get("/menu", (req, res) => {
         const contabilidad = roles.includes('contabilidad');
         const soporte = roles.includes('soporte');
 
-        res.render("home",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, contabilidad ,soporte}); // Pasar los roles a la plantilla
+        res.render("home", { name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, contabilidad, soporte }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login");
     }
@@ -495,8 +503,6 @@ app.get("/", (req, res) => {
         const roles = Array.isArray(rolesString) ? rolesString : [];
         otraFuncion(req, res); // Llama a otraFuncion para obtener el nombre de usuario
 
-
-
         const auxiliar = roles.includes('auxiliar');
         const ejecutivo = roles.includes('ejecutivo');
         const cordinacion = roles.includes('cordinacion');
@@ -506,15 +512,11 @@ app.get("/", (req, res) => {
         const aeropuerto = roles.includes('aeropuerto');
         const soporte = roles.includes('soporte');
 
-        res.render("operaciones/menu.operaciones.hbs",{ name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto,soporte }); // Pasar los roles a la plantilla
+        res.render("operaciones/menu.operaciones.hbs", { name: req.session.name, auxiliar, ejecutivo, cordinacion, callcenter, director, gerencia, aeropuerto, soporte }); // Pasar los roles a la plantilla
     } else {
         res.redirect("/login");
     }
 });
-
-
-
-
 
 
 // Ruta para la programación de vehículos
@@ -522,7 +524,7 @@ app.get("/programacion-vehiculos", (req, res) => {
     if (req.session.loggedin === true) {
         const rolesString = req.session.roles;
         const roles = Array.isArray(rolesString) ? rolesString : [];
-        
+
         const ejecutivo1 = roles.includes('ejecutivo1');
         const ejecutivo2 = roles.includes('ejecutivo2');
         const ejecutivo3 = roles.includes('ejecutivo3');
@@ -531,46 +533,48 @@ app.get("/programacion-vehiculos", (req, res) => {
         const ejecutivo6 = roles.includes('ejecutivo6');
         const ejecutivo7 = roles.includes('ejecutivo7');
         const ejecutivo8 = roles.includes('ejecutivo8');
-        
+
         const isExecutive = roles.includes('ejecutivo');
-        
+
         // Consulta SQL para obtener las bases y placas
-        connection.query("SELECT base, placa FROM vehiculos", (error, results) => {
-            if (error) {
+        const query = 'SELECT base, placa FROM vehiculos';
+
+        client.query(query)
+            .then(results => {
+                // Renderizar la vista de programación de vehículos con los datos de las bases y placas
+                res.render("operaciones/programacion/programacion.hbs", { 
+                    basesPlacas: results.rows,
+                    name: req.session.name, 
+                    isExecutive, 
+                    ejecutivo1, 
+                    ejecutivo2, 
+                    ejecutivo3,
+                    ejecutivo4,
+                    ejecutivo5,
+                    ejecutivo6,
+                    ejecutivo7,
+                    ejecutivo8,
+                    // Otros roles ejecutivos...
+                });
+            })
+            .catch(error => {
                 console.error("Error al obtener las bases y placas:", error);
                 res.status(500).send("Error al obtener las bases y placas");
-                return;
-            }
-            // Renderizar la vista de programación de vehículos con los datos de las bases y placas
-            res.render("operaciones/programacion/programacion.hbs", { 
-                basesPlacas: results,
-                name: req.session.name, 
-                isExecutive, 
-                ejecutivo1, 
-                ejecutivo2, 
-                ejecutivo3,
-                ejecutivo4,
-                ejecutivo5,
-                ejecutivo6,
-                ejecutivo7,
-                ejecutivo8,
-                // Otros roles ejecutivos...
             });
-        });
     } else {
         res.redirect("/login");
     }
 });
-
-
 // Ruta para guardar la programación de vehículos
 app.post('/guardar-programacion', (req, res) => {
     // Obtener los datos del formulario del cuerpo de la solicitud
     const { base, placa, fecha, horario, observaciones } = req.body;
 
     // Insertar los datos en la tabla programacion_vehiculos
-    const sql = `INSERT INTO programacion_vehiculos (base, placa, fecha, horario, observaciones) VALUES (?, ?, ?, ?, ?)`;
-    connection.query(sql, [base, placa, fecha, horario, observaciones], (err, result) => {
+    const sql = `INSERT INTO programacion_vehiculos (base, placa, fecha, horario, observaciones) VALUES ($1, $2, $3, $4, $5)`;
+    const values = [base, placa, fecha, horario, observaciones];
+
+    client.query(sql, values, (err, result) => {
         if (err) {
             console.error('Error al guardar la programación del vehículo:', err);
             res.status(500).send('Error al guardar la programación del vehículo');
@@ -581,31 +585,34 @@ app.post('/guardar-programacion', (req, res) => {
     });
 });
 
-
-
- // Ruta para mostrar la página de ver_programacion.hbs
+// Ruta para mostrar la página de ver_programacion.hbs
 app.get('/ver-programacion', (req, res) => {
     // Consulta a la base de datos para obtener todas las bases y horarios disponibles
-    connection.query('SELECT DISTINCT base FROM programacion_vehiculos', (err, basesResults) => {
+    const basesQuery = 'SELECT DISTINCT base FROM programacion_vehiculos';
+    const horariosQuery = 'SELECT DISTINCT horario FROM programacion_vehiculos';
+
+    client.query(basesQuery, (err, basesResults) => {
         if (err) {
             console.error('Error al obtener las bases:', err);
-            // Manejar el error adecuadamente
+            res.status(500).send('Error al obtener las bases');
             return;
         }
 
-        connection.query('SELECT DISTINCT horario FROM programacion_vehiculos', (err, horariosResults) => {
+        client.query(horariosQuery, (err, horariosResults) => {
             if (err) {
                 console.error('Error al obtener los horarios:', err);
-                // Manejar el error adecuadamente
+                res.status(500).send('Error al obtener los horarios');
                 return;
             }
 
-            const bases = basesResults.map(result => result.base); // Extraer las bases de los resultados
-            const horarios = horariosResults.map(result => result.horario); // Extraer los horarios de los resultados
+            const bases = basesResults.rows.map(result => result.base); // Extraer las bases de los resultados
+            const horarios = horariosResults.rows.map(result => result.horario); // Extraer los horarios de los resultados
             res.render('operaciones/programacion/ver_programacion.hbs', { bases, horarios }); // Renderizar la página ver_programacion.hbs con las bases y horarios disponibles
         });
     });
 });
+
+
 
 
 
@@ -626,58 +633,57 @@ handlebars.registerHelper('formatDatee', function(dateString) {
     return `${day}/${month}/${year}`;
 });
 
-
 app.get('/buscar-programacion', (req, res) => {
     const { base, fecha, horario } = req.query;
 
     // Construir la consulta SQL para la programación de vehículos
-    let programacionSql = 'SELECT * FROM programacion_vehiculos WHERE 1';
+    let programacionSql = 'SELECT * FROM programacion_vehiculos WHERE 1=1';
     const programacionParams = [];
 
     if (base && base !== 'todos') {
-        programacionSql += ' AND base = ?';
+        programacionSql += ' AND base = $1';
         programacionParams.push(base);
     }
 
     if (fecha) {
-        programacionSql += ' AND fecha = ?';
+        programacionSql += ' AND fecha = $2';
         programacionParams.push(fecha);
     }
 
     if (horario && horario !== 'todos') {
-        programacionSql += ' AND horario = ?';
+        programacionSql += ' AND horario = $3';
         programacionParams.push(horario);
     }
 
     // Ejecutar la consulta para la programación de vehículos
-    connection.query(programacionSql, programacionParams, (err, programacionResults) => {
+    client.query(programacionSql, programacionParams, (err, programacionResults) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
-            // Maneja el error apropiadamente
+            res.status(500).send('Error al buscar programación de vehículos');
             return;
         }
 
         // Construir la consulta SQL para las llegadas y salidas
-        let llegadasSalidasSql = 'SELECT * FROM llegadas_salidas WHERE 1';
+        let llegadasSalidasSql = 'SELECT * FROM llegadas_salidas WHERE 1=1';
         const llegadasSalidasParams = [];
 
         if (fecha) {
-            llegadasSalidasSql += ' AND fecha = ?';
+            llegadasSalidasSql += ' AND fecha = $1';
             llegadasSalidasParams.push(fecha);
         }
 
         // Ejecutar la consulta para las llegadas y salidas
-        connection.query(llegadasSalidasSql, llegadasSalidasParams, (err, llegadasSalidasResults) => {
+        client.query(llegadasSalidasSql, llegadasSalidasParams, (err, llegadasSalidasResults) => {
             if (err) {
                 console.error('Error al buscar llegadas y salidas:', err);
-                // Maneja el error apropiadamente
+                res.status(500).send('Error al buscar llegadas y salidas');
                 return;
             }
 
             // Renderizar la página de resultados con los datos obtenidos
             res.render('operaciones/programacion/resultados_programacion.hbs', { 
-                programacion: programacionResults,
-                llegadasSalidas: llegadasSalidasResults
+                programacion: programacionResults.rows,
+                llegadasSalidas: llegadasSalidasResults.rows
             });
         });
     });
@@ -710,14 +716,14 @@ app.get('/descargar-programacion', (req, res) => {
     const { fechaInicio, fechaFin } = req.query;
 
     // Construir la consulta SQL con el rango de fechas proporcionado
-    const sql = 'SELECT * FROM programacion_vehiculos WHERE fecha BETWEEN ? AND ?';
+    const sql = 'SELECT * FROM programacion_vehiculos WHERE fecha BETWEEN $1 AND $2';
     const params = [fechaInicio, fechaFin];
 
     // Ejecutar la consulta
-    connection.query(sql, params, (err, results) => {
+    client.query(sql, params, (err, results) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
-            // Manejar el error apropiadamente
+            res.status(500).send('Error al buscar programación de vehículos');
             return;
         }
 
@@ -729,7 +735,7 @@ app.get('/descargar-programacion', (req, res) => {
         worksheet.addRow(['Base', 'Placa', 'Fecha', 'Horario', 'Observaciones']);
 
         // Agregar los datos de la consulta a las filas del archivo Excel
-        results.forEach(result => {
+        results.rows.forEach(result => {
             worksheet.addRow([result.base, result.placa, result.fecha, result.horario, result.observaciones]);
         });
 
@@ -744,11 +750,14 @@ app.get('/descargar-programacion', (req, res) => {
             })
             .catch(err => {
                 console.error('Error al generar el archivo Excel:', err);
-                // Manejar el error apropiadamente
                 res.status(500).send('Error al generar el archivo Excel');
             });
     });
 });
+
+
+
+
 
 function otraFuncion(req, res, next) {
     if (req.session.loggedin === true) {
@@ -773,14 +782,16 @@ app.get("/admin/roless", (req, res) => {
     // Verificar si el usuario tiene permisos de administrador
     if (req.session.loggedin && req.session.roles.includes('gerencia')) {
         // Obtener los usuarios y sus roles desde la base de datos
-        connection.query("SELECT id, email, name, roles FROM user", (error, results) => {
+        const query = 'SELECT id, email, name, roles FROM "user"';
+        
+        client.query(query, (error, results) => {
             if (error) {
                 console.error("Error al obtener usuarios y roles:", error);
                 res.status(500).send("Error al obtener usuarios y roles");
                 return;
             }
             // Renderizar la vista de administración de roles con los datos de los usuarios
-            res.render("admin/roles.hbs", { users: results });
+            res.render("admin/roles.hbs", { users: results.rows });
         });
     } else {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
@@ -795,19 +806,28 @@ app.get("/admin/roles/:id/edit", (req, res) => {
     if (req.session.loggedin && req.session.roles.includes('gerencia')) {
         const userId = req.params.id;
         // Obtener información del usuario y sus roles desde la base de datos
-        connection.query("SELECT id, email, name, roles FROM user WHERE id = ?", [userId], (error, results) => {
+        const query = 'SELECT id, email, name, roles FROM "user" WHERE id = $1';
+        const values = [userId];
+
+        client.query(query, values, (error, results) => {
             if (error) {
                 console.error("Error al obtener información del usuario:", error);
                 res.status(500).send("Error al obtener información del usuario");
                 return;
             }
             // Renderizar el formulario de edición de roles con los datos del usuario
-            res.render("admin/editRole", { user: results[0] });
+            res.render("admin/editRole", { user: results.rows[0] });
         });
     } else {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
     }
 });
+
+
+
+
+
+
 // Ruta para procesar la edición de roles
 app.post("/admin/editRole/:id/edit", (req, res) => {
     // Verificar si el usuario tiene permisos de administrador
@@ -816,7 +836,10 @@ app.post("/admin/editRole/:id/edit", (req, res) => {
         const newRole = req.body.newRole; // Obtener el nuevo rol del cuerpo de la solicitud
         
         // Actualizar el rol del usuario en la base de datos
-        connection.query("UPDATE user SET roles = ? WHERE id = ?", [newRole, userId], (error, results) => {
+        const query = 'UPDATE "user" SET roles = $1 WHERE id = $2';
+        const values = [newRole, userId];
+
+        client.query(query, values, (error, results) => {
             if (error) {
                 console.error("Error al actualizar el rol del usuario:", error);
                 res.status(500).send("Error al actualizar el rol del usuario");
@@ -829,32 +852,51 @@ app.post("/admin/editRole/:id/edit", (req, res) => {
         res.redirect("/"); // Redirigir a la página principal si el usuario no tiene permisos de administrador
     }
 });
+
+
+
+
 // Ruta para obtener la lista de bases
 app.get('/api/bases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+    const query = 'SELECT DISTINCT base FROM vehiculos';
+
+    client.query(query, (error, results) => {
         if (error) {
             console.error('Error al obtener las bases:', error);
             res.status(500).json({ error: 'Error al obtener las bases' });
             return;
         }
-        const bases = results.map(result => result.base);
+        const bases = results.rows.map(result => result.base);
         res.json(bases);
     });
 });
 
+
+
+
+
+
 // Ruta para obtener la lista de placas según la base seleccionada
 app.get('/api/placas', (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+    const query = 'SELECT placa FROM vehiculos WHERE base = $1';
+    const values = [baseSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al obtener las placas:', error);
             res.status(500).json({ error: 'Error al obtener las placas' });
             return;
         }
-        const placas = results.map(result => result.placa);
+        const placas = results.rows.map(result => result.placa);
         res.json(placas);
     });
 });
+
+
+
+
+
 // Ruta para manejar la programación de vehículos
 app.post("/programacion-vehiculos", (req, res) => {
     // Aquí puedes agregar la lógica para manejar los datos enviados desde el formulario
@@ -864,17 +906,20 @@ app.post("/programacion-vehiculos", (req, res) => {
 });
 
 
+
 // Definir las rutas
 app.get("/consulta-vehiculos", (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query("SELECT placa FROM vehiculos", (error, results) => {
+    const query = 'SELECT placa FROM vehiculos';
+
+    client.query(query, (error, results) => {
         if (error) {
-            console.error("Error al obtener las placas:", error);
-            res.status(500).send("Error al obtener las placas");
+            console.error('Error al obtener las placas:', error);
+            res.status(500).send('Error al obtener las placas');
             return;
         }
         // Renderizar la vista de consulta de vehículos con los datos de las placas
-        res.render("operaciones/vehiculos/consulta.hbs", { placas: results.map(result => result.placa) });
+        res.render('operaciones/vehiculos/consulta.hbs', { placas: results.rows.map(result => result.placa) });
     });
 });
 
@@ -882,27 +927,28 @@ app.get("/consulta-vehiculos", (req, res) => {
 app.post("/consulta-vehiculos", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    const query = 'SELECT * FROM vehiculos WHERE placa = $1';
+    const values = [placaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
-            console.error("Error al obtener la información del vehículo:", error);
-            res.status(500).send("Error al obtener la información del vehículo");
+            console.error('Error al obtener la información del vehículo:', error);
+            res.status(500).send('Error al obtener la información del vehículo');
             return;
         }
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             // Si no se encuentra ningún vehículo con la placa seleccionada, enviar un mensaje de error
-            res.status(404).send("Vehículo no encontrado");
+            res.status(404).send('Vehículo no encontrado');
             return;
         }
-        const vehiculo = results[0]; // Obtener el primer vehículo encontrado (debería haber solo uno)
-        // Enviar la información del vehículo al cliente en formato JSON
-      
-        
-           // Convertir los datos binarios de la imagen en una URL base64
-         
-           const fotoURL = vehiculo.foto_vehiculo ? `data:image/jpeg;base64,${vehiculo.foto_vehiculo.toString('base64')}` : null;
-           res.json({ ...vehiculo, fotoURL });
-        });
+        const vehiculo = results.rows[0]; // Obtener el primer vehículo encontrado (debería haber solo uno)
+        // Convertir los datos binarios de la imagen en una URL base64
+        const fotoURL = vehiculo.foto_vehiculo ? `data:image/jpeg;base64,${vehiculo.foto_vehiculo.toString('base64')}` : null;
+        res.json({ ...vehiculo, fotoURL });
+    });
 });
+
+
 
 
 
@@ -915,7 +961,11 @@ app.get('/edicion/:placa', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            
+            // Obtener la lista de clientes
+            const clienteResult = await client.query(clientesQuery);
+            const clienteRows = clienteResult.rows;
+            
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -924,27 +974,22 @@ app.get('/edicion/:placa', async (req, res) => {
             const placa = req.params.placa;
 
             // Realizar una consulta a la base de datos para obtener los datos del vehículo
-            connection.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
-                if (error) {
-                    console.error("Error al obtener los datos del vehículo:", error);
-                    res.status(500).send("Error al obtener los datos del vehículo");
-                    return;
-                }
+            const vehiculoQuery = 'SELECT * FROM vehiculos WHERE placa = $1';
+            const vehiculoResult = await client.query(vehiculoQuery, [placa]);
 
-                if (results.length === 0) {
-                    console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
-                    res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
-                    return;
-                }
+            if (vehiculoResult.rows.length === 0) {
+                console.error("No se encontró ningún vehículo con la placa proporcionada:", placa);
+                res.status(404).send("No se encontró ningún vehículo con la placa proporcionada");
+                return;
+            }
 
-                const vehiculo = results[0]; // Obtener el primer vehículo encontrado
+            const vehiculo = vehiculoResult.rows[0]; // Obtener el primer vehículo encontrado
 
-                console.log('Clientes encontrados:');
-                const nombresClientes = clienteRows.map(row => row.nombre);
-                // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
-                const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
-                res.render('operaciones/vehiculos/edicion.hbs', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
-            });
+            console.log('Clientes encontrados:');
+            const nombresClientes = clienteRows.map(row => row.nombre);
+            // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
+            const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+            res.render('operaciones/vehiculos/edicion.hbs', { vehiculo, nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
             res.redirect("/login");
         }
@@ -953,9 +998,6 @@ app.get('/edicion/:placa', async (req, res) => {
         res.status(500).send("Error interno del servidor");
     }
 });
-
-
-
 
 
 
@@ -974,7 +1016,7 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
     }
 
     // Obtener otros datos del vehículo desde el cuerpo de la solicitud
-    const { placa, Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1 ,n_convenio,fecha_vigencia_convenio} = req.body;
+    const { placa, Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, n_convenio, fecha_vigencia_convenio } = req.body;
 
     // Construir la consulta SQL para la actualización
     let sqlQuery;
@@ -982,22 +1024,22 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
 
     if (fotoData) {
         // Si se ha cargado una nueva foto, incluir el campo de foto en la actualización
-        sqlQuery = 'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, Matricula=?, Marca=?, Linea=?, Clase_vehiculo=?, Modelo=?, Capacidad=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, Num_puestos=?, Puertas=?, Peso_bruto=?, Num_ejes=?, Numero_chasis=?, Numero_motor=?, Color=?, Cilindraje=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?, foto_vehiculo=?, n_convenio=?, fecha_vigencia_convenio=? WHERE Placa=?';
-        queryParams = [Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, fotoData,n_convenio,fecha_vigencia_convenio, placa];
+        sqlQuery = 'UPDATE vehiculos SET Base=$1, Conductor=$2, No_movil=$3, Matricula=$4, Marca=$5, Linea=$6, Clase_vehiculo=$7, Modelo=$8, Capacidad=$9, Propietario_contrato=$10, Propietario_licencia=$11, Afiliado_a=$12, Num_puestos=$13, Puertas=$14, Peso_bruto=$15, Num_ejes=$16, Numero_chasis=$17, Numero_motor=$18, Color=$19, Cilindraje=$20, Combustible=$21, Carroceria=$22, Fecha_matricula=$23, Num_soat=$24, Entidad=$25, Fecha_vigencia_soat=$26, Num_tecnomecanica=$27, Cda=$28, Fecha_inicio_tecnomecanica=$29, Fecha_vigencia=$30, Num_polizas_rcc_rce=$31, Compania_aseguradora=$32, Vigencia_polizas=$33, Num_tarjeta_operacion=$34, Empresa_afiliacion=$35, Fecha_final_operacion=$36, Num_preventiva_1=$37, Cda_preventiva=$38, Fecha_inicial_preventiva_1=$39, Fecha_final_preventiva_1=$40, foto_vehiculo=$41, n_convenio=$42, fecha_vigencia_convenio=$43 WHERE Placa=$44';
+        queryParams = [Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, fotoData, n_convenio, fecha_vigencia_convenio, placa];
     } else {
         // Si no se ha cargado una nueva foto, omitir el campo de foto en la actualización
-        sqlQuery = 'UPDATE vehiculos SET Base=?, Conductor=?, No_movil=?, Matricula=?, Marca=?, Linea=?, Clase_vehiculo=?, Modelo=?, Capacidad=?, Propietario_contrato=?, Propietario_licencia=?, Afiliado_a=?, Num_puestos=?, Puertas=?, Peso_bruto=?, Num_ejes=?, Numero_chasis=?, Numero_motor=?, Color=?, Cilindraje=?, Combustible=?, Carroceria=?, Fecha_matricula=?, Num_soat=?, Entidad=?, Fecha_vigencia_soat=?, Num_tecnomecanica=?, Cda=?, Fecha_inicio_tecnomecanica=?, Fecha_vigencia=?, Num_polizas_rcc_rce=?, Compania_aseguradora=?, Vigencia_polizas=?, Num_tarjeta_operacion=?, Empresa_afiliacion=?, Fecha_final_operacion=?, Num_preventiva_1=?, Cda_preventiva=?, Fecha_inicial_preventiva_1=?, Fecha_final_preventiva_1=?,n_convenio=?,fecha_vigencia_convenio=? WHERE Placa=?';
-        queryParams = [Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, n_convenio,fecha_vigencia_convenio, placa];
+        sqlQuery = 'UPDATE vehiculos SET Base=$1, Conductor=$2, No_movil=$3, Matricula=$4, Marca=$5, Linea=$6, Clase_vehiculo=$7, Modelo=$8, Capacidad=$9, Propietario_contrato=$10, Propietario_licencia=$11, Afiliado_a=$12, Num_puestos=$13, Puertas=$14, Peso_bruto=$15, Num_ejes=$16, Numero_chasis=$17, Numero_motor=$18, Color=$19, Cilindraje=$20, Combustible=$21, Carroceria=$22, Fecha_matricula=$23, Num_soat=$24, Entidad=$25, Fecha_vigencia_soat=$26, Num_tecnomecanica=$27, Cda=$28, Fecha_inicio_tecnomecanica=$29, Fecha_vigencia=$30, Num_polizas_rcc_rce=$31, Compania_aseguradora=$32, Vigencia_polizas=$33, Num_tarjeta_operacion=$34, Empresa_afiliacion=$35, Fecha_final_operacion=$36, Num_preventiva_1=$37, Cda_preventiva=$38, Fecha_inicial_preventiva_1=$39, Fecha_final_preventiva_1=$40, n_convenio=$41, fecha_vigencia_convenio=$42 WHERE Placa=$43';
+        queryParams = [Base, Conductor, No_movil, Matricula, Marca, Linea, Clase_vehiculo, Modelo, Capacidad, Propietario_contrato, Propietario_licencia, Afiliado_a, Num_puestos, Puertas, Peso_bruto, Num_ejes, Numero_chasis, Numero_motor, Color, Cilindraje, Combustible, Carroceria, Fecha_matricula, Num_soat, Entidad, Fecha_vigencia_soat, Num_tecnomecanica, Cda, Fecha_inicio_tecnomecanica, Fecha_vigencia, Num_polizas_rcc_rce, Compania_aseguradora, Vigencia_polizas, Num_tarjeta_operacion, Empresa_afiliacion, Fecha_final_operacion, Num_preventiva_1, Cda_preventiva, Fecha_inicial_preventiva_1, Fecha_final_preventiva_1, n_convenio, fecha_vigencia_convenio, placa];
     }
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(sqlQuery, queryParams, (error, results) => {
+    client.query(sqlQuery, queryParams, (error, results) => {
         if (error) {
             console.error('Error al guardar los cambios:', error);
             res.status(500).send('Error al guardar los cambios');
             return;
         }
-        if (results.affectedRows === 0) {
+        if (results.rowCount === 0) {
             console.error('No se encontró ningún vehículo con la placa proporcionada:', placa);
             res.status(404).send('No se encontró ningún vehículo con la placa proporcionada');
             return;
@@ -1010,12 +1052,11 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
 
 
 
+
 // Ruta para mostrar el formulario de agregar vehículo
 app.get("", (req, res) => {
     res.render('formulario_agregar'); // Renderizar la vista del formulario de agregar
 });
-
-
 
 
 app.get('/agregar-vehiculo', async (req, res) => {
@@ -1023,14 +1064,21 @@ app.get('/agregar-vehiculo', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            
+            // Obtener la lista de clientes
+            const clienteResult = await client.query(clientesQuery);
+            const clienteRows = clienteResult.rows;
+
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
+
             console.log('Clientes encontrados:');
             const nombresClientes = clienteRows.map(row => row.nombre);
+
             // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
+
             res.render('operaciones/vehiculos/formulario_agregar.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
         } else {
             res.redirect("/login");
@@ -1053,13 +1101,15 @@ app.get('/agregar-vehiculo', async (req, res) => {
 
 
 
+
 // Ruta para manejar los datos enviados desde el formulario y agregar un nuevo vehículo a la base de datos
 app.post("/agregar-vehiculo", (req, res) => {
     // Obtener todos los campos del formulario
     const formData = req.body;
 
     // Construir las cláusulas SET y los valores para la consulta SQL
-    let setClause = '';
+    let columns = '';
+    let placeholders = '';
     let values = [];
 
     // Iterar sobre los campos del formulario
@@ -1067,31 +1117,33 @@ app.post("/agregar-vehiculo", (req, res) => {
         // Si el valor del campo no está vacío
         if (formData[key]) {
             // Agregar el nombre del campo y el signo de interrogación al conjunto
-            setClause += `${key} = ?, `;
+            columns += `${key}, `;
+            placeholders += `$${index + 1}, `;
             // Agregar el valor del campo al array de valores
             values.push(formData[key]);
         }
     });
 
-    // Quitar la coma final de la cláusula SET
-    setClause = setClause.slice(0, -2);
+    // Quitar la coma final de las cláusulas
+    columns = columns.slice(0, -2);
+    placeholders = placeholders.slice(0, -2);
 
     // Insertar los datos en la base de datos
-    connection.query(
-        `INSERT INTO vehiculos SET ${setClause}`,
-        values,
-        (error, results) => {
-            if (error) {
-                console.error("Error al agregar el vehículo:", error);
-                res.status(500).send("Error al agregar el vehículo");
-                return;
-            }
-            console.log("Vehículo agregado correctamente a la base de datos");
-            // Redirigir al usuario de vuelta a la página de consulta de vehículos
-            res.redirect(`/consulta-vehiculos`);
+    const query = `INSERT INTO vehiculos (${columns}) VALUES (${placeholders})`;
+
+    client.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al agregar el vehículo:', error);
+            res.status(500).send('Error al agregar el vehículo');
+            return;
         }
-    );
+        console.log('Vehículo agregado correctamente a la base de datos');
+        // Redirigir al usuario de vuelta a la página de consulta de vehículos
+        res.redirect(`/consulta-vehiculos`);
+    });
 });
+
+
 
 
 // Vista del formulario de agregación de vehículos (formulario_agregar.ejs)
@@ -1105,19 +1157,21 @@ app.post("/agregar-vehiculo", (req, res) => {
 
 app.use(express.static('public'));
 // Ruta para la página de consulta de conductores
+// Ruta para consultar conductores
 app.get('/consulta-conductores', (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query('SELECT placa FROM conductores', (error, results) => {
-      if (error) {
-        console.error('Error al obtener las placas:', error);
-        res.status(500).send('Error al obtener las placas');
-        return;
-      }
-      // Renderizar la vista de consulta de conductores con los datos de las placas
-      res.render('operaciones/conductores/conductores.hbs', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
+    const query = 'SELECT placa FROM conductores';
+
+    client.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener las placas:', error);
+            res.status(500).send('Error al obtener las placas');
+            return;
+        }
+        // Renderizar la vista de consulta de conductores con los datos de las placas
+        res.render('operaciones/conductores/conductores.hbs', { placas: results.rows.map(result => result.placa) }); // Utiliza la plantilla "conductores"
     });
 });
-
 
 
 
@@ -1128,27 +1182,29 @@ app.get('/consulta-conductores', (req, res) => {
 
 app.post("/consulta-conductores", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    const query = 'SELECT * FROM conductores WHERE placa = $1';
+    const values = [placaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error("Error al obtener la información del conductor:", error);
             res.status(500).send("Error al obtener la información del conductor");
             return;
         }
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             // Si no se encuentra ningún conductor con la placa seleccionada, enviar un mensaje de error
             res.status(404).send("Conductor no encontrado");
             return;
         }
-        const conductor = results[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
-        // Enviar la información del conductor al cliente en formato JSON
-      
+        const conductor = results.rows[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
+        
+        // Convertir los datos binarios de la imagen en una URL base64
         const fotoURL = conductor.foto ? `data:image/jpeg;base64,${conductor.foto.toString('base64')}` : null;
         res.json({ ...conductor, fotoURL });
     });
 });
-
-
 
 
 
@@ -1159,17 +1215,18 @@ app.post("/consulta-conductores", (req, res) => {
 // Ruta para la página de consulta de conductores
 app.get('/consulta-conductores2', (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query('SELECT placa FROM conductores', (error, results) => {
-      if (error) {
-        console.error('Error al obtener las placas:', error);
-        res.status(500).send('Error al obtener las placas');
-        return;
-      }
-      // Renderizar la vista de consulta de conductores con los datos de las placas
-      res.render('operaciones/conductores/conductores2.hbs', { placas: results.map((result) => result.placa) }); // Utiliza la plantilla "conductores"
+    const query = 'SELECT placa FROM conductores';
+
+    client.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener las placas:', error);
+            res.status(500).send('Error al obtener las placas');
+            return;
+        }
+        // Renderizar la vista de consulta de conductores con los datos de las placas
+        res.render('operaciones/conductores/conductores2.hbs', { placas: results.rows.map(result => result.placa) }); // Utiliza la plantilla "conductores"
     });
 });
-
 
 
 
@@ -1180,27 +1237,29 @@ app.get('/consulta-conductores2', (req, res) => {
 
 app.post("/consulta-conductores2", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    const query = 'SELECT * FROM conductores WHERE placa = $1';
+    const values = [placaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error("Error al obtener la información del conductor:", error);
             res.status(500).send("Error al obtener la información del conductor");
             return;
         }
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             // Si no se encuentra ningún conductor con la placa seleccionada, enviar un mensaje de error
             res.status(404).send("Conductor no encontrado");
             return;
         }
-        const conductor = results[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
-        // Enviar la información del conductor al cliente en formato JSON
-      
+        const conductor = results.rows[0]; // Obtener el primer conductor encontrado (debería haber solo uno)
+        
+        // Convertir los datos binarios de la imagen en una URL base64
         const fotoURL = conductor.foto ? `data:image/jpeg;base64,${conductor.foto.toString('base64')}` : null;
         res.json({ ...conductor, fotoURL });
     });
 });
-
-
 
 
 
@@ -1215,23 +1274,27 @@ app.post("/consulta-conductores2", (req, res) => {
 
 // Manejador de ruta para procesar el formulario y agregar un nuevo conductor a la base de datos
 app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
-  // Verificar si se subió una foto
-  if (!req.file) {
-    // Si no se subió ninguna foto, manejar el error aquí
-    return res.status(400).send('No se seleccionó ninguna foto.');
-  }
-
-  // Aquí puedes acceder al archivo subido a través de req.file
-  const fotoPath = req.file.path;
-
-  // Obtener todos los campos del formulario incluida la información de la foto
-  const formData = { ...req.body, foto: fotoPath };
-
-  // Insertar los datos en la base de datos
-  connection.query(
-    `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, foto) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
+    // Verificar si se subió una foto
+    if (!req.file) {
+      // Si no se subió ninguna foto, manejar el error aquí
+      return res.status(400).send('No se seleccionó ninguna foto.');
+    }
+  
+    // Leer los datos del archivo subido
+    const fotoData = fs.readFileSync(req.file.path);
+  
+    // Obtener todos los campos del formulario
+    const formData = req.body;
+  
+    // Insertar los datos en la base de datos
+    const query = `
+      INSERT INTO conductores 
+      (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen, certificado_1, fecha_certificado_1, contacto_emergencia, celular_emergencia, foto) 
+      VALUES 
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+    `;
+  
+    const values = [
       formData.placa,
       formData.conductor,
       formData.tipo_documento,
@@ -1250,12 +1313,12 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
       formData.fecha_vencimiento_examen,
       formData.certificado_1,
       formData.fecha_certificado_1,
-
       formData.contacto_emergencia,
       formData.celular_emergencia,
-      formData.foto
-    ],
-    (error, results) => {
+      fotoData
+    ];
+  
+    client.query(query, values, (error, results) => {
       if (error) {
         console.error('Error al agregar el conductor:', error);
         res.status(500).send('Error al agregar el conductor');
@@ -1264,31 +1327,36 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
       console.log('Conductor agregado correctamente a la base de datos');
       // Redirigir al usuario de vuelta a la página de consulta de conductores
       res.redirect(`/consulta-conductores`);
-    }
-  );
-});
-
-
+    });
+  });
 
 // Ruta para mostrar la página de edición de conductor
 app.get('/edicionC/:placa', (req, res) => {
-  const placa = req.params.placa;
-  // Realizar una consulta a la base de datos para obtener los datos del conductor
-  connection.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
-    if (error) {
-      console.error('Error al obtener los datos del conductor:', error);
-      res.status(500).send('Error al obtener los datos del conductor');
-      return;
-    }
-    if (results.length === 0) {
-      console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
-      res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
-      return;
-    }
-    // Renderizar la vista de edición con los datos del conductor
-    res.render('operaciones/conductores/edicionC.hbs', { conductor: results[0] }); // Pasar los datos del conductor a la vista
+    const placa = req.params.placa;
+    // Realizar una consulta a la base de datos para obtener los datos del conductor
+    const query = 'SELECT * FROM conductores WHERE placa = $1';
+    const values = [placa];
+  
+    client.query(query, values, (error, results) => {
+      if (error) {
+        console.error('Error al obtener los datos del conductor:', error);
+        res.status(500).send('Error al obtener los datos del conductor');
+        return;
+      }
+      if (results.rows.length === 0) {
+        console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
+        res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
+        return;
+      }
+      // Renderizar la vista de edición con los datos del conductor
+      res.render('operaciones/conductores/edicionC.hbs', { conductor: results.rows[0] }); // Pasar los datos del conductor a la vista
+    });
   });
-});
+  
+
+
+
+
 
 
 
@@ -1302,7 +1370,7 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
     }
 
     // Obtener otros datos del conductor desde el cuerpo de la solicitud
-    const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia } = req.body;
+    const { placa, conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, certificado_1, fecha_certificado_1, contacto_emergencia, celular_emergencia } = req.body;
 
     // Construir la consulta SQL para la actualización
     let sqlQuery;
@@ -1310,22 +1378,22 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
 
     if (fotoData) {
         // Si se ha cargado una nueva foto, actualizar también el campo de foto
-        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?, certificado_1 = ?,fecha_certificado_1 = ?, contacto_emergencia = ?, celular_emergencia = ?, foto = ? WHERE placa = ?';
-        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, fotoData, placa];
+        sqlQuery = 'UPDATE conductores SET conductor = $1, tipo_documento = $2, cedula = $3, fecha_expedicion = $4, fecha_nacimiento = $5, celular = $6, email = $7, direccion = $8, arl = $9, eps = $10, seguridad_social = $11, fecha_vencimiento_examen = $12, categoria = $13, fecha_vigencia = $14, tipo_sangre = $15, certificado_1 = $16, fecha_certificado_1 = $17, contacto_emergencia = $18, celular_emergencia = $19, foto = $20 WHERE placa = $21';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, certificado_1, fecha_certificado_1, contacto_emergencia, celular_emergencia, fotoData, placa];
     } else {
         // Si no se ha cargado una nueva foto, mantener la foto existente
-        sqlQuery = 'UPDATE conductores SET conductor = ?, tipo_documento = ?, cedula = ?, fecha_expedicion = ?, fecha_nacimiento = ?, celular = ?, email = ?, direccion = ?, arl = ?, eps = ?, seguridad_social = ?, fecha_vencimiento_examen = ?, categoria = ?, fecha_vigencia = ?, tipo_sangre = ?,certificado_1 = ?,fecha_certificado_1 = ?, contacto_emergencia = ?, celular_emergencia = ? WHERE placa = ?';
-        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, placa];
+        sqlQuery = 'UPDATE conductores SET conductor = $1, tipo_documento = $2, cedula = $3, fecha_expedicion = $4, fecha_nacimiento = $5, celular = $6, email = $7, direccion = $8, arl = $9, eps = $10, seguridad_social = $11, fecha_vencimiento_examen = $12, categoria = $13, fecha_vigencia = $14, tipo_sangre = $15, certificado_1 = $16, fecha_certificado_1 = $17, contacto_emergencia = $18, celular_emergencia = $19 WHERE placa = $20';
+        queryParams = [conductor, tipo_documento, cedula, fecha_expedicion, fecha_nacimiento, celular, email, direccion, arl, eps, seguridad_social, fecha_vencimiento_examen, categoria, fecha_vigencia, tipo_sangre, certificado_1, fecha_certificado_1, contacto_emergencia, celular_emergencia, placa];
     }
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(sqlQuery, queryParams, (error, results) => {
+    client.query(sqlQuery, queryParams, (error, results) => {
         if (error) {
             console.error('Error al guardar los cambios:', error);
             res.status(500).send('Error al guardar los cambios');
             return;
         }
-        if (results.affectedRows === 0) {
+        if (results.rowCount === 0) {
             console.error('No se encontró ningún conductor con la placa proporcionada:', placa);
             res.status(404).send('No se encontró ningún conductor con la placa proporcionada');
             return;
@@ -1337,27 +1405,31 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
 });
 
 
+
 // Ruta para renderizar la página del formulario de agregar conductor
 app.get('/agregar-conductor', (req, res) => {
   // Renderiza el formulario para agregar un nuevo conductor
   res.render('operaciones/conductores/formulario_agregar_conductor.hbs');
 });
 
+
+
+
 //consulta contabilidad 
 app.get("/consulta-contabilidad", (req, res) => {
     // Consulta SQL para obtener todas las placas disponibles
-    connection.query("SELECT placa FROM contabilidad", (error, results) => {
+    const query = 'SELECT placa FROM contabilidad';
+
+    client.query(query, (error, results) => {
         if (error) {
-            console.error("Error al obtener las placas de contabilidad:", error);
-            res.status(500).send("Error al obtener las placas de contabilidad");
+            console.error('Error al obtener las placas de contabilidad:', error);
+            res.status(500).send('Error al obtener las placas de contabilidad');
             return;
         }
-        const placas = results.map(result => result.placa); // Extraer solo las placas de los resultados
-        res.render("operaciones/administracion/consulta_contabilidad.hbs", { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
+        const placas = results.rows.map(result => result.placa); // Extraer solo las placas de los resultados
+        res.render('operaciones/administracion/consulta_contabilidad.hbs', { placas: placas }); // Renderizar la plantilla y pasar las placas como datos
     });
 });
-
-
 
 
 
@@ -1370,19 +1442,23 @@ app.get("/consulta-contabilidad", (req, res) => {
 //consulta contabilidad 
 app.post("/consulta-contabilidad", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
+
     // Consulta SQL para obtener la información de contabilidad correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    const query = 'SELECT * FROM contabilidad WHERE placa = $1';
+    const values = [placaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
-            console.error("Error al obtener la información de contabilidad:", error);
-            res.status(500).send("Error al obtener la información de contabilidad");
+            console.error('Error al obtener la información de contabilidad:', error);
+            res.status(500).send('Error al obtener la información de contabilidad');
             return;
         }
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             // Si no se encuentra ninguna entrada de contabilidad con la placa seleccionada, enviar un mensaje de error
-            res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa seleccionada");
+            res.status(404).send('No se encontró ninguna entrada de contabilidad con la placa seleccionada');
             return;
         }
-        const entradaContabilidad = results[0]; // Obtener la primera entrada de contabilidad encontrada (debería haber solo una)
+        const entradaContabilidad = results.rows[0]; // Obtener la primera entrada de contabilidad encontrada (debería haber solo una)
         // Renderizar la plantilla y pasar las placas y la entrada de contabilidad como datos
         res.json(entradaContabilidad);
     });
@@ -1391,54 +1467,92 @@ app.post("/consulta-contabilidad", (req, res) => {
 
 
 
-
 // Ruta para cargar la página de edición de contabilidad
 app.get("/edicion-contabilidad/:placa", (req, res) => {
     const placa = req.params.placa; // Obtener la placa del parámetro de la URL
     // Consulta SQL para obtener la información de contabilidad correspondiente a la placa
-    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placa], (error, results) => {
+    const query = 'SELECT * FROM contabilidad WHERE placa = $1';
+    const values = [placa];
+
+    client.query(query, values, (error, results) => {
         if (error) {
-            console.error("Error al obtener la información de contabilidad:", error);
-            res.status(500).send("Error al obtener la información de contabilidad");
+            console.error('Error al obtener la información de contabilidad:', error);
+            res.status(500).send('Error al obtener la información de contabilidad');
             return;
         }
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             // Si no se encuentra ninguna entrada de contabilidad con la placa seleccionada, enviar un mensaje de error
-            res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa seleccionada");
+            res.status(404).send('No se encontró ninguna entrada de contabilidad con la placa seleccionada');
             return;
         }
-        const contabilidad = results[0]; // Obtener la primera entrada de contabilidad encontrada
+        const contabilidad = results.rows[0]; // Obtener la primera entrada de contabilidad encontrada
         // Renderizar la plantilla de edición de contabilidad y pasar la información de contabilidad como datos
-        res.render("operaciones/administracion/edicion_contabilidad.hbs", { contabilidad: contabilidad });
+        res.render('operaciones/administracion/edicion_contabilidad.hbs', { contabilidad: contabilidad });
     });
 });
+
+
+
+
+
+
+
+
 
 // Ruta para manejar el formulario de edición de contabilidad
 app.post('/guardar-edicion-contabilidad', (req, res) => {
     const placa = req.body.placa;
     // Obtener los datos del cuerpo de la solicitud
-    const { NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO,TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
+    const { NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(
-        'UPDATE contabilidad SET NOMBRES_LICENCIA = ?, TIPO_DE_DOCUMENTO_LICENCIA = ?, NUMERO_DE_DOCUMENTO_LICENCIA = ?, FECHA_DE_INICIO_CONTRATO = ?, FECHA_FINAL = ?, MOTIVO_RETIRO = ?, NOMBRES_CONTRATO = ?, TIPO_DE_DOCUMENTO_CONTRATO = ?,NUMERO_DE_DOCUMENTO_CONTRATO = ?, DIRECCION_CONTRATO = ?,CELULAR_CONTRATO = ?, EMAIL_CONTRATO = ?, ACTIVIDAD_ECONOMICA_CONTRATO = ?, VALOR_ADMINISTRACION = ?, Nombre = ?, tipo_documento = ?, Cedula = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?',
-        [NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO,NUMERO_DE_DOCUMENTO_CONTRATO,DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email, placa],
-        (error, results) => {
-            if (error) {
-                console.error("Error al guardar los cambios:", error);
-                res.status(500).send("Error al guardar los cambios");
-                return;
-            }
-            if (results.affectedRows === 0) {
-                console.error("No se encontró ninguna entrada de contabilidad con la placa proporcionada:", placa);
-                res.status(404).send("No se encontró ninguna entrada de contabilidad con la placa proporcionada");
-                return;
-            }
-            console.log("Cambios guardados correctamente en la base de datos");
-            // Redirigir al usuario de vuelta a la página de consulta de contabilidad
-            res.redirect(`/consulta-contabilidad?placa=${placa}`);
+    const query = `
+        UPDATE contabilidad 
+        SET NOMBRES_LICENCIA = $1, TIPO_DE_DOCUMENTO_LICENCIA = $2, NUMERO_DE_DOCUMENTO_LICENCIA = $3, FECHA_DE_INICIO_CONTRATO = $4, FECHA_FINAL = $5, MOTIVO_RETIRO = $6, NOMBRES_CONTRATO = $7, TIPO_DE_DOCUMENTO_CONTRATO = $8, NUMERO_DE_DOCUMENTO_CONTRATO = $9, DIRECCION_CONTRATO = $10, CELULAR_CONTRATO = $11, EMAIL_CONTRATO = $12, ACTIVIDAD_ECONOMICA_CONTRATO = $13, VALOR_ADMINISTRACION = $14, Nombre = $15, tipo_documento = $16, Cedula = $17, Nombre_del_banco = $18, Tipo_de_cuenta_bancaria = $19, Numero_de_cuenta = $20, Direccion = $21, Celular = $22, Email = $23 
+        WHERE placa = $24`;
+    
+    const values = [
+        NOMBRES_LICENCIA, 
+        TIPO_DE_DOCUMENTO_LICENCIA, 
+        NUMERO_DE_DOCUMENTO_LICENCIA, 
+        FECHA_DE_INICIO_CONTRATO, 
+        FECHA_FINAL, 
+        MOTIVO_RETIRO, 
+        NOMBRES_CONTRATO, 
+        TIPO_DE_DOCUMENTO_CONTRATO, 
+        NUMERO_DE_DOCUMENTO_CONTRATO, 
+        DIRECCION_CONTRATO, 
+        CELULAR_CONTRATO, 
+        EMAIL_CONTRATO, 
+        ACTIVIDAD_ECONOMICA_CONTRATO, 
+        VALOR_ADMINISTRACION, 
+        Nombre, 
+        tipo_documento, 
+        Cedula, 
+        Nombre_del_banco, 
+        Tipo_de_cuenta_bancaria, 
+        Numero_de_cuenta, 
+        direccion, 
+        celular, 
+        email, 
+        placa
+    ];
+
+    client.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al guardar los cambios:', error);
+            res.status(500).send('Error al guardar los cambios');
+            return;
         }
-    );
+        if (results.rowCount === 0) {
+            console.error('No se encontró ninguna entrada de contabilidad con la placa proporcionada:', placa);
+            res.status(404).send('No se encontró ninguna entrada de contabilidad con la placa proporcionada');
+            return;
+        }
+        console.log('Cambios guardados correctamente en la base de datos');
+        // Redirigir al usuario de vuelta a la página de consulta de contabilidad
+        res.redirect(`/consulta-contabilidad?placa=${placa}`);
+    });
 });
 
 
@@ -1464,14 +1578,12 @@ app.post('/guardar-edicion-contabilidad', (req, res) => {
 
 
 
-
-// agregar contabilidad 
-// Ruta para renderizar la página del formulario de agregar contabilidad
 // Ruta para renderizar la página del formulario de agregar contabilidad
 app.get("/agregar-contabilidad", (req, res) => {
     // Renderiza el formulario para agregar una nueva entrada de contabilidad
     res.render("operaciones/administracion/formulario_agregar_contabilidad.hbs");
 });
+
 
 // Ruta para manejar los datos enviados desde el formulario y agregar una nueva entrada de contabilidad a la base de datos
 app.post("/agregar-contabilidad", (req, res) => {
@@ -1482,47 +1594,48 @@ app.post("/agregar-contabilidad", (req, res) => {
     const numeroCuenta = formData.Numero_de_cuenta || '';
 
     // Insertar los datos en la base de datos
-    connection.query(
-        `INSERT INTO contabilidad 
+    const query = `
+        INSERT INTO contabilidad 
         (placa, NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, Direccion, Celular, Email) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-            formData.placa,
-            formData.NOMBRES_LICENCIA,
-            formData.TIPO_DE_DOCUMENTO_LICENCIA,
-            formData.NUMERO_DE_DOCUMENTO_LICENCIA,
-            formData.FECHA_DE_INICIO_CONTRATO,
-            formData.FECHA_FINAL,
-            formData.MOTIVO_RETIRO,
-            formData.NOMBRES_CONTRATO,
-            formData.TIPO_DE_DOCUMENTO_CONTRATO,
-            formData.NUMERO_DE_DOCUMENTO_CONTRATO,
-            formData.DIRECCION_CONTRATO,
-            formData.CELULAR_CONTRATO,
-            formData.EMAIL_CONTRATO,
-            formData.ACTIVIDAD_ECONOMICA_CONTRATO,
-            formData.VALOR_ADMINISTRACION,
-            formData.Nombre,
-            formData.tipo_documento,
-            formData.Cedula,
-            formData.Nombre_del_banco,
-            formData.Tipo_de_cuenta_bancaria,
-            formData.Numero_de_cuenta,
-            formData.Direccion,
-            formData.Celular,
-            formData.Email
-        ],
-        (error, results) => {
-            if (error) {
-                console.error("Error al agregar la contabilidad:", error);
-                res.status(500).send("Error al agregar la contabilidad");
-                return;
-            }
-            console.log("Información agregada correctamente a la base de datos");
-            // Redirigir al usuario de vuelta a la página de consulta de contabilidad
-            res.redirect(`/consulta-contabilidad`);
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)`;
+    
+    const values = [
+        formData.placa,
+        formData.NOMBRES_LICENCIA,
+        formData.TIPO_DE_DOCUMENTO_LICENCIA,
+        formData.NUMERO_DE_DOCUMENTO_LICENCIA,
+        formData.FECHA_DE_INICIO_CONTRATO,
+        formData.FECHA_FINAL,
+        formData.MOTIVO_RETIRO,
+        formData.NOMBRES_CONTRATO,
+        formData.TIPO_DE_DOCUMENTO_CONTRATO,
+        formData.NUMERO_DE_DOCUMENTO_CONTRATO,
+        formData.DIRECCION_CONTRATO,
+        formData.CELULAR_CONTRATO,
+        formData.EMAIL_CONTRATO,
+        formData.ACTIVIDAD_ECONOMICA_CONTRATO,
+        formData.VALOR_ADMINISTRACION,
+        formData.Nombre,
+        formData.tipo_documento,
+        formData.Cedula,
+        formData.Nombre_del_banco,
+        formData.Tipo_de_cuenta_bancaria,
+        numeroCuenta,
+        formData.Direccion,
+        formData.Celular,
+        formData.Email
+    ];
+
+    client.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al agregar la contabilidad:', error);
+            res.status(500).send('Error al agregar la contabilidad');
+            return;
         }
-    );
+        console.log('Información agregada correctamente a la base de datos');
+        // Redirigir al usuario de vuelta a la página de consulta de contabilidad
+        res.redirect(`/consulta-contabilidad`);
+    });
 });
 
 
@@ -1531,10 +1644,6 @@ app.post("/agregar-contabilidad", (req, res) => {
 
 
 
-
-
-
-// Ruta para el formulario
 // Ruta para el formulario
 app.get('/formulario', async (req, res) => {
     try {
@@ -1542,48 +1651,36 @@ app.get('/formulario', async (req, res) => {
             const rolesString = req.session.roles;
             const roles = Array.isArray(rolesString) ? rolesString : [];
         
-        const ejecutivo1 = roles.includes('ejecutivo1');
-        const ejecutivo2 = roles.includes('ejecutivo2');
-        const ejecutivo3 = roles.includes('ejecutivo3');
-        const ejecutivo4 = roles.includes('ejecutivo4');
-        const ejecutivo5 = roles.includes('ejecutivo5');
-        const ejecutivo6 = roles.includes('ejecutivo6');
-        const ejecutivo7 = roles.includes('ejecutivo7');
-        const ejecutivo8 = roles.includes('ejecutivo8');
-        
-        const isExecutive = roles.includes('ejecutivo');
+            const ejecutivo1 = roles.includes('ejecutivo1');
+            const ejecutivo2 = roles.includes('ejecutivo2');
+            const ejecutivo3 = roles.includes('ejecutivo3');
+            const ejecutivo4 = roles.includes('ejecutivo4');
+            const ejecutivo5 = roles.includes('ejecutivo5');
+            const ejecutivo6 = roles.includes('ejecutivo6');
+            const ejecutivo7 = roles.includes('ejecutivo7');
+            const ejecutivo8 = roles.includes('ejecutivo8');
+            const isExecutive = roles.includes('ejecutivo');
         
             // Consulta para obtener todos los clientes de la tabla "clientes"
-            connection.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
-                if (errorClientes) {
-                    console.error('Error al obtener los clientes:', errorClientes);
-                    res.status(500).send('Error al obtener los clientes');
-                    return;
-                }
-
-                // Consulta para obtener todas las placas de la tabla "conductores"
-                connection.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
-                    if (errorPlacas) {
-                        console.error('Error al obtener las placas de los conductores:', errorPlacas);
-                        res.status(500).send('Error al obtener las placas de los conductores');
-                        return;
-                    }
-
-                    // Los resultados de ambas consultas se pasan al renderizar la página
-                    res.render('recepciones', { 
-                        clientes: resultadosClientes, 
-                        placas: resultadosPlacas,
-                        isExecutive, 
-                        ejecutivo1, 
-                        ejecutivo2, 
-                        ejecutivo3,
-                        ejecutivo4,
-                        ejecutivo5,
-                        ejecutivo6,
-                        ejecutivo7,
-                        ejecutivo8,
-                    });
-                });
+            const clientesQuery = 'SELECT * FROM clientes';
+            const placasQuery = 'SELECT DISTINCT placa FROM conductores';
+            
+            const resultadosClientes = await client.query(clientesQuery);
+            const resultadosPlacas = await client.query(placasQuery);
+            
+            // Los resultados de ambas consultas se pasan al renderizar la página
+            res.render('recepciones', { 
+                clientes: resultadosClientes.rows, 
+                placas: resultadosPlacas.rows,
+                isExecutive, 
+                ejecutivo1, 
+                ejecutivo2, 
+                ejecutivo3,
+                ejecutivo4,
+                ejecutivo5,
+                ejecutivo6,
+                ejecutivo7,
+                ejecutivo8,
             });
         } else {
             res.redirect("/login");
@@ -1594,22 +1691,30 @@ app.get('/formulario', async (req, res) => {
     }
 });
 
+
+
+
+
+
 app.post('/obtener_conductor', (req, res) => {
     const placaSeleccionada = req.body.placa;
 
     // Realiza una consulta a la base de datos para obtener el conductor correspondiente a la placa
-    connection.query('SELECT conductor, celular, foto FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
+    const query = 'SELECT conductor, celular, foto FROM conductores WHERE placa = $1';
+    const values = [placaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al obtener el conductor:', error);
             res.status(500).json({ error: 'Error al obtener el conductor' });
         } else {
-            if (results && results.length > 0) {
-                const conductor = results[0].conductor;
-                const celular = results[0].celular;
+            if (results.rows && results.rows.length > 0) {
+                const conductor = results.rows[0].conductor;
+                const celular = results.rows[0].celular;
                 let fotoURL = null; // Inicializa la URL de la foto como nula por defecto
-                if (results[0].foto) {
+                if (results.rows[0].foto) {
                     // Si hay una foto en la base de datos, conviértela a Base64 y forma la URL
-                    const fotoBase64 = results[0].foto.toString('base64');
+                    const fotoBase64 = results.rows[0].foto.toString('base64');
                     fotoURL = `data:image/jpeg;base64,${fotoBase64}`;
                 }
                 res.json({ conductor, celular, fotoURL });
@@ -1623,19 +1728,20 @@ app.post('/obtener_conductor', (req, res) => {
 
 
 
+
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
 /// Modifica la función post para enviar los datos al Google Sheet
-
 // Ruta para procesar el formulario
 app.post('/procesar_formulario', async (req, res) => {
     const { cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor } = req.body;
-  
+
     try {
         // Insertar los datos en la base de datos
-        const query = 'INSERT INTO aeropuerto (cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        connection.query(query, [cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor]);
+        const query = 'INSERT INTO aeropuerto (cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)';
+        const values = [cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor];
+        await client.query(query, values);
         console.log('Datos insertados correctamente en la base de datos');
 
         // Enviar los datos al Google Sheet
@@ -1780,12 +1886,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-
-
-
 app.get('/clientes', (req, res) => {
     // Realiza una consulta a la base de datos para obtener los nombres y fotos de los clientes
-    connection.query('SELECT nombre,  foto FROM clientes', (error, results, fields) => {
+    const query = 'SELECT nombre, foto FROM clientes';
+
+    client.query(query, (error, results) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1793,10 +1898,9 @@ app.get('/clientes', (req, res) => {
         }
 
         // Envia los resultados de la consulta como respuesta en formato JSON
-        res.json(results);
+        res.json(results.rows);
     });
 });
-
 
 
 
@@ -1804,7 +1908,10 @@ app.get('/clientePorNombre', (req, res) => {
     const nombreCliente = req.query.nombre;
 
     // Realiza una consulta a la base de datos para obtener los datos del cliente por su nombre
-    connection.query('SELECT * FROM clientes WHERE nombre = ?', [nombreCliente], (error, results, fields) => {
+    const query = 'SELECT * FROM clientes WHERE nombre = $1';
+    const values = [nombreCliente];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1812,8 +1919,8 @@ app.get('/clientePorNombre', (req, res) => {
         }
 
         // Verifica si se encontró un cliente con el nombre dado
-        if (results.length > 0) {
-            const cliente = results[0];
+        if (results.rows.length > 0) {
+            const cliente = results.rows[0];
             res.json(cliente);
         } else {
             res.status(404).send('Cliente no encontrado');
@@ -1822,13 +1929,15 @@ app.get('/clientePorNombre', (req, res) => {
 });
 
 
-
 app.get('/obtenerFotoConductor', (req, res) => {
     const placa = req.query.placa;
     console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
 
     // Realizar una consulta a la base de datos para obtener los datos binarios de la foto del conductor basada en la placa
-    connection.query('SELECT foto FROM conductores WHERE placa = ?', [placa], (error, results, fields) => {
+    const query = 'SELECT foto FROM conductores WHERE placa = $1';
+    const values = [placa];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1836,8 +1945,8 @@ app.get('/obtenerFotoConductor', (req, res) => {
         }
 
         // Verificar si se encontró la foto del conductor con la placa dada
-        if (results.length > 0) {
-            const fotoConductor = results[0].foto;
+        if (results.rows.length > 0) {
+            const fotoConductor = results.rows[0].foto;
 
             // Devolver los datos binarios de la foto del conductor
             res.send(fotoConductor);
@@ -1847,31 +1956,33 @@ app.get('/obtenerFotoConductor', (req, res) => {
     });
 });
 
-
 app.get('/obtenerFotovehiculo', (req, res) => {
     const placa = req.query.placa;
     console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
 
-// Corrige el nombre de la columna en la consulta SQL y en la asignación de resultados
-connection.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa], (error, results, fields) => {
-    if (error) {
-        console.error('Error al ejecutar la consulta:', error);
-        res.status(500).send('Error interno del servidor');
-        return;
-    }
+    // Realizar una consulta a la base de datos para obtener los datos binarios de la foto del vehículo basada en la placa
+    const query = 'SELECT foto_vehiculo FROM vehiculos WHERE placa = $1';
+    const values = [placa];
 
-    // Verificar si se encontró la foto del vehículo con la placa dada
-    if (results.length > 0) {
-        const fotoVehiculo = results[0].foto_vehiculo; // Corrige el nombre de la variable a fotoVehiculo
+    client.query(query, values, (error, results) => {
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
 
-        // Devolver los datos binarios de la foto del vehículo
-        res.send(fotoVehiculo);
-    } else {
-        res.status(404).send('Foto del vehículo no encontrada');
-    }
+        // Verificar si se encontró la foto del vehículo con la placa dada
+        if (results.rows.length > 0) {
+            const fotoVehiculo = results.rows[0].foto_vehiculo; // Corrige el nombre de la variable a fotoVehiculo
+
+            // Devolver los datos binarios de la foto del vehículo
+            res.send(fotoVehiculo);
+        } else {
+            res.status(404).send('Foto del vehículo no encontrada');
+        }
+    });
 });
 
-});
 
 
 
@@ -1984,17 +2095,19 @@ app.get('/tarifas', (req, res) => {
 
 
 
-
-
 app.get('/novedades', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
-            const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const userQuery = 'SELECT DISTINCT name FROM "user"';
+
+            const userResult = await client.query(userQuery);
+            const userRows = userResult.rows;
+
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
+
             const clientes = userRows.map(row => row.name); // Verifica que 'row.name' es el campo correcto
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
             console.log('Renderizando plantilla con:', { nombreUsuario, clientes, fechaActual });
@@ -2013,79 +2126,92 @@ app.get('/novedades', async (req, res) => {
 
 
 
-
-
-
 app.post('/novedades', (req, res) => {
-    const fecha = req.body.fecha;
-    const turno = req.body.turno;
-    const realiza = req.body.realiza;
-    const entrega = req.body.entrega;
-    const sinNovedad = req.body.sinNovedad ? 'Sin novedad' : '';
+    const {
+        fecha,
+        turno,
+        realiza,
+        entrega,
+        sinNovedad,
+        novedad_tripulacion,
+        novedad_hoteleria,
+        novedad_ejecutivos,
+        novedad_empresas_privadas,
+        novedad_NOVEDADES_TASKGO,
+        novedad_ACTAS,
+        novedad_OTRAS,
+        firmaBase64
+    } = req.body;
 
-    const novedad_tripulacion = req.body.novedad_tripulacion || '';
-    const novedad_hoteleria = req.body.novedad_hoteleria || '';
-    const novedad_ejecutivos = req.body.novedad_ejecutivos || '';
-    const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
-    const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
-    const novedad_ACTAS = req.body.novedad_ACTAS || '';
-    const novedad_OTRAS = req.body.novedad_OTRAS || '';
-    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
-    console.log("Firma en formato base64 recibida:", firmaBase64);
-
-
+    const sinNovedadText = sinNovedad ? 'Sin novedad' : '';
     const fecha_registro = new Date(); // Obtener la fecha actual
 
-
-
-
-    const sql = "INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, sinNovedad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firmaBase64, sinNovedad]; // Corregido aquí
+    const sql = `INSERT INTO novedades 
+        (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, 
+        novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, sinNovedad) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
     
-connection.query(sql, values, (error, results) => {
-  if (error) {
-    console.error("Error al insertar la novedad en la base de datos:", error);
-  } else {
-    console.log("Novedad insertada correctamente:", results);
+    const values = [
+        fecha_registro, 
+        fecha, 
+        turno, 
+        realiza, 
+        entrega, 
+        novedad_tripulacion || '', 
+        novedad_hoteleria || '', 
+        novedad_ejecutivos || '', 
+        novedad_empresas_privadas || '', 
+        novedad_NOVEDADES_TASKGO || '', 
+        novedad_ACTAS || '', 
+        novedad_OTRAS || '', 
+        firmaBase64 || '', 
+        sinNovedadText
+    ];
 
-            // Configurar transporte de correo electrónico
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'callcenter.vianco@gmail.com',
-                    pass: 'mdfaqssdhgoedbmw'
-                }
-            });
+    client.query(sql, values, (error, results) => {
+        if (error) {
+            console.error("Error al insertar la novedad en la base de datos:", error);
+            res.status(500).send("Error interno del servidor");
+            return;
+        } 
 
-// Generar un ID de mensaje único
-function generateMessageId() {
-    return `vianco_${Date.now()}@dominio.com`;
-}
+        console.log("Novedad insertada correctamente:", results);
 
-// Enviar correo electrónico
-transporter.sendMail({
-    from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
-    to: 'soporte.it.vianco@gmail.com', // El destinatario del correo electrónico
-    subject: 'alerta no denovedad centro operaciones', // El asunto del correo electrónico
-    html: '<p><strong>Estimados,</strong></p><br>' +
-          '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
-          '<p>Recuerde realizar el seguimiento en la app en el módulo novedades pendientes.</p>', // El contenido del correo electrónico en HTML
-    messageId: generateMessageId() // Generar un ID de mensaje único
-}, (error, info) => {
-    if (error) {
-        console.error('Error al enviar el correo electrónico:', error);
-    } else {
-        console.log('Correo electrónico enviado:', info.response);
-    }
-});
-
-
-                    const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
-                    res.send(alertScript);
-                }
-            });
+        // Configurar transporte de correo electrónico
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'callcenter.vianco@gmail.com',
+                pass: 'mdfaqssdhgoedbmw'
+            }
         });
 
+        // Generar un ID de mensaje único
+        function generateMessageId() {
+            return `vianco_${Date.now()}@dominio.com`;
+        }
+
+        // Enviar correo electrónico
+        transporter.sendMail({
+            from: 'callcenter.vianco@gmail.com', // Tu dirección de correo electrónico de Gmail
+            to: 'soporte.it.vianco@gmail.com', // El destinatario del correo electrónico
+            subject: 'alerta no denovedad centro operaciones', // El asunto del correo electrónico
+            html: '<p><strong>Estimados,</strong></p><br>' +
+                  '<p>Me complace informarle que se ha agregado una nueva novedad al sistema de nuestro equipo centro operaciones. Esta actualización refleja nuestro continuo compromiso con la eficiencia y la excelencia en nuestro trabajo diario.</p><br>' +
+                  '<p>Recuerde realizar el seguimiento en la app en el módulo novedades pendientes.</p>', // El contenido del correo electrónico en HTML
+            messageId: generateMessageId() // Generar un ID de mensaje único
+        }, (error, info) => {
+            if (error) {
+                console.error('Error al enviar el correo electrónico:', error);
+            } else {
+                console.log('Correo electrónico enviado:', info.response);
+            }
+        });
+
+        const alertScript = '<script>alert("Novedad enviada con éxito"); window.location.href = "/novedades";</script>';
+        res.send(alertScript);
+    });
+});
 
 
     
@@ -2119,30 +2245,38 @@ app.get('/ver_novedades', (req, res) => {
 
 // Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles', (req, res) => {
-    connection.query('SELECT DISTINCT DATE_FORMAT(fecha_registro, "%Y-%m-%d") AS fecha_formateada FROM novedades', (error, results) => {
+    const query = 'SELECT DISTINCT TO_CHAR(fecha_registro, \'YYYY-MM-DD\') AS fecha_formateada FROM novedades';
+
+    client.query(query, (error, results) => {
         if (error) {
             console.error('Error al obtener las fechas disponibles:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
         } else {
-            const fechasDisponibles = results.map(result => result.fecha_formateada);
+            const fechasDisponibles = results.rows.map(result => result.fecha_formateada);
             res.json(fechasDisponibles); // Devuelve un JSON con las fechas disponibles
         }
     });
 });
 
-
 // Backend (Endpoint /api/obtener_novedades)
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
-    const query = 'SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro FROM novedades WHERE DATE(fecha_registro) = ?'; // Añadir el campo de la firma en la consulta SQL
-    connection.query(query, [fechaSeleccionada], (error, results) => {
+    const query = `SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, 
+                   novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, 
+                   NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro 
+                   FROM novedades 
+                   WHERE TO_CHAR(fecha_registro, 'YYYY-MM-DD') = $1`; // Añadir el campo de la firma en la consulta SQL
+
+    const values = [fechaSeleccionada];
+
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         } else {
             // Aquí tienes los resultados de la consulta SQL
             // Itera sobre los resultados para procesar cada fila
-            results.forEach(row => {
+            results.rows.forEach(row => {
                 // Suponiendo que 'row' es el resultado de tu consulta SQL que contiene la firma codificada en base64
                 const firmaBase64 = row.firma;
                 const firmaBinaria = Buffer.from(firmaBase64, 'base64');
@@ -2150,11 +2284,10 @@ app.get('/api/obtener_novedades', (req, res) => {
                 row.firmaBinaria = firmaBinaria;
             });
             // Devuelve los resultados con las firmas binarias decodificadas
-            res.json(results);
+            res.json(results.rows);
         }
     });
 });
-
 
 
 
@@ -2166,11 +2299,14 @@ app.post('/api/guardar_seguimiento', (req, res) => {
     const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,turno,realiza,entrega,sinNovedad,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES} = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza,entrega,sinNovedad,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,sinNovedad,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES];
+    const query = `INSERT INTO novedades_completadas 
+        (nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, turno, realiza, entrega, sinNovedad, fecha_novedad, 
+        novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma, ACCIONES) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`;
+    const values = [nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza, entrega, sinNovedad, fecha, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, otras_novedades, firma, ACCIONES];
     
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results, fields) => {
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al guardar el seguimiento en la base de datos:', error);
             res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
@@ -2187,10 +2323,11 @@ app.post('/api/guardar_seguimiento', (req, res) => {
 
 
 
-
 app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
     const fecha_formateada = req.params.fecha;
-    connection.query('DELETE FROM novedades WHERE DATE_FORMAT(fecha_registro, "%Y-%m-%d") = ?', fecha_formateada, (error, results) => {
+    const query = 'DELETE FROM novedades WHERE TO_CHAR(fecha_registro, \'YYYY-MM-DD\') = $1';
+
+    client.query(query, [fecha_formateada], (error, results) => {
         if (error) {
             console.error('Error al eliminar la fecha:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -2199,7 +2336,6 @@ app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
         }
     });
 });
-
 
 
 
@@ -2215,26 +2351,23 @@ app.get('/ver_novedades_C', (req, res) => {
 
 
 
-
 app.get('/novedadess', (req, res) => {
     const fecha = req.query.fecha;
 
-    // Convertir la fecha al formato de tu base de datos (DD/MM/YYYY)
-    const fechaDB = fecha.split('-').reverse().join('/');
-
     // Preparar la consulta SQL para obtener las novedades de la fecha seleccionada
-    const sql = "SELECT * FROM novedades_completadas WHERE fecha_registro LIKE ?";
+    const sql = "SELECT * FROM novedades_completadas WHERE TO_CHAR(fecha_registro, 'YYYY-MM-DD') LIKE $1";
 
     // Ejecutar la consulta
-    connection.query(sql, [`%${fechaDB}%`], (err, result) => {
+    client.query(sql, [`%${fecha}%`], (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
         } else {
-            res.status(200).json(result); // Devuelve los datos como JSON
+            res.status(200).json(result.rows); // Devuelve los datos como JSON
         }
     });
 });
+
 
 
 
@@ -2252,8 +2385,11 @@ app.get('/inicio', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
-            const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const userQuery = 'SELECT DISTINCT name FROM "user"';
+            
+            const userResult = await client.query(userQuery);
+            const userRows = userResult.rows;
+
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -2272,14 +2408,15 @@ app.get('/inicio', async (req, res) => {
 
 
 
+
 // Manejar la solicitud POST para iniciar el turno
 app.post('/inicio-turno', (req, res) => {
     const nombre = req.body.nombre;
     const turno = req.body.turno;
 
     const fechaHoraActual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
-    const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
-    connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
+    const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES ($1, $2, $3)';
+    client.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
         if (error) {
             console.error('Error al guardar la hora de inicio en la base de datos:', error);
             res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
@@ -2290,6 +2427,7 @@ app.post('/inicio-turno', (req, res) => {
     });
 });
 
+
 app.get('/centro_operaciones/tareas_diarias', (req, res) => {
     const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
     res.render('centro_operaciones/tareas_diarias', { fechaActual, title: 'Tareas Diarias' });
@@ -2297,8 +2435,6 @@ app.get('/centro_operaciones/tareas_diarias', (req, res) => {
 
 
 
-
-// Manejar la solicitud POST para marcar una tarea
 // Manejar la solicitud POST para marcar una tarea
 app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
     const tarea = {
@@ -2323,7 +2459,6 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
         hora_realizada: new Date() // Obtener la hora actual
     };
 
-
     const sql = 'INSERT INTO tareas SET ?';
     connection.query(sql, tarea, (err, result) => {
         if (err) {
@@ -2331,7 +2466,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
             return res.status(500).send('Error al guardar la tarea');
         }
         console.log('Tarea insertada correctamente en la base de datos');
-    
+
         // Actualizar la hora de finalización del turno
         const nombre = req.body.nombre;
         const turno = req.body.turno;
@@ -2343,7 +2478,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
                 return res.status(500).send('Error al actualizar la hora de finalización del turno');
             }
             console.log('Hora de finalización del turno actualizada en la base de datos');
-    
+
             // Envía el mensaje de finalización de turno exitosa
             res.locals.successMessage = 'Finalización de turno exitosa.';
             setTimeout(() => {
@@ -2359,7 +2494,6 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
         res.redirect('/inicio'); // Redirige al usuario a la página de inicio si no hay mensaje de éxito
     }
 });
-
 
 
 
@@ -2421,19 +2555,18 @@ app.get("/buscar_por_fecha", (req, res) => {
 
 
 
-
 // Ruta para procesar la búsqueda por fecha
 app.post('/buscar_por_fecha', async (req, res) => {
     const { fecha } = req.body;
   
     try {
         // Consultar la base de datos por la fecha especificada
-        const query = 'SELECT * FROM aeropuerto WHERE fecha = ?';
-        const [rows, fields] = await connection.promise().query(query, [fecha]);
+        const query = 'SELECT * FROM aeropuerto WHERE fecha = $1';
+        const result = await client.query(query, [fecha]);
         console.log('Datos encontrados');
 
         // Enviar los resultados como respuesta JSON
-        res.json(rows);
+        res.json(result.rows);
     } catch (error) {
         console.error('Error en la búsqueda por fecha:', error);
         res.status(500).send('Error en la búsqueda por fecha');
@@ -2463,23 +2596,19 @@ Handlebars.registerHelper('formatDate', formatDate);
 
 
 
-
-
-
-
 // Ruta para clientes
 app.get('/formulario_cotizaciones', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
         // Consulta a la base de datos para obtener la información de los clientes
-        connection.query('SELECT * FROM clientes', (error, results) => {
+        client.query('SELECT * FROM clientes', (error, results) => {
             if (error) {
                 console.error('Error al obtener los clientes:', error);
                 res.status(500).send('Error interno del servidor');
             } else {
                 // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta
-                res.render('cotizaciones/formulario_cotizacion.hbs', { nombreUsuario,clientes: results });
+                res.render('cotizaciones/formulario_cotizacion.hbs', { nombreUsuario, clientes: results.rows });
             }
         });
     } else {
@@ -2489,7 +2618,8 @@ app.get('/formulario_cotizaciones', (req, res) => {
 
 
 
-app.post('/cotizacion', (req, res) => {
+// Ruta para manejar la solicitud POST de cotización
+app.post('/cotizacion', async (req, res) => {
     const cotizacionData = req.body;
     const numServicios = parseInt(cotizacionData.numServicios);
 
@@ -2506,114 +2636,92 @@ app.post('/cotizacion', (req, res) => {
     cotizacionData.num_servicios = numServicios;
 
     // Verificar si 'adicionales' está presente y agregarlo a cotizacionData
-    if (cotizacionData['adicionales']) {
-        cotizacionData.adicionales = cotizacionData['adicionales'];
+    if (cotizacionData.adicionales) {
+        cotizacionData.adicionales = cotizacionData.adicionales;
     }
 
-    // Insertar los datos de la cotización en la base de datos
-    connection.beginTransaction(err => {
-        if (err) {
-            console.error('Error al iniciar la transacción:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
+    // Iniciar una transacción para asegurar la integridad de los datos
+    try {
+        await client.query('BEGIN');
 
         // Guardar la cotización en la tabla de cotizaciones
-        connection.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
-            if (err) {
-                console.error('Error al insertar la cotización en la base de datos:', err);
-                res.status(500).send('Error interno del servidor');
-                return;
-            }
+        const cotizacionInsertQuery = 'INSERT INTO cotizaciones(cliente, num_servicios, adicionales) VALUES($1, $2, $3) RETURNING id';
+        const cotizacionValues = [cotizacionData.cliente, cotizacionData.num_servicios, cotizacionData.adicionales];
+        const cotizacionResult = await client.query(cotizacionInsertQuery, cotizacionValues);
+        const cotizacionId = cotizacionResult.rows[0].id;
 
-            const cotizacionId = result.insertId;
+        // Crear una nueva entrada en la tabla de notificaciones
+        const notificacionInsertQuery = 'INSERT INTO notificaciones(cotizacion_id, estado_lectura, fecha_creacion) VALUES($1, $2, $3)';
+        const notificacionValues = [cotizacionId, 'no leído', new Date()];
+        await client.query(notificacionInsertQuery, notificacionValues);
 
-            // Crear una nueva entrada en la tabla de notificaciones
-            const notificacionData = {
-                cotizacion_id: cotizacionId,
-                estado_lectura: 'no leído',
-                fecha_creacion: new Date()
-            };
-
-            connection.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
-                if (err) {
-                    console.error('Error al crear la notificación:', err);
-                    res.status(500).send('Error interno del servidor');
-                    return;
-                }
-
-                // Enviar una respuesta al cliente
-                res.send('Cotización enviada exitosamente');
-            });
-        });
-    });
+        // Commit la transacción si todo fue exitoso
+        await client.query('COMMIT');
+        res.send('Cotización enviada exitosamente');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error en la transacción:', err);
+        res.status(500).send('Error interno del servidor');
+    }
 });
-
-
-
-
-
-
-
-
-
 
 // Ruta para obtener el número de notificaciones sin leer
-app.get('/notificacionesSinLeer', (req, res) => {
-    // Consulta SQL para contar el número de notificaciones sin leer del usuario actual
-    connection.query('SELECT COUNT(*) AS count FROM notificaciones WHERE estado_lectura = ?', ['no leído'], (err, resultados) => {
-        if (err) {
-            console.error('Error al obtener el número de notificaciones sin leer:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
+app.get('/notificacionesSinLeer', async (req, res) => {
+    try {
+        // Consulta SQL para contar el número de notificaciones sin leer del usuario actual
+        const query = 'SELECT COUNT(*) AS count FROM notificaciones WHERE estado_lectura = $1';
+        const values = ['no leído'];
+
+        // Ejecutar la consulta usando async/await en el cliente de PostgreSQL
+        const { rows } = await client.query(query, values);
+        const count = rows[0].count;
 
         // Enviar el número de notificaciones sin leer al cliente
-        res.json({ count: resultados[0].count });
-    });
+        res.json({ count });
+    } catch (error) {
+        console.error('Error al obtener el número de notificaciones sin leer:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
-// Ruta para marcar todas las notificaciones como leídas
-app.post('/marcarNotificacionesLeidas', (req, res) => {
-    // Actualiza el estado de las notificaciones a "leído"
-    connection.query('UPDATE notificaciones SET estado_lectura = ?', ['leído'], (err, result) => {
-        if (err) {
-            console.error('Error al marcar las notificaciones como leídas:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
 
-        // Envía una respuesta de éxito al cliente
-        res.send('Notificaciones marcadas como leídas exitosamente');
-    });
-});
+// Ruta para la página de búsqueda y visualización de datos (cotizaciones pendientes)
+app.get('/cotizaciones_pendientes', async (req, res) => {
+    try {
+        // Consulta SQL para obtener las cotizaciones pendientes
+        const query = 'SELECT id, cliente FROM cotizaciones WHERE realizada = $1';
+        const values = [0]; // Valor de realizada = 0
 
-// Ruta para la página de búsqueda y visualización de datos
-app.get('/cotizaciones_pendientes', (req, res) => {
-    // Realizar la consulta a la base de datos para obtener las cotizaciones pendientes
-    connection.query('SELECT id, cliente FROM cotizaciones WHERE realizada = 0', (err, rows) => {
-        if (err) {
-            console.error('Error al obtener cotizaciones pendientes:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
+        // Ejecutar la consulta utilizando async/await en el cliente de PostgreSQL
+        const { rows } = await client.query(query, values);
+
         // Renderizar la plantilla cotizaciones_pendientes.hbs con los datos obtenidos de la base de datos
         res.render('cotizaciones/cotizaciones_pendientes', { cotizaciones: rows });
-    });
+    } catch (error) {
+        console.error('Error al obtener cotizaciones pendientes:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
-app.get('/cotizaciones_pendientes/:id', (req, res) => {
+
+
+
+
+// Ruta para obtener detalles de una cotización por ID
+app.get('/cotizaciones_pendientes/:id', async (req, res) => {
     const cotizacionId = req.params.id;
-    connection.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
-        if (err) {
-            console.error('Error al obtener detalles de la cotización:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
+    try {
+        // Consulta SQL para obtener la cotización por su ID
+        const query = 'SELECT * FROM cotizaciones WHERE id = $1';
+        const values = [cotizacionId];
+
+        // Ejecutar la consulta utilizando async/await en el cliente de PostgreSQL
+        const { rows: cotizacionRows } = await client.query(query, values);
+
         if (cotizacionRows.length === 0) {
             res.status(404).send('Cotización no encontrada');
             return;
         }
-        
+
         // Una vez que tengas los detalles de la cotización, extrae los servicios asociados a esa cotización
         const cotizacion = cotizacionRows[0];
         const servicios = [];
@@ -2632,68 +2740,95 @@ app.get('/cotizaciones_pendientes/:id', (req, res) => {
         }
 
         // Renderizar la plantilla detalles_cotizacion.hbs con los detalles de la cotización, los servicios y los detalles del cliente
-        res.render('cotizaciones/detalles_cotizacion', { cotizacion: cotizacion, servicios: servicios, cliente: cotizacion });
-    });
-});
-app.post('/generar_plantilla', (req, res) => {
-    // Extraer todos los datos de la cotización del cuerpo de la solicitud
-    const cotizacionId = req.body.cotizacionId;
-    const valorTotal = req.body.valorTotal;
-    const subtotal = req.body.subtotal;
-    const descuento = req.body.descuento;
-    const adicionales = req.body.adicionales; // Aquí se obtiene el valor de adicionales
-    
-    // Extraer los datos del cliente del cuerpo de la solicitud
-    const cliente = {
-        nombre: req.body.nombre,
-        cliente: req.body.cliente,
-        correo: req.body.correo,
-        contacto: req.body.contacto,
-        ciudad: req.body.ciudad,
-        num_servicios: req.body.num_servicios,
-        fecha_creacion: req.body.fecha_creacion
-    };
-    
-    // Extraer todos los detalles de los servicios de la cotización
-    const servicios = req.body.servicios;
-    
-    // Renderizar la plantilla personalizada con todos los datos de la cotización
-    res.render('cotizaciones/plantilla_personalizada', { 
-        cotizacionId: cotizacionId, 
-        valorTotal: valorTotal,
-        subtotal: subtotal,
-        descuento: descuento,
-        adicionales: adicionales, // Aquí se incluye adicionales en el contexto
-        cliente: cliente, 
-        servicios: servicios
-    }, (err, html) => {
-        if (err) {
-            console.error('Error al renderizar la plantilla:', err);
-            res.status(500).send('Error al generar la plantilla');
-            return;
-        }
-        // Enviar el HTML generado como respuesta HTTP
-        res.send(html);
-    });
+        res.render('cotizaciones/detalles_cotizacion', { cotizacion, servicios, cliente: cotizacion });
+    } catch (error) {
+        console.error('Error al obtener detalles de la cotización:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 
 
 
-app.post('/marcar_realizado', (req, res) => {
-    const cotizacionId = req.body.cotizacionId;
-    console.log(req.body); 
-    // Aquí debes implementar la lógica para marcar la cotización como realizada en tu base de datos
-    // Por ejemplo, si estás utilizando MySQL puedes hacer algo como esto:
-    connection.query('UPDATE cotizaciones SET realizada = 1 WHERE id = ?', cotizacionId, (err, result) => {
-        if (err) {
-            console.error('Error al marcar como realizado:', err);
-            res.status(500).send('Error interno del servidor');
-            return;
-        }
+
+
+
+// Ruta para generar una plantilla personalizada de cotización
+app.post('/generar_plantilla', async (req, res) => {
+    try {
+        // Extraer todos los datos de la cotización del cuerpo de la solicitud
+        const {
+            cotizacionId,
+            valorTotal,
+            subtotal,
+            descuento,
+            adicionales,
+            nombre,
+            cliente,
+            correo,
+            contacto,
+            ciudad,
+            num_servicios,
+            fecha_creacion,
+            servicios
+        } = req.body;
+
+        const clienteData = {
+            nombre,
+            cliente,
+            correo,
+            contacto,
+            ciudad,
+            num_servicios,
+            fecha_creacion
+        };
+
+        // Renderizar la plantilla personalizada con todos los datos de la cotización
+        res.render('cotizaciones/plantilla_personalizada', {
+            cotizacionId,
+            valorTotal,
+            subtotal,
+            descuento,
+            adicionales,
+            cliente: clienteData,
+            servicios
+        }, (err, html) => {
+            if (err) {
+                console.error('Error al renderizar la plantilla:', err);
+                res.status(500).send('Error al generar la plantilla');
+                return;
+            }
+            // Enviar el HTML generado como respuesta HTTP
+            res.send(html);
+        });
+    } catch (error) {
+        console.error('Error al procesar la solicitud:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
+
+
+
+// Ruta para marcar una cotización como realizada
+app.post('/marcar_realizado', async (req, res) => {
+    try {
+        const cotizacionId = req.body.cotizacionId;
+
+        // Ejecutar la actualización en la base de datos
+        const query = 'UPDATE cotizaciones SET realizada = true WHERE id = $1';
+        const values = [cotizacionId];
+
+        // Ejecutar la consulta usando async/await
+        await client.query(query, values);
+
         // Redirigir a la página de cotizaciones pendientes después de marcar como realizado
         res.redirect('/cotizaciones_pendientes');
-    });
+    } catch (error) {
+        console.error('Error al marcar como realizado:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 
@@ -2725,25 +2860,52 @@ app.get('/VE', (req, res) => {
     res.render('cotizaciones/ver_cotizaciones.hbs');
 });
 
-app.get('/ver_cotizaciones', (req, res) => {
+
+
+// Ruta para ver detalles de una cotización
+app.get('/ver_cotizaciones', async (req, res) => {
     const idCotizacion = req.query.id_cotizacion;
 
-    if (idCotizacion) {
-        const sql = 'SELECT * FROM cotizaciones WHERE id = ?';
-        connection.query(sql, [idCotizacion], (error, results) => {
-            if (error) {
-                console.error('Error al ejecutar la consulta:', error);
-                res.render('error');
-                return;
-            }
-            if (results.length > 0) {
-                res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: results[0] });
-            } else {
-                res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: null });
-            }
-        });
-    } else {
-        res.redirect('/VE'); // Si no se proporciona un ID válido, redirige al formulario de búsqueda
+    try {
+        if (!idCotizacion) {
+            return res.redirect('/VE'); // Si no se proporciona un ID válido, redirige al formulario de búsqueda
+        }
+
+        // Consulta SQL para obtener la cotización por su ID
+        const query = 'SELECT * FROM cotizaciones WHERE id = $1';
+        const { rows } = await client.query(query, [idCotizacion]);
+
+        if (rows.length > 0) {
+            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: rows[0] });
+        } else {
+            res.render('cotizaciones/ver_cotizaciones.hbs', { cotizacion: null });
+        }
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.render('error');
+    }
+});
+
+
+
+
+
+
+
+// Ruta para consultar todos los registros de contabilidad
+app.get('/consulta-contabilidad-todos', async (req, res) => {
+    try {
+        // Consulta SQL para seleccionar las columnas necesarias de la tabla contabilidad
+        const query = 'SELECT placa, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta FROM contabilidad';
+
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(query);
+
+        // Enviar los resultados de la consulta como respuesta en formato JSON
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al consultar la contabilidad:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
@@ -2756,43 +2918,20 @@ app.get('/ver_cotizaciones', (req, res) => {
 
 
 
-// Define la ruta para el endpoint '/consulta-contabilidad-todos'
-app.get('/consulta-contabilidad-todos', (req, res) => {
-    // Realizar la consulta a la base de datos seleccionando solo las columnas necesarias
-    connection.query('SELECT placa, Nombre, tipo_documento,Cedula,Nombre_del_banco,Tipo_de_cuenta_bancaria,Numero_de_cuenta FROM contabilidad', (error, results, fields) => {
-        if (error) {
-            console.error('Error al consultar la contabilidad:', error);
-            res.status(500).json({ error: 'Error interno del servidor' });
-            return;
-        }
-
-        // Enviar los resultados de la consulta como respuesta en formato JSON
-        res.json(results);
-    });
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Ruta para la página de búsqueda y visualización de datos
 // Ruta para la página de búsqueda y visualización de datos
+
+// Ruta para mostrar el mapa si el usuario está autenticado
 app.get('/mapa', (req, res) => {
     // Realizar autenticación de usuario u otras tareas aquí
     if (req.session.loggedin) {
         // El usuario está autenticado, realizar tareas adicionales si es necesario
         const nombreUsuario = req.session.name;
         console.log(`El usuario ${nombreUsuario} está autenticado.`);
-        res.render('mapa.hbs', { nombreUsuario: nombreUsuario }); // Pasar el nombre de usuario como una variable de contexto
+
+        // Renderizar la plantilla 'mapa.hbs' y pasar el nombre de usuario como variable de contexto
+        res.render('mapa.hbs', { nombreUsuario });
     } else {
         // El usuario no está autenticado, redirigir o mostrar un mensaje de error
         console.log('El usuario no está autenticado.');
@@ -2800,8 +2939,6 @@ app.get('/mapa', (req, res) => {
         res.redirect('/login');
     }
 });
-
-
 
 
 
@@ -2816,6 +2953,7 @@ const io = socketIo(server);
 
 // Objeto para mantener las últimas ubicaciones conocidas de los usuarios
 let lastKnownLocations = {};
+
 
 /// Cuando se conecta el socket, solicitar las últimas ubicaciones conocidas
 io.on('connection', (socket) => {
@@ -2838,39 +2976,53 @@ io.on('connection', (socket) => {
         socket.emit('userLocations', locations);
     });
 
+
+
+    
 // Manejar la solicitud de selección de usuario
-socket.on('selectUser', ({ username }) => {
-    // Consultar la base de datos para obtener los movimientos del usuario seleccionado
-    const query = `SELECT * FROM ubicaciones WHERE nombre_usuario = '${username}'`;
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error('Error al obtener los movimientos de MySQL:', error);
-            return;
-        }
+socket.on('selectUser', async ({ username }) => {
+    try {
+        // Consultar la base de datos para obtener los movimientos del usuario seleccionado
+        const query = 'SELECT * FROM ubicaciones WHERE nombre_usuario = $1';
+        const { rows } = await client.query(query, [username]);
+
         // Emitir los movimientos al cliente que solicitó
-        socket.emit('userMovements', results);
-    });
+        socket.emit('userMovements', rows);
+    } catch (error) {
+        console.error('Error al obtener los movimientos de PostgreSQL:', error);
+    }
 });
 
 
-   // Emitir las últimas ubicaciones conocidas al cliente recién conectado
-   socket.emit('userLocations', lastKnownLocations);
-   
-   socket.on('location', (data) => {
-    // Actualizar la última ubicación conocida del usuario
-    lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time, date: data.date };
 
-    // Insertar la ubicación, la fecha y el nombre de usuario en la tabla de ubicaciones
-    const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora, fecha) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [data.lat, data.lng, data.username, data.time, data.date], (error, results) => {
-        if (error) {
-            console.error('Error al insertar la ubicación en MySQL:', error);
-            return;
-        }
-        // Emitir la ubicación a todos los clientes conectados
+
+
+
+// Emitir las últimas ubicaciones conocidas al cliente recién conectado
+socket.emit('userLocations', lastKnownLocations);
+
+// Manejar la actualización de la ubicación del usuario
+socket.on('location', async (data) => {
+    try {
+        // Actualizar la última ubicación conocida del usuario en la memoria del servidor
+        lastKnownLocations[data.username] = { lat: data.lat, lng: data.lng, time: data.time, date: data.date };
+
+        // Insertar la ubicación en la tabla de ubicaciones en PostgreSQL
+        const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora, fecha) VALUES ($1, $2, $3, $4, $5)';
+        const values = [data.lat, data.lng, data.username, data.time, data.date];
+        await client.query(query, values);
+
+        // Emitir la ubicación actualizada a todos los clientes conectados
         io.emit('userLocation', data);
-    });
+    } catch (error) {
+        console.error('Error al insertar la ubicación en PostgreSQL:', error);
+    }
 });
+
+
+
+
+
 
     // Manejar la desconexión de los clientes
     socket.on('disconnect', () => {
@@ -2882,88 +3034,84 @@ socket.on('selectUser', ({ username }) => {
 
 
 
-
-
 // Ruta para clientes
-app.get('/clientess', (req, res) => {
-    // Consulta a la base de datos para obtener la información de los clientes
-    connection.query('SELECT * FROM clientes', (error, results) => {
-        if (error) {
-            console.error('Error al obtener los clientes:', error);
-            res.status(500).send('Error interno del servidor');
-        } else {
-          
-            // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta
-            res.render('clientes/clientes.hbs', { clientes: results });
-        }
-    });
+app.get('/clientess', async (req, res) => {
+    try {
+        // Consulta a la base de datos para obtener la información de los clientes
+        const query = 'SELECT * FROM clientes';
+        const { rows: results } = await client.query(query);
+
+        // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta
+        res.render('clientes/clientes.hbs', { clientes: results });
+    } catch (error) {
+        console.error('Error al obtener los clientes:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 
 
 
 // Ruta para actualizar un cliente específico
-app.post('/actualizar_cliente', (req, res) => {
-    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto,fecha_inicio,fecha_final,destino} = req.body;
+app.post('/actualizar_cliente', async (req, res) => {
+    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino } = req.body;
 
     console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
-    connection.query(
-        'SELECT * FROM clientes WHERE nombre = ?', 
-        [nombre], 
-        (error, results) => {
-            if (error) {
-                console.error('Error al buscar el cliente:', error);
-                return res.status(500).send('Error interno del servidor');
-            }
-            if (results.length === 0) {
-                return res.status(404).send('Cliente no encontrado');
-            }
+    try {
+        // Consultar el cliente actual en la base de datos
+        const { rows: results } = await client.query('SELECT * FROM clientes WHERE nombre = $1', [nombre]);
 
-            const clienteActual = results[0];
-
-            if (
-                clienteActual.contratante !== contratante ||
-                clienteActual.N_contrato !== N_contrato ||
-                clienteActual.nit !== nit ||
-                clienteActual.rut !== rut ||
-                clienteActual.camara_comercio !== camara_comercio ||
-                clienteActual.cumpleaños !== cumpleaños ||
-                clienteActual.responsable !== responsable ||
-                clienteActual.celular !== celular ||
-                clienteActual.cedula !== cedula ||
-                clienteActual.objeto !== objeto ||
-                clienteActual.destino !== destino ||
-                clienteActual.fecha_inicio !== fecha_inicio ||
-                clienteActual.fecha_final !== fecha_final ||
-                
-                clienteActual.direccion !== direccion
-
-                
-
-                
-                
-            ) {
-                connection.query(
-                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ?,destino = ? WHERE nombre = ?', 
-                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,destino,nombre], 
-                    (error, results) => {
-                        if (error) {
-                            console.error('Error al actualizar el cliente:', error);
-                            return res.status(500).send('Error interno del servidor');
-                        }
-                        console.log('Cliente actualizado correctamente:', results);
-                        return res.json({ message: 'Cliente actualizado correctamente' });
-                    }
-                );
-            } else {
-                console.log('Los valores son los mismos, no es necesario actualizar');
-                return res.json({ message: 'Los valores son los mismos, no es necesario actualizar' });
-            }
+        if (results.length === 0) {
+            return res.status(404).send('Cliente no encontrado');
         }
-    );
-});
 
+        const clienteActual = results[0];
+
+        // Verificar si hay cambios en los datos del cliente
+        if (
+            clienteActual.contratante !== contratante ||
+            clienteActual.N_contrato !== N_contrato ||
+            clienteActual.nit !== nit ||
+            clienteActual.rut !== rut ||
+            clienteActual.camara_comercio !== camara_comercio ||
+            clienteActual.cumpleaños !== cumpleaños ||
+            clienteActual.responsable !== responsable ||
+            clienteActual.celular !== celular ||
+            clienteActual.cedula !== cedula ||
+            clienteActual.objeto !== objeto ||
+            clienteActual.destino !== destino ||
+            clienteActual.fecha_inicio !== fecha_inicio ||
+            clienteActual.fecha_final !== fecha_final ||
+            clienteActual.direccion !== direccion
+        ) {
+            // Ejecutar la actualización del cliente en la base de datos
+            const updateQuery = `
+                UPDATE clientes 
+                SET contratante = $1, N_contrato = $2, nit = $3, rut = $4, camara_comercio = $5, cumpleaños = $6,
+                    direccion = $7, responsable = $8, celular = $9, cedula = $10, objeto = $11, fecha_inicio = $12,
+                    fecha_final = $13, destino = $14
+                WHERE nombre = $15
+            `;
+
+            const updateValues = [
+                contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion, responsable, celular, cedula,
+                objeto, fecha_inicio, fecha_final, destino, nombre
+            ];
+
+            await client.query(updateQuery, updateValues);
+
+            console.log('Cliente actualizado correctamente:', results);
+            return res.json({ message: 'Cliente actualizado correctamente' });
+        } else {
+            console.log('Los valores son los mismos, no es necesario actualizar');
+            return res.json({ message: 'Los valores son los mismos, no es necesario actualizar' });
+        }
+    } catch (error) {
+        console.error('Error al actualizar el cliente:', error);
+        return res.status(500).send('Error interno del servidor');
+    }
+});
 
 
 
@@ -2972,44 +3120,46 @@ app.get('/nuevo_cliente', (req, res) => {
     res.render('clientes/agregar_clientes.hbs');
 });
 
-
 // Manejador de ruta para procesar el formulario y agregar un nuevo cliente a la base de datos
-app.post('/agregar-cliente',(req, res) => {
+app.post('/agregar-cliente', async (req, res) => {
     const formData = req.body; // Capturar los datos del formulario
 
-    connection.query(
-      `INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        formData.nombre,
-        formData.rut,
-        formData.camara_comercio,
-        formData.cumpleaños,
-        formData.N_contrato,
-        formData.contratante,
-        formData.nit,
-        formData.direccion,
-        formData.responsable,
-        formData.celular,
-        formData.cedula,
-        formData.objeto,
-        formData.fecha_inicio,
-        formData.fecha_final,
-        formData.destino,
+    try {
+        // Consulta SQL para insertar un nuevo cliente en la base de datos
+        const insertQuery = `
+            INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        `;
 
-      ],
-      (error, results) => {
-        if (error) {
-          console.error('Error al agregar el cliente:', error);
-          res.status(500).send('Error al agregar el cliente');
-          return;
-        }
+        const insertValues = [
+            formData.nombre,
+            formData.rut,
+            formData.camara_comercio,
+            formData.cumpleaños,
+            formData.N_contrato,
+            formData.contratante,
+            formData.nit,
+            formData.direccion,
+            formData.responsable,
+            formData.celular,
+            formData.cedula,
+            formData.objeto,
+            formData.fecha_inicio,
+            formData.fecha_final,
+            formData.destino,
+        ];
+
+        // Ejecutar la consulta de inserción usando async/await
+        await client.query(insertQuery, insertValues);
+
         console.log('Cliente agregado correctamente a la base de datos');
         // Redirigir al usuario de vuelta a la página de consulta de clientes
-        res.redirect(`/clientess`);
-      }
-    );
-  });
+        res.redirect('/clientess');
+    } catch (error) {
+        console.error('Error al agregar el cliente:', error);
+        res.status(500).send('Error al agregar el cliente');
+    }
+});
 
 
 
@@ -3080,417 +3230,348 @@ app.get('/seleccionar', (req, res) => {
 });
 
 
-app.get('/vehiculos_vencidos', (req, res) => {
-    const consultaVehiculos = `
-      SELECT placa 
-      FROM vehiculos;
-    `;
-      
-    connection.query(consultaVehiculos, (error, resultados) => {
-      if (error) {
+app.get('/vehiculos_vencidos', async (req, res) => {
+    try {
+        // Consulta SQL para obtener las placas de todos los vehículos
+        const consultaVehiculos = `
+            SELECT placa
+            FROM vehiculos
+        `;
+
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(consultaVehiculos);
+
+        // Enviar los resultados de la consulta como respuesta en formato JSON
+        res.json(rows);
+    } catch (error) {
         console.error('Error al obtener vehículos:', error);
         res.status(500).json({ error: 'Error al obtener vehículos' });
-        return;
-      }
-      res.json(resultados);
-    });
-});
-
-
-
-
-
-
-
-
-
-
-// Ruta para obtener todas las placas de vehículos disponibles
-app.get('/vehiculoos', (req, res) => {
-    const consultaVehiculos = 'SELECT placa FROM vehiculos';
-    connection.query(consultaVehiculos, (error, resultados) => {
-        if (error) {
-            console.error('Error al obtener vehículos:', error);
-            res.status(500).json({ error: 'Error al obtener vehículos' });
-            return;
-        }
-        res.json(resultados);
-    });
-});
-
-
-  // Obtener el último consecutivo al iniciar la aplicación
-  connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
-    if (err) {
-      console.error('Error al obtener el último consecutivo:', err);
-      return;
     }
-    if (rows.length > 0) {
-      ultimoConsecutivo = rows[0].valor;
-      console.log('Último consecutivo obtenido de la base de datos:', ultimoConsecutivo);
-    }
-  });
-
-
-
-
-
-// Ruta para obtener conductores
-app.get('/conductoress', (req, res) => {
-    const consultaConductores = 'SELECT id, conductor, cedula, fecha_vigencia FROM conductores';
-    connection.query(consultaConductores, (error, resultados) => {
-        if (error) {
-            console.error('Error al obtener conductores:', error);
-            res.status(500).json({ error: 'Error al obtener conductores' });
-            return;
-        }
-        res.json(resultados);
-    });
 });
 
-app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /clientes2
-    const consultaClientes = 'SELECT nombre,contratante,fecha_inicio, N_contrato ,fecha_final  FROM clientes';
-    connection.query(consultaClientes, (error, resultados) => {
-      if (error) {
+
+
+
+
+
+app.get('/vehiculoos', async (req, res) => {
+    try {
+        // Consulta SQL para obtener todas las placas de vehículos
+        const consultaVehiculos = 'SELECT placa FROM vehiculos';
+
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(consultaVehiculos);
+
+        // Enviar los resultados de la consulta como respuesta en formato JSON
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener vehículos:', error);
+        res.status(500).json({ error: 'Error al obtener vehículos' });
+    }
+});
+
+
+
+
+
+
+
+
+app.get('/conductoress', async (req, res) => {
+    try {
+        // Consulta SQL para obtener conductores con sus detalles
+        const consultaConductores = 'SELECT id, conductor, cedula, fecha_vigencia FROM conductores';
+
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(consultaConductores);
+
+        // Enviar los resultados de la consulta como respuesta en formato JSON
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener conductores:', error);
+        res.status(500).json({ error: 'Error al obtener conductores' });
+    }
+});
+
+
+
+app.get('/clientes2', async (req, res) => {
+    try {
+        // Consulta SQL para obtener clientes con sus detalles relevantes
+        const consultaClientes = 'SELECT nombre, contratante, fecha_inicio, N_contrato, fecha_final FROM clientes';
+
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(consultaClientes);
+
+        // Mapear los resultados para formatearlos como se requiere
+        const clientesData = rows.map(cliente => ({
+            nombre: cliente.nombre,
+            N_contrato: cliente.n_contrato,
+            contratante: cliente.contratante,
+            fecha_inicio: cliente.fecha_inicio,
+            fecha_final: cliente.fecha_final
+        }));
+
+        // Enviar los resultados formateados como respuesta en formato JSON
+        res.json(clientesData);
+    } catch (error) {
         console.error('Error al obtener clientes:', error);
         res.status(500).json({ error: 'Error al obtener clientes' });
-        return;
-      }
-  
-      const clientesData = resultados.map(cliente => ({
-        nombre: cliente.nombre,
-        N_contrato: cliente.N_contrato,
-        contratante: cliente.contratante,
-        fecha_inicio: cliente.fecha_inicio,
-        fecha_final: cliente.fecha_final
-      }));
-  
-      res.json(clientesData);
-    });
-  });
+    }
+});
 
 
 
-// Ruta para obtener el primer conductor asociado a una placa
-app.get('/primer-conductor/:placa', (req, res) => {
+
+
+
+app.get('/primer-conductor/:placa', async (req, res) => {
     const placa = req.params.placa;
-    const consultaPrimerConductor = 'SELECT id, conductor FROM conductores WHERE placa = ? LIMIT 1';
-    connection.query(consultaPrimerConductor, [placa], (error, resultado) => {
-        if (error) {
-            console.error('Error al obtener el primer conductor:', error);
-            res.status(500).json({ error: 'Error al obtener el primer conductor' });
-            return;
-        }
-        if (resultado.length > 0) {
-            res.json(resultado[0]);
+    const consultaPrimerConductor = 'SELECT id, conductor FROM conductores WHERE placa = $1 LIMIT 1';
+
+    try {
+        // Ejecutar la consulta utilizando async/await
+        const { rows } = await client.query(consultaPrimerConductor, [placa]);
+
+        if (rows.length > 0) {
+            // Si se encontró un conductor, enviarlo como respuesta en formato JSON
+            res.json(rows[0]);
         } else {
+            // Si no se encontró ningún conductor, enviar un mensaje de error 404
             res.status(404).json({ error: 'No se encontró conductor para la placa proporcionada' });
         }
-    });
+    } catch (error) {
+        // Manejar errores de consulta
+        console.error('Error al obtener el primer conductor:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
 
 
 
 
-app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato/:contratante/:fecha_inicio/:fecha_final', (req, res) => {
-    const nombreCliente = req.params.nombreCliente;
-    const placa = req.params.placa;
-    const idConductor1 = req.params.idConductor1;
-    const idConductor2 = req.params.idConductor2;
-    const idConductor3 = req.params.idConductor3;
-    const N_contrato = req.params.N_contrato;
-    const contratante = req.params.contratante;
-    const fecha_inicio = req.params.fecha_inicio;
-    const fecha_final = req.params.fecha_final;
 
-    let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA');
-// Valida y asigna valores predeterminados a los parámetros si son undefined
-// Función para codificar un parámetro y manejar casos indefinidos
-// Función para formatear un parámetro y su valor
-function formatParam(key, value) {
-    return `${key.toUpperCase()} :${value}`;
-}
 
-// Función para codificar un parámetro y manejar casos indefinidos
-function encodeParam(param, defaultValue = '') {
-    return param !== undefined ? encodeURIComponent(param) : defaultValue;
-  }
+// Ruta para generar un FUEC y guardar los datos en PostgreSQL
+app.get('/fuec/:nombreCliente/:placa/:idConductor1/:idConductor2/:idConductor3/:N_contrato/:contratante/:fecha_inicio/:fecha_final', async (req, res) => {
+    const { nombreCliente, placa, idConductor1, idConductor2, idConductor3, N_contrato, contratante, fecha_inicio, fecha_final } = req.params;
 
-// Valida y codifica cada parámetro de la URL
-const placaFormatted = formatParam("Placa", placa || "INDEFINIDA");
-const contratoFormatted = N_contrato !== undefined ? formatParam("Contrato No ", N_contrato) : '';
-const contratanteFormatted = contratante !== undefined ? formatParam("Cliente ", contratante) : '';
-const fecha_inicioFormatted = fecha_inicio !== undefined ? formatParam("Fecha inicio", fecha_inicio) : '';
-const fecha_finalFormatted = fecha_final !== undefined ? formatParam("Fecha final", fecha_final) : '';
-const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFormatted} \n${fecha_finalFormatted}\n${placaFormatted}\n`;
-    // Genera el código QR con la URL del FUEC en el servidor
-    qrcode.toDataURL(fuecURL, (err, qrDataURL) => {
-        if (err) {
-            console.error('Error al generar el código QR:', err);
-            res.status(500).json({ error: 'Error al generar el código QR' });
-            return;
-        }
+    // Filtrar conductores válidos y convertir a números enteros
+    let conductoresIds = [idConductor1, idConductor2, idConductor3].filter(id => id !== 'NA').map(id => parseInt(id));
+
+    try {
+        // Generar el código QR con la URL del FUEC en el servidor
+        const fuecURL = `Contrato Nº ${N_contrato}\nCliente: ${contratante}\nFecha inicio: ${fecha_inicio} \nFecha final: ${fecha_final}\nPlaca: ${placa}\n`;
+        const qrDataURL = await qrcode.toDataURL(fuecURL);
 
         // Obtener el último consecutivo de la base de datos
-        connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
-            if (err) {
-                console.error('Error al obtener el último consecutivo:', err);
-                res.status(500).json({ error: 'Error al obtener el último consecutivo' });
-                return;
-            }
+        const queryLastConsecutivo = 'SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1';
+        const { rows } = await pool.query(queryLastConsecutivo);
+        let ultimoConsecutivo = 1; // Valor predeterminado si no hay registros en la base de datos
 
-            let ultimoConsecutivo = 1; // Valor predeterminado si no se encuentra en la base de datos
-            if (rows.length > 0) {
-                ultimoConsecutivo = rows[0].valor + 1; // Incrementa el último consecutivo obtenido
-            }
+        if (rows.length > 0) {
+            ultimoConsecutivo = rows[0].valor + 1; // Incrementar el último consecutivo obtenido
+        }
 
+        // Actualizar el último consecutivo en la base de datos
+        const queryInsertConsecutivo = 'INSERT INTO consecutivos (valor) VALUES ($1)';
+        await pool.query(queryInsertConsecutivo, [ultimoConsecutivo]);
 
+        // Generar el número FUEC con el formato específico
+        const numeroFUEC = `4250427192024${N_contrato}${ultimoConsecutivo}`;
 
+        // Obtener responsable y objeto del cliente
+        const queryClienteInfo = 'SELECT responsable, objeto FROM clientes WHERE nombre = $1';
+        const clienteResult = await pool.query(queryClienteInfo, [nombreCliente]);
+
+        if (clienteResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Cliente no encontrado' });
+        }
+
+        const { responsable, objeto } = clienteResult.rows[0];
+
+        // Obtener nombres de conductores
+        const queryConductoresInfo = 'SELECT id, conductor FROM conductores WHERE id = ANY($1)';
+        const conductoresResult = await pool.query(queryConductoresInfo, [conductoresIds]);
+
+        // Mapear los resultados para obtener un objeto de ID->Nombre de conductor
+        const conductorNamesMap = {};
+        conductoresResult.rows.forEach(row => {
+            conductorNamesMap[row.id] = row.conductor;
+        });
+
+        // Utilizar el mapa de nombres de conductores para reemplazar los IDs con los nombres en fuec_data
+        const nombreConductor1 = conductorNamesMap[idConductor1];
+        const nombreConductor2 = idConductor2 ? conductorNamesMap[idConductor2] : null;
+        const nombreConductor3 = idConductor3 ? conductorNamesMap[idConductor3] : null;
+
+        // Guardar los datos en la tabla fuec_data
+        const queryInsertFuecData = `
+            INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        `;
+        await pool.query(queryInsertFuecData, [
+            nombreCliente, placa, nombreConductor1, nombreConductor2, nombreConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto
+        ]);
+
+        // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
+        const consultaCliente = `
+            SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular, fecha_inicio, fecha_final,destino 
+            FROM clientes 
+            WHERE nombre = $1`;
+
+        const clienteData = await pool.query(consultaCliente, [nombreCliente]);
+
+        if (clienteData.rows.length === 0) {
+            return res.status(404).json({ error: 'Cliente no encontrado' });
+        }
+
+        const consultaVehiculo = `
+            SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a,Num_tarjeta_operacion
+            FROM vehiculos 
+            WHERE placa = $1`;
+
+        const vehiculoData = await pool.query(consultaVehiculo, [placa]);
+
+        if (vehiculoData.rows.length === 0) {
+            return res.status(404).json({ error: 'Vehículo no encontrado' });
+        }
+
+        if (conductoresIds.length === 1) {
+            // Si solo se selecciona un conductor, cambiar la consulta para obtener solo ese conductor
+            const consultaConductorUnico = `
+                SELECT conductor, cedula, fecha_vigencia
+                FROM conductores
+                WHERE id = $1`;
             
-            // Actualizar el último consecutivo en la base de datos
-            connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
+            const conductorData = await pool.query(consultaConductorUnico, [conductoresIds[0]]);
+
+            if (conductorData.rows.length === 0) {
+                return res.status(404).json({ error: 'Conductor no encontrado' });
+            }
+
+            const cliente = clienteData.rows[0];
+            const vehiculo = vehiculoData.rows[0];
+            const conductor = conductorData.rows[0];
+
+            // Construir la plantilla HTML con un solo conductor
+            fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
                 if (err) {
-                    console.error('Error al actualizar el último consecutivo en la base de datos:', err);
-                    res.status(500).json({ error: 'Error al actualizar el último consecutivo en la base de datos' });
-                    return;
+                    console.error('Error al leer el archivo de la plantilla HBS:', err);
+                    return res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
                 }
 
-                // Generar el número FUEC con el formato específico
-                const numeroFUEC = `4250427192024${N_contrato}${ultimoConsecutivo}`;
+                const template = hbs.compile(data);
 
-                connection.query('SELECT responsable, objeto FROM clientes WHERE nombre = ?', [nombreCliente], (err, result) => {
-                    if (err) {
-                        console.error('Error al obtener el responsable y objeto del cliente:', err);
-                        res.status(500).json({ error: 'Error al obtener el responsable y objeto del cliente' });
-                        return;
-                    }
-                
-                    if (result.length === 0) {
-                        res.status(404).json({ error: 'Cliente no encontrado' });
-                        return;
-                    }
-                
-                    const { responsable, objeto } = result[0];
+                const html = template({
+                    contratante: cliente.contratante,
+                    nit: cliente.nit,
+                    N_contrato: cliente.N_contrato,
+                    objeto: cliente.objeto,
+                    destino: cliente.destino,
 
-
-
-
-
-
-
-                  connection.query('SELECT id, conductor FROM conductores WHERE id IN (?)', [conductoresIds], (err, rows) => {
-    if (err) {
-        console.error('Error al obtener los nombres de los conductores:', err);
-        res.status(500).json({ error: 'Error al obtener los nombres de los conductores' });
-        return;
-    }
-
-    // Mapea los resultados para obtener un objeto de ID->Nombre de conductor
-    const conductorNamesMap = {};
-    rows.forEach(row => {
-        conductorNamesMap[row.id] = row.conductor;
-    });
-
-    // Utiliza el mapa de nombres de conductores para reemplazar los IDs con los nombres en fuec_data
-    const nombreConductor1 = conductorNamesMap[idConductor1];
-    const nombreConductor2 = idConductor2 ? conductorNamesMap[idConductor2] : null;
-    const nombreConductor3 = idConductor3 ? conductorNamesMap[idConductor3] : null;
-
-    // Ahora, puedes usar los nombres de los conductores para guardar en fuec_data en lugar de los IDs
-    connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, nombreConductor1, nombreConductor2, nombreConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
-        if (err) {
-            console.error('Error al guardar los datos en la base de datos:', err);
-            res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
-            return;
-        }
-    });
-});
-
-
-                // Continuar con la lógica para obtener los datos del cliente, vehículo y conductores seleccionados
-                const consultaCliente = `
-                    SELECT contratante, nit, N_contrato, objeto, direccion, responsable, cedula, celular, fecha_inicio, fecha_final,destino 
-                    FROM clientes 
-                    WHERE nombre = '${nombreCliente}'`;
-
-                connection.query(consultaCliente, (errorCliente, resultadosCliente) => {
-                    if (errorCliente) {
-                        console.error('Error al obtener datos del cliente:', errorCliente);
-                        res.status(500).json({ error: 'Error al obtener datos del cliente' });
-                        return;
-                    }
-
-                    if (resultadosCliente.length === 0) {
-                        res.status(404).json({ error: 'Cliente no encontrado' });
-                        return;
-                    }
-
-                    const consultaVehiculo = `
-                        SELECT placa, Modelo, Marca, Clase_vehiculo, No_movil, Afiliado_a,Num_tarjeta_operacion
-                        FROM vehiculos 
-                        WHERE placa = '${placa}'`;
-
-                    connection.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
-                        if (errorVehiculo) {
-                            console.error('Error al obtener datos del vehículo:', errorVehiculo);
-                            res.status(500).json({ error: 'Error al obtener datos del vehículo' });
-                            return;
-                        }
-
-                        if (resultadosVehiculo.length === 0) {
-                            res.status(404).json({ error: 'Vehículo no encontrado' });
-                            return;
-                        }
-
-                        if (conductoresIds.length === 1) {
-                            // Si solo se selecciona un conductor, cambiar la consulta para obtener solo ese conductor
-                            const consultaConductorUnico = `
-                                SELECT conductor, cedula, fecha_vigencia
-                                FROM conductores
-                                WHERE id = ${conductoresIds[0]}`;
-                            
-                            connection.query(consultaConductorUnico, (errorConductor, resultadoConductor) => {
-                                if (errorConductor) {
-                                    console.error('Error al obtener datos del conductor:', errorConductor);
-                                    res.status(500).json({ error: 'Error al obtener datos del conductor' });
-                                    return;
-                                }
-
-                                if (resultadoConductor.length === 0) {
-                                    res.status(404).json({ error: 'Conductor no encontrado' });
-                                    return;
-                                }
-
-                                const cliente = resultadosCliente[0];
-                                const vehiculo = resultadosVehiculo[0];
-                                const conductor = resultadoConductor[0];
-
-                                // Construir la plantilla HTML con un solo conductor
-                                fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
-                                    if (err) {
-                                        console.error('Error al leer el archivo de la plantilla HBS:', err);
-                                        res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
-                                        return;
-                                    }
-
-                                    const template = hbs.compile(data);
-
-                                    const html = template({
-                                        contratante: cliente.contratante,
-                                        nit: cliente.nit,
-                                        N_contrato: cliente.N_contrato,
-                                        objeto: cliente.objeto,
-                                        destino: cliente.destino,
-
-                                        celular: cliente.celular,
-                                        cedula: cliente.cedula,
-                                        direccion: cliente.direccion,
-                                        responsable: cliente.responsable,
-                                        fecha_inicio: cliente.fecha_inicio,
-                                        fecha_final: cliente.fecha_final,
-                                        conductores: [{
-                                            conductor: conductor.conductor,
-                                            cedula: conductor.cedula,
-                                            fecha_vigencia: conductor.fecha_vigencia
-                                        }],
-                                        vehiculo: {
-                                            placa: vehiculo.placa,
-                                            Modelo: vehiculo.Modelo,
-                                            Marca: vehiculo.Marca,
-                                            Clase_vehiculo: vehiculo.Clase_vehiculo,
-                                            No_movil: vehiculo.No_movil,
-                                            Afiliado_a: vehiculo.Afiliado_a,
-                                            Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
-                                        },
-                                        ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
-                                        qrDataURL: qrDataURL // Agregar la URL del código QR al template
-                                    });
-
-                                    res.send(html);
-                                });
-
-                            });
-
-                        } else if (conductoresIds.length === 2 || conductoresIds.length === 3) {
-                            // Si se seleccionan dos o tres conductores
-                            const consultaConductores = `
-                                SELECT conductor, cedula, fecha_vigencia
-                                FROM conductores
-                                WHERE id IN (${conductoresIds.join(', ')})`;
-
-                            connection.query(consultaConductores, (errorConductores, resultadosConductores) => {
-                                if (errorConductores) {
-                                    console.error('Error al obtener datos de los conductores:', errorConductores);
-                                    res.status(500).json({ error: 'Error al obtener datos de los conductores' });
-                                    return;
-                                }
-
-                                if (resultadosConductores.length !== conductoresIds.length) {
-                                    res.status(404).json({ error: `No se encontraron ${conductoresIds.length} conductores` });
-                                    return;
-                                }
-
-                                const cliente = resultadosCliente[0];
-                                const vehiculo = resultadosVehiculo[0];
-
-                                // Construir la plantilla HTML con los conductores seleccionados
-                                fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
-                                    if (err) {
-                                        console.error('Error al leer el archivo de la plantilla HBS:', err);
-                                        res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
-                                        return;
-                                    }
-
-                                    const template = hbs.compile(data);
-
-                                    const html = template({
-                                        contratante: cliente.contratante,
-                                        nit: cliente.nit,
-                                        N_contrato: cliente.N_contrato,
-                                        objeto: cliente.objeto,
-                                        destino: cliente.destino,
-
-                                        celular: cliente.celular,
-                                        cedula: cliente.cedula,
-                                        direccion: cliente.direccion,
-                                        responsable: cliente.responsable,
-                                        fecha_inicio: cliente.fecha_inicio,
-                                        fecha_final: cliente.fecha_final,
-                                        conductores: resultadosConductores.map(conductor => {
-                                            return {
-                                                conductor: conductor.conductor,
-                                                cedula: conductor.cedula,
-                                                fecha_vigencia: conductor.fecha_vigencia
-                                            };
-                                        }),
-                                        vehiculo: {
-                                            placa: vehiculo.placa,
-                                            Modelo: vehiculo.Modelo,
-                                            Marca: vehiculo.Marca,
-                                            Clase_vehiculo: vehiculo.Clase_vehiculo,
-                                            No_movil: vehiculo.No_movil,
-                                            Afiliado_a: vehiculo.Afiliado_a,
-                                            Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
-                                        },
-                                        ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
-                                        qrDataURL: qrDataURL // Agregar la URL del código QR al template
-                                    });
-
-                                    res.send(html);
-                                });
-
-                            });
-                        } else {
-                            // Si no se seleccionan conductores válidos
-                            res.status(404).json({ error: 'No se seleccionaron conductores válidos' });
-                        }
-                    });
+                    celular: cliente.celular,
+                    cedula: cliente.cedula,
+                    direccion: cliente.direccion,
+                    responsable: cliente.responsable,
+                    fecha_inicio: cliente.fecha_inicio,
+                    fecha_final: cliente.fecha_final,
+                    conductores: [{
+                        conductor: conductor.conductor,
+                        cedula: conductor.cedula,
+                        fecha_vigencia: conductor.fecha_vigencia
+                    }],
+                    vehiculo: {
+                        placa: vehiculo.placa,
+                        Modelo: vehiculo.Modelo,
+                        Marca: vehiculo.Marca,
+                        Clase_vehiculo: vehiculo.Clase_vehiculo,
+                        No_movil: vehiculo.No_movil,
+                        Afiliado_a: vehiculo.Afiliado_a,
+                        Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
+                    },
+                    ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
+                    qrDataURL: qrDataURL // Agregar la URL del código QR al template
                 });
+
+                res.send(html);
             });
-        });
-    });
+
+        } else if (conductoresIds.length === 2 || conductoresIds.length === 3) {
+            // Si se seleccionan dos o tres conductores
+            const consultaConductores = `
+                SELECT conductor, cedula, fecha_vigencia
+                FROM conductores
+                WHERE id IN (${conductoresIds.join(', ')})`;
+
+            const conductoresData = await pool.query(consultaConductores);
+
+            if (conductoresData.rows.length !== conductoresIds.length) {
+                return res.status(404).json({ error: `No se encontraron ${conductoresIds.length} conductores` });
+            }
+
+            const cliente = clienteData.rows[0];
+            const vehiculo = vehiculoData.rows[0];
+
+            // Construir la plantilla HTML con los conductores seleccionados
+            fs.readFile('src/views/clientes/fuec_template.hbs', 'utf8', (err, data) => {
+                if (err) {
+                    console.error('Error al leer el archivo de la plantilla HBS:', err);
+                    return res.status(500).json({ error: 'Error al cargar la plantilla HBS' });
+                }
+
+                const template = hbs.compile(data);
+
+                const html = template({
+                    contratante: cliente.contratante,
+                    nit: cliente.nit,
+                    N_contrato: cliente.N_contrato,
+                    objeto: cliente.objeto,
+                    destino: cliente.destino,
+
+                    celular: cliente.celular,
+                    cedula: cliente.cedula,
+                    direccion: cliente.direccion,
+                    responsable: cliente.responsable,
+                    fecha_inicio: cliente.fecha_inicio,
+                    fecha_final: cliente.fecha_final,
+                    conductores: conductoresData.rows.map(conductor => {
+                        return {
+                            conductor: conductor.conductor,
+                            cedula: conductor.cedula,
+                            fecha_vigencia: conductor.fecha_vigencia
+                        };
+                    }),
+                    vehiculo: {
+                        placa: vehiculo.placa,
+                        Modelo: vehiculo.Modelo,
+                        Marca: vehiculo.Marca,
+                        Clase_vehiculo: vehiculo.Clase_vehiculo,
+                        No_movil: vehiculo.No_movil,
+                        Afiliado_a: vehiculo.Afiliado_a,
+                        Num_tarjeta_operacion: vehiculo.Num_tarjeta_operacion
+                    },
+                    ultimoConsecutivo: ultimoConsecutivo, // Agregar esta línea
+                    qrDataURL: qrDataURL // Agregar la URL del código QR al template
+                });
+
+                res.send(html);
+            });
+
+        } else {
+            // Si no se seleccionan conductores válidos
+            return res.status(404).json({ error: 'No se seleccionaron conductores válidos' });
+        }
+
+    } catch (error) {
+        console.error('Error en la consulta PostgreSQL:', error);
+        res.status(500).json({ error: 'Error en la consulta PostgreSQL' });
+    }
 });
-});
+
+
+
+
 
 
 // Ruta para descargar el template en formato PNG
@@ -3537,53 +3618,48 @@ app.get('/buscar', (req, res) => {
         return;
     }
 
-    const sql = `SELECT * FROM fuec_data WHERE numero_fuec = ?`;
-    connection.query(sql, [numeroFuec], (err, resultados) => {
+    const sql = `SELECT * FROM fuec_data WHERE numero_fuec = $1`;
+    client.query(sql, [numeroFuec], (err, result) => {
         if (err) {
             console.error('Error al ejecutar la consulta:', err);
             res.render('error');
             return;
         }
-        res.render('operaciones/fuec/ver_fuec.hbs', { resultados }); // Renderiza la misma plantilla con los resultados de la búsqueda
+        res.render('operaciones/fuec/ver_fuec.hbs', { resultados: result.rows }); // Renderiza la misma plantilla con los resultados de la búsqueda
     });
 });
-
-
-
-
 
 
 
 app.get('/userMovements/:username', (req, res) => {
     const username = req.params.username;
-    const query = `SELECT latitud, longitud FROM ubicaciones WHERE nombre_usuario = ?`;
-    connection.query(query, [username], (err, results) => {
+    const query = `SELECT latitud, longitud FROM ubicaciones WHERE nombre_usuario = $1`;
+    client.query(query, [username], (err, result) => {
         if (err) {
             console.error('Error al consultar la base de datos:', err);
             res.status(500).json({ error: 'Error al consultar la base de datos' });
             return;
         }
-        res.json(results);
+        res.json(result.rows);
     });
 });
-
-
-
-
-
-
-
-
 
 
 
 // Define una ruta para obtener la lista de usuarios
 app.get('/usuarios', function(req, res) {
-    connection.query('SELECT DISTINCT nombre_usuario FROM ubicaciones', function(error, results, fields) {
-        if (error) throw error;
-        res.json(results);
+    const query = 'SELECT DISTINCT nombre_usuario FROM ubicaciones';
+    client.query(query, (error, result) => {
+        if (error) {
+            console.error('Error al consultar la base de datos:', error);
+            res.status(500).json({ error: 'Error al consultar la base de datos' });
+            return;
+        }
+        res.json(result.rows);
     });
 });
+
+
 
 // Define una ruta para obtener las ubicaciones de un usuario específico para una fecha específica
 app.get('/ubicaciones/:nombreUsuario', function(req, res) {
@@ -3591,20 +3667,22 @@ app.get('/ubicaciones/:nombreUsuario', function(req, res) {
     const fechaSeleccionada = req.query.date; // Obtener la fecha seleccionada desde la consulta
 
     // Construir la consulta SQL para filtrar por usuario y fecha si se proporciona
-    let query = 'SELECT * FROM ubicaciones WHERE nombre_usuario = ?';
+    let query = 'SELECT * FROM ubicaciones WHERE nombre_usuario = $1';
     let params = [nombreUsuario];
     if (fechaSeleccionada) {
-        query += ' AND DATE(created_at) = ?'; // Filtrar por la fecha seleccionada
+        query += ' AND DATE(created_at) = $2'; // Filtrar por la fecha seleccionada
         params.push(fechaSeleccionada);
     }
 
-    connection.query(query, params, function(error, results, fields) {
-        if (error) throw error;
-        res.json(results);
+    client.query(query, params, function(error, result) {
+        if (error) {
+            console.error('Error al consultar la base de datos:', error);
+            res.status(500).json({ error: 'Error al consultar la base de datos' });
+            return;
+        }
+        res.json(result.rows);
     });
 });
-
-
 
 
 
@@ -3617,6 +3695,12 @@ app.get('/ubicaciones/:nombreUsuario', function(req, res) {
 app.get('/ver_ubicaiones', (req, res) => {
     res.render('operaciones/geolocalizacion/ver_ubicaciones.hbs');
 });
+
+
+
+
+
+
 app.post('/guardar_datos', (req, res) => {
     const cotizacionId = req.body.cotizacionId;
     const valorTotal = req.body.valorTotal;
@@ -3625,7 +3709,7 @@ app.post('/guardar_datos', (req, res) => {
     const servicios = req.body.servicios;
 
     // Actualizar la tabla de cotizaciones con el nuevo subtotal, descuento y valor total
-    connection.query('UPDATE cotizaciones SET subtotal = ?, descuento = ?, valor_total = ? WHERE id = ?', [subtotal, descuento, valorTotal, cotizacionId], function(err, result) {
+    client.query('UPDATE cotizaciones SET subtotal = $1, descuento = $2, valor_total = $3 WHERE id = $4', [subtotal, descuento, valorTotal, cotizacionId], function(err, result) {
         if (err) {
             console.error('Error al actualizar valores:', err);
             return res.status(500).json({ error: 'Error al actualizar valores' });
@@ -3637,7 +3721,7 @@ app.post('/guardar_datos', (req, res) => {
             const valorColumn = `valor_${index + 1}`;
             const observacionesColumn = `observaciones_${index + 1}`;
 
-            connection.query(`UPDATE cotizaciones SET ${valorColumn} = ?, ${observacionesColumn} = ? WHERE id = ?`, [servicio.valor, servicio.observaciones, cotizacionId], function(err, result) {
+            client.query(`UPDATE cotizaciones SET ${valorColumn} = $1, ${observacionesColumn} = $2 WHERE id = $3`, [servicio.valor, servicio.observaciones, cotizacionId], function(err, result) {
                 if (err) {
                     console.error(`Error al actualizar servicio ${index + 1}:`, err);
                     return res.status(500).json({ error: `Error al actualizar servicio ${index + 1}` });
@@ -3689,7 +3773,6 @@ app.get('/novedades_viancoo', (req, res) => {
 
 
 
-
 app.post('/novedades_vianco', (req, res) => {
     const fecha = req.body.fecha;
     const realiza = req.body.realiza;
@@ -3699,12 +3782,12 @@ app.post('/novedades_vianco', (req, res) => {
     const novedad_empresas_privadas = req.body.novedad_empresasPrivadas || '';
     const NOVEDADES_TASKGO = req.body.novedad_NOVEDADES_TASKGO || '';
     const otrasNovedades = req.body.novedad_OTRAS || '';
-    const firmaBase64 = req.body.firmaBase64 || ''; // Corregido aquí
+    const firmaBase64 = req.body.firmaBase64 || '';
     console.log("Firma en formato base64 recibida:", firmaBase64);
 
-    const sql = 'INSERT INTO novedades_vianco (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)'; // Corregido aquí
+    const sql = 'INSERT INTO novedades_vianco (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), $1, $2, $3, $4, $5, $6, $7, $8, $9)';
 
-    connection.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
+    client.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otrasNovedades, firmaBase64], (error, results) => {
         if (error) {
             console.error('Error al insertar la novedad en la base de datos:', error);
             res.status(500).send('Error interno del servidor.');
@@ -3725,6 +3808,11 @@ app.post('/novedades_vianco', (req, res) => {
         }
     });
 });
+
+
+
+
+
 
 function enviarCorreoNOVEDADD(destinatario, asunto, contenido) {
     // Configurar el transporte del correo electrónico
@@ -3791,50 +3879,53 @@ app.get('/ver_novedades_vianco', (req, res) => {
 
 
 
-
 app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
     const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
-    const query = 'SELECT DISTINCT id FROM novedades_vianco WHERE responsable_asignado = ?';
+    const query = 'SELECT DISTINCT id FROM novedades_vianco WHERE responsable_asignado = $1';
 
-    connection.query(query, [nombreUsuario], (error, results) => {
+    client.query(query, [nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las IDs disponibles:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         } else {
-            const idsDisponibles = results.map(result => result.id);
+            const idsDisponibles = results.rows.map(result => result.id);
             res.json(idsDisponibles);
         }
     });
 });
 
 
+
+
 app.get('/api/obtener_novedades_vianco/:id', (req, res) => {
     const id = req.params.id;
     const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
-    const query = 'SELECT id, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro, responsable_asignado FROM novedades_vianco WHERE id = ? AND responsable_asignado = ?';
+    const query = 'SELECT id, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro, responsable_asignado FROM novedades_vianco WHERE id = $1 AND responsable_asignado = $2';
 
-    connection.query(query, [id, nombreUsuario], (error, results) => {
+    client.query(query, [id, nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         } else {
-            results.forEach(row => {
+            results.rows.forEach(row => {
                 if (row.firma) {
                     const firmaBase64 = row.firma;
                     const firmaBinaria = Buffer.from(firmaBase64, 'base64');
                     row.firmaBinaria = firmaBinaria;
                 }
             });
-            res.json(results);
+            res.json(results.rows);
         }
     });
 });
 
 
+
+
 // Backend (Endpoint /api/eliminar_novedad)
 app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
+    client.query('DELETE FROM novedades_vianco WHERE id = $1', [id], (error, results) => {
         if (error) {
             console.error('Error al eliminar la novedad:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -3846,18 +3937,19 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 
 
 
+
 // Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
     
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo} = req.body;
+    const { nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, realiza, fecha, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo } = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo];
+    const query = 'INSERT INTO novedades_completadas_vianco (nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza, fecha_novedad, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)';
+    const values = [nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, realiza, fecha, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo];
     
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results, fields) => {
+    client.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al guardar el seguimiento en la base de datos:', error);
             res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
@@ -3872,10 +3964,13 @@ app.post('/api/guardar_seguimiento_vianco', (req, res) => {
 
 
 
+
+
+
 // Endpoint para eliminar una fecha por su ID
 app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
+    client.query('DELETE FROM novedades_vianco WHERE id = $1', [id], (error, results) => {
         if (error) {
             console.error('Error al eliminar la fecha:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -3934,15 +4029,15 @@ app.get('/novedad_vianco', (req, res) => {
             WHERE 1=1
         `;
         if (id) {
-            sql += " AND id LIKE ?";
+            sql += " AND id LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha >= ?";
+            sql += " AND fecha >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha <= ?";
+            sql += " AND fecha <= $3";
             params.push(fechaFin);
         }
     } else if (pendiente === "nuevas") { 
@@ -3965,15 +4060,15 @@ app.get('/novedad_vianco', (req, res) => {
     `;
     
         if (id) {
-            sql += " AND numeroU LIKE ?";
+            sql += " AND numeroU LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha_novedad >= ?";
+            sql += " AND fecha_novedad >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha_novedad <= ?";
+            sql += " AND fecha_novedad <= $3";
             params.push(fechaFin);
         }
     } else if (pendiente === "asignadas") {
@@ -3996,15 +4091,15 @@ app.get('/novedad_vianco', (req, res) => {
         WHERE responsable_asignado IS NOT NULL
     `;
         if (id) {
-            sql += " AND numeroU LIKE ?";
+            sql += " AND numeroU LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha_novedad >= ?";
+            sql += " AND fecha_novedad >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha_novedad <= ?";
+            sql += " AND fecha_novedad <= $3";
             params.push(fechaFin);
         }
     } else if (pendiente === "proceso") {
@@ -4034,15 +4129,15 @@ app.get('/novedad_vianco', (req, res) => {
         WHERE aceptadas IS NULL
     `;
         if (id) {
-            sql += " AND numeroU LIKE ?";
+            sql += " AND numeroU LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha_novedad >= ?";
+            sql += " AND fecha_novedad >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha_novedad <= ?";
+            sql += " AND fecha_novedad <= $3";
             params.push(fechaFin);
         }
     } else if (pendiente === "aceptadas") {
@@ -4099,15 +4194,15 @@ app.get('/novedad_vianco', (req, res) => {
     WHERE 1=1
         `;
         if (id) {
-            sql += " AND id LIKE ?";
+            sql += " AND id LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha >= ?";
+            sql += " AND fecha >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha <= ?";
+            sql += " AND fecha <= $3";
             params.push(fechaFin);
         }
         sql += `
@@ -4135,21 +4230,21 @@ app.get('/novedad_vianco', (req, res) => {
             WHERE 1=1
         `;
         if (id) {
-            sql += " AND numeroU LIKE ?";
+            sql += " AND numeroU LIKE $1";
             params.push(`%${id}%`);
         }
         if (fechaInicio) {
-            sql += " AND fecha_novedad >= ?";
+            sql += " AND fecha_novedad >= $2";
             params.push(fechaInicio);
         }
         if (fechaFin) {
-            sql += " AND fecha_novedad <= ?";
+            sql += " AND fecha_novedad <= $3";
             params.push(fechaFin);
         }
     }
     
     if (keyword) {
-        sql += " AND (novedad_tripulacion LIKE ? OR novedad_hoteleria LIKE ? OR novedad_ejecutivos LIKE ? OR novedad_empresas_privadas LIKE ? OR otras_novedades LIKE ?)";
+        sql += " AND (novedad_tripulacion LIKE $4 OR novedad_hoteleria LIKE $4 OR novedad_ejecutivos LIKE $4 OR novedad_empresas_privadas LIKE $4 OR otras_novedades LIKE $4)";
         const keywordParam = `%${keyword}%`;
         params.push(keywordParam, keywordParam, keywordParam, keywordParam, keywordParam);
     }
@@ -4163,17 +4258,15 @@ app.get('/novedad_vianco', (req, res) => {
         sql += ")";
     }
     
-    connection.query(sql, params, (err, result) => {
+    client.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
         } else {
-            res.status(200).json(result);
+            res.status(200).json(result.rows);
         }
     });
 });
-
-
 
 app.post('/descargar_excell', (req, res) => {
     const { fechaInicio, fechaFin } = req.body;
@@ -4181,21 +4274,36 @@ app.post('/descargar_excell', (req, res) => {
     let params = [];
 
     if (fechaInicio) {
-        sql += " AND fecha_novedad >= ?";
+        sql += " AND fecha_novedad >= $1";
         params.push(fechaInicio);
     }
     if (fechaFin) {
-        sql += " AND fecha_novedad <= ?";
+        sql += " AND fecha_novedad <= $2";
         params.push(fechaFin);
     }
 
-    connection.query(sql, params, (err, result) => {
+    client.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
         } else {
             // Aquí se debería generar el archivo Excel con los datos obtenidos
-            const workbook = createExcelWorkbook(result); // Función hipotética para crear el archivo Excel
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Novedades');
+
+            // Añadir encabezados
+            worksheet.columns = [
+                { header: 'ID', key: 'id', width: 10 },
+                { header: 'Fecha Novedad', key: 'fecha_novedad', width: 15 },
+                { header: 'Realiza', key: 'realiza', width: 20 },
+                // Añadir más columnas según los campos de la tabla
+            ];
+
+            // Añadir filas
+            result.rows.forEach(row => {
+                worksheet.addRow(row);
+            });
+
             res.setHeader('Content-Disposition', 'attachment; filename="informe.xlsx"');
             workbook.xlsx.write(res).then(() => {
                 res.end();
@@ -4203,6 +4311,11 @@ app.post('/descargar_excell', (req, res) => {
         }
     });
 });
+
+
+
+
+
 
 function createExcelWorkbook(data) {
     const ExcelJS = require('exceljs');
@@ -4241,52 +4354,77 @@ app.post('/descargar_excell', (req, res) => {
     const { fechaInicio, fechaFin } = req.body;
 
     // Consulta las novedades dentro del rango de fechas especificado
-    const sql = `SELECT * FROM novedades_completadas_vianco WHERE fecha_novedad BETWEEN '${fechaInicio}' AND '${fechaFin}'`;
+    const sql = `SELECT * FROM novedades_completadas_vianco WHERE fecha_novedad BETWEEN $1 AND $2`;
+    const params = [fechaInicio, fechaFin];
 
-    connection.query(sql, (err, result) => {
+    client.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
         } else {
             // Genera el archivo Excel con las novedades
-            const workbook = generarInformeExcel(result);
+            const workbook = generarInformeExcel(result.rows);
 
             // Convierte el workbook a buffer y envíalo como descarga
-            const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-            res.setHeader('Content-Disposition', `attachment; filename="informe.xlsx"`);
+            res.setHeader('Content-Disposition', 'attachment; filename="informe.xlsx"');
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
+            workbook.xlsx.write(res).then(() => {
+                res.end();
+            });
         }
     });
 });
 
 
-function generarInformeExcel(novedades) {
-    // Mapear los resultados de la consulta SQL y cambiar los títulos de las columnas
-    const novedadesFormateadas = novedades.map(novedad => ({
-        // Cambiar los nombres de las propiedades según sea necesario
-        'Fecha del servicio no conforme': novedad.fecha_novedad,
-        'Realizada por': novedad.realiza,
-        'Novedad de Tripulación': novedad.novedad_tripulacion,
-        'Novedad de Hotelería': novedad.novedad_hoteleria,
-        'Novedad de Ejecutivos': novedad.novedad_ejecutivos,
-        'Novedad de Empresas Privadas': novedad.novedad_empresas_privadas,
-        'NOVEDADES_TASKGO': novedad.NOVEDADES_TASKGO,
-        'Otras novedades': novedad.otras_novedades,
-        'Fecha de seguimiento': novedad.fecha_seguimiento,
-        'Nombre de seguimiento': novedad.nombre_seguimiento,
-        'Detalle de seguimiento': novedad.detalle_seguimiento,
-        'Fecha de registro': novedad.fecha_registro,
-        'Acciones correctivas': novedad.ACCIONES
-    }));
 
+
+
+
+function generarInformeExcel(novedades) {
     // Crear el workbook y la hoja de cálculo
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(novedadesFormateadas);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Novedades');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Novedades');
+
+    // Definir las columnas
+    worksheet.columns = [
+        { header: 'Fecha del servicio no conforme', key: 'fecha_novedad', width: 20 },
+        { header: 'Realizada por', key: 'realiza', width: 20 },
+        { header: 'Novedad de Tripulación', key: 'novedad_tripulacion', width: 30 },
+        { header: 'Novedad de Hotelería', key: 'novedad_hoteleria', width: 30 },
+        { header: 'Novedad de Ejecutivos', key: 'novedad_ejecutivos', width: 30 },
+        { header: 'Novedad de Empresas Privadas', key: 'novedad_empresas_privadas', width: 30 },
+        { header: 'NOVEDADES_TASKGO', key: 'NOVEDADES_TASKGO', width: 20 },
+        { header: 'Otras novedades', key: 'otras_novedades', width: 30 },
+        { header: 'Fecha de seguimiento', key: 'fecha_seguimiento', width: 20 },
+        { header: 'Nombre de seguimiento', key: 'nombre_seguimiento', width: 20 },
+        { header: 'Detalle de seguimiento', key: 'detalle_seguimiento', width: 40 },
+        { header: 'Fecha de registro', key: 'fecha_registro', width: 20 },
+        { header: 'Acciones correctivas', key: 'ACCIONES', width: 40 }
+    ];
+
+    // Añadir filas
+    novedades.forEach(novedad => {
+        worksheet.addRow({
+            fecha_novedad: novedad.fecha_novedad,
+            realiza: novedad.realiza,
+            novedad_tripulacion: novedad.novedad_tripulacion,
+            novedad_hoteleria: novedad.novedad_hoteleria,
+            novedad_ejecutivos: novedad.novedad_ejecutivos,
+            novedad_empresas_privadas: novedad.novedad_empresas_privadas,
+            NOVEDADES_TASKGO: novedad.NOVEDADES_TASKGO,
+            otras_novedades: novedad.otras_novedades,
+            fecha_seguimiento: novedad.fecha_seguimiento,
+            nombre_seguimiento: novedad.nombre_seguimiento,
+            detalle_seguimiento: novedad.detalle_seguimiento,
+            fecha_registro: novedad.fecha_registro,
+            ACCIONES: novedad.ACCIONES
+        });
+    });
 
     return workbook;
 }
+
+
 
 
 
@@ -4308,32 +4446,41 @@ app.get('/inspeccion', (req, res) => {
     }
 });
 
+
+
+
 // Ruta para obtener la lista de bases
 app.get('/obtenerBases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+    client.query('SELECT DISTINCT base FROM vehiculos', (error, result) => {
         if (error) {
             console.error('Error al obtener las bases:', error);
             res.status(500).json({ error: 'Error al obtener las bases' });
             return;
         }
-        const bases = results.map(result => result.base);
+        const bases = result.rows.map(row => row.base);
         res.json(bases);
     });
 });
 
+
+
+
 // Ruta para obtener la lista de placas según la base seleccionada
 app.get('/inspeccion_vianco', (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+    client.query('SELECT placa FROM vehiculos WHERE base = $1', [baseSeleccionada], (error, result) => {
         if (error) {
             console.error('Error al obtener las placas:', error);
             res.status(500).json({ error: 'Error al obtener las placas' });
             return;
         }
-        const placas = results.map(result => result.placa);
+        const placas = result.rows.map(row => row.placa);
         res.json(placas);
     });
 });
+
+
+
 
 
 app.post('/guardar-inspeccion', (req, res) => {
@@ -4343,8 +4490,15 @@ app.post('/guardar-inspeccion', (req, res) => {
     // Agregar el nombre de usuario al objeto formData
     formData.responsable = nombreUsuario;
 
+    // Construir la consulta SQL y los valores
+    const fields = Object.keys(formData).join(', ');
+    const values = Object.values(formData);
+    const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+
+    const query = `INSERT INTO inspeccion_2_0 (${fields}) VALUES (${placeholders})`;
+
     // Insertar los datos en la base de datos
-    connection.query('INSERT INTO inspeccion_2_0 SET ?', formData, (err, result) => {
+    client.query(query, values, (err, result) => {
         if (err) {
             console.error('Error al guardar los datos:', err);
             res.status(500).send('Error interno del servidor.');
@@ -4367,24 +4521,22 @@ app.post('/guardar-inspeccion', (req, res) => {
 
 
 
-
-
 // Ruta para renderizar el formulario de consulta
 app.get('/consulta_inspeccion', async (req, res) => {
     try {
         // Consultar la base de datos para obtener las placas y bases disponibles desde la tabla de vehículos
         const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
         const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
-        
-        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
-        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
-        
-        console.log('Placas encontradas:', placasRows);
-        console.log('Bases encontradas:', basesRows);
+
+        const placasResult = await client.query(placasQuery);
+        const basesResult = await client.query(basesQuery);
+
+        console.log('Placas encontradas:', placasResult.rows);
+        console.log('Bases encontradas:', basesResult.rows);
 
         // Insertar "Todas" como opción adicional en las listas de placas y bases
-        const placas = ['Todas', ...placasRows.map(row => row.placa)];
-        const bases = ['Todas', ...basesRows.map(row => row.base)];
+        const placas = ['Todas', ...placasResult.rows.map(row => row.placa)];
+        const bases = ['Todas', ...basesResult.rows.map(row => row.base)];
 
         // Renderizar el formulario con las placas y bases disponibles
         res.render('Inspección/consulta_inspeccion.hbs', { placas, bases });
@@ -4395,31 +4547,33 @@ app.get('/consulta_inspeccion', async (req, res) => {
 });
 
 
-
+// Ruta para consultar inspección
 app.post('/consulta_inspeccion', async (req, res) => {
     const { placa, base, fecha_inicio, fecha_fin } = req.body;
     try {
-        let query, params;
+        let query;
+        let params = [fecha_inicio, fecha_fin];
+
         if (placa === 'Todas' && base === 'Todas') {
             // Consultar todos los resultados sin filtrar por placa ni base
-            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
-            params = [fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN $1 AND $2';
         } else if (placa === 'Todas') {
             // Consultar por base y rango de fechas sin filtrar por placa
-            query = 'SELECT * FROM inspeccion_2_0 WHERE base = ? AND fecha BETWEEN ? AND ?';
-            params = [base, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE base = $3 AND fecha BETWEEN $1 AND $2';
+            params.push(base);
         } else if (base === 'Todas') {
             // Consultar por placa y rango de fechas sin filtrar por base
-            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND fecha BETWEEN ? AND ?';
-            params = [placa, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = $3 AND fecha BETWEEN $1 AND $2';
+            params.push(placa);
         } else {
             // Consultar por placa, base y rango de fechas
-            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND base = ? AND fecha BETWEEN ? AND ?';
-            params = [placa, base, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = $3 AND base = $4 AND fecha BETWEEN $1 AND $2';
+            params.push(placa, base);
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const result = await client.query(query, params);
+        const rows = result.rows;
         console.log('Datos encontrados:', rows);
 
         // Calcular la suma y el porcentaje de cumplimiento para cada fila
@@ -4451,26 +4605,29 @@ app.post('/consulta_inspeccion', async (req, res) => {
 });
 
 
+
+
 const excel = require('exceljs');
 
 // Ruta para descargar los resultados en formato Excel
 app.post('/descargar_excel_INSPECION', async (req, res) => {
     const { placa, fecha_inicio, fecha_fin } = req.body;
     try {
-        let query, params;
+        let query;
+        let params = [fecha_inicio, fecha_fin];
 
         if (placa === 'Todas') {
             // Consultar todos los resultados sin filtrar por placa
-            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN ? AND ?';
-            params = [fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE fecha BETWEEN $1 AND $2';
         } else {
             // Consultar por placa y rango de fechas
-            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = ? AND fecha BETWEEN ? AND ?';
-            params = [placa, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM inspeccion_2_0 WHERE placa = $3 AND fecha BETWEEN $1 AND $2';
+            params.push(placa);
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const result = await client.query(query, params);
+        const rows = result.rows;
 
         // Verificar si rows tiene elementos antes de continuar
         if (rows.length === 0) {
@@ -4482,7 +4639,7 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
         console.log('Datos encontrados:', rows);
 
         // Crear un nuevo libro de Excel
-        const workbook = new excel.Workbook();
+        const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Resultados');
 
         // Agregar encabezados a la hoja de cálculo
@@ -4526,7 +4683,7 @@ app.get('/pagina-indicadores', (req, res) => {
 
 
 
-
+// Ruta para obtener las placas bajo el 60%
 app.get('/placas-bajo-60', (req, res) => {
     const fechaInicio = req.query.fechaInicio; // Obtener fecha de inicio desde la solicitud
     const fechaFin = req.query.fechaFin; // Obtener fecha de fin desde la solicitud
@@ -4558,30 +4715,29 @@ app.get('/placas-bajo-60', (req, res) => {
 });
 
 // Función para obtener las placas bajo el 60%
-function obtenerPlacasBajo60(fechaInicio, fechaFin, callback) {
-    // Consulta SQL para obtener las placas bajo el 60%
-    let query = `
-      SELECT placa
-      FROM inspeccion_2_0
-      WHERE fecha BETWEEN ? AND ?
-        AND (corbata_vianco + traje + presentacion_externa + interior_vehiculo + protocolo_servicio + AGUA + PAÑOS + CARGADOR + MANOS + aire_acondicionado + logo_rnt + logos_reservado + logos_vianco + estado_baul) / (14 * 3) * 100 < 60`;
+async function obtenerPlacasBajo60(fechaInicio, fechaFin, callback) {
+    try {
+        // Consulta SQL para obtener las placas bajo el 60%
+        let query = `
+            SELECT placa
+            FROM inspeccion_2_0
+            WHERE fecha BETWEEN $1 AND $2
+            AND (corbata_vianco + traje + presentacion_externa + interior_vehiculo + protocolo_servicio + AGUA + PAÑOS + CARGADOR + MANOS + aire_acondicionado + logo_rnt + logos_reservado + logos_vianco + estado_baul) / (14 * 3) * 100 < 60`;
 
-    // Parámetros para la consulta SQL
-    let queryParams = [fechaInicio, fechaFin];
+        // Parámetros para la consulta SQL
+        let queryParams = [fechaInicio, fechaFin];
 
-    // Realiza la consulta a la base de datos
-    connection.query(query, queryParams, (error, rows) => {
-        if (error) {
-            callback(error, null);
-            return;
-        }
+        // Realiza la consulta a la base de datos
+        const result = await client.query(query, queryParams);
 
         // Obtén las placas bajo el 60%
-        const placas = rows.map(row => row.placa);
+        const placas = result.rows.map(row => row.placa);
 
         // Llama al callback con las placas obtenidas
         callback(null, placas);
-    });
+    } catch (error) {
+        callback(error, null);
+    }
 }
 
 
@@ -4600,32 +4756,32 @@ app.get('/auditoria', (req, res) => {
 
 
 // Ruta para obtener la lista de bases
-app.get('/obtenerBases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
-        if (error) {
-            console.error('Error al obtener las bases:', error);
-            res.status(500).json({ error: 'Error al obtener las bases' });
-            return;
-        }
-        const bases = results.map(result => result.base);
+app.get('/obtenerBases', async (req, res) => {
+    try {
+        const result = await client.query('SELECT DISTINCT base FROM vehiculos');
+        const bases = result.rows.map(row => row.base);
         res.json(bases);
-    });
+    } catch (error) {
+        console.error('Error al obtener las bases:', error);
+        res.status(500).json({ error: 'Error al obtener las bases' });
+    }
 });
+
+
 
 
 
 // Ruta para obtener la lista de placas según la base seleccionada
-app.get('/inspeccion_vianco', (req, res) => {
+app.get('/inspeccion_vianco', async (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
-        if (error) {
-            console.error('Error al obtener las placas:', error);
-            res.status(500).json({ error: 'Error al obtener las placas' });
-            return;
-        }
-        const placas = results.map(result => result.placa);
+    try {
+        const result = await client.query('SELECT placa FROM vehiculos WHERE base = $1', [baseSeleccionada]);
+        const placas = result.rows.map(row => row.placa);
         res.json(placas);
-    });
+    } catch (error) {
+        console.error('Error al obtener las placas:', error);
+        res.status(500).json({ error: 'Error al obtener las placas' });
+    }
 });
 
 
@@ -4633,28 +4789,25 @@ app.get('/inspeccion_vianco', (req, res) => {
 
 
 
-
-app.post('/guardar_auditoria', (req, res) => {
+// Ruta para guardar auditoría
+app.post('/guardar_auditoria', async (req, res) => {
     // Extraer los datos del cuerpo de la solicitud
-    const { placa, base,fecha, inspeccion, supervision, programacion,turno_extra,nombreUsuario } = req.body;
+    const { placa, base, fecha, inspeccion, supervision, programacion, turno_extra, nombreUsuario } = req.body;
   
     // Consulta SQL para insertar datos en la tabla
-    const query = `INSERT INTO auditoria (placa,base, fecha, inspeccion, supervision, programacion,turno_extra, responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [placa,base, fecha, inspeccion, supervision, programacion,turno_extra, nombreUsuario];
+    const query = `INSERT INTO auditoria (placa, base, fecha, inspeccion, supervision, programacion, turno_extra, responsable) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    const values = [placa, base, fecha, inspeccion, supervision, programacion, turno_extra, nombreUsuario];
   
-    // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results) => {
-      if (error) {
-        console.error('Error al guardar los datos:', error);
-        res.status(500).send('Error interno del servidor');
-      } else {
+    try {
+        // Ejecutar la consulta SQL
+        await client.query(query, values);
         console.log('Datos guardados correctamente');
         res.redirect('/auditoria');
-      }
-    });
+    } catch (error) {
+        console.error('Error al guardar los datos:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
-
-
 
 
 
@@ -4673,15 +4826,15 @@ app.get('/consulta_auditoria', async (req, res) => {
         const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
         const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
         
-        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
-        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
+        const placasResult = await client.query(placasQuery);
+        const basesResult = await client.query(basesQuery);
         
-        console.log('Placas encontradas:', placasRows);
-        console.log('Bases encontradas:', basesRows);
+        console.log('Placas encontradas:', placasResult.rows);
+        console.log('Bases encontradas:', basesResult.rows);
 
         // Insertar "Todas" como opción adicional en las listas de placas y bases
-        const placas = ['Todas', ...placasRows.map(row => row.placa)];
-        const bases = ['Todas', ...basesRows.map(row => row.base)];
+        const placas = ['Todas', ...placasResult.rows.map(row => row.placa)];
+        const bases = ['Todas', ...basesResult.rows.map(row => row.base)];
 
         // Renderizar el formulario con las placas y bases disponibles
         res.render('auditoria/consultar_auditoria.hbs', { placas, bases });
@@ -4702,30 +4855,33 @@ app.get('/consulta_auditoria', async (req, res) => {
 
 
 
+
+// Ruta para consultar los resultados de auditoría
 app.post('/consulta_auditoria_resultado', async (req, res) => {
     const { placa, base, fecha_inicio, fecha_fin } = req.body;
     try {
         let query, params;
         if (placa === 'Todas' && base === 'Todas') {
             // Consultar todos los resultados sin filtrar por placa ni base
-            query = 'SELECT * FROM auditoria WHERE fecha BETWEEN ? AND ?';
+            query = 'SELECT * FROM auditoria WHERE fecha BETWEEN $1 AND $2';
             params = [fecha_inicio, fecha_fin];
         } else if (placa === 'Todas') {
             // Consultar por base y rango de fechas sin filtrar por placa
-            query = 'SELECT * FROM auditoria WHERE base = ? AND fecha BETWEEN ? AND ?';
-            params = [base, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM auditoria WHERE base = $3 AND fecha BETWEEN $1 AND $2';
+            params = [fecha_inicio, fecha_fin, base];
         } else if (base === 'Todas') {
             // Consultar por placa y rango de fechas sin filtrar por base
-            query = 'SELECT * FROM auditoria WHERE placa = ? AND fecha BETWEEN ? AND ?';
-            params = [placa, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM auditoria WHERE placa = $3 AND fecha BETWEEN $1 AND $2';
+            params = [fecha_inicio, fecha_fin, placa];
         } else {
             // Consultar por placa, base y rango de fechas
-            query = 'SELECT * FROM auditoria WHERE placa = ? AND base = ? AND fecha BETWEEN ? AND ?';
-            params = [placa, base, fecha_inicio, fecha_fin];
+            query = 'SELECT * FROM auditoria WHERE placa = $3 AND base = $4 AND fecha BETWEEN $1 AND $2';
+            params = [fecha_inicio, fecha_fin, placa, base];
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const result = await client.query(query, params);
+        const rows = result.rows;
         console.log('Datos encontrados:', rows);
 
         // Calcular la suma y el porcentaje de cumplimiento para cada fila
@@ -4782,19 +4938,22 @@ function obtenerFechaActual() {
 
 
 
-
-
+// Ruta para llegadas y salidas
 app.get('/llegadas_salidas', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            const result = await client.query(clientesQuery);
+            const clienteRows = result.rows;
+
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
+
             console.log('Clientes encontrados:');
             const nombresClientes = clienteRows.map(row => row.nombre);
+
             // Obtenemos la fecha actual y la pasamos al renderizar la plantilla
             const fechaActual = obtenerFechaActual(); // Función para obtener la fecha actual
             res.render('llegadasYsalidas/form_llegas.hbs', { nombreUsuario, clientes: nombresClientes, fechaActual });
@@ -4811,33 +4970,31 @@ app.get('/llegadas_salidas', async (req, res) => {
 
 
 
-
-
-app.post('/guardar_llegadas_salidas', (req, res) => {
+// Ruta para guardar llegadas y salidas
+app.post('/guardar_llegadas_salidas', async (req, res) => {
     // Extraer los datos del cuerpo de la solicitud
     const { clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion } = req.body;
 
     // Consulta SQL para insertar datos en la tabla
-    const query = `INSERT INTO llegadas_salidas (clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion) VALUES (?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO llegadas_salidas (clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion) VALUES ($1, $2, $3, $4, $5, $6)`;
     const values = [clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion];
 
-    // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results) => {
-        if (error) {
-            console.error('Error al guardar los datos:', error);
-            return res.status(500).send('Error interno del servidor');
-        } else {
-            console.log('Datos guardados correctamente');
-            // Enviar una respuesta con un script que active el alert
-            const script = `
-                <script>
-                    alert('Los datos se han guardado correctamente');
-                    window.location.href = '/llegadas_salidas'; // Redirigir después de cerrar el alert
-                </script>
-            `;
-            return res.send(script);
-        }
-    });
+    try {
+        // Ejecutar la consulta SQL
+        await client.query(query, values);
+        console.log('Datos guardados correctamente');
+        // Enviar una respuesta con un script que active el alert
+        const script = `
+            <script>
+                alert('Los datos se han guardado correctamente');
+                window.location.href = '/llegadas_salidas'; // Redirigir después de cerrar el alert
+            </script>
+        `;
+        res.send(script);
+    } catch (error) {
+        console.error('Error al guardar los datos:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 
@@ -4855,71 +5012,45 @@ app.get('/consulta_vencidos', (req, res) => {
 
 
 
-
-app.get('/documentos-vencidos', (req, res) => {
+// Ruta para obtener vehículos con documentos vencidos
+app.get('/documentos-vencidos', async (req, res) => {
     const hoy = new Date();
     const fechaOchoDiasDespues = new Date(hoy);
     fechaOchoDiasDespues.setDate(fechaOchoDiasDespues.getDate() + 8); // Suma 8 días a la fecha actual
 
     const query = `
-    SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-    Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
-FROM vehiculos
-WHERE 
- (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') <= ?) OR
- (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') <= ?) OR
- (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') <= ?) OR
- (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') <= ?) OR
- (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') <= ?) OR
- (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') <= ?)
-UNION
-SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-    Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
-FROM vehiculos
-WHERE 
- (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= ?) OR
- (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= ?) OR
- (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= ?) OR
- (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= ?) OR
- (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= ?) OR
- (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
+        SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+               Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+        FROM vehiculos
+        WHERE 
+            (Fecha_vigencia_soat IS NOT NULL AND TO_DATE(Fecha_vigencia_soat, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_vigencia IS NOT NULL AND TO_DATE(Fecha_vigencia, 'DD/MM/YYYY') <= $1) OR
+            (Vigencia_polizas IS NOT NULL AND TO_DATE(Vigencia_polizas, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_final_operacion IS NOT NULL AND TO_DATE(Fecha_final_operacion, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_final_preventiva_1 IS NOT NULL AND TO_DATE(Fecha_final_preventiva_1, 'DD/MM/YYYY') <= $1) OR
+            (fecha_vigencia_convenio IS NOT NULL AND TO_DATE(fecha_vigencia_convenio, 'DD/MM/YYYY') <= $1)
+        UNION
+        SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
+               Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+        FROM vehiculos
+        WHERE 
+            (Fecha_vigencia_soat IS NOT NULL AND TO_DATE(Fecha_vigencia_soat, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_vigencia IS NOT NULL AND TO_DATE(Fecha_vigencia, 'DD/MM/YYYY') >= $2) OR
+            (Vigencia_polizas IS NOT NULL AND TO_DATE(Vigencia_polizas, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_final_operacion IS NOT NULL AND TO_DATE(Fecha_final_operacion, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_final_preventiva_1 IS NOT NULL AND TO_DATE(Fecha_final_preventiva_1, 'DD/MM/YYYY') >= $2) OR
+            (fecha_vigencia_convenio IS NOT NULL AND TO_DATE(fecha_vigencia_convenio, 'DD/MM/YYYY') >= $2)
+    `;
 
-`;
-
-    connection.query(query, [
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-    ], (error, results, fields) => {
-        if (error) {
-            console.error('Error al obtener vehículos con documentos vencidos:', error);
-            res.status(500).json({ error: 'Error interno del servidor' });
-            return;
-        }
+    try {
+        const result = await client.query(query, [hoy, fechaOchoDiasDespues]);
         console.log('Fechas recuperadas de la base de datos:');
-        res.json(results);
-    });
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener vehículos con documentos vencidos:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
-
-
-
-
-
 
 
 
@@ -4933,66 +5064,48 @@ WHERE
 
 
 // Ruta para descargar el archivo Excel
-app.post('/descargar-excel', (req, res) => {
+app.post('/descargar-excel', async (req, res) => {
     const hoy = new Date();
     const fechaOchoDiasDespues = new Date(hoy);
     fechaOchoDiasDespues.setDate(fechaOchoDiasDespues.getDate() + 8); // Suma 8 días a la fecha actual
 
     const query = `
         SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-            Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+               Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
         FROM vehiculos
         WHERE 
-        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') <= ?) OR
-        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') <= ?) OR
-        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') <= ?) OR
-        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') <= ?) OR
-        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') <= ?) OR
-        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') <= ?)
+            (Fecha_vigencia_soat IS NOT NULL AND TO_DATE(Fecha_vigencia_soat, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_vigencia IS NOT NULL AND TO_DATE(Fecha_vigencia, 'DD/MM/YYYY') <= $1) OR
+            (Vigencia_polizas IS NOT NULL AND TO_DATE(Vigencia_polizas, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_final_operacion IS NOT NULL AND TO_DATE(Fecha_final_operacion, 'DD/MM/YYYY') <= $1) OR
+            (Fecha_final_preventiva_1 IS NOT NULL AND TO_DATE(Fecha_final_preventiva_1, 'DD/MM/YYYY') <= $1) OR
+            (fecha_vigencia_convenio IS NOT NULL AND TO_DATE(fecha_vigencia_convenio, 'DD/MM/YYYY') <= $1)
         UNION
         SELECT Placa, Conductor, Base, Fecha_vigencia_soat, Fecha_vigencia, Vigencia_polizas, 
-            Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
+               Fecha_final_operacion, Fecha_final_preventiva_1, fecha_vigencia_convenio
         FROM vehiculos
         WHERE 
-        (Fecha_vigencia_soat IS NOT NULL AND STR_TO_DATE(Fecha_vigencia_soat, '%d/%m/%Y') >= ?) OR
-        (Fecha_vigencia IS NOT NULL AND STR_TO_DATE(Fecha_vigencia, '%d/%m/%Y') >= ?) OR
-        (Vigencia_polizas IS NOT NULL AND STR_TO_DATE(Vigencia_polizas, '%d/%m/%Y') >= ?) OR
-        (Fecha_final_operacion IS NOT NULL AND STR_TO_DATE(Fecha_final_operacion, '%d/%m/%Y') >= ?) OR
-        (Fecha_final_preventiva_1 IS NOT NULL AND STR_TO_DATE(Fecha_final_preventiva_1, '%d/%m/%Y') >= ?) OR
-        (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
+            (Fecha_vigencia_soat IS NOT NULL AND TO_DATE(Fecha_vigencia_soat, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_vigencia IS NOT NULL AND TO_DATE(Fecha_vigencia, 'DD/MM/YYYY') >= $2) OR
+            (Vigencia_polizas IS NOT NULL AND TO_DATE(Vigencia_polizas, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_final_operacion IS NOT NULL AND TO_DATE(Fecha_final_operacion, 'DD/MM/YYYY') >= $2) OR
+            (Fecha_final_preventiva_1 IS NOT NULL AND TO_DATE(Fecha_final_preventiva_1, 'DD/MM/YYYY') >= $2) OR
+            (fecha_vigencia_convenio IS NOT NULL AND TO_DATE(fecha_vigencia_convenio, 'DD/MM/YYYY') >= $2)
     `;
 
-    connection.query(query, [
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy,
-        fechaOchoDiasDespues,
-        hoy
-    ], (error, results, fields) => {
-        if (error) {
-            console.error('Error al obtener vehículos con documentos vencidos:', error);
-            res.status(500).json({ error: 'Error interno del servidor' });
-            return;
-        }
-
+    try {
+        const result = await client.query(query, [hoy, fechaOchoDiasDespues]);
         console.log('Fechas recuperadas de la base de datos:');
         // Crear el archivo Excel y enviarlo como respuesta
-        generarExcel(results, res);
-    });
+        generarExcel(result.rows, res);
+    } catch (error) {
+        console.error('Error al obtener vehículos con documentos vencidos:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
+
+
+
 
 // Función para generar el archivo Excel y enviarlo como respuesta
 function generarExcel(data, res) {
@@ -5049,45 +5162,48 @@ function generarExcel(data, res) {
 
 
 
-
 // Definir las rutas
-app.get("/consulta-vehiculos2", (req, res) => {
-    // Consulta SQL para obtener las placas disponibles
-    connection.query("SELECT placa FROM vehiculos", (error, results) => {
-        if (error) {
-            console.error("Error al obtener las placas:", error);
-            res.status(500).send("Error al obtener las placas");
-            return;
-        }
+app.get("/consulta-vehiculos2", async (req, res) => {
+    try {
+        // Consulta SQL para obtener las placas disponibles
+        const result = await client.query("SELECT placa FROM vehiculos");
         // Renderizar la vista de consulta de vehículos con los datos de las placas
-        res.render("operaciones/vehiculos/consulta_2.hbs", { placas: results.map(result => result.placa) });
-    });
+        res.render("operaciones/vehiculos/consulta_2.hbs", { placas: result.rows.map(row => row.placa) });
+    } catch (error) {
+        console.error("Error al obtener las placas:", error);
+        res.status(500).send("Error al obtener las placas");
+    }
 });
 
-app.post("/consulta-vehiculos2", (req, res) => {
+
+
+
+
+// Ruta para obtener la información del vehículo correspondiente a la placa seleccionada
+app.post("/consulta-vehiculos2", async (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
-    // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
-        if (error) {
-            console.error("Error al obtener la información del vehículo:", error);
-            res.status(500).send("Error al obtener la información del vehículo");
-            return;
-        }
-        if (results.length === 0) {
+    try {
+        // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
+        const result = await client.query("SELECT * FROM vehiculos WHERE placa = $1", [placaSeleccionada]);
+        if (result.rows.length === 0) {
             // Si no se encuentra ningún vehículo con la placa seleccionada, enviar un mensaje de error
             res.status(404).send("Vehículo no encontrado");
             return;
         }
-        const vehiculo = results[0]; // Obtener el primer vehículo encontrado (debería haber solo uno)
+        const vehiculo = result.rows[0]; // Obtener el primer vehículo encontrado (debería haber solo uno)
+        // Convertir los datos binarios de la imagen en una URL base64
+        const fotoURL = vehiculo.foto_vehiculo ? `data:image/jpeg;base64,${vehiculo.foto_vehiculo.toString('base64')}` : null;
         // Enviar la información del vehículo al cliente en formato JSON
-      
-        
-           // Convertir los datos binarios de la imagen en una URL base64
-         
-           const fotoURL = vehiculo.foto_vehiculo ? `data:image/jpeg;base64,${vehiculo.foto_vehiculo.toString('base64')}` : null;
-           res.json({ ...vehiculo, fotoURL });
-        });
+        res.json({ ...vehiculo, fotoURL });
+    } catch (error) {
+        console.error("Error al obtener la información del vehículo:", error);
+        res.status(500).send("Error al obtener la información del vehículo");
+    }
 });
+
+
+
+
 
 
 
@@ -5100,8 +5216,9 @@ hbs.registerHelper('formatDate', function (dateString) {
 });
 
 
+
 // Ruta para obtener el informe general
-app.get('/informe_general_f', (req, res) => {
+app.get('/informe_general_f', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
         const { fecha_inicio, fecha_final } = req.query;
@@ -5111,18 +5228,17 @@ app.get('/informe_general_f', (req, res) => {
             const isValidDate = (date) => /^\d{4}-\d{2}-\d{2}$/.test(date);
 
             if (isValidDate(fecha_inicio) && isValidDate(fecha_final)) {
-                // Consulta para obtener los datos filtrados por fecha_creacion
-                const query = 'SELECT * FROM fuec_data WHERE fecha_creacion >= ? AND fecha_creacion <= DATE_ADD(?, INTERVAL 1 DAY)';
-                connection.query(query, [fecha_inicio, fecha_final], (error, results) => {
-                    if (error) {
-                        console.error('Error al ejecutar la consulta:', error.stack);
-                        res.status(500).send('Error en el servidor');
-                        return;
-                    }
+                try {
+                    // Consulta para obtener los datos filtrados por fecha_creacion
+                    const query = 'SELECT * FROM fuec_data WHERE fecha_creacion >= $1 AND fecha_creacion <= $2';
+                    const result = await client.query(query, [fecha_inicio, fecha_final]);
                     
                     // Renderiza la plantilla con los datos obtenidos
-                    res.render('operaciones/fuec/informe_general_fuec.hbs', { nombreUsuario, datos: results });
-                });
+                    res.render('operaciones/fuec/informe_general_fuec.hbs', { nombreUsuario, datos: result.rows });
+                } catch (error) {
+                    console.error('Error al ejecutar la consulta:', error.stack);
+                    res.status(500).send('Error en el servidor');
+                }
             } else {
                 res.status(400).send('Formato de fecha inválido');
             }
@@ -5139,9 +5255,13 @@ app.get('/informe_general_f', (req, res) => {
 
 
 
+
+
+
 app.get('/seleccionar_hotelVAN', (req, res) => {
     res.render('operaciones/tarifas/tarifas_van.hbs'); // Renderiza la vista seleccionar_hotel.hbs
 });
+
 
 
 
@@ -5194,8 +5314,7 @@ async function enviarCorreoElectronico(responsable, tarea) {
     await transporter.sendMail(mailOptions);
 }
 
-
-
+// Ruta para asignar servicio no conforme
 app.get('/asiganr_servicioN', async (req, res) => {
     try {
         if (req.session.loggedin === true) {
@@ -5203,8 +5322,9 @@ app.get('/asiganr_servicioN', async (req, res) => {
             const nombreUsuario = req.session.name;
 
             // Consulta para obtener la lista de usuarios
-            const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const userQuery = 'SELECT DISTINCT name FROM "user"';
+            const userResult = await client.query(userQuery);
+            const userRows = userResult.rows;
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -5213,7 +5333,8 @@ app.get('/asiganr_servicioN', async (req, res) => {
 
             // Consulta para obtener las novedades
             const novedadesQuery = 'SELECT * FROM novedades_vianco WHERE responsable_asignado IS NULL';
-            const [novedadesRows] = await connection.promise().query(novedadesQuery);
+            const novedadesResult = await client.query(novedadesQuery);
+            const novedadesRows = novedadesResult.rows;
 
             // Filtrar novedades que tienen contenido
             const filteredNovedades = novedadesRows.filter(novedad => 
@@ -5259,33 +5380,31 @@ app.post('/asignar-responsable', async (req, res) => {
         const responsableName = req.body.responsable;
 
         // Consulta para obtener la información del usuario responsable
-        const userQuery = 'SELECT name, email FROM user WHERE name = ?';
-        const [userRows] = await connection.promise().query(userQuery, [responsableName]);
+        const userQuery = 'SELECT name, email FROM "user" WHERE name = $1';
+        const userResult = await client.query(userQuery, [responsableName]);
 
         // Verificar si se encontró al usuario responsable
-        if (!userRows || userRows.length === 0) {
+        if (!userResult.rows || userResult.rows.length === 0) {
             throw new Error("No se encontró al usuario responsable en la base de datos.");
         }
 
         // Obtener el correo electrónico del responsable
-        const responsableEmail = userRows[0].email;
+        const responsableEmail = userResult.rows[0].email;
 
         // Llamar a la función para enviar correo electrónico
         await enviarCorreoElectronico({ name: responsableName, email: responsableEmail }, { id: idTarea });
 
         // Actualizar la base de datos con el responsable asignado y la notificación pendiente
-        const updateQuery = 'UPDATE novedades_vianco SET responsable_asignado = ?, notificacion_pendiente = 1 WHERE id = ?';
-        await connection.promise().query(updateQuery, [responsableName, idTarea]);
+        const updateQuery = 'UPDATE novedades_vianco SET responsable_asignado = $1, notificacion_pendiente = 1 WHERE id = $2';
+        await client.query(updateQuery, [responsableName, idTarea]);
 
-      // Redirigir de vuelta a la página de asignación
-      res.redirect('/asiganr_servicioN');
+        // Redirigir de vuelta a la página de asignación
+        res.redirect('/asiganr_servicioN');
     } catch (error) {
         console.error("Error:", error);
         res.status(500).send("Error interno del servidor");
     }
 });
-
-
 
 
 
@@ -5301,23 +5420,32 @@ app.get('/verificar-notificaciones', async (req, res) => {
         const nombreUsuario = req.session.name;
 
         // Query to check for pending notifications for the current user
-        const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
-        const [result] = await connection.promise().query(query, [nombreUsuario]);
+        const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = $1 AND notificacion_pendiente = 1';
+        const result = await client.query(query, [nombreUsuario]);
 
         // Send response to the client
-        res.json({ notificaciones: result });
+        res.json({ notificaciones: result.rows });
     } catch (error) {
         console.error('Error al verificar notificaciones pendientes:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
+
+
+
+
+
+
+// Ruta para marcar una notificación como leída
 app.put('/marcar-notificacion/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        // Mark the notification as read in the database
-        const updateResult = await Notificacion.updateOne({ _id: id }, { leida: true });
-        if (updateResult.nModified === 1) {
+        // Marcar la notificación como leída en la base de datos
+        const query = 'UPDATE novedades_vianco SET notificacion_pendiente = 0 WHERE id = $1';
+        const updateResult = await client.query(query, [id]);
+
+        if (updateResult.rowCount === 1) {
             res.status(200).send('Notificación marcada como leída correctamente');
         } else {
             res.status(404).send('Notificación no encontrada');
@@ -5328,12 +5456,18 @@ app.put('/marcar-notificacion/:id', async (req, res) => {
     }
 });
 
+
+
+
+// Ruta para obtener las notificaciones pendientes para un usuario dado
 app.get('/notificaciones-pendientes/:usuario', async (req, res) => {
     try {
         const usuario = req.params.usuario;
         // Buscar todas las notificaciones pendientes para el usuario dado
-        const notificaciones = await Notificacion.find({ responsable: usuario, leida: false });
-        res.status(200).json(notificaciones);
+        const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = $1 AND notificacion_pendiente = 1';
+        const result = await client.query(query, [usuario]);
+
+        res.status(200).json(result.rows);
     } catch (error) {
         console.error('Error al obtener las notificaciones pendientes:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -5344,16 +5478,15 @@ app.get('/notificaciones-pendientes/:usuario', async (req, res) => {
 
 
 
-
-
-
 // Ruta para eliminar una notificación
 app.delete('/eliminar-notificacion/:id', async (req, res) => {
     try {
         const id = req.params.id; // Obtener el ID de la solicitud
-        const notificacion = await Notificacion.findByIdAndDelete(id);
-        if (notificacion) {
-            res.status(200).json(notificacion);
+        const query = 'DELETE FROM novedades_vianco WHERE id = $1 RETURNING *';
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount > 0) {
+            res.status(200).json(result.rows[0]);
         } else {
             res.status(404).send('Notificación no encontrada');
         }
@@ -5366,14 +5499,18 @@ app.delete('/eliminar-notificacion/:id', async (req, res) => {
 
 
 
+
 // Ruta para verificación de servicios
-app.get('/verificacion_servicio', (req, res) => {
+app.get('/verificacion_servicio', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        connection.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results) => {
-            if (error) throw error;
-            res.render('novedades_vianco/verificacion_servicio', { nombreUsuario, novedades: results });
-        });
+        try {
+            const result = await client.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0');
+            res.render('novedades_vianco/verificacion_servicio', { nombreUsuario, novedades: result.rows });
+        } catch (error) {
+            console.error('Error al obtener las novedades:', error);
+            res.status(500).send('Error interno del servidor');
+        }
     } else {
         res.redirect("/login");
     }
@@ -5381,34 +5518,43 @@ app.get('/verificacion_servicio', (req, res) => {
 
 
 
+
+
+
 // Ruta para marcar una novedad como aceptada
-app.get('/marcar_aceptada/:id', (req, res) => {
+app.get('/marcar_aceptada/:id', async (req, res) => {
     const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
 
-    // Actualizar el estado de la novedad en la base de datos como aceptada
-    connection.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
-        if (error) throw error;
+    try {
+        // Actualizar el estado de la novedad en la base de datos como aceptada
+        await client.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = $1', [idNovedad]);
 
         // Consultar el email del usuario que realizó la acción
-        connection.query('SELECT email FROM user WHERE id = ?', idNovedad, (error, results, fields) => {
-            if (error) throw error;
-            
-            // Verificar si hay resultados en la consulta
-            if (results && results.length > 0) {
-                const userEmail = results[0].email; // Suponiendo que el email es único
+        const userResult = await client.query('SELECT email FROM "user" WHERE id = $1', [idNovedad]);
 
-                // Enviar correo electrónico de confirmación
-                enviarCorreoVerificacionn(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.');
+        // Verificar si hay resultados en la consulta
+        if (userResult.rows && userResult.rows.length > 0) {
+            const userEmail = userResult.rows[0].email; // Suponiendo que el email es único
 
-                // Redirigir a la página de verificación de servicios
-                res.redirect('/verificacion_servicio');
-            } else {
-                console.error('No se encontró ningún usuario con el ID proporcionado');
-                res.status(404).send('Usuario no encontrado');
-            }
-        });
-    });
+            // Enviar correo electrónico de confirmación
+            await enviarCorreoVerificacion(userEmail, 'Servicio Verificado', 'Su servicio ha sido verificado correctamente.');
+
+            // Redirigir a la página de verificación de servicios
+            res.redirect('/verificacion_servicio');
+        } else {
+            console.error('No se encontró ningún usuario con el ID proporcionado');
+            res.status(404).send('Usuario no encontrado');
+        }
+    } catch (error) {
+        console.error('Error al marcar la novedad como aceptada:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
+
+
+
+
+
 
 
 
@@ -5462,29 +5608,28 @@ Equipo de Soporte de Vianco`;
 
 
 
+
+
 // Ruta para manejar la consulta de servicios
-app.get('/Consulta_mia', (req, res) => {
+app.get('/Consulta_mia', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        // Consulta a la base de datos para obtener los servicios del usuario actual
-        const query = "SELECT * FROM novedades_completadas_vianco WHERE realiza = ?";
-        connection.query(query, [nombreUsuario], (err, results) => {
-            if (err) {
-                console.error('Error al consultar la base de datos: ', err);
-                res.status(500).send('Error interno del servidor');
-                return;
-            }
+        try {
+            // Consulta a la base de datos para obtener los servicios del usuario actual
+            const query = 'SELECT * FROM novedades_completadas_vianco WHERE realiza = $1';
+            const result = await client.query(query, [nombreUsuario]);
+
             // Renderiza la plantilla y pasa los resultados como contexto
-            res.render('novedades_vianco/consulta_mia_SN.hbs', { nombreUsuario, servicios: results });
-        });
+            res.render('novedades_vianco/consulta_mia_SN.hbs', { nombreUsuario, servicios: result.rows });
+        } catch (err) {
+            console.error('Error al consultar la base de datos: ', err);
+            res.status(500).send('Error interno del servidor');
+        }
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login");
+        res.redirect('/login');
     }
 });
-
-
-
 
 
 
@@ -5501,29 +5646,39 @@ app.get('/Consulta_mia', (req, res) => {
 
 
 // Ruta para verificación de servicios
-app.get('/verificacion_cotizacion', (req, res) => {
+app.get('/verificacion_cotizacion', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        // Consultar las cotizaciones realizadas pero no verificadas desde la base de datos
-        connection.query('SELECT * FROM cotizaciones WHERE realizada = 1 AND verificadas IS NULL', (error, results, fields) => {
-            if (error) throw error;
+        try {
+            // Consultar las cotizaciones realizadas pero no verificadas desde la base de datos
+            const query = 'SELECT * FROM cotizaciones WHERE realizada = 1 AND verificadas IS NULL';
+            const result = await client.query(query);
+
             // Agrupar cotizaciones por número de servicios
             const cotizacionesPorServicios = {};
-            results.forEach(cotizacion => {
+            result.rows.forEach(cotizacion => {
                 const numServicios = cotizacion.num_servicios;
                 if (!cotizacionesPorServicios[numServicios]) {
                     cotizacionesPorServicios[numServicios] = [];
                 }
                 cotizacionesPorServicios[numServicios].push(cotizacion);
             });
+
             // Renderizar la vista y pasar las cotizaciones agrupadas como datos
             res.render('cotizaciones/verificarCotizacion', { nombreUsuario, cotizacionesPorServicios });
-        });
+        } catch (error) {
+            console.error('Error al consultar la base de datos:', error);
+            res.status(500).send('Error interno del servidor');
+        }
     } else {
         // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login");
+        res.redirect('/login');
     }
 });
+
+
+
+
 
 
 
@@ -5543,57 +5698,43 @@ app.get('/verificacion_cotizacion', (req, res) => {
 
 
 // Ruta para marcar una cotización como aceptada
-app.post('/marcar_aceptada/:id', (req, res) => {
+app.post('/marcar_aceptada/:id', async (req, res) => {
     const id = req.params.id;
-    connection.query('UPDATE cotizaciones SET verificadas = 1 WHERE id = ?', [id], (error, results, fields) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error al marcar como aceptada');
+    try {
+        const query = 'UPDATE cotizaciones SET verificadas = 1 WHERE id = $1';
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount > 0) {
+            res.send('Cotización aceptada correctamente');
+        } else {
+            res.status(404).send('Cotización no encontrada');
         }
-        res.send('Cotización aceptada correctamente');
-    });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al marcar como aceptada');
+    }
 });
+
+
+
+
+
 
 // Ruta para marcar una cotización como rechazada
-app.post('/marcar_rechazada/:id', (req, res) => {
+app.post('/marcar_rechazada/:id', async (req, res) => {
     const id = req.params.id;
-    connection.query('UPDATE cotizaciones SET verificadas = 0 WHERE id = ?', [id], (error, results, fields) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error al marcar como rechazada');
+    try {
+        const query = 'UPDATE cotizaciones SET verificadas = 0 WHERE id = $1';
+        const result = await client.query(query, [id]);
+
+        if (result.rowCount > 0) {
+            res.send('Cotización rechazada correctamente');
+        } else {
+            res.status(404).send('Cotización no encontrada');
         }
-        res.send('Cotización rechazada correctamente');
-    });
-});
-
-
-
-
-
-
-
-
-
-
-app.get('/nuevo_tikect_soporte', (req, res) => {
-    if (req.session.loggedin === true) {
-        const nombreUsuario = req.session.name;
-        // Aquí obtienes el correo electrónico del usuario de la base de datos
-        const query = 'SELECT email FROM user WHERE name = ?';
-        connection.query(query, [nombreUsuario], (error, results) => {
-            if (error) {
-                console.error('Error al obtener el correo electrónico del usuario:', error);
-                // Maneja el error apropiadamente
-                res.redirect("/login");
-                return;
-            }
-            // Si se encuentra el correo electrónico, pásalo a la página
-            const emailUsuario = results[0].email;
-            res.render('SoporteIT/crear_tikect.hbs', { nombreUsuario, emailUsuario });
-        });
-    } else {
-        // Manejo para el caso en que el usuario no está autenticado
-        res.redirect("/login");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al marcar como rechazada');
     }
 });
 
@@ -5604,24 +5745,55 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
 
 
 
+// Ruta para crear un nuevo ticket de soporte
+app.get('/nuevo_tikect_soporte', async (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+        try {
+            // Aquí obtienes el correo electrónico del usuario de la base de datos
+            const query = 'SELECT email FROM "user" WHERE name = $1';
+            const result = await client.query(query, [nombreUsuario]);
+
+            if (result.rows.length === 0) {
+                console.error('No se encontró el correo electrónico del usuario');
+                res.redirect('/login');
+                return;
+            }
+
+            // Si se encuentra el correo electrónico, pásalo a la página
+            const emailUsuario = result.rows[0].email;
+            res.render('SoporteIT/crear_tikect.hbs', { nombreUsuario, emailUsuario });
+        } catch (error) {
+            console.error('Error al obtener el correo electrónico del usuario:', error);
+            // Maneja el error apropiadamente
+            res.redirect('/login');
+        }
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect('/login');
+    }
+});
 
 
 
 
 
-app.post('/guardar_ticket', (req, res) => {
+
+
+
+// Ruta para guardar un nuevo ticket de soporte
+app.post('/guardar_ticket', async (req, res) => {
     const { usuario, email, asunto, otro_asunto, prioridad, descripcion } = req.body;
 
     const asuntoFinal = (asunto === 'Otro') ? otro_asunto : asunto;
 
-    const sql = "INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES (?, ?, ?, ?, ?)";
-    connection.query(sql, [usuario, email, asuntoFinal, prioridad, descripcion], (error, results) => {
-        if (error) {
-            console.error('Error al insertar el ticket:', error);
-            res.status(500).send('Error interno al guardar el ticket');
-            return;
-        }
-        console.log('Nuevo ticket creado con ID:', results.insertId);
+    const sql = 'INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const values = [usuario, email, asuntoFinal, prioridad, descripcion];
+
+    try {
+        const result = await client.query(sql, values);
+        const ticketId = result.rows[0].id;
+        console.log('Nuevo ticket creado con ID:', ticketId);
 
         const mailOptions = {
             from: 'soporte.it.vianco@gmail.com',
@@ -5670,127 +5842,128 @@ app.post('/guardar_ticket', (req, res) => {
                 return;
             }
             console.log('Correo electrónico enviado:', info.response);
-
             res.json({ message: '¡Ticket creado exitosamente y correo electrónico enviado!' });
         });
-    });
-});
-
-
-
-
-
-
-
-
-
-
-
-app.get('/revisar_tickets', (req, res) => {
-    if (req.session.loggedin === true) {
-        // Consulta los tickets en estado pendiente desde la base de datos
-        const query = 'SELECT * FROM tickets_soporte WHERE estado = ?';
-        connection.query(query, ['pendiente'], (error, results) => {
-            if (error) {
-                console.error('Error al obtener los tickets en estado pendiente:', error);
-                // Maneja el error apropiadamente
-                res.status(500).send('Error interno del servidor');
-                return;
-            }
-            // Renderiza la vista de tickets pendientes, pasando los resultados de la consulta
-            res.render('SoporteIT/responder_tikect.hbs', { tickets: results });
-        });
-    } else {
-        // Redirige al usuario al inicio de sesión si no está autenticado
-        res.redirect("/login");
+    } catch (error) {
+        console.error('Error al insertar el ticket:', error);
+        res.status(500).send('Error interno al guardar el ticket');
     }
 });
 
 
 
-app.post('/responder_ticket/:id', (req, res) => {
+
+
+
+
+
+
+
+// Ruta para revisar los tickets pendientes
+app.get('/revisar_tickets', async (req, res) => {
+    if (req.session.loggedin === true) {
+        try {
+            // Consulta los tickets en estado pendiente desde la base de datos
+            const query = 'SELECT * FROM tickets_soporte WHERE estado = $1';
+            const result = await client.query(query, ['pendiente']);
+
+            // Renderiza la vista de tickets pendientes, pasando los resultados de la consulta
+            res.render('SoporteIT/responder_tikect.hbs', { tickets: result.rows });
+        } catch (error) {
+            console.error('Error al obtener los tickets en estado pendiente:', error);
+            // Maneja el error apropiadamente
+            res.status(500).send('Error interno del servidor');
+        }
+    } else {
+        // Redirige al usuario al inicio de sesión si no está autenticado
+        res.redirect('/login');
+    }
+});
+
+
+
+
+
+
+
+// Ruta para responder a un ticket
+app.post('/responder_ticket/:id', async (req, res) => {
     if (req.session.loggedin === true) {
         const ticketId = req.params.id;
         const respuesta = req.body.respuesta;
         const fechaRespuesta = new Date(); // Obtén la fecha y hora actual
 
-        // Actualiza el ticket en la base de datos
-        const query = 'UPDATE tickets_soporte SET estado = ?, respuesta = ?, fechaRespuesta = ? WHERE id = ?';
-        connection.query(query, ['completo', respuesta, fechaRespuesta, ticketId], (error, results) => {
-            if (error) {
-                console.error('Error al responder al ticket:', error);
-                res.status(500).send('Error interno del servidor');
-                return;
-            }
+        try {
+            // Actualiza el ticket en la base de datos
+            const query = 'UPDATE tickets_soporte SET estado = $1, respuesta = $2, fechaRespuesta = $3 WHERE id = $4';
+            await client.query(query, ['completo', respuesta, fechaRespuesta, ticketId]);
 
             // Aquí asumimos que el correo electrónico del destinatario está almacenado en la base de datos
             // Supongamos que tienes un campo 'email' en la tabla 'tickets_soporte'
-            const emailQuery = 'SELECT email FROM tickets_soporte WHERE id = ?';
-            connection.query(emailQuery, [ticketId], (emailError, emailResults) => {
-                if (emailError) {
-                    console.error('Error al obtener el correo electrónico:', emailError);
+            const emailQuery = 'SELECT email FROM tickets_soporte WHERE id = $1';
+            const emailResult = await client.query(emailQuery, [ticketId]);
+
+            const destinatario = emailResult.rows[0].email;
+            const mailOptions = {
+                from: 'soporte.it.vianco@gmail.com',
+                to: destinatario,
+                subject: 'Respuesta a tu ticket de soporte',
+                html: `
+                <html>
+                <head>
+                    <style>
+                        /* Estilos para el cuerpo del correo */
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                        }
+                        /* Estilos para el encabezado */
+                        .header {
+                            background-color: #f4f4f4;
+                            padding: 20px;
+                        }
+                        /* Estilos para el contenido */
+                        .content {
+                            padding: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Respuesta a tu ticket de soporte</h1>
+                    </div>
+                    <div class="content">
+                        <p>Buen dia mi estimado,</p>
+                        <p>Tu ticket ha sido respondido. a continuacion veras la respuesta:</p>
+                        <p>${respuesta}</p>
+                        <p>Fecha de respuesta: ${fechaRespuesta}</p>
+                        <p>Saludos,</p>
+                        <p>El equipo de soporte</p>
+                    </div>
+                </body>
+                </html>
+            `
+            };
+
+            // Envía el correo electrónico
+            transporter.sendMail(mailOptions, (mailError, info) => {
+                if (mailError) {
+                    console.error('Error al enviar el correo:', mailError);
                     res.status(500).send('Error interno del servidor');
                     return;
                 }
-
-                const destinatario = emailResults[0].email;
-                const mailOptions = {
-                    from: 'soporte.it.vianco@gmail.com',
-                    to: destinatario,
-                    subject: 'Respuesta a tu ticket de soporte',
-                    html: `
-                    <html>
-                    <head>
-                        <style>
-                            /* Estilos para el cuerpo del correo */
-                            body {
-                                font-family: Arial, sans-serif;
-                                line-height: 1.6;
-                            }
-                            /* Estilos para el encabezado */
-                            .header {
-                                background-color: #f4f4f4;
-                                padding: 20px;
-                            }
-                            /* Estilos para el contenido */
-                            .content {
-                                padding: 20px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>Respuesta a tu ticket de soporte</h1>
-                        </div>
-                        <div class="content">
-                            <p>Buen dia mi estimado,</p>
-                            <p>Tu ticket ha sido respondido. a continuacion veras la respuesta:</p>
-                            <p>${respuesta}</p>
-                            <p>Fecha de respuesta: ${fechaRespuesta}</p>
-                            <p>Saludos,</p>
-                            <p>El equipo de soporte</p>
-                        </div>
-                    </body>
-                    </html>
-                `
-            };
-
-                // Envía el correo electrónico
-                transporter.sendMail(mailOptions, (mailError, info) => {
-                    if (mailError) {
-                        console.error('Error al enviar el correo:', mailError);
-                        res.status(500).send('Error interno del servidor');
-                        return;
-                    }
-                    console.log('Correo enviado:', info.response);
-                    res.json({ message: 'Datos insertados correctamente' });
-                });
+                console.log('Correo enviado:', info.response);
+                res.json({ message: 'Datos insertados correctamente' });
             });
-        });
+        } catch (error) {
+            console.error('Error al responder al ticket:', error);
+            res.status(500).send('Error interno del servidor');
+        }
     } else {
-        res.redirect("/login");
+        res.redirect('/login');
     }
 });
+
 
 
 
@@ -5802,39 +5975,51 @@ app.post('/responder_ticket/:id', (req, res) => {
 
 
 // Ruta para clientes
-app.get('/SolictarServicioTerceros', (req, res) => {
+app.get('/SolictarServicioTerceros', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
-        // Consulta a la base de datos para obtener el correo electrónico del usuario
-        const query = 'SELECT email FROM user WHERE name = ?';
-        connection.query(query, [nombreUsuario], (error, userResult) => {
-            if (error) {
-                console.error('Error al obtener el correo electrónico del usuario:', error);
+        try {
+            // Consulta a la base de datos para obtener el correo electrónico del usuario
+            const userQuery = 'SELECT email FROM "user" WHERE name = $1';
+            const userResult = await client.query(userQuery, [nombreUsuario]);
+
+            if (userResult.rows.length === 0) {
+                console.error('No se encontró el correo electrónico del usuario');
                 res.status(500).send('Error interno del servidor');
-                return; // Agregado para evitar que el código continúe después del error
+                return;
             }
 
             // Consulta a la base de datos para obtener la información de los clientes
-            connection.query('SELECT * FROM clientes', (error, clientesResult) => {
-                if (error) {
-                    console.error('Error al obtener los clientes:', error);
-                    res.status(500).send('Error interno del servidor');
-                    return; // Agregado para evitar que el código continúe después del error
-                }
+            const clientesQuery = 'SELECT * FROM clientes';
+            const clientesResult = await client.query(clientesQuery);
 
-                // Si se obtienen los resultados correctamente
-                // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta y el correo electrónico del usuario
-                res.render('operaciones/ServiciosTerceros/solictarServicio.hbs', { nombreUsuario, emailUsuario: userResult[0].email, clientes: clientesResult });
+            // Si se obtienen los resultados correctamente
+            // Renderiza la plantilla 'clientes.hbs' pasando los resultados de la consulta y el correo electrónico del usuario
+            res.render('operaciones/ServiciosTerceros/solictarServicio.hbs', { 
+                nombreUsuario, 
+                emailUsuario: userResult.rows[0].email, 
+                clientes: clientesResult.rows 
             });
-        });
+        } catch (error) {
+            console.error('Error al obtener los datos:', error);
+            res.status(500).send('Error interno del servidor');
+        }
     } else {
-        res.redirect("/login");
+        res.redirect('/login');
     }
 });
 
 
-app.post('/guardar-servicio_tercero', (req, res) => {
+
+
+
+
+
+
+
+// Ruta para guardar un nuevo servicio de terceros
+app.post('/guardar-servicio_tercero', async (req, res) => {
     const {
         realizadopor,
         email,
@@ -5855,92 +6040,92 @@ app.post('/guardar-servicio_tercero', (req, res) => {
 
     // Query to insert data into the 'servicios_terceros' table
     const sql = `INSERT INTO servicios_terceros (realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
 
-    // Execute the query
-    connection.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente], (err, result) => {
-        if (err) {
-            console.error('Error al insertar datos:', err);
-            res.status(500).send('Error al guardar los datos en la base de datos.');
-        } else {
-            console.log('Datos insertados correctamente');
+    try {
+        // Execute the query
+        await client.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente]);
+        console.log('Datos insertados correctamente');
 
-            // Send email notification
-            const mailOptions = {
-                from: 'soporte.it.vianco@gmail.com',
-                to: 'cdaza.vianco@gmail.com ',
-                subject: 'Nueva Solicitud de Servicio Tercerizado',
-                html: `
-                    <p>Estimado/a CAMILO DAZA,</p>
-                    <p>Me complace informarle que se ha registrado una nueva solicitud de servicio tercerizado. Por favor, tome un momento para revisar los detalles proporcionados y confirmar su validez.</p>
-                    <p>Su confirmación es fundamental para proceder con el servicio de manera adecuada.</p>
-                    <p>Quedamos a la espera de su respuesta.</p>
-                    <p>Atentamente,<br/>SOPORTE IT VIANCO</p>
-                `
-            };
+        // Send email notification
+        const mailOptions = {
+            from: 'soporte.it.vianco@gmail.com',
+            to: 'cdaza.vianco@gmail.com',
+            subject: 'Nueva Solicitud de Servicio Tercerizado',
+            html: `
+                <p>Estimado/a CAMILO DAZA,</p>
+                <p>Me complace informarle que se ha registrado una nueva solicitud de servicio tercerizado. Por favor, tome un momento para revisar los detalles proporcionados y confirmar su validez.</p>
+                <p>Su confirmación es fundamental para proceder con el servicio de manera adecuada.</p>
+                <p>Quedamos a la espera de su respuesta.</p>
+                <p>Atentamente,<br/>SOPORTE IT VIANCO</p>
+            `
+        };
 
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    console.error('Error al enviar el correo:', error);
-                    res.status(500).send('Error al enviar el correo.');
-                } else {
-                    console.log('Correo enviado:', info.response);
-                    res.redirect('/SolictarServicioTerceros?enviado=exito');
-                }
-            });
-        }
-    });
-});
-
-
-
-
-
-
-
-
-
-
-
-
-app.get('/ServiciosTerceros_pendientes', (req, res) => {
-    if (req.session.loggedin === true) {
-        // Consulta los servicios tercerizados en estado pendiente desde la base de datos
-        const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
-        connection.query(query, ['pendiente'], (error, results) => {
+        transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
-                // Maneja el error apropiadamente
-                res.status(500).send('Error interno del servidor');
-                return;
+                console.error('Error al enviar el correo:', error);
+                res.status(500).send('Error al enviar el correo.');
+            } else {
+                console.log('Correo enviado:', info.response);
+                res.redirect('/SolictarServicioTerceros?enviado=exito');
             }
-            
-            // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
-            res.render('operaciones/ServiciosTerceros/asignar_servicio_tercero.hbs', { servicios: results });
         });
-    } else {
-        // Redirige al usuario al inicio de sesión si no está autenticado
-        res.redirect("/login");
+    } catch (err) {
+        console.error('Error al insertar datos:', err);
+        res.status(500).send('Error al guardar los datos en la base de datos.');
     }
 });
 
 
-app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
+
+
+
+
+
+// Ruta para obtener los servicios tercerizados pendientes
+app.get('/ServiciosTerceros_pendientes', async (req, res) => {
+    if (req.session.loggedin === true) {
+        try {
+            // Consulta los servicios tercerizados en estado pendiente desde la base de datos
+            const query = 'SELECT * FROM servicios_terceros WHERE estado = $1';
+            const result = await client.query(query, ['pendiente']);
+
+            // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
+            res.render('operaciones/ServiciosTerceros/asignar_servicio_tercero.hbs', { servicios: result.rows });
+        } catch (error) {
+            console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
+            // Maneja el error apropiadamente
+            res.status(500).send('Error interno del servidor');
+        }
+    } else {
+        // Redirige al usuario al inicio de sesión si no está autenticado
+        res.redirect('/login');
+    }
+});
+
+
+
+
+
+
+
+// Ruta para actualizar datos del conductor en un servicio tercerizado
+app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', async (req, res) => {
     if (req.session.loggedin === true) {
         const ticketId = req.params.id;
-        const { placa, conductor, celular,Provedor, valorque_noscobran } = req.body;
+        const { placa, conductor, celular, Provedor, valorque_noscobran } = req.body;
 
-        const query = 'UPDATE servicios_terceros SET estado = ?, placa = ?, conductor = ?, celular = ?,Provedor = ?, valorque_noscobran = ? WHERE id = ?';
-        connection.query(query, ['asignado', placa, conductor, celular, Provedor,valorque_noscobran, ticketId], (error, results) => {
-            if (error) {
-                console.error('Error al actualizar el ticket:', error);
-                res.status(500).send({ message: 'Error interno del servidor' });
-                return;
-            }
+        const query = 'UPDATE servicios_terceros SET estado = $1, placa = $2, conductor = $3, celular = $4, Provedor = $5, valorque_noscobran = $6 WHERE id = $7';
+        try {
+            await client.query(query, ['asignado', placa, conductor, celular, Provedor, valorque_noscobran, ticketId]);
+            console.log('Datos actualizados correctamente');
             
-            // Email sending logic
+            // Enviar correo electrónico
             sendEmail(ticketId, placa, conductor, celular, res);
-        });
+        } catch (error) {
+            console.error('Error al actualizar el ticket:', error);
+            res.status(500).send({ message: 'Error interno del servidor' });
+        }
     } else {
         res.status(403).send({ message: 'No autorizado' });
     }
@@ -5949,25 +6134,24 @@ app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
 
 
 
-
-
 function sendEmail(ticketId, placa, conductor, celular, res) {
     // Obtener el correo electrónico del servicio tercerizado y toda la información del servicio
-    const getEmailAndServiceQuery = 'SELECT email, realizadopor, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto FROM servicios_terceros WHERE id = ?';
-    connection.query(getEmailAndServiceQuery, [ticketId], (getError, getResult) => {
+    const getEmailAndServiceQuery = 'SELECT email, realizadopor, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto FROM servicios_terceros WHERE id = $1';
+    
+    client.query(getEmailAndServiceQuery, [ticketId], (getError, getResult) => {
         if (getError) {
             console.error('Error al obtener la información del servicio:', getError);
             res.status(500).send({ message: 'Error interno del servidor' });
             return;
         }
     
-        if (getResult.length === 0) {
+        if (getResult.rows.length === 0) {
             console.error('No se pudo obtener la información del servicio');
             res.status(500).send({ message: 'No se pudo obtener la información del servicio' });
             return;
         }
     
-        const email = getResult[0].email;
+        const email = getResult.rows[0].email;
     
         if (!email || !validateEmail(email)) {
             console.error('La dirección de correo electrónico es inválida');
@@ -5975,7 +6159,7 @@ function sendEmail(ticketId, placa, conductor, celular, res) {
             return;
         }
     
-        const serviceInfo = getResult[0];
+        const serviceInfo = getResult.rows[0];
         const fechaServicio = new Date(serviceInfo.fecha_servicio).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
     
         const mailBody = `
@@ -6094,8 +6278,8 @@ function validateEmail(email) {
 app.get('/ServiciosTerceros_asignados', (req, res) => {
     if (req.session.loggedin === true) {
         // Consulta los servicios tercerizados en estado pendiente desde la base de datos
-        const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
-        connection.query(query, ['asignado'], (error, results) => {
+        const query = 'SELECT * FROM servicios_terceros WHERE estado = $1';
+        client.query(query, ['asignado'], (error, results) => {
             if (error) {
                 console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
                 // Maneja el error apropiadamente
@@ -6104,7 +6288,7 @@ app.get('/ServiciosTerceros_asignados', (req, res) => {
             }
             
             // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
-            res.render('operaciones/ServiciosTerceros/verificacionservicios.hbs', { servicios: results });
+            res.render('operaciones/ServiciosTerceros/verificacionservicios.hbs', { servicios: results.rows });
         });
     } else {
         // Redirige al usuario al inicio de sesión si no está autenticado
@@ -6116,19 +6300,20 @@ app.get('/ServiciosTerceros_asignados', (req, res) => {
 
 
 
+
 app.post('/guardar_VERIFICACIONSERVICIO_TERCERO/:id', (req, res) => {
     if (req.session.loggedin === true) {
         const servicioterceroId = req.params.id;
         const { valorCliente, costeProveedor, facturacion } = req.body;
 
-        let estadoServicio = 'asignado'; // Por defecto, el estado es PENDIENTE
+        let estadoServicio = 'asignado'; // Por defecto, el estado es asignado
 
         if (facturacion === 'PAGADO') {
             estadoServicio = 'PAGADO'; // Si la facturación es PAGADO, el estado se actualiza a PAGADO
         }
 
-        const query = 'UPDATE servicios_terceros SET valor_dadoCliente = ?, valorque_noscobran = ?, facturacion = ?, estado = ? WHERE id = ?';
-        connection.query(query, [valorCliente, costeProveedor, facturacion, estadoServicio, servicioterceroId], (error, results) => {
+        const query = 'UPDATE servicios_terceros SET valor_dadoCliente = $1, valorque_noscobran = $2, facturacion = $3, estado = $4 WHERE id = $5';
+        client.query(query, [valorCliente, costeProveedor, facturacion, estadoServicio, servicioterceroId], (error, results) => {
             if (error) {
                 console.error('Error al actualizar el servicio:', error);
                 res.status(500).send({ message: 'Error interno del servidor' });
@@ -6155,29 +6340,29 @@ app.get('/consultar_servicioT', (req, res) => {
         let queryParams = [];
 
         if (id) {
-            query += ' AND id = ?';
+            query += ' AND id = $1';
             queryParams.push(id);
         }
         if (fecha_inicio && fecha_fin) {
-            query += ' AND fecha_servicio BETWEEN ? AND ?';
+            query += ' AND fecha_servicio BETWEEN $2 AND $3';
             queryParams.push(fecha_inicio, fecha_fin);
         } else if (fecha_inicio) {
-            query += ' AND fecha_servicio >= ?';
+            query += ' AND fecha_servicio >= $4';
             queryParams.push(fecha_inicio);
         } else if (fecha_fin) {
-            query += ' AND fecha_servicio <= ?';
+            query += ' AND fecha_servicio <= $5';
             queryParams.push(fecha_fin);
         }
         if (estado) {
-            query += ' AND estado = ?';
+            query += ' AND estado = $6';
             queryParams.push(estado);
         }
 
-        connection.query(query, queryParams, (err, results) => {
+        client.query(query, queryParams, (err, results) => {
             if (err) {
                 return res.status(500).send('Error en la consulta a la base de datos');
             }
-            res.render('operaciones/ServiciosTerceros/consultar_servicioT.hbs', { nombreUsuario, results });
+            res.render('operaciones/ServiciosTerceros/consultar_servicioT.hbs', { nombreUsuario, results: results.rows });
         });
     } else {
         res.redirect('/login');
@@ -6266,18 +6451,14 @@ app.get('/PQRS', (req, res) => {
 // Definir la ruta para procesar el formulario de PQRS
 app.post('/guardar_pqrs', (req, res) => {
     // Recuperar los datos del formulario
-    const fecha = req.body.fecha;
-    const correo = req.body.correo;
-    const realiza = req.body.realiza;
-    const tipo = req.body.tipo;
-    const descripcion = req.body.descripcion;
+    const { fecha, correo, realiza, tipo, descripcion } = req.body;
 
     // Construir la consulta SQL para insertar los datos
     const sql = `INSERT INTO pqrs (fecha, correo, realiza, tipo, descripcion) 
-                 VALUES (?, ?, ?, ?, ?)`;
+                 VALUES ($1, $2, $3, $4, $5)`;
 
     // Ejecutar la consulta SQL con los datos del formulario
-    connection.query(sql, [fecha, correo, realiza, tipo, descripcion], (error, results, fields) => {
+    client.query(sql, [fecha, correo, realiza, tipo, descripcion], (error, results) => {
         if (error) {
             console.error("Error al guardar la PQRS:", error);
             res.status(500).send("Error al guardar la PQRS.");
@@ -6291,6 +6472,10 @@ app.post('/guardar_pqrs', (req, res) => {
         }
     });
 });
+
+
+
+
 
 // Función para enviar el correo electrónico
 function enviarCorreeeo(destinatario, fecha, realiza, tipo, descripcion) {
@@ -6355,18 +6540,17 @@ app.get('/menuGerencia', (req, res) => {
 
 
 
-
-
 async function obtenerDatoscontabilidadA() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION,junio FROM contabilidad";
-      connection.query(query, (error, results) => {
-        if (error) reject(error);
-        resolve(results);
-      });
+        const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION, junio FROM contabilidad";
+        client.query(query, (error, results) => {
+            if (error) reject(error);
+            resolve(results.rows);
+        });
     });
-  }
-  app.get('/Calcular_administracion', async (req, res) => {
+}
+
+app.get('/Calcular_administracion', async (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
         const fechaActual = new Date();
@@ -6388,6 +6572,9 @@ async function obtenerDatoscontabilidadA() {
     }
 });
 
+
+
+
 function obtenerValorAdministracionMesActual(vehiculos, mesActual) {
     // Buscar el valor de administración correspondiente al mes actual en el array de vehículos
     for (const vehiculo of vehiculos) {
@@ -6408,6 +6595,15 @@ function obtenerValorAdministracionMesActual(vehiculos, mesActual) {
     }
     return null; // Si no se encuentra el valor para el mes actual, se puede devolver null o algún otro valor predeterminado
 }
+
+
+
+
+
+
+
+
+
 
 // Ruta para manejar las solicitudes POST para actualizar el valor en la base de datos
 app.post('/actualizar_valor_pagar', (req, res) => {
@@ -6416,27 +6612,22 @@ app.post('/actualizar_valor_pagar', (req, res) => {
     // Log de la solicitud para depuración
     console.log(`Valor recibido: ${valor}, Mes: ${mes}, Placa: ${placa}`);
   
-    // Aquí debes escribir el código para actualizar el valor en la base de datos según el mes recibido
-  
     // Convertir el valor a un número decimal
     const valorDecimal = parseFloat(valor);
   
     // Por ejemplo, podrías ejecutar una consulta SQL para actualizar el valor
-    const sql = `UPDATE contabilidad SET ${mes} = ? WHERE placa = ?`;
+    const sql = `UPDATE contabilidad SET ${mes} = $1 WHERE placa = $2`;
   
-    connection.query(sql, [valorDecimal, placa], (err, result) => {
-      if (err) {
-        console.error('Error al ejecutar la consulta SQL: ', err);
-        res.status(500).send('Error al actualizar el valor en la base de datos');
-        return;
-      }
-      console.log('Valor actualizado correctamente en la base de datos');
-      res.status(200).send('Valor actualizado correctamente');
+    client.query(sql, [valorDecimal, placa], (err, result) => {
+        if (err) {
+            console.error('Error al ejecutar la consulta SQL: ', err);
+            res.status(500).send('Error al actualizar el valor en la base de datos');
+            return;
+        }
+        console.log('Valor actualizado correctamente en la base de datos');
+        res.status(200).send('Valor actualizado correctamente');
     });
 });
-
-
-
 
 
 
@@ -6459,13 +6650,15 @@ app.post('/actualizar_valor_pagar', (req, res) => {
 
 
 const getIndicadores = async () => {
-    const connection = await mysql.createConnection({
+    const client = new Client({
         host: "69.61.31.131",
         user: "viancote_soporte",
         password: "MXPwPzz4zlU=",
         database: "viancote_nodelogin",
-        port: "3306"
+        port: 5432
     });
+
+    await client.connect();
 
     try {
         // Obtener la fecha actual y la fecha hace 15 días
@@ -6474,37 +6667,37 @@ const getIndicadores = async () => {
         hace15Dias.setDate(hace15Dias.getDate() - 15);
 
         // Consulta para obtener el número de recepciones hoy
-        const [recepcionesHoyResult] = await connection.promise().query('SELECT COUNT(*) AS recepcionesHoy FROM aeropuerto WHERE DATE(fecha) = ?', [hoy.toISOString().split('T')[0]]);
+        const recepcionesHoyResult = await client.query('SELECT COUNT(*) AS recepcionesHoy FROM aeropuerto WHERE DATE(fecha) = $1', [hoy.toISOString().split('T')[0]]);
 
         // Consulta para obtener el número de recepciones mensuales
         const firstDayOfMonth = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
         const lastDayOfMonth = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
         const firstDayOfMonthString = firstDayOfMonth.toISOString().split('T')[0];
         const lastDayOfMonthString = lastDayOfMonth.toISOString().split('T')[0];
-        const [recepcionesMensualesResult] = await connection.promise().query('SELECT COUNT(*) AS recepcionesMensuales FROM aeropuerto WHERE fecha >= ? AND fecha <= ?', [firstDayOfMonthString, lastDayOfMonthString]);
+        const recepcionesMensualesResult = await client.query('SELECT COUNT(*) AS recepcionesMensuales FROM aeropuerto WHERE fecha >= $1 AND fecha <= $2', [firstDayOfMonthString, lastDayOfMonthString]);
 
         // Consulta para obtener el número de recepciones en los últimos 15 días
-        const [recepcionesUltimos15Result] = await connection.promise().query('SELECT COUNT(*) AS recepcionesUltimos15 FROM aeropuerto WHERE fecha >= ? AND fecha < ? AND fecha < ?', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0], firstDayOfMonthString]);
+        const recepcionesUltimos15Result = await client.query('SELECT COUNT(*) AS recepcionesUltimos15 FROM aeropuerto WHERE fecha >= $1 AND fecha < $2 AND fecha < $3', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0], firstDayOfMonthString]);
 
         // Consulta para obtener el conductor que más realiza en los últimos 15 días
-        const [conductorMasActivoResult] = await connection.promise().query('SELECT conductor, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= ? AND fecha < ? GROUP BY conductor ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
+        const conductorMasActivoResult = await client.query('SELECT conductor, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= $1 AND fecha < $2 GROUP BY conductor ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
 
         // Consulta para obtener el cliente que más ha estado activo en los últimos 15 días
-        const [clienteMasActivoResult] = await connection.promise().query('SELECT cliente, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= ? AND fecha < ? GROUP BY cliente ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
+        const clienteMasActivoResult = await client.query('SELECT cliente, COUNT(*) AS cantidad FROM aeropuerto WHERE fecha >= $1 AND fecha < $2 GROUP BY cliente ORDER BY cantidad DESC LIMIT 1', [hace15Dias.toISOString().split('T')[0], hoy.toISOString().split('T')[0]]);
 
         // Devuelve los indicadores como un objeto
         return {
-            recepcionesHoy: recepcionesHoyResult[0].recepcionesHoy,
-            recepcionesUltimos15: recepcionesUltimos15Result[0].recepcionesUltimos15,
-            recepcionesMensuales: recepcionesMensualesResult[0].recepcionesMensuales,
-            conductorMasActivo: conductorMasActivoResult.length > 0 ? conductorMasActivoResult[0].conductor : 'N/A', // Si no hay resultados, muestra 'N/A'
-            clienteMasActivo: clienteMasActivoResult.length > 0 ? clienteMasActivoResult[0].cliente : 'N/A' // Si no hay resultados, muestra 'N/A'
+            recepcionesHoy: recepcionesHoyResult.rows[0].recepcioneshoy,
+            recepcionesUltimos15: recepcionesUltimos15Result.rows[0].recepcionesultimos15,
+            recepcionesMensuales: recepcionesMensualesResult.rows[0].recepcionesmensuales,
+            conductorMasActivo: conductorMasActivoResult.rows.length > 0 ? conductorMasActivoResult.rows[0].conductor : 'N/A', // Si no hay resultados, muestra 'N/A'
+            clienteMasActivo: clienteMasActivoResult.rows.length > 0 ? clienteMasActivoResult.rows[0].cliente : 'N/A' // Si no hay resultados, muestra 'N/A'
         };
     } catch (err) {
         throw new Error(err.message);
     } finally {
-        if (connection) {
-            await connection.end();
+        if (client) {
+            await client.end();
         }
     }
 };
@@ -6512,6 +6705,10 @@ const getIndicadores = async () => {
 module.exports = {
     getIndicadores
 };
+
+
+
+
 
 
   
@@ -6534,6 +6731,9 @@ app.get('/indicadoresAERO', async (req, res) => {
       res.redirect("/login");
     }
   });
+
+
+
 
 
 
@@ -6570,21 +6770,41 @@ router.get('/descargar-informe-excel-aeropuerto', async (req, res) => {
     }
 });
 
+
+
+
+// Función para obtener los datos desde la base de datos
+
 // Función para obtener los datos desde la base de datos
 async function obtenerDatosParaExcel(fechaInicio, fechaFin) {
+    const client = new Client({
+        host: '69.61.31.131',
+        user: 'viancote_soporte',
+        password: 'MXPwPzz4zlU=',
+        database: 'viancote_nodelogin',
+        port: 5432
+    });
+
+    await client.connect();
+
     return new Promise((resolve, reject) => {
         // Realiza la consulta a la base de datos utilizando las fechas proporcionadas
-        const query = `SELECT fecha, cliente, nombre_pasajero, vuelo, placa, conductor FROM aeropuerto WHERE fecha BETWEEN ? AND ?`;
-        connection.query(query, [fechaInicio, fechaFin], (error, results) => {
+        const query = `SELECT fecha, cliente, nombre_pasajero, vuelo, placa, conductor FROM aeropuerto WHERE fecha BETWEEN $1 AND $2`;
+        client.query(query, [fechaInicio, fechaFin], (error, results) => {
             if (error) {
                 reject(error);
             } else {
-                resolve(results);
+                resolve(results.rows);
             }
         });
+    }).finally(() => {
+        client.end();
     });
 }
 
+module.exports = {
+    obtenerDatosParaExcel
+};
 
 
 
@@ -6603,7 +6823,7 @@ app.post('/guardar_edicionAE', function(req, res) {
     const datosEditados = req.body;
   
     // Consulta SQL para actualizar los datos
-    const sql = `UPDATE aeropuerto  SET  cliente = ?, hora = ?, nombre_pasajero = ?, vuelo = ?, placa = ?, conductor = ?, celular_conductor = ? WHERE id = ?`;
+    const sql = `UPDATE aeropuerto SET cliente = $1, hora = $2, nombre_pasajero = $3, vuelo = $4, placa = $5, conductor = $6, celular_conductor = $7 WHERE id = $8`;
     const values = [
       datosEditados.cliente,
       datosEditados.hora,
@@ -6616,7 +6836,7 @@ app.post('/guardar_edicionAE', function(req, res) {
     ];
   
     // Ejecutar la consulta SQL
-    connection.query(sql, values, (err, result) => {
+    client.query(sql, values, (err, result) => {
       if (err) {
         console.error('Error al actualizar los datos:', err);
         res.status(500).send('Error al actualizar los datos');
@@ -6625,7 +6845,7 @@ app.post('/guardar_edicionAE', function(req, res) {
         res.send('Datos actualizados correctamente');
       }
     });
-  });
+});
 
 
 
@@ -6641,19 +6861,19 @@ router.get('/seguimientopqr', (req, res) => {
             WHERE estado IS NULL
         `;
 
-        connection.query(query, (error, results) => {
+        client.query(query, (error, results) => {
             if (error) {
                 console.error('Error al obtener PQRS:', error);
                 res.status(500).send('Error interno al obtener PQRS');
             } else {
                 // Modificar resultados para mostrar "Pendiente" cuando estado es null
-                results.forEach(pqr => {
+                results.rows.forEach(pqr => {
                     if (pqr.estado === null) {
                         pqr.estado = 'Pendiente';
                     }
                 });
 
-                res.render('Comercial/PQRS/seguimientopqr.hbs', { nombreUsuario, pqrsList: results });
+                res.render('Comercial/PQRS/seguimientopqr.hbs', { nombreUsuario, pqrsList: results.rows });
             }
         });
     } else {
@@ -6663,7 +6883,6 @@ router.get('/seguimientopqr', (req, res) => {
 });
 
 
-
 // Función para formatear la fecha
 function formatDate(dateString) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -6671,27 +6890,22 @@ function formatDate(dateString) {
 }
 
 
-app.post('/guardar-seguimientoo', (req, res) => {
-    const pqrsId = req.body.pqrsId;
-    const responsable = req.body.responsable;
-    const fechaSeguimiento = req.body.fechaSeguimiento;
-    const seguimiento = req.body.seguimiento;
-    const acciones = req.body.acciones;
-    const correoDestino = req.body.correo;
-    const realiza = req.body.realiza;
-    const descripcion = req.body.descripcion;
 
-    const fecha = req.body.fecha; // Asegúrate de que esta variable coincida con el nombre del campo en tu formulario
-    
+
+app.post('/guardar-seguimientoo', (req, res) => {
+    const { pqrsId, responsable, fechaSeguimiento, seguimiento, acciones, correo, realiza, descripcion, fecha } = req.body;
+
     // Validación de campos
     if (!responsable || !fechaSeguimiento || !seguimiento || !acciones) {
         return res.status(400).send('Todos los campos son obligatorios');
     }
 
-    // Aquí continúa tu lógica de actualización en la base de datos y envío de correo
-    // Ejemplo:
-    const sql = 'UPDATE pqrs SET responsable = ?, fecha_seguimiento = ?, seguimiento = ?, acciones = ?, estado = ? WHERE id = ?';
-    connection.query(sql, [responsable, fechaSeguimiento, seguimiento, acciones, 'Respondida', pqrsId], (err, result) => {
+    // Consulta SQL para actualizar los datos
+    const sql = 'UPDATE pqrs SET responsable = $1, fecha_seguimiento = $2, seguimiento = $3, acciones = $4, estado = $5 WHERE id = $6';
+    const values = [responsable, fechaSeguimiento, seguimiento, acciones, 'Respondida', pqrsId];
+
+    // Ejecutar la consulta SQL
+    client.query(sql, values, (err, result) => {
         if (err) {
             console.error('Error al guardar el seguimiento:', err);
             return res.status(500).send('Error al guardar el seguimiento');
@@ -6700,7 +6914,7 @@ app.post('/guardar-seguimientoo', (req, res) => {
         // Configurar el contenido del correo
         const mailOptions = {
             from: 'soporte.it.vianco@gmail.com',
-            to: correoDestino,
+            to: correo,
             subject: 'Respuesta a PQRS',
             html: `
                 <p>Estimado/a Usuario/a,</p>
@@ -6724,11 +6938,11 @@ app.post('/guardar-seguimientoo', (req, res) => {
                     </tr>
                     <tr>
                         <td><strong>Fecha de creación de la PQRS:</strong></td>
-                        <td>${fecha}</td> <!-- Asegúrate de que 'fecha' esté disponible y tenga el formato correcto -->
+                        <td>${fecha}</td>
                     </tr>
                     <tr>
                         <td><strong>Correo del usuario:</strong></td>
-                        <td>${correoDestino}</td>
+                        <td>${correo}</td>
                     </tr>
                     <tr>
                         <td><strong>Realiza:</strong></td>
@@ -6736,7 +6950,7 @@ app.post('/guardar-seguimientoo', (req, res) => {
                     </tr>
                     <tr>
                         <td><strong>Descripción:</strong></td>
-                        <td>${descripcion}</td> <!-- Ajusta según cómo recibes 'descripcion' en req.body -->
+                        <td>${descripcion}</td>
                     </tr>
                 </table>
                 <p>Gracias por su atención.</p>
@@ -6769,27 +6983,21 @@ app.post('/guardar-seguimientoo', (req, res) => {
 
 
 
-
-
-
-
-
-
 app.get('/consultapqr', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
         // Consulta SQL para obtener las PQRS
         const sql = 'SELECT * FROM pqrs';
-        connection.query(sql, (err, results) => {
+        client.query(sql, (err, results) => {
             if (err) {
                 console.error('Error al consultar las PQRS:', err);
                 return res.status(500).send('Error al consultar las PQRS');
             }
 
             // Filtrar las PQRS según su estado
-            const pendientes = results.filter(pqr => pqr.estado === null);
-            const completadas = results.filter(pqr => pqr.estado === 'Respondida');
+            const pendientes = results.rows.filter(pqr => pqr.estado === null);
+            const completadas = results.rows.filter(pqr => pqr.estado === 'Respondida');
 
             // Renderizar la plantilla con los datos
             res.render('Comercial/PQRS/consulta_pqr.hbs', {
@@ -6805,6 +7013,10 @@ app.get('/consultapqr', (req, res) => {
 });
 
 
+
+
+
+
 app.get('/consultapqr/:tipo', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
@@ -6814,21 +7026,23 @@ app.get('/consultapqr/:tipo', (req, res) => {
         if (tipoPQRS === 'pendientes') {
             sql = 'SELECT * FROM pqrs WHERE estado IS NULL';
         } else if (tipoPQRS === 'completadas') {
-            sql = 'SELECT * FROM pqrs WHERE estado = "Respondida"';
+            sql = 'SELECT * FROM pqrs WHERE estado = $1';
         } else if (tipoPQRS === 'todas') {
             sql = 'SELECT * FROM pqrs';
         } else {
             return res.status(400).send('Tipo de PQRS no válido');
         }
 
-        connection.query(sql, (err, results) => {
+        const queryParams = tipoPQRS === 'completadas' ? ['Respondida'] : [];
+
+        client.query(sql, queryParams, (err, results) => {
             if (err) {
                 console.error('Error al consultar las PQRS:', err);
                 return res.status(500).send('Error al consultar las PQRS');
             }
 
             let htmlResult = '';
-            results.forEach(pqr => {
+            results.rows.forEach(pqr => {
                 htmlResult += `
                     <tr>
                         <td>${pqr.id}</td>
@@ -6839,7 +7053,7 @@ app.get('/consultapqr/:tipo', (req, res) => {
                         <td>${pqr.descripcion}</td>
                         <td>${pqr.estado}</td>
                         <td>${pqr.responsable}</td>
-                          <td>${pqr.fecha_seguimiento}</td>
+                        <td>${pqr.fecha_seguimiento}</td>
                         <td>${pqr.seguimiento}</td>
                         <td>${pqr.acciones}</td>
                     </tr>
@@ -6852,6 +7066,11 @@ app.get('/consultapqr/:tipo', (req, res) => {
         res.redirect("/login");
     }
 });
+
+
+
+
+
 
 function formatDate(dateString) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
