@@ -6066,29 +6066,74 @@ function validateEmail(email) {
 
 
 
-
 app.get('/ServiciosTerceros_asignados', (req, res) => {
     if (req.session.loggedin === true) {
-        // Consulta los servicios tercerizados en estado pendiente desde la base de datos
         const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
         connection.query(query, ['asignado'], (error, results) => {
             if (error) {
                 console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
-                // Maneja el error apropiadamente
                 res.status(500).send('Error interno del servidor');
                 return;
             }
-            
-            // Renderiza la vista de servicios tercerizados pendientes, pasando los resultados de la consulta
             res.render('operaciones/ServiciosTerceros/verificacionservicios.hbs', { servicios: results });
         });
     } else {
-        // Redirige al usuario al inicio de sesión si no está autenticado
         res.redirect("/login");
     }
 });
 
+app.get('/download-excel', (req, res) => {
+    const { startDate, endDate } = req.query;
+    const query = 'SELECT * FROM servicios_terceros WHERE estado = ? AND fecha_servicio BETWEEN ? AND ?';
 
+    connection.query(query, ['asignado', startDate, endDate], async (error, results) => {
+        if (error) {
+            console.error('Error al obtener los servicios tercerizados en el rango de fechas:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Servicios Terceros');
+
+        worksheet.columns = [
+            { header: 'Solicitado por', key: 'realizadopor', width: 20 },
+            { header: 'Número de Tarea', key: 'numero_tarea', width: 15 },
+            { header: 'Fecha del Servicio', key: 'fecha_servicio', width: 15 },
+            { header: 'Hora del Servicio', key: 'hora_servicio', width: 15 },
+            { header: 'Tipo de Vehículo', key: 'tipo_vehiculo', width: 20 },
+            { header: 'Otro Vehículo', key: 'otro_vehiculo', width: 20 },
+            { header: 'Cliente', key: 'cliente', width: 20 },
+            { header: 'Otro Cliente', key: 'otro_cliente', width: 20 },
+            { header: 'Punto de Origen', key: 'punto_origen', width: 25 },
+            { header: 'Punto de Destino', key: 'punto_destino', width: 25 },
+            { header: 'Observaciones', key: 'observaciones', width: 30 },
+            { header: 'Persona de Contacto', key: 'nombrePersona', width: 20 },
+            { header: 'Contacto', key: 'contacto', width: 15 },
+            { header: 'Valor facturado', key: 'valor_dadoCliente', width: 20 },
+            { header: 'Información de Asignación', key: 'informacion_asignacion', width: 20 },
+            { header: 'Estado', key: 'estado', width: 10 },
+            { header: 'Placa', key: 'placa', width: 10 },
+            { header: 'Conductor', key: 'conductor', width: 15 },
+            { header: 'Celular', key: 'celular', width: 15 },
+            { header: 'Provedor', key: 'Provedor', width: 20 },
+            { header: 'COSTO PROVEDOR', key: 'valorque_noscobran', width: 20 },
+            { header: 'Margen de Ganancia', key: 'margen_ganancia', width: 20 },
+            { header: 'Ganancia Neta', key: 'ganancia_neta', width: 20 },
+            { header: 'Facturación', key: 'facturacion', width: 20 },
+        ];
+
+        results.forEach((servicio) => {
+            worksheet.addRow(servicio);
+        });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=ServiciosTerceros.xlsx');
+
+        await workbook.xlsx.write(res);
+        res.end();
+    });
+});
 
 
 

@@ -78,6 +78,15 @@
         <h1>ASIGNACION DE CONDUCTOR TERCERIZADO</h1>
     </header>
 
+<br>
+   <form action="/download-excel" method="get" style="text-align: center; margin-top: 20px;">
+        <label for="startDate">Fecha de inicio:</label>
+        <input type="date" id="startDate" name="startDate" required>
+        <label for="endDate">Fecha de fin:</label>
+        <input type="date" id="endDate" name="endDate" required>
+        <button type="submit">Descargar Excel</button>
+    </form>
+    <br>
     <table>
         <thead>
             <tr>
@@ -149,10 +158,6 @@
             {{/each}}
         </tbody>
     </table>
-
-    <footer>
-        <p>© 2024 Servicios Tercerizados. Todos los derechos reservados.</p>
-    </footer>
 
     <script>
 
