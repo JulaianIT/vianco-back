@@ -6943,6 +6943,8 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         return res.status(400).send('Debes seleccionar al menos un archivo PDF.');
     }
 
+    console.log('Archivos recibidos:', archivosPDF);
+
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -6986,13 +6988,11 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         messageId: messageId,
         attachments: archivosPDF.map(file => ({
             filename: file.originalname,
-            content: fs.createReadStream(file.path)
+            content: file.buffer
         }))
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-        archivosPDF.forEach(file => fs.unlinkSync(file.path));
-
         if (error) {
             console.error('Error al enviar correo electrónico:', error);
             return res.status(500).send('Error al enviar correo electrónico');
