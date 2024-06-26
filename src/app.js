@@ -4,7 +4,10 @@ const session = require("express-session");
 const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
 const multer = require('multer');
-const upload = multer();
+const upload = multer({
+    dest: 'uploads/', // Carpeta donde se guardan temporalmente los archivos
+    limits: { fileSize: 10 * 1024 * 1024 }, // Límite de tamaño: 10 MB por archivo
+});
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
@@ -2880,7 +2883,7 @@ app.get('/clientess', (req, res) => {
 
 // Ruta para actualizar un cliente específico
 app.post('/actualizar_cliente', (req, res) => {
-    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto,fecha_inicio,fecha_final,destino} = req.body;
+    const { nombre, contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion ,responsable,celular,cedula,objeto,fecha_inicio,fecha_final,destino,correoacta} = req.body;
 
     console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
@@ -2912,6 +2915,9 @@ app.post('/actualizar_cliente', (req, res) => {
                 clienteActual.destino !== destino ||
                 clienteActual.fecha_inicio !== fecha_inicio ||
                 clienteActual.fecha_final !== fecha_final ||
+                clienteActual.correoacta !== correoacta ||
+
+
                 
                 clienteActual.direccion !== direccion
 
@@ -2921,8 +2927,8 @@ app.post('/actualizar_cliente', (req, res) => {
                 
             ) {
                 connection.query(
-                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ?,destino = ? WHERE nombre = ?', 
-                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,destino,nombre], 
+                    'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? , correoacta = ?  ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ?,destino = ? WHERE nombre = ?', 
+                    [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,correoacta,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,destino,nombre], 
                     (error, results) => {
                         if (error) {
                             console.error('Error al actualizar el cliente:', error);
@@ -2954,7 +2960,7 @@ app.post('/agregar-cliente',(req, res) => {
     const formData = req.body; // Capturar los datos del formulario
 
     connection.query(
-      `INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino) 
+      `INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion,correoacta, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         formData.nombre,
@@ -2965,6 +2971,10 @@ app.post('/agregar-cliente',(req, res) => {
         formData.contratante,
         formData.nit,
         formData.direccion,
+        formData.correoacta,
+
+
+        
         formData.responsable,
         formData.celular,
         formData.cedula,
@@ -6878,6 +6888,112 @@ function formatDate(dateString) {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return new Date(dateString).toLocaleDateString('es-ES', options);
 }
+
+
+
+
+
+//ENVIAR ACTAS DE SERVICIO
+
+
+// Ruta GET para cargar la página de envío de actas
+router.get('/EnvioActas', (req, res) => {
+    if (req.session.loggedin === true) {
+        const nombreUsuario = req.session.name;
+
+        // Consulta a MySQL para obtener los nombres de clientes y sus correos
+        connection.query('SELECT nombre, correoacta FROM clientes', (error, results, fields) => {
+            if (error) {
+                console.error('Error al obtener clientes desde MySQL:', error);
+                res.status(500).send('Error al obtener clientes desde la base de datos');
+            } else {
+                const clientes = results; // Array de objetos con nombre y correoacta
+
+                res.render('operaciones/actasTasGo/enviodeactas.hbs', { nombreUsuario, clientes });
+            }
+        });
+    } else {
+        // Manejo para el caso en que el usuario no está autenticado
+        res.redirect("/login");
+    }
+});
+
+
+
+
+
+
+
+// Ruta POST para manejar el envío de actas
+app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
+    // Verificamos la sesión del usuario
+    if (req.session.loggedin !== true) {
+        return res.redirect("/login");
+    }
+
+    // Obtenemos los datos del formulario
+    const clienteCorreo = req.body.cliente; // Correo electrónico del cliente seleccionado
+    const archivosPDF = req.files; // Array de archivos PDF subidos
+
+    // Verificamos que se hayan subido archivos
+    if (!archivosPDF || archivosPDF.length === 0) {
+        return res.status(400).send('Debes seleccionar al menos un archivo PDF.');
+    }
+
+    // Configuración del transporte SMTP utilizando tu configuración existente
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'soporte.it.vianco@gmail.com', // Cambia esto por tu correo electrónico
+            pass: 'caerdeblynmsfzvc' // Cambia esto por tu contraseña
+        },
+        messageId: uuidv4() // Genera un Message-ID único para cada correo enviado
+    });
+
+    // Configuración del correo electrónico
+    const mailOptions = {
+        from: 'soporte.it.vianco@gmail.com', // Cambia esto por tu correo electrónico
+        to: clienteCorreo, // Correo electrónico obtenido del formulario
+        subject: 'Envío de Actas',
+        text: `Estimado cliente,\nAdjuntamos las actas correspondientes.`,
+        attachments: archivosPDF.map(file => ({
+            filename: file.originalname,
+            content: fs.createReadStream(file.path) // Adjunta el archivo usando su contenido
+        }))
+    };
+
+    // Envío del correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+        // Eliminar los archivos temporales subidos después del envío del correo
+        archivosPDF.forEach(file => {
+            fs.unlinkSync(file.path); // Elimina el archivo del sistema de archivos
+        });
+
+        if (error) {
+            console.error('Error al enviar correo electrónico:', error);
+            res.status(500).send('Error al enviar correo electrónico');
+        } else {
+            console.log('Correo electrónico enviado:', info.response);
+            // Enviamos una respuesta al cliente
+            res.send('Archivos subidos y correo enviado exitosamente');
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

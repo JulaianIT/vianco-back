@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envío de Actas</title>
+</head>
+<body>
+    <h1>Envío de Actas</h1>
+    <form action="/EnvioActas" method="post" enctype="multipart/form-data">
+        <label for="cliente">Selecciona un cliente:</label>
+        <select id="cliente" name="cliente">
+            {{#each clientes}}
+                <option value="{{this.correoacta}}">{{this.nombre}}</option>
+            {{/each}}
+        </select>
+        <br><br>
+        <label for="archivosPDF">Selecciona hasta 4 archivos PDF:</label>
+        <input type="file" id="archivosPDF" name="archivosPDF" accept=".pdf" multiple>
+        <br><br>
+        <button type="submit">Enviar Actas</button>
+    </form>
+</body>
+</html>
