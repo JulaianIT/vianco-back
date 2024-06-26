@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-
-<link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Formulario</title>
     <style>
-
         main {
             width: 100%;
             padding: 20px;
@@ -22,144 +20,96 @@
             margin-top: 100px;
         }
         *{
-margin: 0;
-
-
+            margin: 0;
         }
         body{
-
             background-color: #d9d9d9;
-
         }
-
-
-h1{
-    
-    font-size: 27px;
-    padding: 7px;
-    margin: 0;
-text-align: center;
-color: #f3f3f3;
-background-color: #666567;
-
-
-}
-p{
-    font-size: 15px;
-    padding: 30px;
-
-
-}
-.contenido{
-  
-   top: -100px;
-    position: relative;
-    left: 20%;
-    max-width: 850px;
-       
-      
-        border-radius: 6px;
-        background-color: #fff;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-                    border: 18px solid #666567; /* Cambia #ff0000 al color que desees */
-
-    }
-
-
-#viancoo{
-    text-align: justify;
-
-
-}
-.protocolo{
-background-color: #90c9a7;
-}
-
-p strong{
-    padding: 30px;
-                      border: 4px solid #666567; /* Cambia #ff0000 al color que desees */
-  justify-content: center;
-}
-
-p{
-
-
-  
-        flex-wrap: wrap;
-}
-table td{
-    border: 5px solid #666567; /* Cambia #ff0000 al color que desees */
-    margin: 10px;
-    font-size: 15px;
-    padding: 10px;
-
-
-}
-.foto_condcutor{
-
-background-color: #90c9a7;
-padding: 22px;
-
-
-}
-strong {
-    text-transform: uppercase;
-    font-size: 16px;
-}
-
-.LETRA {
-  
-    display: flex;
-}
-
-.info {
-    display: flex;
-    flex-wrap: wrap; /* Permite que los elementos se ajusten en caso de ser necesario */
-}
-
-.texto {
-    padding: 0;
-    margin: 0;
-        font-size: 20px;
-
-    position: relative;
-    left: 90px;
-    text-align: justify;
-    
-     /* El texto ocupará todo el espacio disponible */
-}
-
-.code img {
-    padding: 0;
-    margin: 0;
-    position: relative;
-    top: -250px;
-    left: 520px;
-    width: 250px; /* Ajusta el tamaño del código QR según lo necesites */
-
-}
-.asig{
-
- font-size: 21px;
-    padding: 7px;
-    margin: 0;
-text-align: center;
-color: #f3f3f3;
-background-color: #666567;
-
-}
-
-.protocolo{
-
-    background-color: #90c9a7;
-
-
-
-}
-  .volver-btn {
-    position: relative;
-    left: 62%;
-    top: -70px;
+        h1{
+            font-size: 27px;
+            padding: 7px;
+            margin: 0;
+            text-align: center;
+            color: #f3f3f3;
+            background-color: #666567;
+        }
+        p{
+            font-size: 15px;
+            padding: 30px;
+        }
+        .contenido{
+            top: -100px;
+            position: relative;
+            left: 20%;
+            max-width: 850px;
+            border-radius: 6px;
+            background-color: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            border: 18px solid #666567;
+        }
+        #viancoo{
+            text-align: justify;
+        }
+        .protocolo{
+            background-color: #90c9a7;
+        }
+        p strong{
+            padding: 30px;
+            border: 4px solid #666567;
+            justify-content: center;
+        }
+        table td{
+            border: 5px solid #666567;
+            margin: 10px;
+            font-size: 15px;
+            padding: 10px;
+        }
+        .foto_condcutor{
+            background-color: #90c9a7;
+            padding: 22px;
+        }
+        strong {
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        .LETRA {
+            display: flex;
+        }
+        .info {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .texto {
+            padding: 0;
+            margin: 0;
+            font-size: 20px;
+            position: relative;
+            left: 90px;
+            text-align: justify;
+        }
+        .code img {
+            padding: 0;
+            margin: 0;
+            position: relative;
+            top: -250px;
+            left: 520px;
+            width: 250px;
+        }
+        .asig{
+            font-size: 21px;
+            padding: 7px;
+            margin: 0;
+            text-align: center;
+            color: #f3f3f3;
+            background-color: #666567;
+        }
+        .protocolo{
+            background-color: #90c9a7;
+        }
+        .volver-btn {
+            position: relative;
+            left: 62%;
+            top: -70px;
             background-color:#90c9a7;
             color: #000;
             border: none;
@@ -174,15 +124,13 @@ background-color: #666567;
             font-weight: bold;
             text-decoration: none;
         }
-
         .volver-btn:hover {
             background-color: #d9d9d9;
         }
-
         .volver {
             position: relative;
-    left: 20%;
-    top: -70px;
+            left: 20%;
+            top: -70px;
             background-color:#90c9a7;
             color: #000;
             border: none;
@@ -197,86 +145,59 @@ background-color: #666567;
             font-weight: bold;
             text-decoration: none;
         }
-
         .botones {
             text-align: center;
         }
         .volver:hover {
-
-                        background-color: #d9d9d9;
-
+            background-color: #d9d9d9;
         }
-        .protocolo{
-
-
+        .texto{
+            padding: 0;
+            font-size: 23px;
+            position: relative;
+            left: 10px;
         }
-   /* Estilos para impresión */
-.texto{
-    padding: 0;
-    font-size: 23px;
-    position: relative;
-    left: 10px;
-
-
-}
-#whaas{
-    position: relative;
-    width: 30px;
-    top: 5px;
-     padding-right: 12px;
-
-
-
-}
-.body{
-
-
-  font-family: "ABeeZee", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-#gmael{
- width: 30px;
- padding-right: 12px;
-
-}
-#qr{
-
-  position: relative;
-    width: 280px;
-   left: 480px;
-   top: -370px;
-    padding: 0;
-    margin: 0;
-
-
-}
- 
- strong{
-padding: 5PX;
-font-size: 25px;
-
- }
-.respuestas{
-    font-size: 20px;
-padding: 0px;
-
-    text-transform: uppercase;
-
-
-}
-.obs{
-    font-size: 32px;
-}
-.asig{
-
-}
-.volvera{
-
-
-  position: relative;
-    left: 15%;
-    top: -70px;
+        #whaas{
+            position: relative;
+            width: 30px;
+            top: 5px;
+            padding-right: 12px;
+        }
+        .body{
+            font-family: "ABeeZee", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        #gmael{
+            width: 30px;
+            padding-right: 12px;
+        }
+        #qr{
+            position: relative;
+            width: 280px;
+            left: 480px;
+            top: -370px;
+            padding: 0;
+            margin: 0;
+        }
+        strong{
+            padding: 5px;
+            font-size: 25px;
+        }
+        .respuestas{
+            font-size: 20px;
+            padding: 0px;
+            text-transform: uppercase;
+        }
+        .obs{
+            font-size: 32px;
+        }
+        .asig{
+        }
+        .volvera{
+            position: relative;
+            left: 15%;
+            top: -70px;
             background-color:#90c9a7;
             color: #000;
             border: none;
@@ -290,549 +211,441 @@ padding: 0px;
             font-size: 20px;
             font-weight: bold;
             text-decoration: none;
-
-}
-.volvera:hover{
-                background-color: #d9d9d9;
-
-}
-.PRO {
-    text-align: center;
-    width: 100%; /* Establece el ancho al 100% */
-}
-.clientee{
-
-position: relative;
-left: 890px;
-top: -1490px;
-
-}
-      /* Estilos para la lista desplegable */
-.input-field select {
-    outline: none;
-    font-size: 16px;
-    color: #333;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    padding: 10px 15px; /* Ajusta el padding según tu preferencia */
-    height: 42px;
-    margin: 8px 0;
-    box-sizing: border-box; /* Evita que el padding afecte el ancho total */
-}
-
-.input-field select:focus {
-    border-color: #888;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.13);
-}
-
-/* Estilos para las opciones de la lista desplegable */
-.input-field select option {
-    font-size: 16px;
-    font-weight: 200;
-    color: #333;
-    background-color: #fff;
-}
-
-/* Estilos para la flecha de la lista desplegable */
-.input-field::after {
-    content: '\25BC'; /* Código Unicode para la flecha hacia abajo */
-   
-    transform: translateY(-50%);
-    pointer-events: none; /* Evita que la flecha sea clickeable */
-}
-/* Estilos para las opciones de la lista desplegable */
-.input-field select option {
-    font-size: 16px;
-    font-weight: 400;
-    color: #333;
-    background-color: #d9d9d9; /* Color de fondo predeterminado */
-}
-
-/* Estilos para las opciones de la lista desplegable al pasar el mouse */
-.input-field select option:hover {
-    background-color: #d9d9d9; /* Color de fondo al pasar el mouse */
-}
-/* Estilos para las opciones de la lista desplegable */
-.input-field select option {
-    font-size: 20px; /* Tamaño de la fuente */
-    font-weight: 400;
-    color: #333; /* Color del texto */
-    background-color: #fff; /* Color de fondo predeterminado */
-}
-
-/* Estilos para las opciones de la lista desplegable al pasar el mouse */
-.input-field select option:hover,
-.input-field select option:focus {
-    background-color: #90c9a7; /* Color de fondo al pasar el mouse o estar seleccionado */
-    color: #000; /* Color del texto al pasar el mouse o estar seleccionado */
-}
-.selecione{
-
-    position: relative;
-}
-.felii{
-position: relative;
-left: 28%;
-top: -95px;
-width: 700px;
-font-size: 30px;
-background-color: #fff;
-border-radius: 10px;
-text-align: center;
-
-}
-#fotoConductor{
-    left: 15px;
-position: relative;
-width: 200px;
-align-items: center
-
-}
-#fotoVehiculo{
-
-position: relative;
-width: 100%;
-align-items: center
-
-}
-.respuestas {
-    text-align: center;
-    font-size: 25px; /* Ajusta el tamaño de la fuente para las respuestas */
-    width: 500px; /* Ajusta el ancho de las casillas de respuestas */
-}
-
-.respuestass {
-
-    text-align: center;
-    font-size: 25px; /* Ajusta el tamaño de la fuente para las respuestas */
-    width: 500px; /* Ajusta el ancho de las casillas de respuestas */
-}
-header{
-background-color: #fff;
-
-
-}
-.selecione{
-padding: 15px;
-        background-color: #90c9a7;
-    border: solid 10px #90c9a7;
-    margin: 20px;
-    top: 30px;
-    position: relative;
-    left: 30%;
-
-
-}
-body{
-
-
-    
-}
-.texto{
-    margin: 10px;
-    margin-right: 30px;
- text-align: justify;
- font-size: 30px;
-}
-.FOTO{
-
-font-size: 20PX;
-align-items: center;
-white-space: 30px;
-
-}
-#logo{
-    position: relative;
-    left: 90px;
-
-    width: 400px;
-
-}
-#vigilado {
-    float: right; /* Alinea la imagen a la izquierda dentro del header */
-    width: 300px;
-}
-
-
+        }
+        .volvera:hover{
+            background-color: #d9d9d9;
+        }
+        .PRO {
+            text-align: center;
+            width: 100%;
+        }
+        .clientee{
+            position: relative;
+            left: 890px;
+            top: -1490px;
+        }
+        .input-field select {
+            outline: none;
+            font-size: 16px;
+            color: #333;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+            padding: 10px 15px;
+            height: 42px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+        .input-field select:focus {
+            border-color: #888;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.13);
+        }
+        .input-field select option {
+            font-size: 16px;
+            font-weight: 200;
+            color: #333;
+            background-color: #fff;
+        }
+        .input-field::after {
+            content: '\25BC';
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .input-field select option:hover {
+            background-color: #d9d9d9;
+        }
+        .input-field select option {
+            font-size: 20px;
+            font-weight: 400;
+            color: #333;
+            background-color: #fff;
+        }
+        .input-field select option:hover,
+        .input-field select option:focus {
+            background-color: #90c9a7;
+            color: #000;
+        }
+        .selecione{
+            position: relative;
+        }
+        .felii{
+            position: relative;
+            left: 28%;
+            top: -95px;
+            width: 700px;
+            font-size: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #fotoConductor{
+            left: 15px;
+            position: relative;
+            width: 200px;
+            align-items: center
+        }
+        #fotoVehiculo{
+            position: relative;
+            width: 100%;
+            align-items: center
+        }
+        .respuestas {
+            text-align: center;
+            font-size: 25px;
+            width: 500px;
+        }
+        .respuestass {
+            text-align: center;
+            font-size: 25px;
+            width: 500px;
+        }
+        header{
+            background-color: #fff;
+        }
+        .selecione{
+            padding: 15px;
+            background-color: #90c9a7;
+            border: solid 10px #90c9a7;
+            margin: 20px;
+            top: 30px;
+            position: relative;
+            left: 30%;
+        }
+        body{
+        }
+        .texto{
+            margin: 10px;
+            margin-right: 30px;
+            text-align: justify;
+            font-size: 30px;
+        }
+        .FOTO{
+            font-size: 20px;
+            align-items: center;
+            white-space: 30px;
+        }
+        #logo{
+            position: relative;
+            left: 90px;
+            width: 400px;
+        }
+        #vigilado {
+            float: right;
+            width: 300px;
+        }
     </style>
 </head>
 <body>
-       <header>
-        <img id="membrete"   src="/imagenes/menbrete.png"/>
-        <img  id="logo"      src="../imagenes/logo vianco.png"/>
-        <img  id="vigilado"  src="../imagenes/vigilado.png"/>
+    <header>
+        <img id="membrete" src="/imagenes/menbrete.png"/>
+        <img id="logo" src="../imagenes/logo vianco.png"/>
+        <img id="vigilado" src="../imagenes/vigilado.png"/>
         <hr>
     </header>
-<div class="input-field">
-    <h2 class="selecione">{{datosFormulario.cliente}}</h2>
-</div> 
+    <div class="input-field">
+        <h2 class="selecione">{{datosFormulario.cliente}}</h2>
+    </div> 
     <main>
         <div class="contenido" id="contenido">
-          <div class="protocolo">
-
-<img  class="PRO"    id="fotoCliente" src="" alt="Foto del cliente">
-
-          </div>
+            <div class="protocolo">
+                <img class="PRO" id="fotoCliente" src="" alt="Foto del cliente">
+            </div>
             <h1>DATOS DEL SERVICIO</h1>
             <table>
                 <tr>
                     <td><strong>Nombre Pasajero:</strong></td>
-                    
-                    <td class="respuestas"  >{{datosFormulario.nombre_pasajero}}</td>
-                    
+                    <td class="respuestas">{{datosFormulario.nombre_pasajero}}</td>
                     <td><strong>Fecha:</strong></td>
                     <td class="respuestas">{{datosFormulario.fecha}}</td>
-                    
                 </tr>
                 <tr>
                     <td><strong>N° de Vuelo:</strong></td>
                     <td class="respuestas">{{datosFormulario.vuelo}}</td>
-                    </div>
-                 
-                        <td><strong>Hora:</strong></td>
+                    <td><strong>Hora:</strong></td>
                     <td class="respuestas">{{datosFormulario.hora}}</td>
-                  
-                    
                 </tr>
                 <tr>
-                    <td class="asig"  colspan="6"><h1>DATOS DEL CONDUCTOR:</h1></td>
-                  
+                    <td class="asig" colspan="6"><h1>DATOS DEL CONDUCTOR:</h1></td>
                 </tr>
-           <tr>
-    <td><strong>Conductor asignado:</strong></td>
-            <div class="nombre-C">
-    <td class="FOTO">{{datosFormulario.conductor}}</td>
-    </div>
-       <td><strong>Placa:</strong></td>
+                <tr>
+                    <td><strong>Conductor asignado:</strong></td>
+                    <td class="FOTO">{{datosFormulario.conductor}}</td>
+                    <td><strong>Placa:</strong></td>
                     <td class="respuestass">{{datosFormulario.placa}}</td>
-</tr>
-<tr>
-    <!-- Agrega el primer elemento img para la foto del conductor -->
-    <td colspan="1" style="max-width: 20px;">
-        <img id="fotoConductor" src="" alt="Foto del conductor">
-    </td>
-    <!-- Agrega el segundo elemento img para la foto del vehículo -->
-    <td colspan="3" 
-        <strong>:</strong>
-        <img id="fotoVehiculo" src="" alt="Foto del vehículo">
-    </td>
-</tr>
-               <td><strong>Tipo de Vehículo:</strong></td>
-                  <td class="respuestas">{{datosFormulario.tipo_vehiculo}}</td>
-    <td><strong>N°. Pasajeros:</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="1" style="max-width: 20px;">
+                        <img id="fotoConductor" src="" alt="Foto del conductor">
+                    </td>
+                    <td colspan="3">
+                        <strong>:</strong>
+                        <img id="fotoVehiculo" src="" alt="Foto del vehículo">
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Tipo de Vehículo:</strong></td>
+                    <td class="respuestas">{{datosFormulario.tipo_vehiculo}}</td>
+                    <td><strong>N°. Pasajeros:</strong></td>
                     <td class="respuestas">{{datosFormulario.cantidad_pasajeros}}</td>
-                  
                 </tr>
                 <tr>
                     <td><strong>Teléfono:</strong></td>
                     <td colspan="3" class="respuestas">{{datosFormulario.celular_conductor}}</td>
-              
-                    
-               <tr>
-<tr>
-    <td colspan="1" class="obs"><strong>Observaciones:</strong></td>
-    <td colspan="3" class="respuestas">{{datosFormulario.observaciones}}</td>
-</tr>       
-<tr>
-                    <td class="asig"  colspan="6"><h1>POLITICA DE SERVICIO</h1></td>
-                 
                 </tr>
-                          
-            <td class="" colspan="6">
-             <div class="texto">
-            "Hola Si desea realizar modificaciones a la reserva de transporte, por favor comuníquese por los siguientes medios: <br><br>
-            <img  id="gmael" src="/gmail.jpg" alt="">operaciones@viancotetransporta.com <br>
-             <img id="whaas" src="/whatsapp-icon.png" alt="">+57 315 670 3770 <br> 
-             <br>
-            La cancelación y cambios se deben realizar 12 horas antes del servicio. La compañía Vianco Te Transporta SAS protegerá sus datos personales y no serán de uso público ni comercial. Vianco Te Transporta SAS se abstiene de realizar servicios de turismo y transporte o actividad en el cual involucra el Turismo Sexual infringiendo la Ley 679 de 2001."    
-            </td>
+                <tr>
+                    <td colspan="1" class="obs"><strong>Observaciones:</strong></td>
+                    <td colspan="3" class="respuestas">{{datosFormulario.observaciones}}</td>
+                </tr>
+                <tr>
+                    <td class="asig" colspan="6"><h1>POLITICA DE SERVICIO</h1></td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="texto">
+                            "Hola Si desea realizar modificaciones a la reserva de transporte, por favor comuníquese por los siguientes medios: <br><br>
+                            <img id="gmael" src="/gmail.jpg" alt="">operaciones@viancotetransporta.com <br>
+                            <img id="whaas" src="/whatsapp-icon.png" alt="">+57 315 670 3770 <br> 
+                            <br>
+                            La cancelación y cambios se deben realizar 12 horas antes del servicio. La compañía Vianco Te Transporta SAS protegerá sus datos personales y no serán de uso público ni comercial. Vianco Te Transporta SAS se abstiene de realizar servicios de turismo y transporte o actividad en el cual involucra el Turismo Sexual infringiendo la Ley 679 de 2001."
+                        </div>
+                    </td>
                 </tr>
             </table>
-            <!-- Agregar más campos del formulario según sea necesario -->
         </div>
     </main>
-    <h2 class="felii">"FELICIDADES TU RECEPCION HA SIDO CONFIRMADA A LOS ENCARGADOS DEL AEROPUERTO"  <hr></h2>
-                      <a href="/" class="volver">Volver al Menú</a>
-<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
-    <button  class="volvera"  onclick="seleccionarArchivo()">enviar por correo electrónico</button>
+    <h2 class="felii">"FELICIDADES TU RECEPCION HA SIDO CONFIRMADA A LOS ENCARGADOS DEL AEROPUERTO"<hr></h2>
+    <a href="/" class="volver">Volver al Menú</a>
+    <button class="volver-btn" id="convertirBtn">DESCARGAR</button>
+    <button class="volvera" id="enviarCorreoBtn">enviar por correo electrónico</button>
 
-<!-- Cerrar el select aquí -->
-
-
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
-
-    <!-- Resto de tu contenido -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/0.9.1/html-to-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+      <script>
         document.getElementById('convertirBtn').addEventListener('click', function() {
-            // Captura el elemento contenedor que deseas convertir en imagen
-            const container = document.getElementById('contenido'); // Cambia el ID a "contenido"
+            const element = document.getElementById('contenido');
+            if (element) {
+                html2canvas(element).then(function(canvas) {
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'pt', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const maxWidth = pdfWidth * 0.9;
+                    const maxHeight = pdfHeight * 0.9;
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
 
-            // Opciones de configuración para html2canvas (opcional)
-            const options = {
-                // Configura tus opciones aquí
-            };
+                    let width, height;
+                    if (imgWidth / imgHeight > maxWidth / maxHeight) {
+                        width = maxWidth;
+                        height = (imgHeight * maxWidth) / imgWidth;
+                    } else {
+                        height = maxHeight;
+                        width = (imgWidth * maxHeight) / imgHeight;
+                    }
 
-            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
-            html2canvas(container, options).then(canvas => {
-                // Convierte el canvas en una URL de datos
-                const dataUrl = canvas.toDataURL();
+                    const xOffset = (pdfWidth - width) / 2;
+                    const yOffset = (pdfHeight - height) / 2;
 
-                // Crea un enlace para descargar la imagen
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = 'CONFIRMACION AEROPUERTO';
-                a.textContent = 'Descargar Imagen';
-                document.body.appendChild(a);
-
-                // Simula un clic en el enlace para iniciar la descarga
-                a.click();
-            });
+                    pdf.addImage(imgData, 'PNG', xOffset, yOffset, width, height, undefined, 'FAST');
+                    pdf.save('Recepcion.pdf');
+                }).catch(function(error) {
+                    console.error('Error capturing the element:', error);
+                });
+            } else {
+                console.error('Element with ID "contenido" not found.');
+            }
         });
-    });
-function redireccionarAGmail() {
-  // Correo electrónico
-  const correo = 'correo_destino@gmail.com';
 
-  // Asunto del correo
-  const asunto = encodeURIComponent('Recogida de transporte en el Aeropuerto Internacional El Dorado, Bogotá Colombia. Recibidos');
+        document.getElementById('enviarCorreoBtn').addEventListener('click', function() {
+            const element = document.getElementById('contenido');
+            if (element) {
+                html2canvas(element).then(function(canvas) {
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'pt', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const maxWidth = pdfWidth * 0.9;
+                    const maxHeight = pdfHeight * 0.9;
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
 
-  // Mensaje predefinido
-  const mensaje = encodeURIComponent("Cordial Saludo,\n\nGracias por visitar la increíble ciudad de Bogotá, anexo al correo encontrará una imagen la confirmación del transporte solicitado con los datos del conductor(es), vehículo(s) asignado(s), el itinerario, los términos y condiciones.\n\nDentro del Aeropuerto frente a la puerta internacional o nacional, lo esperará un integrante del equipo Vianco Te Transporta para trasladarlo al Hotel.\n\nGracias por preferirnos, !Vianco te transporta a un mundo lleno de experiencias¡");
+                    let width, height;
+                    if (imgWidth / imgHeight > maxWidth / maxHeight) {
+                        width = maxWidth;
+                        height = (imgHeight * maxWidth) / imgWidth;
+                    } else {
+                        height = maxHeight;
+                        width = (imgWidth * maxHeight) / imgHeight;
+                    }
 
-  // URL de Gmail con el correo electrónico, el asunto y el mensaje predefinido
-  const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${correo}&su=${asunto}&body=${mensaje}`;
+                    const xOffset = (pdfWidth - width) / 2;
+                    const yOffset = (pdfHeight - height) / 2;
 
-  // Redireccionar a Gmail
-  window.open(url, '_blank');
-}
+                    pdf.addImage(imgData, 'PNG', xOffset, yOffset, width, height, undefined, 'FAST');
 
-document.addEventListener('DOMContentLoaded', function() {
-    const clienteSelect = document.getElementById('cliente');
-    const fotoCliente = document.getElementById('fotoCliente');
+                    const pdfBlob = pdf.output('blob');
+                    const formData = new FormData();
+                    formData.append('pdf', pdfBlob, 'Recepcion.pdf');
 
-    // Hacer solicitud AJAX para obtener los datos de los clientes
-    fetch('/clientes')
-        .then(response => response.json())
-        .then(clientes => {
-            // Iterar sobre los clientes y agregar opciones al desplegable
-            clientes.forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.nombre;
-                option.textContent = cliente.nombre;
-                clienteSelect.appendChild(option);
-            });
+                    const destinatario = prompt('Por favor, ingrese la dirección de correo electrónico del destinatario:');
+                    if (!destinatario) {
+                        alert('Debe ingresar la dirección de correo electrónico del destinatario.');
+                        return;
+                    }
+                    formData.append('destinatario', destinatario);
 
-            // Event listener para detectar cuando se selecciona un cliente
-            clienteSelect.addEventListener('change', function() {
-                // Obtener el cliente seleccionado
-                const clienteSeleccionado = clienteSelect.value;
-
-                // Buscar el cliente seleccionado en el array de clientes obtenido
-                const cliente = clientes.find(c => c.nombre === clienteSeleccionado);
-
-                // Mostrar la foto del cliente seleccionado
-                fotoCliente.src = cliente.foto;
-                fotoCliente.alt = cliente.nombre;
-            });
-        })
-        .catch(error => {
-            console.error('Error al obtener los clientes:', error);
+                    fetch('/enviar-email-pdf', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('El correo electrónico ha sido enviado correctamente.');
+                        } else {
+                            alert('Hubo un problema al enviar el correo electrónico.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al enviar el correo electrónico:', error);
+                        alert('Hubo un error al enviar el correo electrónico.');
+                    });
+                }).catch(function(error) {
+                    console.error('Error capturing the element:', error);
+                });
+            } else {
+                console.error('Element with ID "contenido" not found.');
+            }
         });
-});
 
-document.addEventListener('DOMContentLoaded', function() {
-    const clienteSelect = document.getElementById('cliente');
-    const clienteH2 = document.querySelector('.selecione');
-    const fotoCliente = document.getElementById('fotoCliente');
+        document.addEventListener('DOMContentLoaded', function() {
+            const clienteSelect = document.getElementById('cliente');
+            const fotoCliente = document.getElementById('fotoCliente');
 
-    function mostrarFotoCliente(idCliente) {
-        console.log('Mostrando foto del cliente con ID:', idCliente);
-        fetch(`/cliente?id=${idCliente}`)
-            .then(response => response.json())
-            .then(cliente => {
-                console.log('Datos del cliente:', cliente);
-                fotoCliente.src = cliente.foto;
-                fotoCliente.alt = cliente.nombre;
-                console.log('Foto del cliente establecida:', fotoCliente.src);
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos del cliente:', error);
-            });
-    }
+            fetch('/clientes')
+                .then(response => response.json())
+                .then(clientes => {
+                    clientes.forEach(cliente => {
+                        const option = document.createElement('option');
+                        option.value = cliente.nombre;
+                        option.textContent = cliente.nombre;
+                        clienteSelect.appendChild(option);
+                    });
 
-    // Hacer solicitud AJAX para obtener los datos de los clientes
-    fetch('/clientes')
-        .then(response => response.json())
-        .then(clientes => {
-            // Iterar sobre los clientes y agregar opciones al desplegable
-            clientes.forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.id;
-                option.textContent = cliente.nombre;
-                clienteSelect.appendChild(option);
-            });
+                    clienteSelect.addEventListener('change', function() {
+                        const clienteSeleccionado = clienteSelect.value;
+                        const cliente = clientes.find(c => c.nombre === clienteSeleccionado);
+                        fotoCliente.src = cliente.foto;
+                        fotoCliente.alt = cliente.nombre;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al obtener los clientes:', error);
+                });
+        });
 
-            // Obtener el cliente seleccionado del h2
+        document.addEventListener('DOMContentLoaded', function() {
+            const clienteSelect = document.getElementById('cliente');
+            const clienteH2 = document.querySelector('.selecione');
+            const fotoCliente = document.getElementById('fotoCliente');
+
+            function mostrarFotoCliente(idCliente) {
+                console.log('Mostrando foto del cliente con ID:', idCliente);
+                fetch(`/cliente?id=${idCliente}`)
+                    .then(response => response.json())
+                    .then(cliente => {
+                        console.log('Datos del cliente:', cliente);
+                        fotoCliente.src = cliente.foto;
+                        fotoCliente.alt = cliente.nombre;
+                        console.log('Foto del cliente establecida:', fotoCliente.src);
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener los datos del cliente:', error);
+                    });
+            }
+
+            fetch('/clientes')
+                .then(response => response.json())
+                .then(clientes => {
+                    clientes.forEach(cliente => {
+                        const option = document.createElement('option');
+                        option.value = cliente.id;
+                        option.textContent = cliente.nombre;
+                        clienteSelect.appendChild(option);
+                    });
+
+                    const clienteSeleccionadoH2 = clienteH2.textContent;
+                    clienteSelect.value = clienteSeleccionadoH2;
+                    mostrarFotoCliente(clienteSeleccionadoH2);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los clientes:', error);
+                });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const clienteH2 = document.querySelector('.selecione');
+            const fotoCliente = document.getElementById('fotoCliente');
+
+            function mostrarFotoCliente(nombreCliente) {
+                fetch(`/clientePorNombre?nombre=${nombreCliente}`)
+                    .then(response => response.json())
+                    .then(cliente => {
+                        fotoCliente.src = cliente.foto;
+                        fotoCliente.alt = cliente.nombre;
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener los datos del cliente:', error);
+                    });
+            }
+
             const clienteSeleccionadoH2 = clienteH2.textContent;
-
-            // Establecer el cliente seleccionado automáticamente en el select
-            clienteSelect.value = clienteSeleccionadoH2;
-
-            // Mostrar la foto del cliente seleccionado
             mostrarFotoCliente(clienteSeleccionadoH2);
-        })
-        .catch(error => {
-            console.error('Error al obtener los clientes:', error);
         });
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const clienteH2 = document.querySelector('.selecione');
-    const fotoCliente = document.getElementById('fotoCliente');
 
-    function mostrarFotoCliente(nombreCliente) {
-        fetch(`/clientePorNombre?nombre=${nombreCliente}`)
-            .then(response => response.json())
-            .then(cliente => {
-                fotoCliente.src = cliente.foto;
-                fotoCliente.alt = cliente.nombre;
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos del cliente:', error);
-            });
-    }
-
-    // Obtener el cliente seleccionado del h2
-    const clienteSeleccionadoH2 = clienteH2.textContent;
-
-    // Mostrar la foto del cliente seleccionado
-    mostrarFotoCliente(clienteSeleccionadoH2);
-});
-// Función para mostrar la foto del conductor
-function mostrarFotoConductor(placa) {
-    // Agrega un console.log para imprimir el valor de la placa
-    console.log('Placa a buscar:', placa);
-
-    fetch(`/obtenerFotoConductor?placa=${placa}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('No se pudo obtener la foto del conductor');
-            }
-            return response.blob(); // Convertir la respuesta en un Blob
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob); // Crear una URL a partir del Blob
-            const fotoConductor = document.getElementById('fotoConductor');
-            fotoConductor.src = url; // Asignar la URL al atributo src de la imagen
-        })
-        .catch(error => {
-            console.error('Error al obtener la foto del conductor:', error);
-        });
-}
-
-// Obtener la placa del conductor desde el elemento HTML
-const placaConductor = document.querySelector('.respuestass').textContent;
-
-// Llamar a la función para mostrar la foto del conductor
-mostrarFotoConductor(placaConductor);
-
-
-
-
-
-
-
-// Función para mostrar la foto del vehículo
-function mostrarFotovehiculo(placa) {
-    // Agrega un console.log para imprimir el valor de la placa
-    console.log('Placa a buscar:', placa);
-
-    fetch(`/obtenerFotoVehiculo?placa=${placa}`) // Corrige el nombre de la ruta a obtenerFotoVehiculo
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('No se pudo obtener la foto del vehículo'); // Corrige el mensaje de error
-            }
-            return response.blob(); // Convertir la respuesta en un Blob
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob); // Crear una URL a partir del Blob
-            const fotovehiculo = document.getElementById('fotoVehiculo'); // Corrige el ID del elemento de la imagen
-            fotovehiculo.src = url; // Asignar la URL al atributo src de la imagen
-        })
-        .catch(error => {
-            console.error('Error al obtener la foto del vehículo:', error); // Corrige el mensaje de error
-        });
-}
-
-// Obtener la placa del vehículo desde el elemento HTML
-const placavehiculo = document.querySelector('.respuestass').textContent; // Asegúrate de que el selector sea correcto
-
-// Llamar a la función para mostrar la foto del vehículo
-mostrarFotovehiculo(placavehiculo);
-
-
-
-
-
-
-
-
-
-
-
-
-
-     function seleccionarArchivo() {
-            const imagenInput = document.createElement('input');
-            imagenInput.type = 'file';
-            imagenInput.onchange = function() {
-                const imagenFile = imagenInput.files[0];
-                if (!imagenFile) {
-                    alert('Por favor, seleccione un archivo.');
-                    return;
-                }
-                solicitarDestinatario(imagenFile);
-            };
-            imagenInput.click();
+        function mostrarFotoConductor(placa) {
+            console.log('Placa a buscar:', placa);
+            fetch(`/obtenerFotoConductor?placa=${placa}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo obtener la foto del conductor');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const fotoConductor = document.getElementById('fotoConductor');
+                    fotoConductor.src = url;
+                })
+                .catch(error => {
+                    console.error('Error al obtener la foto del conductor:', error);
+                });
         }
 
-        function solicitarDestinatario(imagenFile) {
-            const destinatario = prompt('Por favor, ingrese la dirección de correo electrónico del destinatario:');
-            if (!destinatario) {
-                alert('Debe ingresar la dirección de correo electrónico del destinatario.');
-                return;
-            }
-            enviarCorreo(destinatario, imagenFile);
+        const placaConductor = document.querySelector('.respuestass').textContent;
+        mostrarFotoConductor(placaConductor);
+
+        function mostrarFotoVehiculo(placa) {
+            console.log('Placa a buscar:', placa);
+            fetch(`/obtenerFotoVehiculo?placa=${placa}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo obtener la foto del vehículo');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const fotoVehiculo = document.getElementById('fotoVehiculo');
+                    fotoVehiculo.src = url;
+                })
+                .catch(error => {
+                    console.error('Error al obtener la foto del vehículo:', error);
+                });
         }
 
-        function enviarCorreo(destinatario, imagenFile) {
-            const formData = new FormData();
-            formData.append('destinatario', destinatario);
-            formData.append('asunto', 'Recogida de transporte en el Aeropuerto Internacional El Dorado, Bogotá Colombia. Recibidos');
-            formData.append('cuerpoHtml', 'Contenido del correo electrónico');
-            formData.append('imagen', imagenFile);
-            
-            // Enviar los datos al servidor mediante una solicitud POST
-            fetch('/enviar-email', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('El correo electrónico ha sido enviado correctamente.');
-                } else {
-                    alert('Hubo un problema al enviar el correo electrónico.');
-                }
-            })
-            .catch(error => {
-                console.error('Error al enviar el correo electrónico:', error);
-                alert('Hubo un error al enviar el correo electrónico.');
-            });
-        }
-</script>
-
-
-
-
+        const placaVehiculo = document.querySelector('.respuestass').textContent;
+        mostrarFotoVehiculo(placaVehiculo);
+    </script>
 </body>
 </html>

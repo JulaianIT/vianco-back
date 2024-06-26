@@ -42,6 +42,22 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            position: relative;
+        }
+        .status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .enviado {
+            background-color: green;
+            color: white;
+        }
+        .no-enviado {
+            background-color: red;
+            color: white;
         }
         .cliente:hover {
             transform: translateY(-10px);
@@ -161,13 +177,14 @@
     <h1>Envío de Actas</h1>
     <div class="clientes-container">
         {{#each clientes}}
-        <div class="cliente">
+        <div class="cliente" id="cliente-{{this.id}}">
+            <div class="status no-enviado" id="status-{{this.id}}">No Enviado</div>
             <img src="{{this.imagen}}" alt="Foto de {{this.nombre}}">
             <div class="info">
                 <p><strong>Nombre:</strong> {{this.nombre}}</p>
                 <p style="display: none;"><strong>Correo:</strong> {{this.correoacta}}</p>
             </div>
-            <form action="/EnvioActas" method="post" enctype="multipart/form-data" class="file-form" onsubmit="prepareFilesForSubmit({{@index}})">
+            <form action="/EnvioActas" method="post" enctype="multipart/form-data" class="file-form" onsubmit="markAsSent({{this.id}}); prepareFilesForSubmit({{@index}})">
                 <input type="hidden" name="cliente" value="{{this.correoacta}}">
                 <input type="hidden" name="nombreCliente" value="{{this.nombre}}">
                 <label for="archivosPDF{{@index}}">Selecciona hasta 4 archivos PDF:</label>
@@ -259,11 +276,64 @@
             input.files = dataTransfer.files;
         }
 
+        function markAsSent(clienteId) {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem(`cliente-${clienteId}`, today);
+        }
+
+        function checkSentStatus() {
+            const today = new Date().toISOString().split('T')[0];
+
+            document.querySelectorAll('.cliente').forEach(cliente => {
+                const clienteId = cliente.id.split('-')[1];
+                const sentDate = localStorage.getItem(`cliente-${clienteId}`);
+                const statusElement = document.getElementById(`status-${clienteId}`);
+
+                if (sentDate === today) {
+                    statusElement.classList.remove('no-enviado');
+                    statusElement.classList.add('enviado');
+                    statusElement.textContent = 'Enviado Hoy';
+                } else {
+                    statusElement.classList.remove('enviado');
+                    statusElement.classList.add('no-enviado');
+                    statusElement.textContent = 'No Enviado';
+                }
+            });
+        }
+
         document.querySelectorAll('.file-dropzone').forEach((dropzone, index) => {
             dropzone.setAttribute('data-index', index);
             dropzone.addEventListener('dragover', handleDragOver);
             dropzone.addEventListener('drop', (e) => handleFileDrop(e, index));
         });
+
+        document.addEventListener('DOMContentLoaded', checkSentStatus);
     </script>
+    <!-- Tu HTML existente -->
+<script>
+    async function checkSentStatus() {
+        const response = await fetch('/api/emailStatus');
+        const statusData = await response.json();
+
+        document.querySelectorAll('.cliente').forEach(cliente => {
+            const clienteId = cliente.id.split('-')[1];
+            const statusElement = document.getElementById(`status-${clienteId}`);
+            const clienteStatus = statusData.find(status => status.cliente_id == clienteId);
+
+            if (clienteStatus && clienteStatus.enviado) {
+                statusElement.classList.remove('no-enviado');
+                statusElement.classList.add('enviado');
+                statusElement.textContent = 'Enviado Hoy';
+            } else {
+                statusElement.classList.remove('enviado');
+                statusElement.classList.add('no-enviado');
+                statusElement.textContent = 'No Enviado';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', checkSentStatus);
+</script>
+
 </body>
 </html>

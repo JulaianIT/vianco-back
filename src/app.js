@@ -5,8 +5,8 @@ const mysql = require("mysql2");
 const { engine } = require("express-handlebars");
 const multer = require('multer');
 const upload = multer({
-    dest: 'uploads/', // Carpeta donde se guardan temporalmente los archivos
-    limits: { fileSize: 10 * 1024 * 1024 }, // Límite de tamaño: 10 MB por archivo
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 } // Límite de tamaño: 10 MB por archivo
 });
 const bodyParser = require('body-parser');
 const fs = require('fs');
@@ -1860,6 +1860,18 @@ connection.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa],
 
 
 
+const uploadDir = path.join(__dirname, 'uploads');
+
+// Crear la carpeta `uploads` si no existe
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+    console.log('Carpeta "uploads" creada.');
+} else {
+    console.log('Carpeta "uploads" ya existe.');
+}
+
+
+
 
 
 
@@ -1869,18 +1881,21 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
-app.post('/enviar-email', upload.single('imagen'), (req, res) => {
-    // Extraer los datos del cuerpo de la solicitud
-    const { destinatario, asunto, cuerpoHtml } = req.body;
-    const imagenFile = req.file;
 
-    // Verificar si todos los campos requeridos están presentes
-    if (!destinatario || !asunto || !cuerpoHtml || !imagenFile) {
+
+
+
+
+
+app.post('/enviar-email-pdf', upload.single('pdf'), (req, res) => {
+    const { destinatario } = req.body;
+    const pdfFile = req.file;
+
+    if (!destinatario || !pdfFile) {
         res.status(400).send('Faltan campos requeridos.');
         return;
     }
 
-    // Configurar el transporte del correo electrónico
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -1889,34 +1904,24 @@ app.post('/enviar-email', upload.single('imagen'), (req, res) => {
         }
     });
 
-// Agrega tu texto adicional al cuerpo del correo electrónico
-const textoAdicional = '<p>Texto adicional que quieres agregar junto con la imagen:</p>';
-const cuerpoHtmlConTexto = cuerpoHtml + textoAdicional;
+    const mailOptions = {
+        from: 'recepciones.vianco@gmail.com',
+        to: destinatario,
+        subject: 'Recogida de transporte en el Aeropuerto Internacional El Dorado, Bogotá Colombia. Recibidos',
+        html: `
+            <p>Cordial Saludo,</p>
+            <p>Gracias por visitar la increíble ciudad de Bogotá, anexo al correo encontrará una imagen la confirmación del transporte solicitado con los datos del conductor(es), vehículo(s) asignado(s), el itinerario, los términos y condiciones.</p>
+            <p>Dentro del Aeropuerto frente a la puerta internacional o nacional, lo esperará un integrante del equipo Vianco Te Transporta para trasladarlo al Hotel.</p>
+            <p>Gracias por preferirnos, !Vianco te transporta a un mundo lleno de experiencias¡</p>
+        `,
+        attachments: [
+            {
+                filename: pdfFile.originalname,
+                content: pdfFile.buffer
+            }
+        ]
+    };
 
-// Configurar los detalles del correo electrónico
-const mailOptions = {
-    from: 'recepciones.vianco@gmail.com',
-    to: destinatario,
-    subject: 'Recogida de transporte en el Aeropuerto Internacional El Dorado, Bogotá Colombia. Recibidos',
-    html: `
-        <p>Cordial Saludo,</p>
-        <p>Gracias por visitar la increíble ciudad de Bogotá, anexo al correo encontrará una imagen la confirmación del transporte solicitado con los datos del conductor(es), vehículo(s) asignado(s), el itinerario, los términos y condiciones.</p>
-        <p>Dentro del Aeropuerto frente a la puerta internacional o nacional, lo esperará un integrante del equipo Vianco Te Transporta para trasladarlo al Hotel.</p>
-        <p>Gracias por preferirnos, !Vianco te transporta a un mundo lleno de experiencias¡</p>
-    `,
-    attachments: [
-        {
-            filename: imagenFile.originalname, // Nombre de la imagen original
-            content: imagenFile.buffer, // Contenido de la imagen en formato buffer
-            encoding: 'base64' // Codificación de la imagenT
-        }
-    ]
-};
-
-
-
-
-    // Enviar el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error('Error al enviar el correo electrónico:', error);
@@ -6920,99 +6925,49 @@ connection.query('SELECT nombre, correoacta, imagen FROM clientes', (error, resu
 });
 
 
-// Ruta POST para manejar el envío de actas
-// Ruta POST para manejar el envío de actas
 app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
-    // Verificamos la sesión del usuario
     if (req.session.loggedin !== true) {
         return res.redirect("/login");
     }
 
-    // Obtenemos los datos del formulario
-    const clienteCorreo = req.body.cliente; // Correo electrónico del cliente seleccionado
-    const nombreCliente = req.body.nombreCliente; // Nombre del cliente seleccionado
-    const archivosPDF = req.files; // Array de archivos PDF subidos
-    const fecha = req.body.fecha; // Fecha seleccionada
+    const clienteCorreo = req.body.cliente;
+    const nombreCliente = req.body.nombreCliente;
+    const archivosPDF = req.files;
+    const fecha = req.body.fecha;
 
-    // Convertimos la fecha a formato "día mes año" y ajustamos la zona horaria
-    const dateObj = new Date(fecha + 'T00:00:00'); // Aseguramos que la fecha sea interpretada como local
+    const dateObj = new Date(fecha + 'T00:00:00');
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
     const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
 
-    // Verificamos que se hayan subido archivos
     if (!archivosPDF || archivosPDF.length === 0) {
         return res.status(400).send('Debes seleccionar al menos un archivo PDF.');
     }
 
-    // Configuración del transporte SMTP utilizando tu configuración existente
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'callcenter.vianco@gmail.com', // Cambia esto por tu correo electrónico
-            pass: 'fnbzfemxneqjmvwc' // Cambia esto por tu contraseña
+            user: 'callcenter.vianco@gmail.com',
+            pass: 'fnbzfemxneqjmvwc'
         }
     });
 
-    // Genera un Message-ID único para cada correo enviado
     const messageId = `<${uuidv4()}@example.com>`;
     const uniqueSubject = `Relación de Servicios ${nombreCliente} ${fechaFormateada}`;
 
-    // Configuración del correo electrónico
     const mailOptions = {
-        from: 'callcenter.vianco@gmail.com', // Cambia esto por tu correo electrónico
-        to: clienteCorreo, // Correo electrónico obtenido del formulario
+        from: 'callcenter.vianco@gmail.com',
+        to: clienteCorreo,
         subject: uniqueSubject,
         html: `
             <style>
-                body {
-                    font-family: 'Arial', sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    background-color: #f4f4f9;
-                    padding: 20px;
-                }
-                .email-container {
-                    width: 100%;
-                    max-width: 600px;
-                    margin: auto;
-                    padding: 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 10px;
-                    background-color: #fff;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                }
-                .email-header {
-                    font-size: 1.5em;
-                    font-weight: bold;
-                    color: #2c3e50;
-                    margin-bottom: 20px;
-                    text-align: center;
-                }
-                .email-body {
-                    font-size: 1em;
-                    margin-bottom: 20px;
-                    color: #555;
-                }
-                .email-body p {
-                    margin-bottom: 20px;
-                }
-                .highlight {
-                    font-weight: bold;
-                    font-size: 1.2em;
-                    color: #e74c3c;
-                }
-                .bold-large {
-                    font-weight: bold;
-                    font-size: 1.3em;
-                    color: #333;
-                }
-                .email-footer {
-                    font-size: 1.1em;
-                    font-weight: bold;
-                    margin-top: 20px;
-                    color: #2c3e50;
-                    text-align: center;
-                }
+                body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f9; padding: 20px; }
+                .email-container { width: 100%; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+                .email-header { font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-bottom: 20px; text-align: center; }
+                .email-body { font-size: 1em; margin-bottom: 20px; color: #555; }
+                .email-body p { margin-bottom: 20px; }
+                .highlight { font-weight: bold; font-size: 1.2em; color: #e74c3c; }
+                .bold-large { font-weight: bold; font-size: 1.3em; color: #333; }
+                .email-footer { font-size: 1.1em; font-weight: bold; margin-top: 20px; color: #2c3e50; text-align: center; }
             </style>
             <div class="email-container">
                 <div class="email-header">
@@ -7020,9 +6975,7 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
                 </div>
                 <div class="email-body">
                     <p>Se realiza el envío de la relación de los servicios de transporte realizados el día ${fechaFormateada}.</p>
-                    
-                    <p style="font-weight: bold; font-size: 1.3em;">Por favor tener en cuenta que algunos servicios recibidos cargados al correo electrónico durante el día tienen observaciones que incluyen el costo real de acuerdo a las novedades que se puedan presentar.</p>
-                    
+                    <p class="bold-large">Por favor tener en cuenta que algunos servicios recibidos cargados al correo electrónico durante el día tienen observaciones que incluyen el costo real de acuerdo a las novedades que se puedan presentar.</p>
                     <p class="highlight">Nota: Agradecemos dar respuesta a este correo con el fin de verificar que los servicios en el acta presentada son correctos. En caso de no recibir notificación alguna en 24 horas se dará por aprobada dicha acta y se procederá a su facturación.</p>
                 </div>
                 <div class="email-footer">
@@ -7030,34 +6983,57 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
                 </div>
             </div>
         `,
-        messageId: messageId, // Asigna un Message-ID único
+        messageId: messageId,
         attachments: archivosPDF.map(file => ({
             filename: file.originalname,
-            content: fs.createReadStream(file.path) // Adjunta el archivo usando su contenido
+            content: fs.createReadStream(file.path)
         }))
     };
 
-    // Envío del correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
-        // Eliminar los archivos temporales subidos después del envío del correo
-        archivosPDF.forEach(file => {
-            fs.unlinkSync(file.path); // Elimina el archivo del sistema de archivos
-        });
+        archivosPDF.forEach(file => fs.unlinkSync(file.path));
 
         if (error) {
             console.error('Error al enviar correo electrónico:', error);
-            res.status(500).send('Error al enviar correo electrónico');
-        } else {
-            console.log('Correo electrónico enviado:', info.response);
-            // Enviamos una respuesta al cliente
-            res.send('Archivos subidos y correo enviado exitosamente');
-        }
+            return res.status(500).send('Error al enviar correo electrónico');
+        } 
+
+        console.log('Correo electrónico enviado:', info.response);
+        connection.query('SELECT id FROM clientes WHERE correoacta = ?', [clienteCorreo], (err, result) => {
+            if (err) {
+                console.error('Error al obtener cliente ID:', err);
+                return res.status(500).send('Error al obtener cliente ID');
+            }
+            if (result.length > 0) {
+                const clienteId = result[0].id;
+                connection.query(
+                    'INSERT INTO email_status (cliente_id, fecha, enviado) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE enviado = ?',
+                    [clienteId, fecha, true, true],
+                    (err) => {
+                        if (err) {
+                            console.error('Error al actualizar estado de correo:', err);
+                            return res.status(500).send('Error al actualizar estado de correo');
+                        }
+                        res.send('Archivos subidos y correo enviado exitosamente');
+                    }
+                );
+            } else {
+                res.status(404).send('Cliente no encontrado');
+            }
+        });
     });
 });
 
-
-
-
+app.get('/api/emailStatus', (req, res) => {
+    const today = new Date().toISOString().split('T')[0];
+    connection.query('SELECT cliente_id, fecha, enviado FROM email_status WHERE fecha = ?', [today], (err, results) => {
+        if (err) {
+            console.error('Error al obtener el estado de los correos:', err);
+            return res.status(500).send('Error al obtener el estado de los correos');
+        }
+        res.json(results);
+    });
+});
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado
