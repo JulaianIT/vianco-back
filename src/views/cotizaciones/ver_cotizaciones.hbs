@@ -24,7 +24,7 @@
         .container {
             font-size: 20px;
             border: 2px solid black;
-            max-width: 50%;
+            max-width: 100%;
             margin: 20px auto;
             background-color: white;
             border-radius: 5px;
@@ -207,7 +207,7 @@ background-color: #90c9a7;
            
                <div class="marca-agua"> <!-- Marca de agua -->
 
-            <div class="TO">
+            <div id="TO" class="TO">
     <div class="container" id="contenedor">
         <header>
             <img id="membrete" src="/imagenes/menbrete.png"/>
@@ -384,6 +384,8 @@ background-color: #90c9a7;
         <p>No se encontró ninguna cotización con el ID proporcionado.</p>
     {{/if}}
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
        <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Captura el estado de la cotización
@@ -443,7 +445,45 @@ document.addEventListener('DOMContentLoaded', function() {
         const estadoCotizacionElement = document.getElementById('estadoCotizacion');
         estadoCotizacionElement.textContent = 'APROBADA';
     }
-});
+
+  document.getElementById('convertirBtn').addEventListener('click', function() {
+                const element = document.getElementById('TO');
+                if (element) {
+                    html2canvas(element).then(function(canvas) {
+                        const imgData = canvas.toDataURL('image/png');
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF('p', 'pt', 'a4');
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                        const maxWidth = pdfWidth * 0.9;
+                        const maxHeight = pdfHeight * 0.9;
+
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+
+                        let width, height;
+                        if (imgWidth / imgHeight > maxWidth / maxHeight) {
+                            width = maxWidth;
+                            height = (imgHeight * maxWidth) / imgWidth;
+                        } else {
+                            height = maxHeight;
+                            width = (imgWidth * maxHeight) / imgHeight;
+                        }
+
+                        const xOffset = (pdfWidth - width) / 2;
+                        const yOffset = (pdfHeight - height) / 2;
+
+                        pdf.addImage(imgData, 'PNG', xOffset, yOffset, width, height, undefined, 'FAST');
+                        pdf.save('cotizacion.pdf');
+                    }).catch(function(error) {
+                        console.error('Error capturing the element:', error);
+                    });
+                } else {
+                    console.error('Element with ID "TO" not found.');
+                }
+            });
+        });
     </script>
 </body>
 </html>
