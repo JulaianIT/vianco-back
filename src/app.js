@@ -6898,36 +6898,37 @@ function formatDate(dateString) {
 
 
 
-//ENVIAR ACTAS DE SERVICIO
-
-
-// Ruta GET para cargar la página de envío de actas
 router.get('/EnvioActas', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
-        // Consulta a MySQL para obtener los nombres de clientes y sus correos
-   // Consulta a MySQL para obtener los nombres de clientes, sus correos y la URL de sus imágenes
-connection.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
-    if (error) {
-        console.error('Error al obtener clientes desde MySQL:', error);
-        res.status(500).send('Error al obtener clientes desde la base de datos');
-    } else {
-        const clientes = results; // Array de objetos con nombre, correoacta e imagen_url
-        res.render('operaciones/actasTasGo/enviodeactas.hbs', { nombreUsuario, clientes });
-    }
-});
+        connection.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
+            if (error) {
+                console.error('Error al obtener clientes desde MySQL:', error);
+                res.status(500).send('Error al obtener clientes desde la base de datos');
+            } else {
+                const clientes = results;
+                res.render('operaciones/actasTasGo/enviodeactas.hbs', { nombreUsuario, clientes });
+            }
+        });
 
     } else {
-        // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login");
     }
 });
 
 
+
+
+
+
+
+
+
+
 app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     if (req.session.loggedin !== true) {
-        return res.redirect("/login");
+        return res.status(401).json({ message: "Usuario no autenticado" });
     }
 
     const clienteCorreo = req.body.cliente;
@@ -6935,12 +6936,8 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     const archivosPDF = req.files;
     const fecha = req.body.fecha;
 
-    const dateObj = new Date(fecha + 'T00:00:00');
-    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-    const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
-
     if (!archivosPDF || archivosPDF.length === 0) {
-        return res.status(400).send('Debes seleccionar al menos un archivo PDF.');
+        return res.status(400).json({ message: 'Debes seleccionar al menos un archivo PDF.' });
     }
 
     console.log('Archivos recibidos:', archivosPDF);
@@ -6952,6 +6949,10 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
             pass: 'fnbzfemxneqjmvwc'
         }
     });
+
+    const dateObj = new Date(fecha + 'T00:00:00');
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
 
     const messageId = `<${uuidv4()}@example.com>`;
     const uniqueSubject = `Relación de Servicios ${nombreCliente} ${fechaFormateada}`;
@@ -6995,34 +6996,40 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error('Error al enviar correo electrónico:', error);
-            return res.status(500).send('Error al enviar correo electrónico');
+            return res.status(500).json({ message: 'Error al enviar correo electrónico' });
         } 
 
         console.log('Correo electrónico enviado:', info.response);
         connection.query('SELECT id FROM clientes WHERE correoacta = ?', [clienteCorreo], (err, result) => {
             if (err) {
                 console.error('Error al obtener cliente ID:', err);
-                return res.status(500).send('Error al obtener cliente ID');
+                return res.status(500).json({ message: 'Error al obtener cliente ID' });
             }
             if (result.length > 0) {
                 const clienteId = result[0].id;
+                console.log('Cliente ID obtenido:', clienteId);
+                console.log('Fecha:', fecha);
                 connection.query(
                     'INSERT INTO email_status (cliente_id, fecha, enviado) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE enviado = ?',
                     [clienteId, fecha, true, true],
                     (err) => {
                         if (err) {
                             console.error('Error al actualizar estado de correo:', err);
-                            return res.status(500).send('Error al actualizar estado de correo');
+                            return res.status(500).json({ message: 'Error al actualizar estado de correo' });
                         }
-                        res.send('Archivos subidos y correo enviado exitosamente');
+                        console.log('Estado del correo actualizado correctamente en la base de datos');
+                        res.json({ message: 'Archivos subidos y correo enviado exitosamente' });
                     }
                 );
             } else {
-                res.status(404).send('Cliente no encontrado');
+                res.status(404).json({ message: 'Cliente no encontrado' });
             }
         });
     });
 });
+
+
+
 
 app.get('/api/emailStatus', (req, res) => {
     const today = new Date().toISOString().split('T')[0];
@@ -7034,6 +7041,18 @@ app.get('/api/emailStatus', (req, res) => {
         res.json(results);
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Inicia el servidor de Socket.IO en el puerto especificado

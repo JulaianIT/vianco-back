@@ -184,7 +184,7 @@
                 <p><strong>Nombre:</strong> {{this.nombre}}</p>
                 <p style="display: none;"><strong>Correo:</strong> {{this.correoacta}}</p>
             </div>
-            <form action="/EnvioActas" method="post" enctype="multipart/form-data" class="file-form" onsubmit="markAsSent({{this.id}}); prepareFilesForSubmit({{@index}})">
+            <form method="post" enctype="multipart/form-data" class="file-form" onsubmit="sendForm(event, {{this.id}}, {{@index}})">
                 <input type="hidden" name="cliente" value="{{this.correoacta}}">
                 <input type="hidden" name="nombreCliente" value="{{this.nombre}}">
                 <label for="archivosPDF{{@index}}">Selecciona hasta 4 archivos PDF:</label>
@@ -210,24 +210,19 @@
         </div>
         {{/each}}
     </div>
-
-    <script>
+ <script>
         let filesMap = new Map();
 
         function updateFileInfo(index) {
             const input = document.getElementById(`archivosPDF${index}`);
             const files = Array.from(input.files);
-
-            // Clear the current files and set the new ones
             filesMap.set(index, files);
-
             displayFiles(index);
         }
 
         function displayFiles(index) {
             const info = document.getElementById(`file-info-${index}`);
             const files = filesMap.get(index) || [];
-
             if (files.length > 0) {
                 let fileInfo = `${files.length} archivo(s) seleccionado(s):<br>`;
                 files.forEach((file, fileIndex) => {
@@ -251,12 +246,9 @@
         function handleFileDrop(event, index) {
             event.preventDefault();
             const newFiles = Array.from(event.dataTransfer.files);
-
             const existingFiles = filesMap.get(index) || [];
-            const combinedFiles = [...new Set([...existingFiles, ...newFiles])]; // Ensure no duplicates
-
+            const combinedFiles = [...new Set([...existingFiles, ...newFiles])];
             filesMap.set(index, combinedFiles);
-
             displayFiles(index);
         }
 
@@ -267,38 +259,34 @@
         function prepareFilesForSubmit(index) {
             const input = document.getElementById(`archivosPDF${index}`);
             const files = filesMap.get(index) || [];
-
             const dataTransfer = new DataTransfer();
             files.forEach(file => {
                 dataTransfer.items.add(file);
             });
-
             input.files = dataTransfer.files;
         }
 
-        function markAsSent(clienteId) {
-            const today = new Date().toISOString().split('T')[0];
-            localStorage.setItem(`cliente-${clienteId}`, today);
-        }
-
-        function checkSentStatus() {
-            const today = new Date().toISOString().split('T')[0];
-
-            document.querySelectorAll('.cliente').forEach(cliente => {
-                const clienteId = cliente.id.split('-')[1];
-                const sentDate = localStorage.getItem(`cliente-${clienteId}`);
-                const statusElement = document.getElementById(`status-${clienteId}`);
-
-                if (sentDate === today) {
-                    statusElement.classList.remove('no-enviado');
-                    statusElement.classList.add('enviado');
-                    statusElement.textContent = 'Enviado Hoy';
-                } else {
-                    statusElement.classList.remove('enviado');
-                    statusElement.classList.add('no-enviado');
-                    statusElement.textContent = 'No Enviado';
-                }
-            });
+        async function checkSentStatus() {
+            try {
+                const response = await fetch('/api/emailStatus');
+                const statusData = await response.json();
+                document.querySelectorAll('.cliente').forEach(cliente => {
+                    const clienteId = cliente.id.split('-')[1];
+                    const statusElement = document.getElementById(`status-${clienteId}`);
+                    const clienteStatus = statusData.find(status => status.cliente_id == clienteId);
+                    if (clienteStatus && clienteStatus.enviado) {
+                        statusElement.classList.remove('no-enviado');
+                        statusElement.classList.add('enviado');
+                        statusElement.textContent = 'Enviado Hoy';
+                    } else {
+                        statusElement.classList.remove('enviado');
+                        statusElement.classList.add('no-enviado');
+                        statusElement.textContent = 'No Enviado';
+                    }
+                });
+            } catch (error) {
+                console.error('Error al obtener el estado de los correos:', error);
+            }
         }
 
         document.querySelectorAll('.file-dropzone').forEach((dropzone, index) => {
@@ -308,32 +296,33 @@
         });
 
         document.addEventListener('DOMContentLoaded', checkSentStatus);
-    </script>
-    <!-- Tu HTML existente -->
-<script>
-    async function checkSentStatus() {
-        const response = await fetch('/api/emailStatus');
-        const statusData = await response.json();
 
-        document.querySelectorAll('.cliente').forEach(cliente => {
-            const clienteId = cliente.id.split('-')[1];
+        function sendForm(event, clienteId, index) {
+            event.preventDefault();
+            const form = event.target;
+            prepareFilesForSubmit(index);
+            const formData = new FormData(form);
             const statusElement = document.getElementById(`status-${clienteId}`);
-            const clienteStatus = statusData.find(status => status.cliente_id == clienteId);
-
-            if (clienteStatus && clienteStatus.enviado) {
-                statusElement.classList.remove('no-enviado');
-                statusElement.classList.add('enviado');
-                statusElement.textContent = 'Enviado Hoy';
-            } else {
-                statusElement.classList.remove('enviado');
-                statusElement.classList.add('no-enviado');
-                statusElement.textContent = 'No Enviado';
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', checkSentStatus);
-</script>
-
+            fetch('/EnvioActas', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    if (data.message === "Archivos subidos y correo enviado exitosamente") {
+                        statusElement.classList.remove('no-enviado');
+                        statusElement.classList.add('enviado');
+                        statusElement.textContent = 'Enviado Hoy';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al enviar el acta. Por favor, inténtalo de nuevo.');
+            });
+        }
+    </script>
 </body>
 </html>
