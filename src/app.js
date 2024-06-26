@@ -6902,16 +6902,17 @@ router.get('/EnvioActas', (req, res) => {
         const nombreUsuario = req.session.name;
 
         // Consulta a MySQL para obtener los nombres de clientes y sus correos
-        connection.query('SELECT nombre, correoacta FROM clientes', (error, results, fields) => {
-            if (error) {
-                console.error('Error al obtener clientes desde MySQL:', error);
-                res.status(500).send('Error al obtener clientes desde la base de datos');
-            } else {
-                const clientes = results; // Array de objetos con nombre y correoacta
+   // Consulta a MySQL para obtener los nombres de clientes, sus correos y la URL de sus imágenes
+connection.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
+    if (error) {
+        console.error('Error al obtener clientes desde MySQL:', error);
+        res.status(500).send('Error al obtener clientes desde la base de datos');
+    } else {
+        const clientes = results; // Array de objetos con nombre, correoacta e imagen_url
+        res.render('operaciones/actasTasGo/enviodeactas.hbs', { nombreUsuario, clientes });
+    }
+});
 
-                res.render('operaciones/actasTasGo/enviodeactas.hbs', { nombreUsuario, clientes });
-            }
-        });
     } else {
         // Manejo para el caso en que el usuario no está autenticado
         res.redirect("/login");
@@ -6919,11 +6920,7 @@ router.get('/EnvioActas', (req, res) => {
 });
 
 
-
-
-
-
-
+// Ruta POST para manejar el envío de actas
 // Ruta POST para manejar el envío de actas
 app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     // Verificamos la sesión del usuario
@@ -6933,7 +6930,14 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
 
     // Obtenemos los datos del formulario
     const clienteCorreo = req.body.cliente; // Correo electrónico del cliente seleccionado
+    const nombreCliente = req.body.nombreCliente; // Nombre del cliente seleccionado
     const archivosPDF = req.files; // Array de archivos PDF subidos
+    const fecha = req.body.fecha; // Fecha seleccionada
+
+    // Convertimos la fecha a formato "día mes año" y ajustamos la zona horaria
+    const dateObj = new Date(fecha + 'T00:00:00'); // Aseguramos que la fecha sea interpretada como local
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
 
     // Verificamos que se hayan subido archivos
     if (!archivosPDF || archivosPDF.length === 0) {
@@ -6944,18 +6948,89 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'soporte.it.vianco@gmail.com', // Cambia esto por tu correo electrónico
-            pass: 'caerdeblynmsfzvc' // Cambia esto por tu contraseña
-        },
-        messageId: uuidv4() // Genera un Message-ID único para cada correo enviado
+            user: 'callcenter.vianco@gmail.com', // Cambia esto por tu correo electrónico
+            pass: 'fnbzfemxneqjmvwc' // Cambia esto por tu contraseña
+        }
     });
+
+    // Genera un Message-ID único para cada correo enviado
+    const messageId = `<${uuidv4()}@example.com>`;
+    const uniqueSubject = `Relación de Servicios ${nombreCliente} ${fechaFormateada}`;
 
     // Configuración del correo electrónico
     const mailOptions = {
-        from: 'soporte.it.vianco@gmail.com', // Cambia esto por tu correo electrónico
+        from: 'callcenter.vianco@gmail.com', // Cambia esto por tu correo electrónico
         to: clienteCorreo, // Correo electrónico obtenido del formulario
-        subject: 'Envío de Actas',
-        text: `Estimado cliente,\nAdjuntamos las actas correspondientes.`,
+        subject: uniqueSubject,
+        html: `
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background-color: #f4f4f9;
+                    padding: 20px;
+                }
+                .email-container {
+                    width: 100%;
+                    max-width: 600px;
+                    margin: auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                    background-color: #fff;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                .email-header {
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 20px;
+                    text-align: center;
+                }
+                .email-body {
+                    font-size: 1em;
+                    margin-bottom: 20px;
+                    color: #555;
+                }
+                .email-body p {
+                    margin-bottom: 20px;
+                }
+                .highlight {
+                    font-weight: bold;
+                    font-size: 1.2em;
+                    color: #e74c3c;
+                }
+                .bold-large {
+                    font-weight: bold;
+                    font-size: 1.3em;
+                    color: #333;
+                }
+                .email-footer {
+                    font-size: 1.1em;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    color: #2c3e50;
+                    text-align: center;
+                }
+            </style>
+            <div class="email-container">
+                <div class="email-header">
+                    Buen día ${nombreCliente},
+                </div>
+                <div class="email-body">
+                    <p>Se realiza el envío de la relación de los servicios de transporte realizados el día ${fechaFormateada}.</p>
+                    
+                    <p style="font-weight: bold; font-size: 1.3em;">Por favor tener en cuenta que algunos servicios recibidos cargados al correo electrónico durante el día tienen observaciones que incluyen el costo real de acuerdo a las novedades que se puedan presentar.</p>
+                    
+                    <p class="highlight">Nota: Agradecemos dar respuesta a este correo con el fin de verificar que los servicios en el acta presentada son correctos. En caso de no recibir notificación alguna en 24 horas se dará por aprobada dicha acta y se procederá a su facturación.</p>
+                </div>
+                <div class="email-footer">
+                    <strong>Cordialmente,</strong>
+                </div>
+            </div>
+        `,
+        messageId: messageId, // Asigna un Message-ID único
         attachments: archivosPDF.map(file => ({
             filename: file.originalname,
             content: fs.createReadStream(file.path) // Adjunta el archivo usando su contenido
@@ -6979,18 +7054,6 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         }
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

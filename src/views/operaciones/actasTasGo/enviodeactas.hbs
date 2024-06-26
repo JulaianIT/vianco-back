@@ -4,21 +4,266 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envío de Actas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #90c9a7, #ffffff);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        .clientes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1250px;
+        }
+        .cliente {
+            background: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .cliente:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #2c3e50;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        .cliente:hover img {
+            transform: scale(1.1);
+        }
+        .info {
+            margin-bottom: 15px;
+        }
+        .info p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        button {
+            background: linear-gradient(to right, #90c9a7, black);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(to right, #feb47b, #ff7e5f);
+            transform: scale(1.05);
+        }
+        form {
+            width: 100%;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 1px dashed #bbb;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .file-input-label:hover {
+            border-color: #888;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .file-input-label span {
+            margin-left: 10px;
+        }
+        .file-dropzone {
+            width: 90%;
+            padding: 20px;
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.3s, border-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .file-dropzone.dragover {
+            background: #f7f7f7;
+            border-color: #007bff;
+        }
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+        .remove-file {
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Envío de Actas</h1>
-    <form action="/EnvioActas" method="post" enctype="multipart/form-data">
-        <label for="cliente">Selecciona un cliente:</label>
-        <select id="cliente" name="cliente">
-            {{#each clientes}}
-                <option value="{{this.correoacta}}">{{this.nombre}}</option>
-            {{/each}}
-        </select>
-        <br><br>
-        <label for="archivosPDF">Selecciona hasta 4 archivos PDF:</label>
-        <input type="file" id="archivosPDF" name="archivosPDF" accept=".pdf" multiple>
-        <br><br>
-        <button type="submit">Enviar Actas</button>
-    </form>
+    <div class="clientes-container">
+        {{#each clientes}}
+        <div class="cliente">
+            <img src="{{this.imagen}}" alt="Foto de {{this.nombre}}">
+            <div class="info">
+                <p><strong>Nombre:</strong> {{this.nombre}}</p>
+                <p style="display: none;"><strong>Correo:</strong> {{this.correoacta}}</p>
+            </div>
+            <form action="/EnvioActas" method="post" enctype="multipart/form-data" class="file-form" onsubmit="prepareFilesForSubmit({{@index}})">
+                <input type="hidden" name="cliente" value="{{this.correoacta}}">
+                <input type="hidden" name="nombreCliente" value="{{this.nombre}}">
+                <label for="archivosPDF{{@index}}">Selecciona hasta 4 archivos PDF:</label>
+                <br><br>
+                <input type="date" id="fecha{{@index}}" name="fecha" required>
+                <br><br>
+                <div class="file-input-container">
+                    <input type="file" id="archivosPDF{{@index}}" name="archivosPDF" accept=".pdf" multiple class="file-input" onchange="updateFileInfo({{@index}})">
+                    <label for="archivosPDF{{@index}}" class="file-input-label">
+                        <svg width="24" height="24" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v4.1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4.1a.5.5 0 0 1 1 0v4.1A2 2 0 0 1 14 16H2a2 2 0 0 1-2-2v-4.1a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 1.146a.5.5 0 0 1 .708 0L10.5 3.293V10.5a.5.5 0 0 1-1 0V3.293L8.354 1.854a.5.5 0 0 1-.708 0L6.5 3.293V10.5a.5.5 0 0 1-1 0V3.293L7.646 1.146z"/>
+                        </svg>
+                        <span>Seleccionar archivos</span>
+                    </label>
+                </div>
+                <div class="file-dropzone" ondrop="handleFileDrop(event, {{@index}})" ondragover="handleDragOver(event)">
+                    Arrastra y suelta archivos aquí
+                </div>
+                <div id="file-info-{{@index}}" class="file-info"></div>
+                <button type="submit">Enviar Actas</button>
+            </form>
+        </div>
+        {{/each}}
+    </div>
+
+    <script>
+        let filesMap = new Map();
+
+        function updateFileInfo(index) {
+            const input = document.getElementById(`archivosPDF${index}`);
+            const files = Array.from(input.files);
+
+            // Clear the current files and set the new ones
+            filesMap.set(index, files);
+
+            displayFiles(index);
+        }
+
+        function displayFiles(index) {
+            const info = document.getElementById(`file-info-${index}`);
+            const files = filesMap.get(index) || [];
+
+            if (files.length > 0) {
+                let fileInfo = `${files.length} archivo(s) seleccionado(s):<br>`;
+                files.forEach((file, fileIndex) => {
+                    fileInfo += `<div class="file-item">${file.name} <span class="remove-file" onclick="removeFile(${index}, ${fileIndex})">X</span></div>`;
+                });
+                info.innerHTML = fileInfo;
+            } else {
+                info.innerHTML = 'No se han seleccionado archivos';
+            }
+        }
+
+        function removeFile(index, fileIndex) {
+            const files = filesMap.get(index);
+            if (files) {
+                files.splice(fileIndex, 1);
+                filesMap.set(index, files);
+                displayFiles(index);
+            }
+        }
+
+        function handleFileDrop(event, index) {
+            event.preventDefault();
+            const newFiles = Array.from(event.dataTransfer.files);
+
+            const existingFiles = filesMap.get(index) || [];
+            const combinedFiles = [...new Set([...existingFiles, ...newFiles])]; // Ensure no duplicates
+
+            filesMap.set(index, combinedFiles);
+
+            displayFiles(index);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        function prepareFilesForSubmit(index) {
+            const input = document.getElementById(`archivosPDF${index}`);
+            const files = filesMap.get(index) || [];
+
+            const dataTransfer = new DataTransfer();
+            files.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+
+            input.files = dataTransfer.files;
+        }
+
+        document.querySelectorAll('.file-dropzone').forEach((dropzone, index) => {
+            dropzone.setAttribute('data-index', index);
+            dropzone.addEventListener('dragover', handleDragOver);
+            dropzone.addEventListener('drop', (e) => handleFileDrop(e, index));
+        });
+    </script>
 </body>
 </html>
