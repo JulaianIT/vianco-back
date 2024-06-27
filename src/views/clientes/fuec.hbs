@@ -9,7 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
     <link rel="shortcut icon" href="/imagenes/logo pestaña.PNG" type="image/x-icon">
-
+           <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
  <style>
     body {
@@ -105,6 +108,14 @@ align-items: center;
 width: 50%;
 
     }
+    *{
+
+  font-family: "Roboto", sans-serif;
+ 
+}
+
+
+    
   </style>
 
 <body>
@@ -156,8 +167,9 @@ width: 50%;
 
 </div>
 
-<button class="volver-btn " id="convertirBtn">DESCARGAR</button>
+  <button class="volver-btn" id="convertirBtn">DESCARGAR</button>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
 
 <script>
     // Función para obtener las placas de vehículos y llenar el select
@@ -331,34 +343,62 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-  document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('convertirBtn').addEventListener('click', function() {
-            // Captura el elemento contenedor que deseas convertir en imagen
-            const container = document.getElementById('FUEC'); // Cambia el ID a "contenido"
 
-            // Opciones de configuración para html2canvas (opcional)
-          const options = {
-    windowWidth: document.getElementById('contenido').scrollWidth,
-    windowHeight: document.getElementById('contenido').scrollHeight
-};
 
-            // Usa html2canvas para capturar el contenido HTML y convertirlo en una imagen
-            html2canvas(container, options).then(canvas => {
-                // Convierte el canvas en una URL de datos
-                const dataUrl = canvas.toDataURL();
 
-                // Crea un enlace para descargar la imagen
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = 'FUEC_VIANCO';
-                a.textContent = 'Descargar Imagen';
-                document.body.appendChild(a);
+document.getElementById('convertirBtn').addEventListener('click', function() {
+    const container = document.getElementById('FUEC');
+    if (container) {
+        const options = {
+            scale: 4, // Aumenta la escala para mejorar la resolución
+            useCORS: true, // Permite cargar imágenes desde otros dominios
+            logging: true, // Habilita el registro de eventos en la consola
+            windowWidth: container.scrollWidth, // Ajusta el ancho de la ventana
+            windowHeight: container.scrollHeight // Ajusta la altura de la ventana
+        };
 
-                // Simula un clic en el enlace para iniciar la descarga
-                a.click();
-            });
+        html2canvas(container, options).then(function(canvas) {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'pt', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const width = imgWidth * ratio;
+            const height = imgHeight * ratio;
+
+            const xOffset = (pdfWidth - width) / 2;
+            const yOffset = (pdfHeight - height) / 2;
+
+            pdf.addImage(imgData, 'PNG', xOffset, yOffset, width, height, undefined, 'FAST');
+            pdf.save('FUEC_VIANCO.pdf');
+        }).catch(function(error) {
+            console.error('Error capturing the element:', error);
         });
-    });
+    } else {
+        console.error('Element with ID "FUEC" not found.');
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     document.addEventListener('DOMContentLoaded', function() {
     const placaSelect = document.getElementById('placa');
     const conductorSelect1 = document.getElementById('conductor1');
