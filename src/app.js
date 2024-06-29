@@ -8,6 +8,10 @@ const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 10 * 1024 * 1024 } // Límite de tamaño: 10 MB por archivo
 });
+
+const pool = require('./db'); // Ajusta la ruta según la estructura de tu proyecto
+
+
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
@@ -69,30 +73,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-const connection = mysql.createConnection({
-    host: "34.66.173.227",
-    user: "soporte",
-    password: "1034277764C",
-    database: "viancoapp",
-    port: "3306"
-});
-
-
-connection.connect(function(err) {
-    if (err) {
-        console.error('Error connecting to the database:', err.stack);
-        return;
-    }
-    console.log('Connected to the database as id ' + connection.threadId);
-});
-
 
 
 
 
 
 app.use((req, res, next) => {
-    req.db = connection;
+    req.db = pool;
     next();
 });
 
@@ -134,9 +121,9 @@ app.get("/login", (req, res) => {
 // Handle login authentication for empresa
 app.post("/auth", (req, res) => {
     const data = req.body;
-    const connection = req.db;
+    
 
-    connection.query("SELECT * FROM user WHERE email = ? AND password = ?", [data.email, data.password], (err, userData) => {
+    pool.query("SELECT * FROM user WHERE email = ? AND password = ?", [data.email, data.password], (err, userData) => {
         if (err) {
             console.error("Error fetching user from database:", err);
             res.status(500).send("Internal Server Error");
@@ -158,9 +145,9 @@ app.post("/auth", (req, res) => {
 // Handle login authentication for cliente
 app.post("/auth-cliente", (req, res) => {
     const data = req.body;
-    const connection = req.db;
+    
 
-    connection.query("SELECT * FROM cliente WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
+    pool.query("SELECT * FROM cliente WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
         if (err) {
             console.error("Error fetching cliente from database:", err);
             res.status(500).send("Internal Server Error");
@@ -199,9 +186,9 @@ app.get("/register", (req, res) => {
 // Handle user registration
 app.post("/storeUser", (req, res) => {
     const data = req.body;
-    const connection = req.db;
+    const pool = pool;
 
-    connection.query("SELECT * FROM user WHERE email = ?", [data.email], (err, userData) => {
+    pool.query("SELECT * FROM user WHERE email = ?", [data.email], (err, userData) => {
         if (err) {
             console.error("Error fetching user from database:", err);  // Manejar errores al recuperar datos del usuario desde la base de datos
             res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
@@ -213,7 +200,7 @@ app.post("/storeUser", (req, res) => {
             return;
         }
 
-        connection.query("INSERT INTO user SET ?", data, (err, rows) => {
+        pool.query("INSERT INTO user SET ?", data, (err, rows) => {
             if (err) {
                 console.error("Error inserting user into database:", err);  // Manejar errores al insertar usuario en la base de datos
                 res.status(500).send("Internal Server Error");  // Enviar respuesta de error interno del servidor
@@ -267,14 +254,14 @@ function requireLogin(req, res, next) {
 // Handle forgot password
 app.post("/forgot-password", (req, res) => {
     const { email } = req.body;
-    const connection = req.db;
+   
 
     // Generar un token único y establecer la fecha de expiración
     const resetToken = crypto.randomBytes(20).toString('hex');
     const resetTokenExpiration = new Date();
     resetTokenExpiration.setHours(resetTokenExpiration.getHours() + 1); // Token válido por 1 hora
 
-    connection.query("UPDATE user SET resetToken = ?, resetTokenExpiration = ? WHERE email = ?", [resetToken, resetTokenExpiration, email], (err, result) => {
+    pool.query("UPDATE user SET resetToken = ?, resetTokenExpiration = ? WHERE email = ?", [resetToken, resetTokenExpiration, email], (err, result) => {
         if (err) {
             console.error("Error updating reset token in database:", err);
             res.status(500).send("Internal Server Error");
@@ -317,7 +304,7 @@ app.get("/reset-password", (req, res) => {
     console.log("Token recibido en GET:", token);
   
     // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
-    connection.query(
+    pool.query(
       "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
       [token],
       (err, results) => {
@@ -341,7 +328,7 @@ app.post("/reset-password", (req, res) => {
     const { token, password } = req.body;
 
     // Verificar si el token es válido y está dentro del tiempo de expiración adecuado
-    connection.query(
+    pool.query(
       "SELECT * FROM user WHERE resetToken = ? AND resetTokenExpiration > NOW()",
       [token],
       (err, results) => {
@@ -355,7 +342,7 @@ app.post("/reset-password", (req, res) => {
             const user = results[0];
 
             // Actualizar la contraseña en la base de datos y limpiar el token
-            connection.query(
+            pool.query(
               "UPDATE user SET password = ?, resetToken = NULL, resetTokenExpiration = NULL WHERE id = ?",
               [password, user.id],
               (updateErr, updateResult) => {
@@ -514,7 +501,7 @@ app.get("/programacion-vehiculos", (req, res) => {
         const isExecutive = roles.includes('ejecutivo');
         
         // Consulta SQL para obtener las bases y placas
-        connection.query("SELECT base, placa FROM vehiculos", (error, results) => {
+        pool.query("SELECT base, placa FROM vehiculos", (error, results) => {
             if (error) {
                 console.error("Error al obtener las bases y placas:", error);
                 res.status(500).send("Error al obtener las bases y placas");
@@ -549,7 +536,7 @@ app.post('/guardar-programacion', (req, res) => {
 
     // Insertar los datos en la tabla programacion_vehiculos
     const sql = `INSERT INTO programacion_vehiculos (base, placa, fecha, horario, observaciones) VALUES (?, ?, ?, ?, ?)`;
-    connection.query(sql, [base, placa, fecha, horario, observaciones], (err, result) => {
+    pool.query(sql, [base, placa, fecha, horario, observaciones], (err, result) => {
         if (err) {
             console.error('Error al guardar la programación del vehículo:', err);
             res.status(500).send('Error al guardar la programación del vehículo');
@@ -565,14 +552,14 @@ app.post('/guardar-programacion', (req, res) => {
  // Ruta para mostrar la página de ver_programacion.hbs
 app.get('/ver-programacion', (req, res) => {
     // Consulta a la base de datos para obtener todas las bases y horarios disponibles
-    connection.query('SELECT DISTINCT base FROM programacion_vehiculos', (err, basesResults) => {
+    pool.query('SELECT DISTINCT base FROM programacion_vehiculos', (err, basesResults) => {
         if (err) {
             console.error('Error al obtener las bases:', err);
             // Manejar el error adecuadamente
             return;
         }
 
-        connection.query('SELECT DISTINCT horario FROM programacion_vehiculos', (err, horariosResults) => {
+        pool.query('SELECT DISTINCT horario FROM programacion_vehiculos', (err, horariosResults) => {
             if (err) {
                 console.error('Error al obtener los horarios:', err);
                 // Manejar el error adecuadamente
@@ -629,7 +616,7 @@ app.get('/buscar-programacion', (req, res) => {
     }
 
     // Ejecutar la consulta para la programación de vehículos
-    connection.query(programacionSql, programacionParams, (err, programacionResults) => {
+    pool.query(programacionSql, programacionParams, (err, programacionResults) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
             // Maneja el error apropiadamente
@@ -646,7 +633,7 @@ app.get('/buscar-programacion', (req, res) => {
         }
 
         // Ejecutar la consulta para las llegadas y salidas
-        connection.query(llegadasSalidasSql, llegadasSalidasParams, (err, llegadasSalidasResults) => {
+        pool.query(llegadasSalidasSql, llegadasSalidasParams, (err, llegadasSalidasResults) => {
             if (err) {
                 console.error('Error al buscar llegadas y salidas:', err);
                 // Maneja el error apropiadamente
@@ -693,7 +680,7 @@ app.get('/descargar-programacion', (req, res) => {
     const params = [fechaInicio, fechaFin];
 
     // Ejecutar la consulta
-    connection.query(sql, params, (err, results) => {
+    pool.query(sql, params, (err, results) => {
         if (err) {
             console.error('Error al buscar programación de vehículos:', err);
             // Manejar el error apropiadamente
@@ -752,7 +739,7 @@ app.get("/admin/roless", (req, res) => {
     // Verificar si el usuario tiene permisos de administrador
     if (req.session.loggedin && req.session.roles.includes('gerencia')) {
         // Obtener los usuarios y sus roles desde la base de datos
-        connection.query("SELECT id, email, name, roles FROM user", (error, results) => {
+        pool.query("SELECT id, email, name, roles FROM user", (error, results) => {
             if (error) {
                 console.error("Error al obtener usuarios y roles:", error);
                 res.status(500).send("Error al obtener usuarios y roles");
@@ -774,7 +761,7 @@ app.get("/admin/roles/:id/edit", (req, res) => {
     if (req.session.loggedin && req.session.roles.includes('gerencia')) {
         const userId = req.params.id;
         // Obtener información del usuario y sus roles desde la base de datos
-        connection.query("SELECT id, email, name, roles FROM user WHERE id = ?", [userId], (error, results) => {
+        pool.query("SELECT id, email, name, roles FROM user WHERE id = ?", [userId], (error, results) => {
             if (error) {
                 console.error("Error al obtener información del usuario:", error);
                 res.status(500).send("Error al obtener información del usuario");
@@ -795,7 +782,7 @@ app.post("/admin/editRole/:id/edit", (req, res) => {
         const newRole = req.body.newRole; // Obtener el nuevo rol del cuerpo de la solicitud
         
         // Actualizar el rol del usuario en la base de datos
-        connection.query("UPDATE user SET roles = ? WHERE id = ?", [newRole, userId], (error, results) => {
+        pool.query("UPDATE user SET roles = ? WHERE id = ?", [newRole, userId], (error, results) => {
             if (error) {
                 console.error("Error al actualizar el rol del usuario:", error);
                 res.status(500).send("Error al actualizar el rol del usuario");
@@ -810,7 +797,7 @@ app.post("/admin/editRole/:id/edit", (req, res) => {
 });
 // Ruta para obtener la lista de bases
 app.get('/api/bases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+    pool.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
         if (error) {
             console.error('Error al obtener las bases:', error);
             res.status(500).json({ error: 'Error al obtener las bases' });
@@ -824,7 +811,7 @@ app.get('/api/bases', (req, res) => {
 // Ruta para obtener la lista de placas según la base seleccionada
 app.get('/api/placas', (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+    pool.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las placas:', error);
             res.status(500).json({ error: 'Error al obtener las placas' });
@@ -846,7 +833,7 @@ app.post("/programacion-vehiculos", (req, res) => {
 // Definir las rutas
 app.get("/consulta-vehiculos", (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query("SELECT placa FROM vehiculos", (error, results) => {
+    pool.query("SELECT placa FROM vehiculos", (error, results) => {
         if (error) {
             console.error("Error al obtener las placas:", error);
             res.status(500).send("Error al obtener las placas");
@@ -861,7 +848,7 @@ app.get("/consulta-vehiculos", (req, res) => {
 app.post("/consulta-vehiculos", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    pool.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
         if (error) {
             console.error("Error al obtener la información del vehículo:", error);
             res.status(500).send("Error al obtener la información del vehículo");
@@ -894,7 +881,7 @@ app.get('/edicion/:placa', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            const [clienteRows] = await pool.promise().query(clientesQuery);
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -903,7 +890,7 @@ app.get('/edicion/:placa', async (req, res) => {
             const placa = req.params.placa;
 
             // Realizar una consulta a la base de datos para obtener los datos del vehículo
-            connection.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
+            pool.query('SELECT * FROM vehiculos WHERE placa = ?', placa, (error, results) => {
                 if (error) {
                     console.error("Error al obtener los datos del vehículo:", error);
                     res.status(500).send("Error al obtener los datos del vehículo");
@@ -970,7 +957,7 @@ app.post('/guardar-edicion', upload.single('foto_vehiculo'), (req, res) => {
     }
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(sqlQuery, queryParams, (error, results) => {
+    pool.query(sqlQuery, queryParams, (error, results) => {
         if (error) {
             console.error('Error al guardar los cambios:', error);
             res.status(500).send('Error al guardar los cambios');
@@ -1002,7 +989,7 @@ app.get('/agregar-vehiculo', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            const [clienteRows] = await pool.promise().query(clientesQuery);
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -1056,7 +1043,7 @@ app.post("/agregar-vehiculo", (req, res) => {
     setClause = setClause.slice(0, -2);
 
     // Insertar los datos en la base de datos
-    connection.query(
+    pool.query(
         `INSERT INTO vehiculos SET ${setClause}`,
         values,
         (error, results) => {
@@ -1086,7 +1073,7 @@ app.use(express.static('public'));
 // Ruta para la página de consulta de conductores
 app.get('/consulta-conductores', (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query('SELECT placa FROM conductores', (error, results) => {
+    pool.query('SELECT placa FROM conductores', (error, results) => {
       if (error) {
         console.error('Error al obtener las placas:', error);
         res.status(500).send('Error al obtener las placas');
@@ -1108,7 +1095,7 @@ app.get('/consulta-conductores', (req, res) => {
 app.post("/consulta-conductores", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    pool.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
         if (error) {
             console.error("Error al obtener la información del conductor:", error);
             res.status(500).send("Error al obtener la información del conductor");
@@ -1138,7 +1125,7 @@ app.post("/consulta-conductores", (req, res) => {
 // Ruta para la página de consulta de conductores
 app.get('/consulta-conductores2', (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query('SELECT placa FROM conductores', (error, results) => {
+    pool.query('SELECT placa FROM conductores', (error, results) => {
       if (error) {
         console.error('Error al obtener las placas:', error);
         res.status(500).send('Error al obtener las placas');
@@ -1160,7 +1147,7 @@ app.get('/consulta-conductores2', (req, res) => {
 app.post("/consulta-conductores2", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del conductor correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    pool.query("SELECT * FROM conductores WHERE placa = ?", [placaSeleccionada], (error, results) => {
         if (error) {
             console.error("Error al obtener la información del conductor:", error);
             res.status(500).send("Error al obtener la información del conductor");
@@ -1207,7 +1194,7 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
   const formData = { ...req.body, foto: fotoPath };
 
   // Insertar los datos en la base de datos
-  connection.query(
+  pool.query(
     `INSERT INTO conductores (placa, conductor, tipo_documento, cedula, fecha_nacimiento, fecha_expedicion, tipo_sangre, direccion, celular, email, categoria, fecha_vigencia, arl, eps, seguridad_social, fecha_vencimiento_examen,certificado_1,fecha_certificado_1, contacto_emergencia, celular_emergencia, foto) 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
@@ -1253,7 +1240,7 @@ app.post('/agregar-conductor', upload.single('foto'), (req, res) => {
 app.get('/edicionC/:placa', (req, res) => {
   const placa = req.params.placa;
   // Realizar una consulta a la base de datos para obtener los datos del conductor
-  connection.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
+  pool.query('SELECT * FROM conductores WHERE placa = ?', placa, (error, results) => {
     if (error) {
       console.error('Error al obtener los datos del conductor:', error);
       res.status(500).send('Error al obtener los datos del conductor');
@@ -1298,7 +1285,7 @@ app.post('/guardar-edicionC', upload.single('foto'), (req, res) => {
     }
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(sqlQuery, queryParams, (error, results) => {
+    pool.query(sqlQuery, queryParams, (error, results) => {
         if (error) {
             console.error('Error al guardar los cambios:', error);
             res.status(500).send('Error al guardar los cambios');
@@ -1325,7 +1312,7 @@ app.get('/agregar-conductor', (req, res) => {
 //consulta contabilidad 
 app.get("/consulta-contabilidad", (req, res) => {
     // Consulta SQL para obtener todas las placas disponibles
-    connection.query("SELECT placa FROM contabilidad", (error, results) => {
+    pool.query("SELECT placa FROM contabilidad", (error, results) => {
         if (error) {
             console.error("Error al obtener las placas de contabilidad:", error);
             res.status(500).send("Error al obtener las placas de contabilidad");
@@ -1350,7 +1337,7 @@ app.get("/consulta-contabilidad", (req, res) => {
 app.post("/consulta-contabilidad", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información de contabilidad correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    pool.query("SELECT * FROM contabilidad WHERE placa = ?", [placaSeleccionada], (error, results) => {
         if (error) {
             console.error("Error al obtener la información de contabilidad:", error);
             res.status(500).send("Error al obtener la información de contabilidad");
@@ -1375,7 +1362,7 @@ app.post("/consulta-contabilidad", (req, res) => {
 app.get("/edicion-contabilidad/:placa", (req, res) => {
     const placa = req.params.placa; // Obtener la placa del parámetro de la URL
     // Consulta SQL para obtener la información de contabilidad correspondiente a la placa
-    connection.query("SELECT * FROM contabilidad WHERE placa = ?", [placa], (error, results) => {
+    pool.query("SELECT * FROM contabilidad WHERE placa = ?", [placa], (error, results) => {
         if (error) {
             console.error("Error al obtener la información de contabilidad:", error);
             res.status(500).send("Error al obtener la información de contabilidad");
@@ -1399,7 +1386,7 @@ app.post('/guardar-edicion-contabilidad', (req, res) => {
     const { NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO,TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email } = req.body;
 
     // Realizar la actualización en la base de datos con los datos recibidos
-    connection.query(
+    pool.query(
         'UPDATE contabilidad SET NOMBRES_LICENCIA = ?, TIPO_DE_DOCUMENTO_LICENCIA = ?, NUMERO_DE_DOCUMENTO_LICENCIA = ?, FECHA_DE_INICIO_CONTRATO = ?, FECHA_FINAL = ?, MOTIVO_RETIRO = ?, NOMBRES_CONTRATO = ?, TIPO_DE_DOCUMENTO_CONTRATO = ?,NUMERO_DE_DOCUMENTO_CONTRATO = ?, DIRECCION_CONTRATO = ?,CELULAR_CONTRATO = ?, EMAIL_CONTRATO = ?, ACTIVIDAD_ECONOMICA_CONTRATO = ?, VALOR_ADMINISTRACION = ?, Nombre = ?, tipo_documento = ?, Cedula = ?, Nombre_del_banco = ?, Tipo_de_cuenta_bancaria = ?, Numero_de_cuenta = ?, Direccion = ?, Celular = ?, Email = ? WHERE placa = ?',
         [NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO,NUMERO_DE_DOCUMENTO_CONTRATO,DIRECCION_CONTRATO,CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, direccion, celular, email, placa],
         (error, results) => {
@@ -1461,7 +1448,7 @@ app.post("/agregar-contabilidad", (req, res) => {
     const numeroCuenta = formData.Numero_de_cuenta || '';
 
     // Insertar los datos en la base de datos
-    connection.query(
+    pool.query(
         `INSERT INTO contabilidad 
         (placa, NOMBRES_LICENCIA, TIPO_DE_DOCUMENTO_LICENCIA, NUMERO_DE_DOCUMENTO_LICENCIA, FECHA_DE_INICIO_CONTRATO, FECHA_FINAL, MOTIVO_RETIRO, NOMBRES_CONTRATO, TIPO_DE_DOCUMENTO_CONTRATO, NUMERO_DE_DOCUMENTO_CONTRATO, DIRECCION_CONTRATO, CELULAR_CONTRATO, EMAIL_CONTRATO, ACTIVIDAD_ECONOMICA_CONTRATO, VALOR_ADMINISTRACION, Nombre, tipo_documento, Cedula, Nombre_del_banco, Tipo_de_cuenta_bancaria, Numero_de_cuenta, Direccion, Celular, Email) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -1533,7 +1520,7 @@ app.get('/formulario', async (req, res) => {
         const isExecutive = roles.includes('ejecutivo');
         
             // Consulta para obtener todos los clientes de la tabla "clientes"
-            connection.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
+            pool.query('SELECT * FROM clientes', (errorClientes, resultadosClientes) => {
                 if (errorClientes) {
                     console.error('Error al obtener los clientes:', errorClientes);
                     res.status(500).send('Error al obtener los clientes');
@@ -1541,7 +1528,7 @@ app.get('/formulario', async (req, res) => {
                 }
 
                 // Consulta para obtener todas las placas de la tabla "conductores"
-                connection.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
+                pool.query('SELECT DISTINCT placa FROM conductores', (errorPlacas, resultadosPlacas) => {
                     if (errorPlacas) {
                         console.error('Error al obtener las placas de los conductores:', errorPlacas);
                         res.status(500).send('Error al obtener las placas de los conductores');
@@ -1577,7 +1564,7 @@ app.post('/obtener_conductor', (req, res) => {
     const placaSeleccionada = req.body.placa;
 
     // Realiza una consulta a la base de datos para obtener el conductor correspondiente a la placa
-    connection.query('SELECT conductor, celular, foto FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
+    pool.query('SELECT conductor, celular, foto FROM conductores WHERE placa = ?', [placaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener el conductor:', error);
             res.status(500).json({ error: 'Error al obtener el conductor' });
@@ -1614,7 +1601,7 @@ app.post('/procesar_formulario', async (req, res) => {
     try {
         // Insertar los datos en la base de datos
         const query = 'INSERT INTO aeropuerto (cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        connection.query(query, [cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor]);
+        pool.query(query, [cliente, fecha, hora, nombre_pasajero, valor, cantidad_pasajeros, tipo_vehiculo, vuelo, placa, conductor, celular_conductor]);
         console.log('Datos insertados correctamente en la base de datos');
 
         // Enviar los datos al Google Sheet
@@ -1764,7 +1751,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/clientes', (req, res) => {
     // Realiza una consulta a la base de datos para obtener los nombres y fotos de los clientes
-    connection.query('SELECT nombre,  foto FROM clientes', (error, results, fields) => {
+    pool.query('SELECT nombre,  foto FROM clientes', (error, results, fields) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1783,7 +1770,7 @@ app.get('/clientePorNombre', (req, res) => {
     const nombreCliente = req.query.nombre;
 
     // Realiza una consulta a la base de datos para obtener los datos del cliente por su nombre
-    connection.query('SELECT * FROM clientes WHERE nombre = ?', [nombreCliente], (error, results, fields) => {
+    pool.query('SELECT * FROM clientes WHERE nombre = ?', [nombreCliente], (error, results, fields) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1807,7 +1794,7 @@ app.get('/obtenerFotoConductor', (req, res) => {
     console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
 
     // Realizar una consulta a la base de datos para obtener los datos binarios de la foto del conductor basada en la placa
-    connection.query('SELECT foto FROM conductores WHERE placa = ?', [placa], (error, results, fields) => {
+    pool.query('SELECT foto FROM conductores WHERE placa = ?', [placa], (error, results, fields) => {
         if (error) {
             console.error('Error al ejecutar la consulta:', error);
             res.status(500).send('Error interno del servidor');
@@ -1832,7 +1819,7 @@ app.get('/obtenerFotovehiculo', (req, res) => {
     console.log('Placa recibida:', placa); // Imprime el valor de la placa en la consola del servidor
 
 // Corrige el nombre de la columna en la consulta SQL y en la asignación de resultados
-connection.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa], (error, results, fields) => {
+pool.query('SELECT foto_vehiculo FROM vehiculos WHERE placa = ?', [placa], (error, results, fields) => {
     if (error) {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).send('Error interno del servidor');
@@ -1975,7 +1962,7 @@ app.get('/novedades', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const [userRows] = await pool.promise().query(userQuery);
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -2026,7 +2013,7 @@ app.post('/novedades', (req, res) => {
     const sql = "INSERT INTO novedades (fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, sinNovedad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [fecha_registro, fecha, turno, realiza, entrega, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firmaBase64, sinNovedad]; // Corregido aquí
     
-connection.query(sql, values, (error, results) => {
+    pool.query(sql, values, (error, results) => {
   if (error) {
     console.error("Error al insertar la novedad en la base de datos:", error);
   } else {
@@ -2103,7 +2090,7 @@ app.get('/ver_novedades', (req, res) => {
 
 // Backend (Endpoint /api/obtener_fechas_disponibles)
 app.get('/api/obtener_fechas_disponibles', (req, res) => {
-    connection.query('SELECT DISTINCT DATE_FORMAT(fecha_registro, "%Y-%m-%d") AS fecha_formateada FROM novedades', (error, results) => {
+    pool.query('SELECT DISTINCT DATE_FORMAT(fecha_registro, "%Y-%m-%d") AS fecha_formateada FROM novedades', (error, results) => {
         if (error) {
             console.error('Error al obtener las fechas disponibles:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -2119,7 +2106,7 @@ app.get('/api/obtener_fechas_disponibles', (req, res) => {
 app.get('/api/obtener_novedades', (req, res) => {
     const fechaSeleccionada = req.query.fecha;
     const query = 'SELECT fecha, turno, realiza, entrega, sinNovedad, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, novedad_ACTAS, novedad_OTRAS, firma, fecha_registro FROM novedades WHERE DATE(fecha_registro) = ?'; // Añadir el campo de la firma en la consulta SQL
-    connection.query(query, [fechaSeleccionada], (error, results) => {
+    pool.query(query, [fechaSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
@@ -2154,7 +2141,7 @@ app.post('/api/guardar_seguimiento', (req, res) => {
     const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, turno, realiza,entrega,sinNovedad,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,novedad_ACTAS,otras_novedades,firma,ACCIONES];
     
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results, fields) => {
+    pool.query(query, values, (error, results, fields) => {
         if (error) {
             console.error('Error al guardar el seguimiento en la base de datos:', error);
             res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
@@ -2174,7 +2161,7 @@ app.post('/api/guardar_seguimiento', (req, res) => {
 
 app.delete('/api/eliminar_fecha/:fecha', (req, res) => {
     const fecha_formateada = req.params.fecha;
-    connection.query('DELETE FROM novedades WHERE DATE_FORMAT(fecha_registro, "%Y-%m-%d") = ?', fecha_formateada, (error, results) => {
+    pool.query('DELETE FROM novedades WHERE DATE_FORMAT(fecha_registro, "%Y-%m-%d") = ?', fecha_formateada, (error, results) => {
         if (error) {
             console.error('Error al eliminar la fecha:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -2210,7 +2197,7 @@ app.get('/novedadess', (req, res) => {
     const sql = "SELECT * FROM novedades_completadas WHERE fecha_registro LIKE ?";
 
     // Ejecutar la consulta
-    connection.query(sql, [`%${fechaDB}%`], (err, result) => {
+    pool.query(sql, [`%${fechaDB}%`], (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -2237,7 +2224,7 @@ app.get('/inicio', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const [userRows] = await pool.promise().query(userQuery);
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -2263,7 +2250,7 @@ app.post('/inicio-turno', (req, res) => {
 
     const fechaHoraActual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
     const consulta = 'INSERT INTO centro_operaciones_inicio (nombre_trabajador, turno, hora_inicio) VALUES (?, ?, ?)';
-    connection.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
+    pool.query(consulta, [nombre, turno, fechaHoraActual], (error, results) => {
         if (error) {
             console.error('Error al guardar la hora de inicio en la base de datos:', error);
             res.status(500).send('Error al iniciar el turno. Por favor, inténtalo de nuevo.');
@@ -2309,7 +2296,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
 
 
     const sql = 'INSERT INTO tareas SET ?';
-    connection.query(sql, tarea, (err, result) => {
+    pool.query(sql, tarea, (err, result) => {
         if (err) {
             console.error('Error al insertar tarea en la base de datos:', err.message);
             return res.status(500).send('Error al guardar la tarea');
@@ -2321,7 +2308,7 @@ app.post('/marcar-tarea', (req, res, next) => { // Agregar next como parámetro
         const turno = req.body.turno;
         const horaFin = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
         const updateQuery = 'UPDATE centro_operaciones_inicio SET hora_fin = ? WHERE nombre_trabajador = ? AND turno = ?';
-        connection.query(updateQuery, [horaFin, nombre, turno], (updateErr, updateResult) => {
+        pool.query(updateQuery, [horaFin, nombre, turno], (updateErr, updateResult) => {
             if (updateErr) {
                 console.error('Error al actualizar la hora de finalización del turno:', updateErr.message);
                 return res.status(500).send('Error al actualizar la hora de finalización del turno');
@@ -2413,7 +2400,7 @@ app.post('/buscar_por_fecha', async (req, res) => {
     try {
         // Consultar la base de datos por la fecha especificada
         const query = 'SELECT * FROM aeropuerto WHERE fecha = ?';
-        const [rows, fields] = await connection.promise().query(query, [fecha]);
+        const [rows, fields] = await pool.promise().query(query, [fecha]);
         console.log('Datos encontrados');
 
         // Enviar los resultados como respuesta JSON
@@ -2457,7 +2444,7 @@ app.get('/formulario_cotizaciones', (req, res) => {
         const nombreUsuario = req.session.name;
 
         // Consulta a la base de datos para obtener la información de los clientes
-        connection.query('SELECT * FROM clientes', (error, results) => {
+        pool.query('SELECT * FROM clientes', (error, results) => {
             if (error) {
                 console.error('Error al obtener los clientes:', error);
                 res.status(500).send('Error interno del servidor');
@@ -2495,7 +2482,7 @@ app.post('/cotizacion', (req, res) => {
     }
 
     // Insertar los datos de la cotización en la base de datos
-    connection.beginTransaction(err => {
+    pool.beginTransaction(err => {
         if (err) {
             console.error('Error al iniciar la transacción:', err);
             res.status(500).send('Error interno del servidor');
@@ -2503,7 +2490,7 @@ app.post('/cotizacion', (req, res) => {
         }
 
         // Guardar la cotización en la tabla de cotizaciones
-        connection.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
+        pool.query('INSERT INTO cotizaciones SET ?', cotizacionData, (err, result) => {
             if (err) {
                 console.error('Error al insertar la cotización en la base de datos:', err);
                 res.status(500).send('Error interno del servidor');
@@ -2519,7 +2506,7 @@ app.post('/cotizacion', (req, res) => {
                 fecha_creacion: new Date()
             };
 
-            connection.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
+            pool.query('INSERT INTO notificaciones SET ?', notificacionData, (err) => {
                 if (err) {
                     console.error('Error al crear la notificación:', err);
                     res.status(500).send('Error interno del servidor');
@@ -2545,7 +2532,7 @@ app.post('/cotizacion', (req, res) => {
 // Ruta para obtener el número de notificaciones sin leer
 app.get('/notificacionesSinLeer', (req, res) => {
     // Consulta SQL para contar el número de notificaciones sin leer del usuario actual
-    connection.query('SELECT COUNT(*) AS count FROM notificaciones WHERE estado_lectura = ?', ['no leído'], (err, resultados) => {
+    pool.query('SELECT COUNT(*) AS count FROM notificaciones WHERE estado_lectura = ?', ['no leído'], (err, resultados) => {
         if (err) {
             console.error('Error al obtener el número de notificaciones sin leer:', err);
             res.status(500).send('Error interno del servidor');
@@ -2560,7 +2547,7 @@ app.get('/notificacionesSinLeer', (req, res) => {
 // Ruta para marcar todas las notificaciones como leídas
 app.post('/marcarNotificacionesLeidas', (req, res) => {
     // Actualiza el estado de las notificaciones a "leído"
-    connection.query('UPDATE notificaciones SET estado_lectura = ?', ['leído'], (err, result) => {
+    pool.query('UPDATE notificaciones SET estado_lectura = ?', ['leído'], (err, result) => {
         if (err) {
             console.error('Error al marcar las notificaciones como leídas:', err);
             res.status(500).send('Error interno del servidor');
@@ -2575,7 +2562,7 @@ app.post('/marcarNotificacionesLeidas', (req, res) => {
 // Ruta para la página de búsqueda y visualización de datos
 app.get('/cotizaciones_pendientes', (req, res) => {
     // Realizar la consulta a la base de datos para obtener las cotizaciones pendientes
-    connection.query('SELECT id, cliente FROM cotizaciones WHERE realizada = 0', (err, rows) => {
+    pool.query('SELECT id, cliente FROM cotizaciones WHERE realizada = 0', (err, rows) => {
         if (err) {
             console.error('Error al obtener cotizaciones pendientes:', err);
             res.status(500).send('Error interno del servidor');
@@ -2587,7 +2574,7 @@ app.get('/cotizaciones_pendientes', (req, res) => {
 });
 app.get('/cotizaciones_pendientes/:id', (req, res) => {
     const cotizacionId = req.params.id;
-    connection.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
+    pool.query('SELECT * FROM cotizaciones WHERE id = ?', cotizacionId, (err, cotizacionRows) => {
         if (err) {
             console.error('Error al obtener detalles de la cotización:', err);
             res.status(500).send('Error interno del servidor');
@@ -2669,7 +2656,7 @@ app.post('/marcar_realizado', (req, res) => {
     console.log(req.body); 
     // Aquí debes implementar la lógica para marcar la cotización como realizada en tu base de datos
     // Por ejemplo, si estás utilizando MySQL puedes hacer algo como esto:
-    connection.query('UPDATE cotizaciones SET realizada = 1 WHERE id = ?', cotizacionId, (err, result) => {
+    pool.query('UPDATE cotizaciones SET realizada = 1 WHERE id = ?', cotizacionId, (err, result) => {
         if (err) {
             console.error('Error al marcar como realizado:', err);
             res.status(500).send('Error interno del servidor');
@@ -2714,7 +2701,7 @@ app.get('/ver_cotizaciones', (req, res) => {
 
     if (idCotizacion) {
         const sql = 'SELECT * FROM cotizaciones WHERE id = ?';
-        connection.query(sql, [idCotizacion], (error, results) => {
+        pool.query(sql, [idCotizacion], (error, results) => {
             if (error) {
                 console.error('Error al ejecutar la consulta:', error);
                 res.render('error');
@@ -2743,7 +2730,7 @@ app.get('/ver_cotizaciones', (req, res) => {
 // Define la ruta para el endpoint '/consulta-contabilidad-todos'
 app.get('/consulta-contabilidad-todos', (req, res) => {
     // Realizar la consulta a la base de datos seleccionando solo las columnas necesarias
-    connection.query('SELECT placa, Nombre, tipo_documento,Cedula,Nombre_del_banco,Tipo_de_cuenta_bancaria,Numero_de_cuenta FROM contabilidad', (error, results, fields) => {
+    pool.query('SELECT placa, Nombre, tipo_documento,Cedula,Nombre_del_banco,Tipo_de_cuenta_bancaria,Numero_de_cuenta FROM contabilidad', (error, results, fields) => {
         if (error) {
             console.error('Error al consultar la contabilidad:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
@@ -2807,7 +2794,7 @@ io.on('connection', (socket) => {
 
     // Consultar la base de datos para obtener todas las ubicaciones almacenadas
     const query = 'SELECT * FROM ubicaciones';
-    connection.query(query, (error, results) => {
+    pool.query(query, (error, results) => {
         if (error) {
             console.error('Error al obtener las ubicaciones de MySQL:', error);
             return;
@@ -2826,7 +2813,7 @@ io.on('connection', (socket) => {
 socket.on('selectUser', ({ username }) => {
     // Consultar la base de datos para obtener los movimientos del usuario seleccionado
     const query = `SELECT * FROM ubicaciones WHERE nombre_usuario = '${username}'`;
-    connection.query(query, (error, results) => {
+    pool.query(query, (error, results) => {
         if (error) {
             console.error('Error al obtener los movimientos de MySQL:', error);
             return;
@@ -2846,7 +2833,7 @@ socket.on('selectUser', ({ username }) => {
 
     // Insertar la ubicación, la fecha y el nombre de usuario en la tabla de ubicaciones
     const query = 'INSERT INTO ubicaciones (latitud, longitud, nombre_usuario, hora, fecha) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [data.lat, data.lng, data.username, data.time, data.date], (error, results) => {
+    pool.query(query, [data.lat, data.lng, data.username, data.time, data.date], (error, results) => {
         if (error) {
             console.error('Error al insertar la ubicación en MySQL:', error);
             return;
@@ -2871,7 +2858,7 @@ socket.on('selectUser', ({ username }) => {
 // Ruta para clientes
 app.get('/clientess', (req, res) => {
     // Consulta a la base de datos para obtener la información de los clientes
-    connection.query('SELECT * FROM clientes', (error, results) => {
+    pool.query('SELECT * FROM clientes', (error, results) => {
         if (error) {
             console.error('Error al obtener los clientes:', error);
             res.status(500).send('Error interno del servidor');
@@ -2892,7 +2879,7 @@ app.post('/actualizar_cliente', (req, res) => {
 
     console.log('Datos recibidos para actualizar:', req.body); // Agregado para depuración
 
-    connection.query(
+    pool.query(
         'SELECT * FROM clientes WHERE nombre = ?', 
         [nombre], 
         (error, results) => {
@@ -2931,7 +2918,7 @@ app.post('/actualizar_cliente', (req, res) => {
                 
                 
             ) {
-                connection.query(
+                pool.query(
                     'UPDATE clientes SET contratante = ?, N_contrato = ?, nit = ?, rut = ?, camara_comercio = ?, cumpleaños = ?, direccion = ? , correoacta = ?  ,responsable = ? , celular = ?,cedula = ?,objeto = ?,fecha_inicio = ?,fecha_final = ?,destino = ? WHERE nombre = ?', 
                     [contratante, N_contrato, nit, rut, camara_comercio, cumpleaños, direccion,correoacta,responsable,celular,cedula, objeto,fecha_inicio,fecha_final,destino,nombre], 
                     (error, results) => {
@@ -2964,7 +2951,7 @@ app.get('/nuevo_cliente', (req, res) => {
 app.post('/agregar-cliente',(req, res) => {
     const formData = req.body; // Capturar los datos del formulario
 
-    connection.query(
+    pool.query(
       `INSERT INTO clientes (nombre, rut, camara_comercio, cumpleaños, N_contrato, contratante, nit, direccion,correoacta, responsable, celular, cedula, objeto, fecha_inicio, fecha_final, destino) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -3045,7 +3032,7 @@ app.post('/agregar-cliente',(req, res) => {
  //   `;
   //  const params = [fechaActual, fechaActual, fechaActual, fechaActual, fechaActual, fechaActual];
     
- //   connection.query(consultaVehiculos, params, (error, resultados) => {
+ //   pool.query(consultaVehiculos, params, (error, resultados) => {
    //     if (error) {
   //          console.error('Error al obtener vehículos:', error);
    ////         res.status(500).json({ error: 'Error al obtener vehículos' });
@@ -3077,7 +3064,7 @@ app.get('/vehiculos_vencidos', (req, res) => {
       FROM vehiculos;
     `;
       
-    connection.query(consultaVehiculos, (error, resultados) => {
+    pool.query(consultaVehiculos, (error, resultados) => {
       if (error) {
         console.error('Error al obtener vehículos:', error);
         res.status(500).json({ error: 'Error al obtener vehículos' });
@@ -3099,7 +3086,7 @@ app.get('/vehiculos_vencidos', (req, res) => {
 // Ruta para obtener todas las placas de vehículos disponibles
 app.get('/vehiculoos', (req, res) => {
     const consultaVehiculos = 'SELECT placa FROM vehiculos';
-    connection.query(consultaVehiculos, (error, resultados) => {
+    pool.query(consultaVehiculos, (error, resultados) => {
         if (error) {
             console.error('Error al obtener vehículos:', error);
             res.status(500).json({ error: 'Error al obtener vehículos' });
@@ -3111,7 +3098,7 @@ app.get('/vehiculoos', (req, res) => {
 
 
   // Obtener el último consecutivo al iniciar la aplicación
-  connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
+  pool.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
     if (err) {
       console.error('Error al obtener el último consecutivo:', err);
       return;
@@ -3129,7 +3116,7 @@ app.get('/vehiculoos', (req, res) => {
 // Ruta para obtener conductores
 app.get('/conductoress', (req, res) => {
     const consultaConductores = 'SELECT id, conductor, cedula, fecha_vigencia FROM conductores';
-    connection.query(consultaConductores, (error, resultados) => {
+    pool.query(consultaConductores, (error, resultados) => {
         if (error) {
             console.error('Error al obtener conductores:', error);
             res.status(500).json({ error: 'Error al obtener conductores' });
@@ -3141,7 +3128,7 @@ app.get('/conductoress', (req, res) => {
 
 app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /clientes2
     const consultaClientes = 'SELECT nombre,contratante,fecha_inicio, N_contrato ,fecha_final  FROM clientes';
-    connection.query(consultaClientes, (error, resultados) => {
+    pool.query(consultaClientes, (error, resultados) => {
       if (error) {
         console.error('Error al obtener clientes:', error);
         res.status(500).json({ error: 'Error al obtener clientes' });
@@ -3166,7 +3153,7 @@ app.get('/clientes2', (req, res) => { // Cambiar el nombre de la ruta a /cliente
 app.get('/primer-conductor/:placa', (req, res) => {
     const placa = req.params.placa;
     const consultaPrimerConductor = 'SELECT id, conductor FROM conductores WHERE placa = ? LIMIT 1';
-    connection.query(consultaPrimerConductor, [placa], (error, resultado) => {
+    pool.query(consultaPrimerConductor, [placa], (error, resultado) => {
         if (error) {
             console.error('Error al obtener el primer conductor:', error);
             res.status(500).json({ error: 'Error al obtener el primer conductor' });
@@ -3223,7 +3210,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
         }
 
         // Obtener el último consecutivo de la base de datos
-        connection.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
+        pool.query('SELECT valor FROM consecutivos ORDER BY id DESC LIMIT 1', (err, rows) => {
             if (err) {
                 console.error('Error al obtener el último consecutivo:', err);
                 res.status(500).json({ error: 'Error al obtener el último consecutivo' });
@@ -3239,7 +3226,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
 
             
             // Actualizar el último consecutivo en la base de datos
-            connection.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
+            pool.query(`INSERT INTO consecutivos (valor) VALUES (${ultimoConsecutivo})`, (err, result) => {
                 if (err) {
                     console.error('Error al actualizar el último consecutivo en la base de datos:', err);
                     res.status(500).json({ error: 'Error al actualizar el último consecutivo en la base de datos' });
@@ -3249,7 +3236,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                 // Generar el número FUEC con el formato específico
                 const numeroFUEC = `4250427192024${N_contrato}${ultimoConsecutivo}`;
 
-                connection.query('SELECT responsable, objeto FROM clientes WHERE nombre = ?', [nombreCliente], (err, result) => {
+                pool.query('SELECT responsable, objeto FROM clientes WHERE nombre = ?', [nombreCliente], (err, result) => {
                     if (err) {
                         console.error('Error al obtener el responsable y objeto del cliente:', err);
                         res.status(500).json({ error: 'Error al obtener el responsable y objeto del cliente' });
@@ -3269,7 +3256,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
 
 
 
-                  connection.query('SELECT id, conductor FROM conductores WHERE id IN (?)', [conductoresIds], (err, rows) => {
+                    pool.query('SELECT id, conductor FROM conductores WHERE id IN (?)', [conductoresIds], (err, rows) => {
     if (err) {
         console.error('Error al obtener los nombres de los conductores:', err);
         res.status(500).json({ error: 'Error al obtener los nombres de los conductores' });
@@ -3288,7 +3275,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
     const nombreConductor3 = idConductor3 ? conductorNamesMap[idConductor3] : null;
 
     // Ahora, puedes usar los nombres de los conductores para guardar en fuec_data en lugar de los IDs
-    connection.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, nombreConductor1, nombreConductor2, nombreConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
+    pool.query(`INSERT INTO fuec_data (nombre_cliente, placa, id_conductor1, id_conductor2, id_conductor3, N_contrato, contratante, fecha_inicio, fecha_final, qr_code_url, numero_fuec, responsable, objeto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [nombreCliente, placa, nombreConductor1, nombreConductor2, nombreConductor3, N_contrato, contratante, fecha_inicio, fecha_final, qrDataURL, numeroFUEC, responsable, objeto], (err, result) => {
         if (err) {
             console.error('Error al guardar los datos en la base de datos:', err);
             res.status(500).json({ error: 'Error al guardar los datos en la base de datos' });
@@ -3304,7 +3291,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                     FROM clientes 
                     WHERE nombre = '${nombreCliente}'`;
 
-                connection.query(consultaCliente, (errorCliente, resultadosCliente) => {
+                    pool.query(consultaCliente, (errorCliente, resultadosCliente) => {
                     if (errorCliente) {
                         console.error('Error al obtener datos del cliente:', errorCliente);
                         res.status(500).json({ error: 'Error al obtener datos del cliente' });
@@ -3321,7 +3308,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                         FROM vehiculos 
                         WHERE placa = '${placa}'`;
 
-                    connection.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
+                        pool.query(consultaVehiculo, (errorVehiculo, resultadosVehiculo) => {
                         if (errorVehiculo) {
                             console.error('Error al obtener datos del vehículo:', errorVehiculo);
                             res.status(500).json({ error: 'Error al obtener datos del vehículo' });
@@ -3340,7 +3327,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                                 FROM conductores
                                 WHERE id = ${conductoresIds[0]}`;
                             
-                            connection.query(consultaConductorUnico, (errorConductor, resultadoConductor) => {
+                                pool.query(consultaConductorUnico, (errorConductor, resultadoConductor) => {
                                 if (errorConductor) {
                                     console.error('Error al obtener datos del conductor:', errorConductor);
                                     res.status(500).json({ error: 'Error al obtener datos del conductor' });
@@ -3409,7 +3396,7 @@ const fuecURL = `${contratoFormatted}\n${contratanteFormatted}\n${fecha_inicioFo
                                 FROM conductores
                                 WHERE id IN (${conductoresIds.join(', ')})`;
 
-                            connection.query(consultaConductores, (errorConductores, resultadosConductores) => {
+                                pool.query(consultaConductores, (errorConductores, resultadosConductores) => {
                                 if (errorConductores) {
                                     console.error('Error al obtener datos de los conductores:', errorConductores);
                                     res.status(500).json({ error: 'Error al obtener datos de los conductores' });
@@ -3529,7 +3516,7 @@ app.get('/buscar', (req, res) => {
     }
 
     const sql = `SELECT * FROM fuec_data WHERE numero_fuec = ?`;
-    connection.query(sql, [numeroFuec], (err, resultados) => {
+    pool.query(sql, [numeroFuec], (err, resultados) => {
         if (err) {
             console.error('Error al ejecutar la consulta:', err);
             res.render('error');
@@ -3548,7 +3535,7 @@ app.get('/buscar', (req, res) => {
 app.get('/userMovements/:username', (req, res) => {
     const username = req.params.username;
     const query = `SELECT latitud, longitud FROM ubicaciones WHERE nombre_usuario = ?`;
-    connection.query(query, [username], (err, results) => {
+    pool.query(query, [username], (err, results) => {
         if (err) {
             console.error('Error al consultar la base de datos:', err);
             res.status(500).json({ error: 'Error al consultar la base de datos' });
@@ -3570,7 +3557,7 @@ app.get('/userMovements/:username', (req, res) => {
 
 // Define una ruta para obtener la lista de usuarios
 app.get('/usuarios', function(req, res) {
-    connection.query('SELECT DISTINCT nombre_usuario FROM ubicaciones', function(error, results, fields) {
+    pool.query('SELECT DISTINCT nombre_usuario FROM ubicaciones', function(error, results, fields) {
         if (error) throw error;
         res.json(results);
     });
@@ -3589,7 +3576,7 @@ app.get('/ubicaciones/:nombreUsuario', function(req, res) {
         params.push(fechaSeleccionada);
     }
 
-    connection.query(query, params, function(error, results, fields) {
+    pool.query(query, params, function(error, results, fields) {
         if (error) throw error;
         res.json(results);
     });
@@ -3616,7 +3603,7 @@ app.post('/guardar_datos', (req, res) => {
     const servicios = req.body.servicios;
 
     // Actualizar la tabla de cotizaciones con el nuevo subtotal, descuento y valor total
-    connection.query('UPDATE cotizaciones SET subtotal = ?, descuento = ?, valor_total = ? WHERE id = ?', [subtotal, descuento, valorTotal, cotizacionId], function(err, result) {
+    pool.query('UPDATE cotizaciones SET subtotal = ?, descuento = ?, valor_total = ? WHERE id = ?', [subtotal, descuento, valorTotal, cotizacionId], function(err, result) {
         if (err) {
             console.error('Error al actualizar valores:', err);
             return res.status(500).json({ error: 'Error al actualizar valores' });
@@ -3628,7 +3615,7 @@ app.post('/guardar_datos', (req, res) => {
             const valorColumn = `valor_${index + 1}`;
             const observacionesColumn = `observaciones_${index + 1}`;
 
-            connection.query(`UPDATE cotizaciones SET ${valorColumn} = ?, ${observacionesColumn} = ? WHERE id = ?`, [servicio.valor, servicio.observaciones, cotizacionId], function(err, result) {
+            pool.query(`UPDATE cotizaciones SET ${valorColumn} = ?, ${observacionesColumn} = ? WHERE id = ?`, [servicio.valor, servicio.observaciones, cotizacionId], function(err, result) {
                 if (err) {
                     console.error(`Error al actualizar servicio ${index + 1}:`, err);
                     return res.status(500).json({ error: `Error al actualizar servicio ${index + 1}` });
@@ -3695,7 +3682,7 @@ app.post('/novedades_vianco', (req, res) => {
 
     const sql = 'INSERT INTO novedades_vianco (fecha_registro, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)'; // Corregido aquí
 
-    connection.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
+    pool.query(sql, [fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO,  otrasNovedades, firmaBase64], (error, results, fields) => {
         if (error) {
             console.error('Error al insertar la novedad en la base de datos:', error);
             res.status(500).send('Error interno del servidor.');
@@ -3787,7 +3774,7 @@ app.get('/api/obtener_fechas_disponibles_vianco', (req, res) => {
     const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
     const query = 'SELECT DISTINCT id FROM novedades_vianco WHERE responsable_asignado = ?';
 
-    connection.query(query, [nombreUsuario], (error, results) => {
+    pool.query(query, [nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las IDs disponibles:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
@@ -3804,7 +3791,7 @@ app.get('/api/obtener_novedades_vianco/:id', (req, res) => {
     const nombreUsuario = req.session.name; // Obtener el nombre de usuario de la sesión
     const query = 'SELECT id, fecha, realiza, novedad_tripulacion, novedad_hoteleria, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, fecha_registro, responsable_asignado FROM novedades_vianco WHERE id = ? AND responsable_asignado = ?';
 
-    connection.query(query, [id, nombreUsuario], (error, results) => {
+    pool.query(query, [id, nombreUsuario], (error, results) => {
         if (error) {
             console.error('Error al obtener las novedades:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
@@ -3825,7 +3812,7 @@ app.get('/api/obtener_novedades_vianco/:id', (req, res) => {
 // Backend (Endpoint /api/eliminar_novedad)
 app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
+    pool.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
         if (error) {
             console.error('Error al eliminar la novedad:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -3836,19 +3823,17 @@ app.delete('/api/eliminar_novedad_vianco/:id', (req, res) => {
 });
 
 
-
-// Ruta para guardar el seguimiento en la base de datos
 app.post('/api/guardar_seguimiento_vianco', (req, res) => {
-    
     // Obtener los datos del cuerpo de la solicitud
-    const {  nombreSeguimiento, detalleSeguimiento ,novedadestripulacion,fechaseguimiento,realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo} = req.body;
+    const { nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, realiza, fecha, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo } = req.body;
 
     // Query para insertar el seguimiento en la base de datos
-    const query = 'INSERT INTO novedades_completadas_vianco ( nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fecha_seguimiento, realiza,fecha_novedad,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo) VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)';
-    const values = [ nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento,  realiza,fecha,novedad_hoteleria,fecha_registro,novedad_ejecutivos,novedad_empresas_privadas,NOVEDADES_TASKGO,otras_novedades,firma,ACCIONES,numeroU,Plazo];
+    const query = 'INSERT INTO novedades_completadas_vianco (nombre_seguimiento, detalle_seguimiento, novedad_tripulacion, fechaseguimiento, realiza, fecha_novedad, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     
+    const values = [nombreSeguimiento, detalleSeguimiento, novedadestripulacion, fechaseguimiento, realiza, fecha, novedad_hoteleria, fecha_registro, novedad_ejecutivos, novedad_empresas_privadas, NOVEDADES_TASKGO, otras_novedades, firma, ACCIONES, numeroU, Plazo];
+
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results, fields) => {
+    pool.query(query, values, (error, results, fields) => {
         if (error) {
             console.error('Error al guardar el seguimiento en la base de datos:', error);
             res.status(500).json({ error: 'Error al guardar el seguimiento en la base de datos' });
@@ -3863,10 +3848,12 @@ app.post('/api/guardar_seguimiento_vianco', (req, res) => {
 
 
 
+
+
 // Endpoint para eliminar una fecha por su ID
 app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
+    pool.query('DELETE FROM novedades_vianco WHERE id = ?', id, (error, results) => {
         if (error) {
             console.error('Error al eliminar la fecha:', error);
             res.status(500).json({ error: 'Error interno del servidor' }); // Devuelve un JSON con el error
@@ -4154,7 +4141,7 @@ app.get('/novedad_vianco', (req, res) => {
         sql += ")";
     }
     
-    connection.query(sql, params, (err, result) => {
+    pool.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -4180,7 +4167,7 @@ app.post('/descargar_excell', (req, res) => {
         params.push(fechaFin);
     }
 
-    connection.query(sql, params, (err, result) => {
+    pool.query(sql, params, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -4234,7 +4221,7 @@ app.post('/descargar_excell', (req, res) => {
     // Consulta las novedades dentro del rango de fechas especificado
     const sql = `SELECT * FROM novedades_completadas_vianco WHERE fecha_novedad BETWEEN '${fechaInicio}' AND '${fechaFin}'`;
 
-    connection.query(sql, (err, result) => {
+    pool.query(sql, (err, result) => {
         if (err) {
             console.error("Error al obtener las novedades:", err);
             res.status(500).json({ error: "Error al obtener las novedades de la base de datos" });
@@ -4301,7 +4288,7 @@ app.get('/inspeccion', (req, res) => {
 
 // Ruta para obtener la lista de bases
 app.get('/obtenerBases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+    pool.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
         if (error) {
             console.error('Error al obtener las bases:', error);
             res.status(500).json({ error: 'Error al obtener las bases' });
@@ -4315,7 +4302,7 @@ app.get('/obtenerBases', (req, res) => {
 // Ruta para obtener la lista de placas según la base seleccionada
 app.get('/inspeccion_vianco', (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+    pool.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las placas:', error);
             res.status(500).json({ error: 'Error al obtener las placas' });
@@ -4335,7 +4322,7 @@ app.post('/guardar-inspeccion', (req, res) => {
     formData.responsable = nombreUsuario;
 
     // Insertar los datos en la base de datos
-    connection.query('INSERT INTO inspeccion_2_0 SET ?', formData, (err, result) => {
+    pool.query('INSERT INTO inspeccion_2_0 SET ?', formData, (err, result) => {
         if (err) {
             console.error('Error al guardar los datos:', err);
             res.status(500).send('Error interno del servidor.');
@@ -4367,8 +4354,8 @@ app.get('/consulta_inspeccion', async (req, res) => {
         const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
         const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
         
-        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
-        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
+        const [placasRows, placasFields] = await pool.promise().query(placasQuery);
+        const [basesRows, basesFields] = await pool.promise().query(basesQuery);
         
         console.log('Placas encontradas:', placasRows);
         console.log('Bases encontradas:', basesRows);
@@ -4410,7 +4397,7 @@ app.post('/consulta_inspeccion', async (req, res) => {
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const [rows, fields] = await pool.promise().query(query, params);
         console.log('Datos encontrados:', rows);
 
         // Calcular la suma y el porcentaje de cumplimiento para cada fila
@@ -4461,7 +4448,7 @@ app.post('/descargar_excel_INSPECION', async (req, res) => {
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const [rows, fields] = await pool.promise().query(query, params);
 
         // Verificar si rows tiene elementos antes de continuar
         if (rows.length === 0) {
@@ -4561,7 +4548,7 @@ function obtenerPlacasBajo60(fechaInicio, fechaFin, callback) {
     let queryParams = [fechaInicio, fechaFin];
 
     // Realiza la consulta a la base de datos
-    connection.query(query, queryParams, (error, rows) => {
+    pool.query(query, queryParams, (error, rows) => {
         if (error) {
             callback(error, null);
             return;
@@ -4592,7 +4579,7 @@ app.get('/auditoria', (req, res) => {
 
 // Ruta para obtener la lista de bases
 app.get('/obtenerBases', (req, res) => {
-    connection.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
+    pool.query('SELECT DISTINCT base FROM vehiculos', (error, results) => {
         if (error) {
             console.error('Error al obtener las bases:', error);
             res.status(500).json({ error: 'Error al obtener las bases' });
@@ -4608,7 +4595,7 @@ app.get('/obtenerBases', (req, res) => {
 // Ruta para obtener la lista de placas según la base seleccionada
 app.get('/inspeccion_vianco', (req, res) => {
     const baseSeleccionada = req.query.base;
-    connection.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
+    pool.query('SELECT placa FROM vehiculos WHERE base = ?', [baseSeleccionada], (error, results) => {
         if (error) {
             console.error('Error al obtener las placas:', error);
             res.status(500).json({ error: 'Error al obtener las placas' });
@@ -4634,7 +4621,7 @@ app.post('/guardar_auditoria', (req, res) => {
     const values = [placa,base, fecha, inspeccion, supervision, programacion,turno_extra, nombreUsuario];
   
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results) => {
+    pool.query(query, values, (error, results) => {
       if (error) {
         console.error('Error al guardar los datos:', error);
         res.status(500).send('Error interno del servidor');
@@ -4664,8 +4651,8 @@ app.get('/consulta_auditoria', async (req, res) => {
         const placasQuery = 'SELECT DISTINCT placa FROM vehiculos';
         const basesQuery = 'SELECT DISTINCT base FROM vehiculos';
         
-        const [placasRows, placasFields] = await connection.promise().query(placasQuery);
-        const [basesRows, basesFields] = await connection.promise().query(basesQuery);
+        const [placasRows, placasFields] = await pool.promise().query(placasQuery);
+        const [basesRows, basesFields] = await pool.promise().query(basesQuery);
         
         console.log('Placas encontradas:', placasRows);
         console.log('Bases encontradas:', basesRows);
@@ -4716,7 +4703,7 @@ app.post('/consulta_auditoria_resultado', async (req, res) => {
         }
 
         // Ejecutar la consulta
-        const [rows, fields] = await connection.promise().query(query, params);
+        const [rows, fields] = await pool.promise().query(query, params);
         console.log('Datos encontrados:', rows);
 
         // Calcular la suma y el porcentaje de cumplimiento para cada fila
@@ -4780,7 +4767,7 @@ app.get('/llegadas_salidas', async (req, res) => {
         if (req.session.loggedin === true) {
             const nombreUsuario = req.session.name;
             const clientesQuery = 'SELECT DISTINCT nombre FROM clientes';
-            const [clienteRows] = await connection.promise().query(clientesQuery);
+            const [clienteRows] = await pool.promise().query(clientesQuery);
             if (!clienteRows || clienteRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -4813,7 +4800,7 @@ app.post('/guardar_llegadas_salidas', (req, res) => {
     const values = [clienteCosto, Responsable, fecha, llegadas, salidas, ocupacion];
 
     // Ejecutar la consulta SQL
-    connection.query(query, values, (error, results) => {
+    pool.query(query, values, (error, results) => {
         if (error) {
             console.error('Error al guardar los datos:', error);
             return res.status(500).send('Error interno del servidor');
@@ -4877,7 +4864,7 @@ WHERE
 
 `;
 
-    connection.query(query, [
+pool.query(query, [
         hoy,
         hoy,
         hoy,
@@ -4953,7 +4940,7 @@ app.post('/descargar-excel', (req, res) => {
         (fecha_vigencia_convenio IS NOT NULL AND STR_TO_DATE(fecha_vigencia_convenio, '%d/%m/%Y') >= ?)
     `;
 
-    connection.query(query, [
+    pool.query(query, [
         hoy,
         hoy,
         hoy,
@@ -5044,7 +5031,7 @@ function generarExcel(data, res) {
 // Definir las rutas
 app.get("/consulta-vehiculos2", (req, res) => {
     // Consulta SQL para obtener las placas disponibles
-    connection.query("SELECT placa FROM vehiculos", (error, results) => {
+    pool.query("SELECT placa FROM vehiculos", (error, results) => {
         if (error) {
             console.error("Error al obtener las placas:", error);
             res.status(500).send("Error al obtener las placas");
@@ -5058,7 +5045,7 @@ app.get("/consulta-vehiculos2", (req, res) => {
 app.post("/consulta-vehiculos2", (req, res) => {
     const placaSeleccionada = req.body.placa; // Obtener la placa seleccionada del cuerpo de la solicitud
     // Consulta SQL para obtener la información del vehículo correspondiente a la placa seleccionada
-    connection.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
+    pool.query("SELECT * FROM vehiculos WHERE placa = ?", [placaSeleccionada], (error, results) => {
         if (error) {
             console.error("Error al obtener la información del vehículo:", error);
             res.status(500).send("Error al obtener la información del vehículo");
@@ -5104,7 +5091,7 @@ app.get('/informe_general_f', (req, res) => {
             if (isValidDate(fecha_inicio) && isValidDate(fecha_final)) {
                 // Consulta para obtener los datos filtrados por fecha_creacion
                 const query = 'SELECT * FROM fuec_data WHERE fecha_creacion >= ? AND fecha_creacion <= DATE_ADD(?, INTERVAL 1 DAY)';
-                connection.query(query, [fecha_inicio, fecha_final], (error, results) => {
+                pool.query(query, [fecha_inicio, fecha_final], (error, results) => {
                     if (error) {
                         console.error('Error al ejecutar la consulta:', error.stack);
                         res.status(500).send('Error en el servidor');
@@ -5195,7 +5182,7 @@ app.get('/asiganr_servicioN', async (req, res) => {
 
             // Consulta para obtener la lista de usuarios
             const userQuery = 'SELECT DISTINCT name FROM user';
-            const [userRows] = await connection.promise().query(userQuery);
+            const [userRows] = await pool.promise().query(userQuery);
             if (!userRows || userRows.length === 0) {
                 throw new Error("No se encontraron clientes en la base de datos.");
             }
@@ -5204,7 +5191,7 @@ app.get('/asiganr_servicioN', async (req, res) => {
 
             // Consulta para obtener las novedades
             const novedadesQuery = 'SELECT * FROM novedades_vianco WHERE responsable_asignado IS NULL';
-            const [novedadesRows] = await connection.promise().query(novedadesQuery);
+            const [novedadesRows] = await pool.promise().query(novedadesQuery);
 
             // Filtrar novedades que tienen contenido
             const filteredNovedades = novedadesRows.filter(novedad => 
@@ -5251,7 +5238,7 @@ app.post('/asignar-responsable', async (req, res) => {
 
         // Consulta para obtener la información del usuario responsable
         const userQuery = 'SELECT name, email FROM user WHERE name = ?';
-        const [userRows] = await connection.promise().query(userQuery, [responsableName]);
+        const [userRows] = await pool.promise().query(userQuery, [responsableName]);
 
         // Verificar si se encontró al usuario responsable
         if (!userRows || userRows.length === 0) {
@@ -5266,7 +5253,7 @@ app.post('/asignar-responsable', async (req, res) => {
 
         // Actualizar la base de datos con el responsable asignado y la notificación pendiente
         const updateQuery = 'UPDATE novedades_vianco SET responsable_asignado = ?, notificacion_pendiente = 1 WHERE id = ?';
-        await connection.promise().query(updateQuery, [responsableName, idTarea]);
+        await pool.promise().query(updateQuery, [responsableName, idTarea]);
 
       // Redirigir de vuelta a la página de asignación
       res.redirect('/asiganr_servicioN');
@@ -5293,7 +5280,7 @@ app.get('/verificar-notificaciones', async (req, res) => {
 
         // Query to check for pending notifications for the current user
         const query = 'SELECT * FROM novedades_vianco WHERE responsable_asignado = ? AND notificacion_pendiente = 1';
-        const [result] = await connection.promise().query(query, [nombreUsuario]);
+        const [result] = await pool.promise().query(query, [nombreUsuario]);
 
         // Send response to the client
         res.json({ notificaciones: result });
@@ -5361,7 +5348,7 @@ app.delete('/eliminar-notificacion/:id', async (req, res) => {
 app.get('/verificacion_servicio', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
-        connection.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results) => {
+        pool.query('SELECT * FROM novedades_completadas_vianco WHERE aceptadas IS NULL OR aceptadas = 0', (error, results) => {
             if (error) throw error;
             res.render('novedades_vianco/verificacion_servicio', { nombreUsuario, novedades: results });
         });
@@ -5377,11 +5364,11 @@ app.get('/marcar_aceptada/:id', (req, res) => {
     const idNovedad = req.params.id; // Obtener el ID de la novedad desde la URL
 
     // Actualizar el estado de la novedad en la base de datos como aceptada
-    connection.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
+    pool.query('UPDATE novedades_completadas_vianco SET aceptadas = true WHERE id = ?', idNovedad, (error, results, fields) => {
         if (error) throw error;
 
         // Consultar el email del usuario que realizó la acción
-        connection.query('SELECT email FROM user WHERE id = ?', idNovedad, (error, results, fields) => {
+        pool.query('SELECT email FROM user WHERE id = ?', idNovedad, (error, results, fields) => {
             if (error) throw error;
             
             // Verificar si hay resultados en la consulta
@@ -5459,7 +5446,7 @@ app.get('/Consulta_mia', (req, res) => {
         const nombreUsuario = req.session.name;
         // Consulta a la base de datos para obtener los servicios del usuario actual
         const query = "SELECT * FROM novedades_completadas_vianco WHERE realiza = ?";
-        connection.query(query, [nombreUsuario], (err, results) => {
+        pool.query(query, [nombreUsuario], (err, results) => {
             if (err) {
                 console.error('Error al consultar la base de datos: ', err);
                 res.status(500).send('Error interno del servidor');
@@ -5496,7 +5483,7 @@ app.get('/verificacion_cotizacion', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
         // Consultar las cotizaciones realizadas pero no verificadas desde la base de datos
-        connection.query('SELECT * FROM cotizaciones WHERE realizada = 1 AND verificadas IS NULL', (error, results, fields) => {
+        pool.query('SELECT * FROM cotizaciones WHERE realizada = 1 AND verificadas IS NULL', (error, results, fields) => {
             if (error) throw error;
             // Agrupar cotizaciones por número de servicios
             const cotizacionesPorServicios = {};
@@ -5536,7 +5523,7 @@ app.get('/verificacion_cotizacion', (req, res) => {
 // Ruta para marcar una cotización como aceptada
 app.post('/marcar_aceptada/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('UPDATE cotizaciones SET verificadas = 1 WHERE id = ?', [id], (error, results, fields) => {
+    pool.query('UPDATE cotizaciones SET verificadas = 1 WHERE id = ?', [id], (error, results, fields) => {
         if (error) {
             console.error(error);
             return res.status(500).send('Error al marcar como aceptada');
@@ -5548,7 +5535,7 @@ app.post('/marcar_aceptada/:id', (req, res) => {
 // Ruta para marcar una cotización como rechazada
 app.post('/marcar_rechazada/:id', (req, res) => {
     const id = req.params.id;
-    connection.query('UPDATE cotizaciones SET verificadas = 0 WHERE id = ?', [id], (error, results, fields) => {
+    pool.query('UPDATE cotizaciones SET verificadas = 0 WHERE id = ?', [id], (error, results, fields) => {
         if (error) {
             console.error(error);
             return res.status(500).send('Error al marcar como rechazada');
@@ -5571,7 +5558,7 @@ app.get('/nuevo_tikect_soporte', (req, res) => {
         const nombreUsuario = req.session.name;
         // Aquí obtienes el correo electrónico del usuario de la base de datos
         const query = 'SELECT email FROM user WHERE name = ?';
-        connection.query(query, [nombreUsuario], (error, results) => {
+        pool.query(query, [nombreUsuario], (error, results) => {
             if (error) {
                 console.error('Error al obtener el correo electrónico del usuario:', error);
                 // Maneja el error apropiadamente
@@ -5606,7 +5593,7 @@ app.post('/guardar_ticket', (req, res) => {
     const asuntoFinal = (asunto === 'Otro') ? otro_asunto : asunto;
 
     const sql = "INSERT INTO tickets_soporte (usuario, email, asunto, prioridad, descripcion) VALUES (?, ?, ?, ?, ?)";
-    connection.query(sql, [usuario, email, asuntoFinal, prioridad, descripcion], (error, results) => {
+    pool.query(sql, [usuario, email, asuntoFinal, prioridad, descripcion], (error, results) => {
         if (error) {
             console.error('Error al insertar el ticket:', error);
             res.status(500).send('Error interno al guardar el ticket');
@@ -5681,7 +5668,7 @@ app.get('/revisar_tickets', (req, res) => {
     if (req.session.loggedin === true) {
         // Consulta los tickets en estado pendiente desde la base de datos
         const query = 'SELECT * FROM tickets_soporte WHERE estado = ?';
-        connection.query(query, ['pendiente'], (error, results) => {
+        pool.query(query, ['pendiente'], (error, results) => {
             if (error) {
                 console.error('Error al obtener los tickets en estado pendiente:', error);
                 // Maneja el error apropiadamente
@@ -5707,7 +5694,7 @@ app.post('/responder_ticket/:id', (req, res) => {
 
         // Actualiza el ticket en la base de datos
         const query = 'UPDATE tickets_soporte SET estado = ?, respuesta = ?, fechaRespuesta = ? WHERE id = ?';
-        connection.query(query, ['completo', respuesta, fechaRespuesta, ticketId], (error, results) => {
+        pool.query(query, ['completo', respuesta, fechaRespuesta, ticketId], (error, results) => {
             if (error) {
                 console.error('Error al responder al ticket:', error);
                 res.status(500).send('Error interno del servidor');
@@ -5717,7 +5704,7 @@ app.post('/responder_ticket/:id', (req, res) => {
             // Aquí asumimos que el correo electrónico del destinatario está almacenado en la base de datos
             // Supongamos que tienes un campo 'email' en la tabla 'tickets_soporte'
             const emailQuery = 'SELECT email FROM tickets_soporte WHERE id = ?';
-            connection.query(emailQuery, [ticketId], (emailError, emailResults) => {
+            pool.query(emailQuery, [ticketId], (emailError, emailResults) => {
                 if (emailError) {
                     console.error('Error al obtener el correo electrónico:', emailError);
                     res.status(500).send('Error interno del servidor');
@@ -5799,7 +5786,7 @@ app.get('/SolictarServicioTerceros', (req, res) => {
 
         // Consulta a la base de datos para obtener el correo electrónico del usuario
         const query = 'SELECT email FROM user WHERE name = ?';
-        connection.query(query, [nombreUsuario], (error, userResult) => {
+        pool.query(query, [nombreUsuario], (error, userResult) => {
             if (error) {
                 console.error('Error al obtener el correo electrónico del usuario:', error);
                 res.status(500).send('Error interno del servidor');
@@ -5807,7 +5794,7 @@ app.get('/SolictarServicioTerceros', (req, res) => {
             }
 
             // Consulta a la base de datos para obtener la información de los clientes
-            connection.query('SELECT * FROM clientes', (error, clientesResult) => {
+            pool.query('SELECT * FROM clientes', (error, clientesResult) => {
                 if (error) {
                     console.error('Error al obtener los clientes:', error);
                     res.status(500).send('Error interno del servidor');
@@ -5849,7 +5836,7 @@ app.post('/guardar-servicio_tercero', (req, res) => {
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     // Execute the query
-    connection.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente], (err, result) => {
+    pool.query(sql, [realizadopor, email, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto, valor_dadoCliente], (err, result) => {
         if (err) {
             console.error('Error al insertar datos:', err);
             res.status(500).send('Error al guardar los datos en la base de datos.');
@@ -5898,7 +5885,7 @@ app.get('/ServiciosTerceros_pendientes', (req, res) => {
     if (req.session.loggedin === true) {
         // Consulta los servicios tercerizados en estado pendiente desde la base de datos
         const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
-        connection.query(query, ['pendiente'], (error, results) => {
+        pool.query(query, ['pendiente'], (error, results) => {
             if (error) {
                 console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
                 // Maneja el error apropiadamente
@@ -5922,7 +5909,7 @@ app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
         const { placa, conductor, celular,Provedor, valorque_noscobran } = req.body;
 
         const query = 'UPDATE servicios_terceros SET estado = ?, placa = ?, conductor = ?, celular = ?,Provedor = ?, valorque_noscobran = ? WHERE id = ?';
-        connection.query(query, ['asignado', placa, conductor, celular, Provedor,valorque_noscobran, ticketId], (error, results) => {
+        pool.query(query, ['asignado', placa, conductor, celular, Provedor,valorque_noscobran, ticketId], (error, results) => {
             if (error) {
                 console.error('Error al actualizar el ticket:', error);
                 res.status(500).send({ message: 'Error interno del servidor' });
@@ -5945,7 +5932,7 @@ app.post('/guardar-datos_conductor_SERIVICIOTERCERIZADO/:id', (req, res) => {
 function sendEmail(ticketId, placa, conductor, celular, res) {
     // Obtener el correo electrónico del servicio tercerizado y toda la información del servicio
     const getEmailAndServiceQuery = 'SELECT email, realizadopor, numero_tarea, fecha_servicio, hora_servicio, tipo_vehiculo, otro_vehiculo, cliente, otro_cliente, punto_origen, punto_destino, observaciones, nombrePersona, contacto FROM servicios_terceros WHERE id = ?';
-    connection.query(getEmailAndServiceQuery, [ticketId], (getError, getResult) => {
+    pool.query(getEmailAndServiceQuery, [ticketId], (getError, getResult) => {
         if (getError) {
             console.error('Error al obtener la información del servicio:', getError);
             res.status(500).send({ message: 'Error interno del servidor' });
@@ -6084,7 +6071,7 @@ function validateEmail(email) {
 app.get('/ServiciosTerceros_asignados', (req, res) => {
     if (req.session.loggedin === true) {
         const query = 'SELECT * FROM servicios_terceros WHERE estado = ?';
-        connection.query(query, ['asignado'], (error, results) => {
+        pool.query(query, ['asignado'], (error, results) => {
             if (error) {
                 console.error('Error al obtener los servicios tercerizados en estado pendiente:', error);
                 res.status(500).send('Error interno del servidor');
@@ -6101,7 +6088,7 @@ app.get('/download-excel', (req, res) => {
     const { startDate, endDate } = req.query;
     const query = 'SELECT * FROM servicios_terceros WHERE estado = ? AND fecha_servicio BETWEEN ? AND ?';
 
-    connection.query(query, ['asignado', startDate, endDate], async (error, results) => {
+    pool.query(query, ['asignado', startDate, endDate], async (error, results) => {
         if (error) {
             console.error('Error al obtener los servicios tercerizados en el rango de fechas:', error);
             res.status(500).send('Error interno del servidor');
@@ -6164,7 +6151,7 @@ app.post('/guardar_VERIFICACIONSERVICIO_TERCERO/:id', (req, res) => {
         }
 
         const query = 'UPDATE servicios_terceros SET valor_dadoCliente = ?, valorque_noscobran = ?, facturacion = ?, estado = ? WHERE id = ?';
-        connection.query(query, [valorCliente, costeProveedor, facturacion, estadoServicio, servicioterceroId], (error, results) => {
+        pool.query(query, [valorCliente, costeProveedor, facturacion, estadoServicio, servicioterceroId], (error, results) => {
             if (error) {
                 console.error('Error al actualizar el servicio:', error);
                 res.status(500).send({ message: 'Error interno del servidor' });
@@ -6209,7 +6196,7 @@ app.get('/consultar_servicioT', (req, res) => {
             queryParams.push(estado);
         }
 
-        connection.query(query, queryParams, (err, results) => {
+        pool.query(query, queryParams, (err, results) => {
             if (err) {
                 return res.status(500).send('Error en la consulta a la base de datos');
             }
@@ -6313,7 +6300,7 @@ app.post('/guardar_pqrs', (req, res) => {
                  VALUES (?, ?, ?, ?, ?)`;
 
     // Ejecutar la consulta SQL con los datos del formulario
-    connection.query(sql, [fecha, correo, realiza, tipo, descripcion], (error, results, fields) => {
+    pool.query(sql, [fecha, correo, realiza, tipo, descripcion], (error, results, fields) => {
         if (error) {
             console.error("Error al guardar la PQRS:", error);
             res.status(500).send("Error al guardar la PQRS.");
@@ -6396,7 +6383,7 @@ app.get('/menuGerencia', (req, res) => {
 async function obtenerDatoscontabilidadA() {
     return new Promise((resolve, reject) => {
       const query = "SELECT placa, NOMBRES_CONTRATO, VALOR_ADMINISTRACION,junio FROM contabilidad";
-      connection.query(query, (error, results) => {
+      pool.query(query, (error, results) => {
         if (error) reject(error);
         resolve(results);
       });
@@ -6460,7 +6447,7 @@ app.post('/actualizar_valor_pagar', (req, res) => {
     // Por ejemplo, podrías ejecutar una consulta SQL para actualizar el valor
     const sql = `UPDATE contabilidad SET ${mes} = ? WHERE placa = ?`;
   
-    connection.query(sql, [valorDecimal, placa], (err, result) => {
+    pool.query(sql, [valorDecimal, placa], (err, result) => {
       if (err) {
         console.error('Error al ejecutar la consulta SQL: ', err);
         res.status(500).send('Error al actualizar el valor en la base de datos');
@@ -6611,7 +6598,7 @@ async function obtenerDatosParaExcel(fechaInicio, fechaFin) {
     return new Promise((resolve, reject) => {
         // Realiza la consulta a la base de datos utilizando las fechas proporcionadas
         const query = `SELECT fecha, cliente, nombre_pasajero, vuelo, placa, conductor FROM aeropuerto WHERE fecha BETWEEN ? AND ?`;
-        connection.query(query, [fechaInicio, fechaFin], (error, results) => {
+        pool.query(query, [fechaInicio, fechaFin], (error, results) => {
             if (error) {
                 reject(error);
             } else {
@@ -6652,7 +6639,7 @@ app.post('/guardar_edicionAE', function(req, res) {
     ];
   
     // Ejecutar la consulta SQL
-    connection.query(sql, values, (err, result) => {
+    pool.query(sql, values, (err, result) => {
       if (err) {
         console.error('Error al actualizar los datos:', err);
         res.status(500).send('Error al actualizar los datos');
@@ -6677,7 +6664,7 @@ router.get('/seguimientopqr', (req, res) => {
             WHERE estado IS NULL
         `;
 
-        connection.query(query, (error, results) => {
+        pool.query(query, (error, results) => {
             if (error) {
                 console.error('Error al obtener PQRS:', error);
                 res.status(500).send('Error interno al obtener PQRS');
@@ -6727,7 +6714,7 @@ app.post('/guardar-seguimientoo', (req, res) => {
     // Aquí continúa tu lógica de actualización en la base de datos y envío de correo
     // Ejemplo:
     const sql = 'UPDATE pqrs SET responsable = ?, fecha_seguimiento = ?, seguimiento = ?, acciones = ?, estado = ? WHERE id = ?';
-    connection.query(sql, [responsable, fechaSeguimiento, seguimiento, acciones, 'Respondida', pqrsId], (err, result) => {
+    pool.query(sql, [responsable, fechaSeguimiento, seguimiento, acciones, 'Respondida', pqrsId], (err, result) => {
         if (err) {
             console.error('Error al guardar el seguimiento:', err);
             return res.status(500).send('Error al guardar el seguimiento');
@@ -6817,7 +6804,7 @@ app.get('/consultapqr', (req, res) => {
 
         // Consulta SQL para obtener las PQRS
         const sql = 'SELECT * FROM pqrs';
-        connection.query(sql, (err, results) => {
+        pool.query(sql, (err, results) => {
             if (err) {
                 console.error('Error al consultar las PQRS:', err);
                 return res.status(500).send('Error al consultar las PQRS');
@@ -6857,7 +6844,7 @@ app.get('/consultapqr/:tipo', (req, res) => {
             return res.status(400).send('Tipo de PQRS no válido');
         }
 
-        connection.query(sql, (err, results) => {
+        pool.query(sql, (err, results) => {
             if (err) {
                 console.error('Error al consultar las PQRS:', err);
                 return res.status(500).send('Error al consultar las PQRS');
@@ -6902,7 +6889,7 @@ router.get('/EnvioActas', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
-        connection.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
+        pool.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
             if (error) {
                 console.error('Error al obtener clientes desde MySQL:', error);
                 res.status(500).send('Error al obtener clientes desde la base de datos');
@@ -7000,7 +6987,7 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         } 
 
         console.log('Correo electrónico enviado:', info.response);
-        connection.query('SELECT id FROM clientes WHERE correoacta = ?', [clienteCorreo], (err, result) => {
+        pool.query('SELECT id FROM clientes WHERE correoacta = ?', [clienteCorreo], (err, result) => {
             if (err) {
                 console.error('Error al obtener cliente ID:', err);
                 return res.status(500).json({ message: 'Error al obtener cliente ID' });
@@ -7009,7 +6996,7 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
                 const clienteId = result[0].id;
                 console.log('Cliente ID obtenido:', clienteId);
                 console.log('Fecha:', fecha);
-                connection.query(
+                pool.query(
                     'INSERT INTO email_status (cliente_id, fecha, enviado) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE enviado = ?',
                     [clienteId, fecha, true, true],
                     (err) => {
@@ -7033,7 +7020,7 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
 
 app.get('/api/emailStatus', (req, res) => {
     const today = new Date().toISOString().split('T')[0];
-    connection.query('SELECT cliente_id, fecha, enviado FROM email_status WHERE fecha = ?', [today], (err, results) => {
+    pool.query('SELECT cliente_id, fecha, enviado FROM email_status WHERE fecha = ?', [today], (err, results) => {
         if (err) {
             console.error('Error al obtener el estado de los correos:', err);
             return res.status(500).send('Error al obtener el estado de los correos');
