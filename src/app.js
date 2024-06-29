@@ -3850,6 +3850,7 @@ app.post('/api/guardar_seguimiento_vianco', (req, res) => {
 
 
 
+
 // Endpoint para eliminar una fecha por su ID
 app.delete('/api/eliminar_fecha_vianco/:id', (req, res) => {
     const id = req.params.id;
@@ -7037,8 +7038,40 @@ app.get('/api/emailStatus', (req, res) => {
 
 
 
+app.get('/test', async (req, res) => {
+    try {
+        await testConnection(req);
+        res.send('Consulta ejecutada correctamente.');
+    } catch (error) {
+        console.error('Error en la ruta /test:', error.message);
+        res.status(500).send('Error en la consulta.');
+    }
+});
+// Assuming req.db correctly holds your connection pool as exported from your connection setup file
 
+async function testConnection(req) {
+    let pool;
+    try {
+        pool = req.db; // Assuming req.db holds the connection pool correctly
 
+        // Acquire a connection from the pool
+        const connection = await pool.promise().getConnection();
+
+        console.log('Connected to MySQL.');
+
+        // Execute a test query
+        const [rows, fields] = await connection.query('SELECT 1 + 1 AS result');
+        console.log('Query result:', rows[0].result);
+
+        // Release the connection back to the pool
+        connection.release();
+        console.log('Connection released.');
+
+    } catch (error) {
+        console.error('Error connecting or executing query:', error.message);
+        throw error; // Throw the error to handle it in the calling route or function
+    }
+}
 
 
 
