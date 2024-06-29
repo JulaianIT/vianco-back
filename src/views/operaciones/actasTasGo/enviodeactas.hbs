@@ -171,6 +171,24 @@
             color: red;
             font-weight: bold;
         }
+        #loading {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -178,13 +196,15 @@
     <div class="clientes-container">
         {{#each clientes}}
         <div class="cliente" id="cliente-{{this.id}}">
-            <div class="status no-enviado" id="status-{{this.id}}">No Enviado</div>
+            <div class="status {{#if this.enviado}}enviado{{else}}no-enviado{{/if}}" id="status-{{this.id}}">
+                {{#if this.enviado}}Enviado Hoy{{else}}No Enviado{{/if}}
+            </div>
             <img src="{{this.imagen}}" alt="Foto de {{this.nombre}}">
             <div class="info">
                 <p><strong>Nombre:</strong> {{this.nombre}}</p>
                 <p style="display: none;"><strong>Correo:</strong> {{this.correoacta}}</p>
             </div>
-            <form method="post" enctype="multipart/form-data" class="file-form" onsubmit="sendForm(event, {{this.id}}, {{@index}})">
+            <form id="envioActasForm-{{this.id}}" enctype="multipart/form-data" class="envioActasForm">
                 <input type="hidden" name="cliente" value="{{this.correoacta}}">
                 <input type="hidden" name="nombreCliente" value="{{this.nombre}}">
                 <label for="archivosPDF{{@index}}">Selecciona hasta 4 archivos PDF:</label>
@@ -210,7 +230,8 @@
         </div>
         {{/each}}
     </div>
- <script>
+    <div id="loading"></div>
+    <script>
         let filesMap = new Map();
 
         function updateFileInfo(index) {
@@ -295,34 +316,43 @@
             dropzone.addEventListener('drop', (e) => handleFileDrop(e, index));
         });
 
-        document.addEventListener('DOMContentLoaded', checkSentStatus);
+        document.querySelectorAll('.envioActasForm').forEach((form, index) => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                prepareFilesForSubmit(index);
 
-        function sendForm(event, clienteId, index) {
-            event.preventDefault();
-            const form = event.target;
-            prepareFilesForSubmit(index);
-            const formData = new FormData(form);
-            const statusElement = document.getElementById(`status-${clienteId}`);
-            fetch('/EnvioActas', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                    if (data.message === "Archivos subidos y correo enviado exitosamente") {
-                        statusElement.classList.remove('no-enviado');
-                        statusElement.classList.add('enviado');
-                        statusElement.textContent = 'Enviado Hoy';
+                const formData = new FormData(this);
+                const loading = document.getElementById('loading');
+
+                loading.style.display = 'block';
+
+                fetch('/EnvioActas', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Hubo un error al enviar el acta. Por favor, inténtalo de nuevo.');
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload(); // Recarga la página después de aceptar la alerta
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al enviar el formulario.');
+                    location.reload(); // Recarga la página si ocurre un error
+                });
             });
-        }
+        });
+
+        checkSentStatus(); // Llama a la función para verificar el estado al cargar la página
     </script>
 </body>
 </html>

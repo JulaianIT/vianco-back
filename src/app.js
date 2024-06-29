@@ -142,12 +142,38 @@ app.post("/auth", (req, res) => {
     });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Render login form
+app.get("/menucliente", (req, res) => {
+    if (req.session.loggedin) {
+        res.render("MODULOCLIENTES/homeclientes.hbs", { error: null });  // Renderizar el formulario de inicio de sesión con un mensaje de error nulo
+    } else {
+        res.render("login/index.hbs", { error: null });  // Renderizar el formulario de inicio de sesión con un mensaje de error nulo
+    }
+});
+
+
+
+//menu para cleintes
+
+
 // Handle login authentication for cliente
 app.post("/auth-cliente", (req, res) => {
     const data = req.body;
     
 
-    pool.query("SELECT * FROM cliente WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
+    pool.query("SELECT * FROM clienteuser WHERE email = ? AND password = ?", [data.email, data.password], (err, clienteData) => {
         if (err) {
             console.error("Error fetching cliente from database:", err);
             res.status(500).send("Internal Server Error");
@@ -159,7 +185,7 @@ app.post("/auth-cliente", (req, res) => {
             req.session.loggedin = true;
             req.session.name = cliente.name;
             req.session.roles = typeof cliente.roles === 'string' ? cliente.roles.split(',') : [];
-            res.redirect("/menu-cliente");
+            res.redirect("/menucliente");
         } else {
             res.render("login/index.hbs", { error: "Cliente no encontrado o contraseña incorrecta" });
         }
@@ -6884,13 +6910,26 @@ function formatDate(dateString) {
 
 
 
-
-
 router.get('/EnvioActas', (req, res) => {
     if (req.session.loggedin === true) {
         const nombreUsuario = req.session.name;
 
-        pool.query('SELECT nombre, correoacta, imagen FROM clientes', (error, results, fields) => {
+        const query = `
+            SELECT 
+                c.id, 
+                c.nombre, 
+                c.correoacta, 
+                c.imagen, 
+                IFNULL(es.enviado, 0) AS enviado
+            FROM 
+                clientes c
+            LEFT JOIN 
+                email_status es 
+            ON 
+                c.id = es.cliente_id AND es.fecha = CURDATE();
+        `;
+
+        pool.query(query, (error, results, fields) => {
             if (error) {
                 console.error('Error al obtener clientes desde MySQL:', error);
                 res.status(500).send('Error al obtener clientes desde la base de datos');
@@ -6906,14 +6945,6 @@ router.get('/EnvioActas', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
 app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     if (req.session.loggedin !== true) {
         return res.status(401).json({ message: "Usuario no autenticado" });
@@ -6922,7 +6953,6 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
     const clienteCorreo = req.body.cliente;
     const nombreCliente = req.body.nombreCliente;
     const archivosPDF = req.files;
-    const fecha = req.body.fecha;
 
     if (!archivosPDF || archivosPDF.length === 0) {
         return res.status(400).json({ message: 'Debes seleccionar al menos un archivo PDF.' });
@@ -6938,9 +6968,9 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         }
     });
 
-    const dateObj = new Date(fecha + 'T00:00:00');
+    const fechaEnvio = new Date();
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-    const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
+    const fechaFormateada = fechaEnvio.toLocaleDateString('es-ES', opciones);
 
     const messageId = `<${uuidv4()}@example.com>`;
     const uniqueSubject = `Relación de Servicios ${nombreCliente} ${fechaFormateada}`;
@@ -6985,7 +7015,7 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
         if (error) {
             console.error('Error al enviar correo electrónico:', error);
             return res.status(500).json({ message: 'Error al enviar correo electrónico' });
-        } 
+        }
 
         console.log('Correo electrónico enviado:', info.response);
         pool.query('SELECT id FROM clientes WHERE correoacta = ?', [clienteCorreo], (err, result) => {
@@ -6995,11 +7025,10 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
             }
             if (result.length > 0) {
                 const clienteId = result[0].id;
-                console.log('Cliente ID obtenido:', clienteId);
-                console.log('Fecha:', fecha);
+                const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
                 pool.query(
                     'INSERT INTO email_status (cliente_id, fecha, enviado) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE enviado = ?',
-                    [clienteId, fecha, true, true],
+                    [clienteId, fechaActual, true, true],
                     (err) => {
                         if (err) {
                             console.error('Error al actualizar estado de correo:', err);
@@ -7018,20 +7047,15 @@ app.post('/EnvioActas', upload.array('archivosPDF', 4), (req, res) => {
 
 
 
-
 app.get('/api/emailStatus', (req, res) => {
-    const today = new Date().toISOString().split('T')[0];
-    pool.query('SELECT cliente_id, fecha, enviado FROM email_status WHERE fecha = ?', [today], (err, results) => {
+    pool.query('SELECT cliente_id, fecha, enviado FROM email_status WHERE fecha = CURDATE()', (err, results) => {
         if (err) {
-            console.error('Error al obtener el estado de los correos:', err);
-            return res.status(500).send('Error al obtener el estado de los correos');
+            console.error('Error al obtener estado de los correos:', err);
+            return res.status(500).json({ message: 'Error al obtener estado de los correos' });
         }
         res.json(results);
     });
 });
-
-
-
 
 
 
